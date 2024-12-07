@@ -1,0 +1,59 @@
+{
+  "cli": {
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      },
+      "env": {
+        "EXPO_PUBLIC_IS_DEV": "true"
+      }
+    },
+    "development-ios-device": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_IS_DEV": "true"
+      }
+    },
+    // Same as test environment
+    "preview": {
+      "channel": "preview",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://worker-auth-production.greetle.workers.dev",
+        "EXPO_PUBLIC_SOCKET_API_URL": "https://thebackend-6lertodt4a-ey.a.run.app"
+      },
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
+    "production": {
+      "channel": "production",
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://worker-auth-production.greetle.workers.dev",
+        "EXPO_PUBLIC_SOCKET_API_URL": "https://thebackend-6lertodt4a-ey.a.run.app"
+      },
+      "android": {
+        "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "releaseStatus": "completed"
+      }
+    },
+    "draft": {
+      "android": {
+        "releaseStatus": "completed"
+      }
+    }
+  }
+}
