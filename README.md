@@ -6,7 +6,9 @@ Contributions welcome!
 ## Key Features
 
 - End-to-end encrypted messaging for secure communication, like Signal
-- Open-source backend coming soon!
+
+
+## [Server repository](https://github.com/mntorg/mnt-server)
 
 ## Download the App
 
