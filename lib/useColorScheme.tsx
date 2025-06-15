@@ -1,12 +1,10 @@
-import { useColorScheme as useNativewindColorScheme } from "nativewind";
+import { useColorScheme as useRNColorScheme } from "react-native";
 
 export function useColorScheme() {
-  const { colorScheme, setColorScheme, toggleColorScheme } =
-    useNativewindColorScheme();
+  const systemColorScheme = useRNColorScheme() || "dark";
+
   return {
-    colorScheme: "dark",
-    isDarkColorScheme: true,
-    setColorScheme,
-    toggleColorScheme,
+    colorScheme: systemColorScheme,
+    isDarkColorScheme: systemColorScheme === "dark",
   };
 }

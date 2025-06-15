@@ -1,13 +1,20 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import { User } from "@/lib/interfaces";
 import { Ionicons } from "@expo/vector-icons";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import UserAvatarChallange from "../UserAvatarChallange";
+import UserAvatarChallange from "../UserAvatarAnimated";
 import { MenuView } from "@react-native-menu/menu";
 import useBlockUser from "@/hooks/useBlockUser";
+import { FontSizes } from "@/lib/theme";
 
 interface FriendItemProps {
   user: User;
@@ -54,13 +61,11 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
   }
 
   return (
-    <View className="flex-row items-center justify-between py-3 w-full">
-      <View className="flex-row items-center">
+    <View style={styles.container}>
+      <View style={styles.leftContainer}>
         <UserAvatarChallange size="md" user={user} />
-        <View className="ml-3">
-          <Text className="text-lg font-semibold text-white">
-            {user.username}
-          </Text>
+        <View style={styles.textContainer}>
+          <Text style={styles.username}>{user.username}</Text>
         </View>
       </View>
       <MenuView
@@ -93,7 +98,7 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
       >
         <TouchableOpacity
           disabled={isDeleting || blockUser.isPending}
-          className="px-4 py-2 rounded-full flex-row items-center justify-center"
+          style={styles.menuButton}
         >
           <Ionicons name="close" size={24} color="gray" />
         </TouchableOpacity>
@@ -101,5 +106,35 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    width: "100%",
+  },
+  leftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  textContainer: {
+    marginLeft: 12,
+  },
+  username: {
+    fontSize: FontSizes.medium,
+    fontWeight: "600",
+    color: "white",
+  },
+  menuButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 export default ContactSyncFriendItem;

@@ -1,18 +1,22 @@
 import React, { forwardRef } from "react";
 import { StyleSheet } from "react-native";
 import { Image } from "expo-image";
-import { Zoomable as RNZoomable } from "@likashefqet/react-native-image-zoom";
+import {
+  Zoomable as RNZoomable,
+  ZOOM_TYPE,
+} from "@likashefqet/react-native-image-zoom";
 
 interface ZoomableImageProps {
   uri: string;
   style?: any;
-  onZoom?: (zoomType?: "in" | "out") => void;
+  onZoom?: (zoomType?: ZOOM_TYPE) => void;
   onAnimationEnd?: (finished: boolean) => void;
   onInteractionStart?: () => void;
   onInteractionEnd?: () => void;
+  minScale?: number;
+  maxScale?: number;
+  doubleTapScale?: number;
 }
-
-type ZoomType = "in" | "out";
 
 const ZoomableImage = forwardRef<any, ZoomableImageProps>(
   (
@@ -23,15 +27,18 @@ const ZoomableImage = forwardRef<any, ZoomableImageProps>(
       onAnimationEnd = () => {},
       onInteractionEnd = () => {},
       onInteractionStart = () => {},
+      minScale = 1,
+      maxScale = 5,
+      doubleTapScale = 3,
     },
     ref
   ) => {
     return (
       <RNZoomable
         ref={ref}
-        minScale={1}
-        maxScale={5}
-        doubleTapScale={3}
+        minScale={minScale}
+        maxScale={maxScale}
+        doubleTapScale={doubleTapScale}
         isSingleTapEnabled
         isDoubleTapEnabled
         onInteractionStart={() => {
@@ -40,10 +47,10 @@ const ZoomableImage = forwardRef<any, ZoomableImageProps>(
         onInteractionEnd={() => {
           onInteractionEnd();
         }}
-        onDoubleTap={(zoomType: ZoomType) => {
+        onDoubleTap={(zoomType: ZOOM_TYPE) => {
           onZoom(zoomType);
         }}
-        onProgrammaticZoom={(zoomType: ZoomType) => {
+        onProgrammaticZoom={(zoomType: ZOOM_TYPE) => {
           onZoom(zoomType);
         }}
         style={[styles.container, style]}

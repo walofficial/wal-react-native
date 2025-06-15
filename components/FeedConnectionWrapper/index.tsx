@@ -17,13 +17,20 @@ export function useSocket() {
 }
 import { useQueryClient } from "@tanstack/react-query";
 import { LocationFeedPost } from "@/lib/interfaces";
+import { publicKeyState } from "@/lib/state/auth";
+import { useAtomValue } from "jotai";
 
 export default function FeedConnectionWrapper({ children }) {
   const [isConnected, setIsConnected] = useState(false);
   const { user } = useAuth();
-  const { taskId } = useLocalSearchParams<{ taskId: string }>();
+  const { taskId, content_type } = useLocalSearchParams<{
+    taskId: string;
+    content_type: "last24h" | "youtube_only" | "social_media_only";
+  }>();
   const queryClient = useQueryClient();
-  const socketRef = useRef(getSocket(user.id));
+  const publicKey = useAtomValue(publicKeyState);
+
+  const socketRef = useRef(getSocket(user.id, publicKey));
 
   useEffect(() => {
     const socket = socketRef.current;
@@ -43,7 +50,7 @@ export default function FeedConnectionWrapper({ children }) {
     socket.on("new_feed_item", (privateMessage: LocationFeedPost) => {
       try {
         queryClient.setQueryData(
-          ["location-feed-paginated", taskId],
+          ["location-feed-paginated", taskId, content_type],
           (data: any) => {
             return {
               ...data,

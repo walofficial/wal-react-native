@@ -19,14 +19,16 @@ export default function useMessageRoom(
     },
     retry: false,
     enabled,
+    staleTime: 1000 * 60, // Consider data fresh for 1 minute
+    gcTime: 1000 * 60 * 10, // Keep data in cache for 10 minutes
     refetchIntervalInBackground: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
   });
 
   useEffect(() => {
     if (error instanceof AxiosError) {
+      // Error handling can be implemented here
     }
   }, [error, room]);
-
   return { room, isFetching: isFetching && !isRefetching, error };
 }

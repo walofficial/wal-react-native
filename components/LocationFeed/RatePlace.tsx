@@ -1,7 +1,7 @@
 import { toast } from "@backpackapp-io/react-native-toast";
 import { ThumbsDown, X } from "lucide-react-native";
 import { Heart } from "lucide-react-native";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import Animated, {
   withTiming,
@@ -12,6 +12,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
+import { FontSizes } from "@/lib/theme";
 
 interface RatePlaceProps {
   taskId: string;
@@ -68,27 +69,24 @@ function RatePlace({ taskId }: RatePlaceProps) {
   }
 
   return (
-    <Animated.View
-      style={[animatedStyle]}
-      className="pt-0 px-5 mb-5 flex-row items-center justify-between"
-    >
+    <Animated.View style={[animatedStyle, styles.container]}>
       <TouchableOpacity
         onPress={() => handlePress("close")}
-        className="items-center justify-center bg-white/10 rounded-full p-3"
+        style={styles.iconButton}
       >
         <X size={20} color="white" />
       </TouchableOpacity>
-      <Text className="text-white text-lg">შეაფასეთ ლოკაცია</Text>
-      <View className="flex-row justify-center ml-5">
+      <Text style={styles.text}>შეაფასეთ ლოკაცია</Text>
+      <View style={styles.ratingContainer}>
         <TouchableOpacity
           onPress={() => handlePress("thumbsDown")}
-          className="items-center justify-center bg-white/10 rounded-full p-3"
+          style={styles.iconButton}
         >
           <ThumbsDown color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => handlePress("heart")}
-          className="ml-3 items-center justify-center bg-white/10 rounded-full p-3"
+          style={[styles.iconButton, styles.heartButton]}
         >
           <Heart color="red" />
         </TouchableOpacity>
@@ -96,5 +94,35 @@ function RatePlace({ taskId }: RatePlaceProps) {
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 0,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  iconButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: 9999,
+    padding: 12,
+  },
+  text: {
+    color: "white",
+    fontSize: FontSizes.medium,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginLeft: 20,
+  },
+  heartButton: {
+    marginLeft: 12,
+  },
+});
 
 export default RatePlace;

@@ -12,6 +12,8 @@ import Reanimated, {
 } from "react-native-reanimated";
 import type { Camera, PhotoFile } from "react-native-vision-camera";
 import { CAPTURE_BUTTON_SIZE } from "./Constants";
+import * as Haptics from "expo-haptics";
+import { useHaptics } from "@/lib/haptics";
 
 const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.1;
 
@@ -34,19 +36,25 @@ const _CaptureButton: React.FC<Props> = ({
 }): React.ReactElement => {
   const isPressingButton = useSharedValue(false);
   const photoRef = useRef<PhotoFile | null>(null);
+  const haptic = useHaptics();
   const takePhoto = useCallback(async () => {
     try {
       if (camera.current == null) throw new Error("Camera ref is null!");
 
+      haptic("Medium");
       const durationStart = Date.now();
       const photo = await camera.current.takePhoto({
         flash: flash,
         enableShutterSound: false,
       });
-      const duration = Date.now() - durationStart;
+
       photoRef.current = photo;
+      const duration = Date.now() - durationStart;
+
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e) {
       console.error("Failed to take photo!", e);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   }, [camera, flash, onMediaCaptured]);
 

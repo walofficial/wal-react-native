@@ -1,14 +1,74 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "@/lib/theme";
+import Button from "@/components/Button";
 
-function ErrorMessageCard({ title }: { title: string }) {
+function ErrorMessageCard({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  const router = useRouter();
+  const theme = useTheme();
+
+  const handleSignInPress = () => {
+    router.push("/(auth)/sign-in");
+  };
+
   return (
-    <View className="flex transition-all animate-fade flex-col w-full items-center justify-center h-[300px] rounded-lg p-4">
-      <Text className="text-lg font-semibold text-red-500 dark:text-white">
-        {title}
-      </Text>
+    <View style={styles.container}>
+      <View style={styles.cardContainer}>
+        <Ionicons name="alert-circle-outline" size={40} color="#FF3B30" />
+        <Text style={[styles.title, { color: "#FF3B30" }]}>{title}</Text>
+        <Text style={[styles.description, { color: theme.colors.text }]}>
+          {description}
+        </Text>
+        <Button
+          title="უკან"
+          variant="primary"
+          size="medium"
+          onPress={handleSignInPress}
+          style={styles.buttonStyle}
+        />
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 16,
+  },
+  cardContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+    padding: 20,
+    width: "100%",
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginTop: 10,
+    textAlign: "center",
+  },
+  description: {
+    fontSize: 14,
+    fontWeight: "400",
+    marginTop: 4,
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  buttonStyle: {
+    marginTop: 12,
+  },
+});
 
 export default ErrorMessageCard;

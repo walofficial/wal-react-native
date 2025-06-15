@@ -8,7 +8,7 @@ export function useUnreadCount() {
       const response = await api.getUnreadNotificationsCount();
       return response.count;
     },
-    refetchInterval: 15000, // Refetch every 10 seconds
+    // refetchInterval: 15000, // Refetch every 10 seconds
   });
 
   return {

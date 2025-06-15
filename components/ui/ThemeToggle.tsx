@@ -1,9 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Pressable, View } from "react-native";
+import { Pressable, View, StyleSheet } from "react-native";
 import { MoonStar } from "~/lib/icons/MoonStar";
 import { Sun } from "~/lib/icons/Sun";
 import { useColorScheme } from "~/lib/useColorScheme";
-import { cn } from "~/lib/utils";
 
 export function ThemeToggle() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
@@ -14,26 +13,41 @@ export function ThemeToggle() {
         setColorScheme(newTheme);
         AsyncStorage.setItem("theme", newTheme);
       }}
-      className="web:ring-offset-background web:transition-colors web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2"
+      style={styles.pressable}
     >
       {({ pressed }) => (
-        <View
-          className={cn(
-            "flex-1 aspect-square pt-0.5 justify-center items-start web:px-5",
-            pressed && "opacity-70"
-          )}
-        >
+        <View style={[styles.container, pressed && styles.pressed]}>
           {isDarkColorScheme ? (
             <MoonStar
-              className="text-foreground"
+              color="#000" // Replace with your foreground color
               size={23}
               strokeWidth={1.25}
             />
           ) : (
-            <Sun className="text-foreground" size={24} strokeWidth={1.25} />
+            <Sun
+              color="#000" // Replace with your foreground color
+              size={24}
+              strokeWidth={1.25}
+            />
           )}
         </View>
       )}
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  pressable: {
+    // Web specific styles can be handled with Platform.select if needed
+  },
+  container: {
+    flex: 1,
+    aspectRatio: 1,
+    paddingTop: 2,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  pressed: {
+    opacity: 0.7,
+  },
+});

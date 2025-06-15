@@ -3,42 +3,41 @@
     "appVersionSource": "remote"
   },
   "build": {
-    "development": {
+    "development-local": {
       "developmentClient": true,
       "distribution": "internal",
-      "ios": {
-        "simulator": true
+      "env": {
+        "EXPO_PUBLIC_IS_DEV": "true",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://wanletusldnndzoqczzm.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndhbmxldHVzbGRubmR6b3FjenptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTY5NzM2NTksImV4cCI6MjAzMjU0OTY1OX0.qSJ7HAP7d1gUP2S5-eGaGADpCilMTJOQoDHXD0-yp0A"
       },
-      "env": {
-        "EXPO_PUBLIC_IS_DEV": "true"
-      }
-    },
-    "development-ios-device": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "env": {
-        "EXPO_PUBLIC_IS_DEV": "true"
+      "android": {
+        "buildType": "apk"
       }
     },
     // Same as test environment
+    "development": {
+      "autoIncrement": true,
+      "channel": "development",
+      "environment": "development",
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      }
+    },
     "preview": {
+      "autoIncrement": true,
       "channel": "preview",
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://worker-auth-production.greetle.workers.dev",
-        "EXPO_PUBLIC_SOCKET_API_URL": "https://thebackend-6lertodt4a-ey.a.run.app"
-      },
+      "environment": "preview",
       "distribution": "internal",
       "android": {
         "buildType": "apk"
       }
     },
     "production": {
-      "channel": "production",
       "autoIncrement": true,
-      "env": {
-        "EXPO_PUBLIC_API_URL": "https://worker-auth-production.greetle.workers.dev",
-        "EXPO_PUBLIC_SOCKET_API_URL": "https://thebackend-6lertodt4a-ey.a.run.app"
-      },
+      "channel": "production",
+      "environment": "production",
       "android": {
         "buildType": "app-bundle"
       }

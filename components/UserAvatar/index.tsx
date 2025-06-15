@@ -1,9 +1,10 @@
-import { cn } from "@/lib/utils";
+import { StyleSheet } from "react-native";
 import { Avatar } from "../ui/avatar";
+import { useTheme } from "@/lib/theme";
 
 export const AvatarWidth = 70;
 
-function UserAvatarLayout({
+const UserAvatarLayout = ({
   size = "md",
   children,
   borderColor = "pink",
@@ -11,26 +12,43 @@ function UserAvatarLayout({
   children: React.ReactNode;
   borderColor?: string;
   size?: "sm" | "md" | "lg";
-}) {
+}) => {
+  const theme = useTheme();
+  const width = size === "sm" ? 50 : size === "md" ? 60 : 70;
+  const height = width;
+  const borderRadius = width / 2;
+
+  // Define border colors using theme
+  const borderColors = {
+    green: theme.colors.primary,
+    pink: "#ec4899", // pink-500
+    blue: "#3b82f6", // blue-500
+    gray: theme.colors.border,
+  };
+
+  const selectedBorderColor =
+    borderColors[borderColor as keyof typeof borderColors] || borderColors.pink;
+
   return (
     <Avatar
-      className={cn(
-        `border-2 p-1 flex items-center justify-center`,
-        borderColor === "green" && `border-green-500`,
-        borderColor === "pink" && `border-pink-500`,
-        borderColor === "blue" && `border-blue-500`,
-        borderColor === "gray" && `border-gray-500`
-      )}
+      style={[
+        styles.avatar,
+        { width, height, borderRadius, borderColor: selectedBorderColor },
+      ]}
       alt="Avatar"
-      style={{
-        width: size === "sm" ? 50 : size === "md" ? 60 : 70,
-        height: size === "sm" ? 50 : size === "md" ? 60 : 70,
-        borderRadius: size === "sm" ? 25 : size === "md" ? 30 : 35,
-      }}
     >
       {children}
     </Avatar>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  avatar: {
+    padding: 4,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 export default UserAvatarLayout;

@@ -89,24 +89,20 @@ export async function registerForPushNotificationsAsync() {
   }
 }
 
-export const isExampleSourceImage = (task: Task) => {
-  if (!task.task_verification_example_sources[0]) {
-    return false;
-  }
-  return task.task_verification_example_sources[0].media_type.includes("image");
-};
-
 export const itemHeightCoeff = 0.45;
 
 export const convertToCDNUrl = (url: string) => {
+  if (!url) {
+    return "";
+  }
   return url
     .replace(
       "https://storage.cloud.google.com/ment-verification/",
-      "https://cdn.ment.ge/"
+      "https://cdn.wal.ge/"
     )
     .replace(
       "https://storage.googleapis.com/ment-verification/",
-      "https://cdn.ment.ge/"
+      "https://cdn.wal.ge/"
     );
 };
 
@@ -120,9 +116,21 @@ export const getVideoSrc = (
     Platform.OS === "ios"
       ? verification?.verified_media_playback?.hls
       : verification?.verified_media_playback?.dash;
-  const mp4Source = verification?.verified_media_playback?.mp4;
+  const mp4Source =
+    verification?.verified_media_playback?.mp4 ||
+    verification?.verified_media_playback?.hls;
 
   const shouldStream = verification?.state === "READY_FOR_USE";
 
   return shouldStream ? streamSrc || mp4Source : mp4Source;
 };
+
+export function formatNumber(num: number): string {
+  if (num >= 1000000) {
+    return (num / 1000000).toFixed(1) + "M";
+  }
+  if (num >= 1000) {
+    return (num / 1000).toFixed(1) + "K";
+  }
+  return num.toString();
+}

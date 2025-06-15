@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
@@ -101,7 +106,7 @@ const RegisteredContactsList: React.FC = () => {
   }
 
   return (
-    <View className="mb-3">
+    <View style={styles.container}>
       {uniqueContacts.length > 0 && (
         <ContactListHeader icon="sparkles-outline" title="იყენებენ" />
       )}
@@ -129,11 +134,11 @@ const RegisteredContactsList: React.FC = () => {
         : null}
       {registeredContacts.length > uniqueContacts.length && (
         <TouchableOpacity
-          className="bg-gray-500 px-4 py-2 rounded-full mt-4 self-center"
+          style={styles.loadMoreButton}
           onPress={loadMore}
           disabled={isLoading}
         >
-          <Text className="text-white font-semibold">
+          <Text style={styles.loadMoreText}>
             {isLoading ? "იტვირთება..." : "ჩამოტვირთე"}
           </Text>
         </TouchableOpacity>
@@ -141,5 +146,23 @@ const RegisteredContactsList: React.FC = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 12,
+  },
+  loadMoreButton: {
+    backgroundColor: "#6B7280",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    marginTop: 16,
+    alignSelf: "center",
+  },
+  loadMoreText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+});
 
 export default RegisteredContactsList;

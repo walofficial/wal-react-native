@@ -1,21 +1,32 @@
 import { useSession } from "@/components/AuthLayer";
-import { H1 } from "@/components/ui/typography";
+import { isWeb } from "@/lib/platform";
 import { Redirect } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
+import { useEffect } from "react";
+import { appIsReadyState } from "@/lib/state/app";
+import { useAtom } from "jotai";
 
 export default function Index() {
   const { session, isLoading } = useSession();
+  const [appIsReady, setAppIsReady] = useAtom(appIsReadyState);
+
+  useEffect(() => {
+    if (session) {
+      setAppIsReady(true);
+    }
+  }, [session]);
 
   if (session) {
-    return <Redirect href="/(tabs)/liveusers" />;
+    return <Redirect href="/(tabs)/(global)/67bb256786841cb3e7074bcd" />;
   }
   if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={"white"} />
-      </View>
-    );
+    // Splash screen is anyway shown here with above useEffect
+    return null;
   }
 
-  return <Redirect href="/sign-in" />;
+  if (isWeb) {
+    // We don't have auth for web version for now
+    return <Redirect href="/(tabs)/(global)/67bb256786841cb3e7074bcd" />;
+  }
+
+  return <Redirect href="/(auth)/sign-in" />;
 }

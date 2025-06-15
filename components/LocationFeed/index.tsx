@@ -1,11 +1,10 @@
-import { useLocalSearchParams, usePathname } from "expo-router";
 import {
   View,
   Dimensions,
   ActivityIndicator,
   RefreshControl,
-  FlatList,
   Platform,
+  FlatList,
 } from "react-native";
 import {
   useEffect,
@@ -14,15 +13,13 @@ import {
   useCallback,
   ReactElement,
   JSXElementConstructor,
-  useMemo,
   Suspense,
+  useMemo,
 } from "react";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { dimensionsState } from "@/components/ActualDimensionsProvider";
-import BottomLocationActions from "../BottomLocationActions";
 import { HEADER_HEIGHT } from "@/lib/constants";
 import { useLocationFeedPaginated } from "@/hooks/useLocationFeedPaginated";
-import api from "@/lib/api";
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -33,129 +30,28 @@ import Animated, {
 import { useScrollReanimatedValue } from "../context/ScrollReanimatedValue";
 import useIsUserInSelectedLocation from "@/hooks/useIsUserInSelectedLocation";
 import { openMap } from "@/utils/openMap";
-import { useTrackImpression } from "@/mutations/trackImpression";
-import { FlashList } from "@shopify/flash-list";
 import React from "react";
-import type { NativeSyntheticEvent, NativeScrollEvent } from "react-native";
+import type { ViewabilityConfig } from "react-native";
 import { ListEmptyComponent } from "./ListEmptyComponent";
-import ListUserGeneratedItem from "@/components/StoryScene";
-import LocationUserListSheet from "../LocationUserListSheet";
 import BottomSheet from "@gorhom/bottom-sheet";
-import type { Task } from "@/lib/interfaces";
-import PinnedFeedItem from "./PinnedFeedItem";
-import { itemHeightCoeff } from "@/lib/utils";
-
-type AnimatedFlashListProps = {
-  data: object[];
-  horizontal: boolean;
-  showsHorizontalScrollIndicator: boolean;
-  pagingEnabled: boolean;
-  keyExtractor: (item: any) => string;
-  scrollEventThrottle: number;
-  onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
-  renderItem: (
-    item: any
-  ) => ReactElement<any | string | JSXElementConstructor<any>>;
-  estimatedItemSize: number;
-  getItemType: (
-    item: any,
-    index: number,
-    extraData?: any
-  ) => string | number | undefined;
-  keyboardShouldPersistTaps?:
-    | boolean
-    | "always"
-    | "never"
-    | "handled"
-    | undefined;
-  initialScrollIndex: number;
-  scrollEnabled: boolean;
-  scrollX: SharedValue<number>;
-  scrollIndex: number;
-  setIndex: (index: number) => void;
-  onScrollEnd?: () => void;
-};
-
-const AnimatedFlashListComponent = Animated.createAnimatedComponent(
-  React.forwardRef(
-    (props: AnimatedFlashListProps, ref: React.Ref<FlashList<any>>) => (
-      <FlashList<any> {...props} ref={ref} />
-    )
-  )
-);
-
-// Move these worklets outside the component to prevent recreating them on each render
-const updateHeaderState = (
-  headerTranslateY: SharedValue<number>,
-  headerOpacity: SharedValue<number>,
-  show: boolean
-) => {
-  "worklet";
-  if (Platform.OS === "ios") {
-    headerTranslateY.value = withTiming(show ? 0 : -120);
-    headerOpacity.value = withTiming(show ? 1 : 0);
-  }
-};
-
-const createScrollHandler = (
-  lastScrollY: SharedValue<number>,
-  hasMomentum: SharedValue<boolean>,
-  headerTranslateY: SharedValue<number>,
-  headerOpacity: SharedValue<number>,
-  opacity: SharedValue<number>,
-  isScrollingDown: SharedValue<boolean>,
-  bottomSheetOpacity: SharedValue<number>
-) => {
-  "worklet";
-  return useAnimatedScrollHandler({
-    onScroll: (event) => {
-      "worklet";
-      isScrollingDown.value = event.contentOffset.y > lastScrollY.value;
-      lastScrollY.value = event.contentOffset.y;
-
-      if (event.contentOffset.y < 30 && bottomSheetOpacity.value !== 1) {
-        if (Platform.OS === "ios") {
-          opacity.value = withTiming(1);
-        } else {
-        }
-        bottomSheetOpacity.value = 1;
-        return;
-      }
-
-      if (isScrollingDown.value) {
-        if (Platform.OS === "ios") {
-          opacity.value = withTiming(0.5);
-          if (event.contentOffset.y >= 100) {
-            updateHeaderState(headerTranslateY, headerOpacity, false);
-          }
-        }
-      }
-    },
-    onBeginDrag: (event) => {
-      "worklet";
-      if (Platform.OS === "ios") {
-        if (isScrollingDown.value) {
-          opacity.value = withTiming(0.5);
-          updateHeaderState(headerTranslateY, headerOpacity, false);
-        }
-      }
-    },
-    onMomentumBegin: () => {
-      "worklet";
-      if (!isScrollingDown.value) {
-        if (Platform.OS === "ios") {
-          opacity.value = withTiming(1);
-          updateHeaderState(headerTranslateY, headerOpacity, true);
-        }
-      } else {
-        if (Platform.OS === "ios") {
-          opacity.value = withTiming(0.5);
-          updateHeaderState(headerTranslateY, headerOpacity, false);
-        }
-      }
-    },
-  });
-};
+import type {
+  AnimatedFlashListProps,
+  LocationFeedPost,
+  Task,
+} from "@/lib/interfaces";
+import { useQueryClient } from "@tanstack/react-query";
+import { isWeb } from "@/lib/platform";
+import BottomLocationActions from "../BottomLocationActions";
+import FeedItem from "../FeedItem";
+import { getVideoSrc } from "@/lib/utils";
+import PostsFeed from "../PostsFeed";
+import NewsFeed from "../NewsFeed";
+import { scrollToTopState } from "@/lib/atoms/location";
+import LocationUserListSheet from "../LocationUserListSheet";
+import NewsCardItem from "../NewsCard/NewsCardItem";
+import { useRouter, usePathname } from "expo-router";
+import { useLightboxControls } from "@/lib/lightbox/lightbox";
+import { shouldFocusCommentInputAtom } from "@/atoms/comments";
 
 type Location = {
   nearest_location: {
@@ -166,62 +62,76 @@ type Location = {
   task: Task;
 };
 
-const MemoizedListUserGeneratedItem = React.memo(ListUserGeneratedItem);
+interface LocationFeedProps {
+  taskId: string;
+  content_type: "last24h" | "youtube_only" | "social_media_only";
+}
 
-export default function LocationFeed() {
-  const { taskId } = useLocalSearchParams<{ taskId: string }>();
-  const { isUserInSelectedLocation, selectedLocation, isGettingLocation } =
-    useIsUserInSelectedLocation();
-  const bottomSheetOpacity = useSharedValue(1);
+export default function LocationFeed({
+  taskId,
+  content_type,
+}: LocationFeedProps) {
+  const {
+    isUserInSelectedLocation,
+    selectedLocation,
+    isGettingLocation,
+    isCountryFeed,
+  } = useIsUserInSelectedLocation();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { closeLightbox } = useLightboxControls();
+  const [_, setShouldFocusInput] = useAtom(shouldFocusCommentInputAtom);
+
   const {
     items,
     fetchNextPage,
     hasNextPage,
-    isLoading,
     isFetching,
     isFetchingNextPage,
     isRefetching,
-    isPending,
     refetch,
   } = useLocationFeedPaginated({
     taskId: taskId as string,
+    content_type: content_type as
+      | "last24h"
+      | "youtube_only"
+      | "social_media_only",
   });
 
+  const locationUserListSheetRef = useRef<BottomSheet>(null);
   const headerHeight = useAtomValue(HEADER_HEIGHT);
-
-  const trackImpression = useTrackImpression();
-
-  const flashListRef = useRef<FlashList<any>>(null);
+  const flashListRef = useRef<any>(null);
+  const queryStatePopulatedOptimistic = useRef(false);
 
   const defaultStoryIndex = 0;
-
-  const dimensions = useAtomValue(dimensionsState) ?? {
-    height: Dimensions.get("window").height,
-    width: Dimensions.get("window").width,
-  };
 
   const [currentViewableItemIndex, setCurrentViewableItemIndex] =
     useState(defaultStoryIndex);
 
-  // Add a new state to keep track of the preloaded video index
-  const [preloadedIndex, setPreloadedIndex] = useState(1);
+  const viewabilityConfig: ViewabilityConfig = {
+    itemVisiblePercentThreshold: 40,
+    minimumViewTime: 0.5e3,
+  };
 
-  const viewabilityConfig = { viewAreaCoveragePercentThreshold: 50 };
-  const onViewableItemsChanged = ({ viewableItems }: any) => {
-    if (viewableItems.length > 0) {
-      const newIndex = viewableItems[0].index ?? 0;
-      setCurrentViewableItemIndex(newIndex);
+  const onViewableItemsChanged = ({
+    viewableItems,
+  }: {
+    viewableItems: { item: LocationFeedPost; index: number }[];
+  }) => {
+    // Viewable config here only applies for video autoplays and impressions trackerr
+    if (viewableItems.length > 0 && viewableItems[0].index !== undefined) {
+      // Sometimes there is case where video and small text type post might be visible in viewport together.
+      // We assume that user is watching video in that case and autoplay it.
+      // To reproduce this try to have first post as 3 row text content and second post as video content.
 
-      // Preload the next video
-      if (newIndex + 1 < items.length && newIndex + 1 !== preloadedIndex) {
-        setPreloadedIndex(newIndex + 1);
-      }
+      const videoItem = viewableItems.find(
+        (item: any) => !!item.item.verified_media_playback
+      );
 
-      // Track impression for the current item
-      const currentItem = items[newIndex];
-
-      if (currentItem) {
-        trackImpression.mutate(currentItem.id);
+      const newIndex = videoItem ? videoItem.index : viewableItems[0].index;
+      if (newIndex !== currentViewableItemIndex) {
+        setCurrentViewableItemIndex(newIndex);
       }
     }
   };
@@ -229,59 +139,16 @@ export default function LocationFeed() {
   const viewabilityConfigCallbackPairs = useRef([
     { viewabilityConfig, onViewableItemsChanged },
   ]);
-  const pathname = usePathname();
-
-  useEffect(() => {
-    if (flashListRef.current && defaultStoryIndex > 0) {
-      flashListRef.current.scrollToIndex({
-        index: defaultStoryIndex,
-        animated: false,
-      });
-    }
-  }, [defaultStoryIndex]);
 
   const loadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   };
-  const keyExtractor = useCallback((item: any, i: number) => {
-    return `${i}-${item.id}`;
-  }, []);
-
-  const itemHeight =
-    Platform.OS === "ios"
-      ? dimensions.height * itemHeightCoeff
-      : dimensions.height * 0.75;
 
   // Replace the Animated.Value with useSharedValue
-  const { lastScrollY, hasMomentum, headerTranslateY, headerOpacity } =
-    useScrollReanimatedValue();
+
   const opacity = useSharedValue(1);
-  const isScrollingDown = useSharedValue(false);
-
-  // Update the scroll handler implementation
-  const scrollHandler = createScrollHandler(
-    lastScrollY,
-    hasMomentum,
-    headerTranslateY,
-    headerOpacity,
-    opacity,
-    isScrollingDown,
-    bottomSheetOpacity
-  );
-  const locationUserListSheetRef = useRef<BottomSheet>(null);
-
-  // Replace withTiming with withTiming in the useEffect
-  useEffect(() => {
-    if (Platform.OS === "ios") {
-      headerTranslateY.value = withTiming(0);
-      headerOpacity.value = withTiming(1);
-    } else {
-      // headerTranslateY.value = 0;
-      // headerOpacity.value = 1;
-    }
-  }, [pathname]);
 
   // Create animated style for bottom actions
   const bottomActionsStyle = useAnimatedStyle(() => {
@@ -298,9 +165,6 @@ export default function LocationFeed() {
     }
   };
 
-  const renderEmpty =
-    !isUserInSelectedLocation || isGettingLocation || !items.length;
-
   // Defer initial data fetching
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -309,59 +173,128 @@ export default function LocationFeed() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Memoize the renderItem function
+  // Handle navigation to verification for news items
+  const handleNavigateToVerification = useCallback(
+    (verificationId: string) => {
+      if (!verificationId) return;
+
+      const wasLightboxActive = closeLightbox();
+
+      // Check if we're already on the verification page
+      const isOnVerificationPage =
+        pathname === `/verification/${verificationId}`;
+
+      if (isOnVerificationPage) {
+        setShouldFocusInput(true);
+        return;
+      }
+
+      // If lightbox was active, wait for animation to complete before navigating
+      if (wasLightboxActive) {
+        setTimeout(() => {
+          router.navigate({
+            pathname: "/verification/[verificationId]",
+            params: {
+              verificationId,
+            },
+          });
+        }, 300);
+      } else {
+        router.navigate({
+          pathname: "/verification/[verificationId]",
+          params: {
+            verificationId,
+          },
+        });
+      }
+    },
+    [closeLightbox, pathname, setShouldFocusInput, router]
+  );
+
+  // Optimized renderItem - conditionally render NewsCardItem or FeedItem
   const renderItem = useCallback(
-    ({ item, index }: any) => {
+    ({ item, index }: { item: LocationFeedPost; index: number }) => {
+      const { last_modified_date } = item;
+
+      // Render regular FeedItem for non-news items
       return (
-        <MemoizedListUserGeneratedItem
-          item={item}
-          shouldPlay={currentViewableItemIndex === index}
-          shouldPreload={preloadedIndex === index}
-          itemHeight={itemHeight}
-          feedItemProps={{
-            isPublic: true,
-            redirectUrl:
-              "/(tabs)/liveusers/feed/[taskId]/verification/[verificationId]",
-          }}
+        <FeedItem
+          key={item.id}
+          name={item.assignee_user?.username || ""}
+          time={last_modified_date}
+          friendId={item.assignee_user?.id || ""}
+          isLive={item.is_live}
+          avatarUrl={item.assignee_user?.photos[0]?.image_url[0] || ""}
+          isPinned={false}
+          affiliatedIcon={item.assignee_user?.affiliated?.icon_url || ""}
+          hasRecording={item.has_recording}
+          verificationId={item.id}
+          taskId={item.task_id}
+          isPublic={item.is_public}
+          canPin={false}
+          text={item.text_content || ""}
+          isSpace={false}
+          videoUrl={getVideoSrc(item) || ""}
+          imageUrl={item.verified_image || ""}
+          livekitRoomName={item.livekit_room_name || ""}
+          isVisible={currentViewableItemIndex === index}
+          isFactChecked={item.is_factchecked}
+          title={item.title}
+          sources={item.sources}
+          imageGallery={item.image_gallery}
+          externalVideo={item.external_video}
+          fact_check_data={item.fact_check_data}
+          previewData={item.preview_data}
+          thumbnail={item.verified_media_playback?.thumbnail}
         />
       );
     },
-    [currentViewableItemIndex, preloadedIndex, itemHeight]
+    [handleNavigateToVerification, currentViewableItemIndex]
   );
 
-  // Memoize dimensions calculations
-  const containerStyle = useMemo(
-    () => ({
-      height: dimensions.height,
-    }),
-    [dimensions.height]
-  );
+  useEffect(() => {
+    if (items && !queryStatePopulatedOptimistic.current) {
+      items.forEach((item) => {
+        queryClient.setQueryData(["verification-by-id", item.id], {
+          ...item,
+        });
+      });
+      queryStatePopulatedOptimistic.current = true;
+    }
+  }, [items]);
 
-  const contentContainerStyle = useMemo(
-    () => ({
-      paddingTop: headerHeight + 30,
-      paddingBottom: 100,
-      paddingHorizontal: 5,
-    }),
-    [headerHeight]
-  );
+  const [scrollToTop] = useAtom(scrollToTopState);
 
-  if (!pathname.includes("/feed/") || (isFetching && items.length === 0)) {
-    return null;
-  }
+  // Add effect to handle scrolling to top
+  useEffect(() => {
+    if (scrollToTop > 0 && flashListRef.current) {
+      // Scroll to top with animation
+      flashListRef.current.scrollToOffset({ offset: 0, animated: true });
+    }
+  }, [scrollToTop]);
+
+  // Enhanced refetch function that also invalidates news feed
+  const enhancedRefetch = useCallback(() => {
+    // Refetch location feed
+    refetch();
+
+    // Also invalidate news feed queries
+    queryClient.invalidateQueries({ queryKey: ["news-feed", taskId] });
+  }, [refetch, queryClient, taskId]);
+
   return (
-    <View className="flex-1" style={containerStyle}>
-      <AnimatedFlashListComponent
+    <>
+      <PostsFeed
         ref={flashListRef}
-        contentContainerStyle={contentContainerStyle}
-        data={items || []}
+        data={items}
         renderItem={renderItem}
-        estimatedItemSize={itemHeight}
-        keyExtractor={keyExtractor}
-        initialNumToRender={3}
-        maxToRenderPerBatch={3}
-        windowSize={7}
-        removeClippedSubviews={true}
+        ListHeaderComponent={
+          isCountryFeed ? (
+            <NewsFeed taskId={taskId as string} />
+          ) : (
+            <View style={{ height: headerHeight + 80 }} />
+          )
+        }
         ListEmptyComponent={
           <ListEmptyComponent
             isFetching={isFetching}
@@ -369,49 +302,32 @@ export default function LocationFeed() {
             isUserInSelectedLocation={isUserInSelectedLocation}
             selectedLocation={selectedLocation as Location}
             handleOpenMap={handleOpenMap}
+            isCountryFeed={isCountryFeed}
           />
         }
-        estimatedListSize={{
-          height: itemHeight * items.length,
-          width: dimensions.width,
-        }}
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={() =>
-          isFetchingNextPage ? <ActivityIndicator color="white" /> : null
-        }
-        refreshControl={
-          <RefreshControl
-            refreshing={false}
-            colors={Platform.OS === "ios" ? ["#fff"] : ["#000"]}
-            progressViewOffset={120}
-            className="hidden"
-            onRefresh={() => {
-              refetch();
-            }}
-          />
-        }
-        onScroll={Platform.OS === "ios" ? scrollHandler : undefined}
+        loadMore={loadMore}
+        hasNextPage={hasNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isRefetching={isRefetching}
+        refetch={enhancedRefetch}
       />
 
-      <Suspense fallback={null}>
-        <Animated.View style={bottomActionsStyle}>
-          <BottomLocationActions
-            taskId={taskId as string}
-            onExpandLiveUsers={() => {
-              locationUserListSheetRef.current?.snapToIndex(0);
-            }}
-          />
-        </Animated.View>
-      </Suspense>
+      {!isWeb && (
+        <Suspense fallback={null}>
+          <Animated.View style={bottomActionsStyle}>
+            <BottomLocationActions
+              taskId={taskId as string}
+              isUserInSelectedLocation={isUserInSelectedLocation}
+              isCountryFeed={isCountryFeed}
+            />
+          </Animated.View>
+        </Suspense>
+      )}
 
-      <Suspense fallback={null}>
-        <LocationUserListSheet
-          ref={locationUserListSheetRef}
-          taskId={taskId as string}
-        />
-      </Suspense>
-    </View>
+      {!isWeb && !isCountryFeed && (
+        <LocationUserListSheet bottomSheetRef={locationUserListSheetRef} />
+      )}
+    </>
   );
 }

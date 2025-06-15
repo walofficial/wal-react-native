@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { InfiniteData } from "@tanstack/react-query";
 import { ChatMessage, ChatMessages } from "@/lib/interfaces";
@@ -6,9 +6,9 @@ import useAuth from "@/hooks/useAuth";
 
 const useMessageUpdates = (
   roomId: string,
-  queryClient: any,
   trackedMessageIdsRef: React.MutableRefObject<Set<string>>
 ) => {
+  const queryClient = useQueryClient();
   const mutateUpdateMessages = useMutation({
     mutationKey: ["update-messages"],
     mutationFn: (messages) => api.updateMessages(messages),
@@ -44,7 +44,7 @@ const useMessageUpdates = (
           if (page.page === 1) {
             return {
               ...page,
-              data: [newMessage, ...page.data],
+              data: [...page.data, newMessage],
             };
           }
           return page;

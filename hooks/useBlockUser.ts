@@ -9,6 +9,7 @@ import { toast } from "@backpackapp-io/react-native-toast";
 import api from "@/lib/api";
 import { Alert } from "react-native";
 import { FriendFeedItem } from "@/lib/interfaces";
+import { useLocalSearchParams } from "expo-router";
 
 function removeUserFromFeed(
   queryClient: QueryClient,
@@ -27,7 +28,10 @@ function removeUserFromFeed(
 
 function useBlockUser() {
   const queryClient = useQueryClient();
-
+  const { taskId, content_type } = useLocalSearchParams<{
+    taskId: string;
+    content_type: "last24h" | "youtube_only" | "social_media_only";
+  }>();
   return useMutation({
     mutationFn: (userId: string) => api.blockUser(userId),
     onSuccess: (_, variables) => {
@@ -40,9 +44,15 @@ function useBlockUser() {
       }
       const locationFeed = queryClient.getQueryData([
         "location-feed-paginated",
+        taskId,
+        content_type,
       ]);
       if (locationFeed) {
-        removeUserFromFeed(queryClient, ["location-feed-paginated"], variables);
+        removeUserFromFeed(
+          queryClient,
+          ["location-feed-paginated", taskId, content_type],
+          variables
+        );
       }
       queryClient.invalidateQueries({ queryKey: ["friends"] });
       queryClient.invalidateQueries({ queryKey: ["task-stories-paginated"] });

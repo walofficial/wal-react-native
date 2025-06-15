@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useMakePublicMutation } from "@/hooks/useMakePublicMutation";
 import { toast } from "@backpackapp-io/react-native-toast";
 
@@ -29,12 +29,28 @@ export default function MakePublic({
   return (
     <TouchableOpacity
       onPress={handleToggle}
-      style={{ backgroundColor: "#efefef" }}
-      className="flex flex-row rounded-xl justify-center items-center shadow-pink-600 mt-3 w-full shadow-sm p-4"
+      style={[styles.button, { backgroundColor: "#efefef" }]}
     >
-      <Text className="text-black text-xl font-semibold">
+      <Text style={styles.buttonText}>
         {isPublic ? "დამალვა" : "გამოაქვეყნე"}
       </Text>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    flexDirection: "row",
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 12,
+    width: "100%",
+    padding: 16,
+  },
+  buttonText: {
+    color: "#000000",
+    fontSize: 20,
+    fontWeight: "600",
+  },
+});

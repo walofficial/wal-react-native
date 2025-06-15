@@ -1,9 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
-import { queryClient } from "@/lib/queryClient";
 import { useEffect } from "react";
+import useAuth from "./useAuth";
 
 function useUserChats({ poolMs }: { poolMs?: number } = {}) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
   const {
     data: chats,
     isFetching,
@@ -13,27 +15,24 @@ function useUserChats({ poolMs }: { poolMs?: number } = {}) {
   } = useQuery({
     queryKey: ["user-chats"],
     queryFn: async () => {
-      const data = await api.getChatRooms();
-
+      const data = await api.getChatRooms(user.id);
       return data;
     },
+    staleTime: 1000 * 30, // Consider data fresh for 30 seconds
+    gcTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
     refetchOnMount: true,
     refetchIntervalInBackground: false,
     refetchInterval: poolMs || undefined,
   });
 
+  // Set individual chat rooms in the cache for quick access
   useEffect(() => {
     if (chats && chats.length > 0) {
       chats.forEach((chat) => {
-        queryClient.prefetchQuery({
-          queryKey: ["user-chat-room", chat.id],
-          queryFn: () => api.getMessageRoom(chat.id),
-          staleTime: 3000,
-          retry: false,
-        });
+        queryClient.setQueryData(["user-chat-room", chat.id], chat);
       });
     }
-  }, [chats?.length]);
+  }, [chats, queryClient]);
 
   return {
     chats: chats || [],

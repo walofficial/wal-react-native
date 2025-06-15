@@ -1,9 +1,10 @@
 import api from "@/lib/api";
 import { FriendFeedItem } from "@/lib/interfaces";
-import { queryClient } from "@/lib/queryClient";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function useDeleteFriendMutation() {
+  const queryClient = useQueryClient();
+
   const deleteFriendMutation = useMutation({
     mutationFn: api.deleteFriend,
     onSuccess: (_, variables) => {

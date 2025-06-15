@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { Dimensions } from "react-native";
+import { Dimensions, Platform } from "react-native";
 
 export const NAV_THEME = {
   light: {
@@ -11,7 +11,6 @@ export const NAV_THEME = {
     text: "hsl(240 10% 3.9%)", // foreground
   },
   dark: {
-    background: "hsl(240 10% 3.9%)", // background
     border: "hsl(240 3.7% 15.9%)", // border
     card: "hsl(240 10% 3.9%)", // card
     notification: "hsl(0 72% 51%)", // destructive
@@ -21,5 +20,21 @@ export const NAV_THEME = {
 };
 
 export const HEADER_HEIGHT = atom<number>(
-  Dimensions.get("window").height * 0.3
+  Platform.OS === "web" ? 0 : Dimensions.get("window").height * 0.1
 );
+
+export const SUPPORTED_MIME_TYPES = [
+  "video/mp4",
+  "video/mpeg",
+  "video/webm",
+  "video/quicktime",
+  "image/gif",
+] as const;
+
+export type SupportedMimeTypes = (typeof SUPPORTED_MIME_TYPES)[number];
+
+export const POST_IMG_MAX = {
+  width: 2000,
+  height: 2000,
+  size: 1000000,
+};

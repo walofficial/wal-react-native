@@ -1,374 +1,459 @@
-import React, { useRef } from "react";
-import { View, Text, TouchableOpacity, Pressable, Image } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { memo, useEffect, useMemo } from "react";
+import { Text, Pressable, Image, View, StyleSheet } from "react-native";
+import { useRouter } from "expo-router";
 import { Avatar, AvatarImage } from "../ui/avatar";
-import SimplifiedVideoPlayback from "../SimplifiedVideoPlayback";
-import { Task } from "@/lib/interfaces";
-import { MenuView } from "@react-native-menu/menu";
-import { Ionicons } from "@expo/vector-icons";
-import useReportTask from "@/hooks/useReportTask";
-import useBlockUser from "@/hooks/useBlockUser";
-import LikeButton from "./LikeButton";
-import LikeCount from "./LikeCount";
-import { State, TapGestureHandler } from "react-native-gesture-handler";
-import { useLikeButton } from "./LikeButton/useLikeButton";
-import UserAvatarLayout from "../UserAvatar";
+import { Pin } from "lucide-react-native";
+import MediaContent from "./MediaContent";
+import FeedActions from "./FeedActions";
+import { isWeb } from "@/lib/platform";
+import MenuView from "./MenuView";
+import { formatRelativeTime } from "@/lib/utils/date";
+import ExpandableText from "./ExpandableText";
+import { useTheme } from "@/lib/theme";
+import { ExternalVideo, LinkPreviewData } from "@/lib/interfaces";
+import { useLinkPreview } from "@/hooks/useLinkPreview";
+import LinkPreview from "../LinkPreview";
+import { FactCheckResponse } from "@/lib/interfaces";
+import useVerificationById from "@/hooks/useVerificationById";
+import { useLightboxControls } from "@/lib/lightbox/lightbox";
 import useAuth from "@/hooks/useAuth";
-import useDeleteFriendMutation from "@/hooks/useDeleteFriendMutation";
-import ImpressionsCount from "./ImpressionsCount";
-import ImageLoader from "../ImageLoader";
-import { ka } from "date-fns/locale";
-import { formatDistanceToNow } from "date-fns";
-import { getTimezoneOffset } from "date-fns-tz";
-import { useMakePublicMutation } from "@/hooks/useMakePublicMutation";
-import ShareButton from "./ShareButton";
-import Share from "react-native-share";
-import usePinVerification from "@/hooks/usePinVerification";
-import useUnpinVerification from "@/hooks/useUnpinVerification";
+import { useQueryClient } from "@tanstack/react-query";
 
+// Simplified props interface - only including what's actually used
 interface FeedItemProps {
   name: string;
-  time: string;
-  imageUrl?: string;
-  videoUrl?: string;
+  isLive: boolean;
   avatarUrl: string;
-  isVisible: boolean;
-  itemHeight: number;
-  headerHeight: number;
+  time: string;
+  isPinned: boolean;
+  affiliatedIcon: string;
+  hasRecording: boolean;
   verificationId: string;
+  taskId: string;
+  isPublic: boolean;
   friendId: string;
-  isStory?: boolean;
-  text?: string;
-  pictureUrl?: string;
-  affiliatedIcon?: string;
-  isProfilePage?: boolean;
-  isPublic?: boolean;
-  canPin?: boolean;
-  isPinned?: boolean;
-  locationName?: string;
+  canPin: boolean;
+  text: string;
+  text_summary?: string;
+  isSpace: boolean;
+  videoUrl: string;
+  imageUrl: string;
+  livekitRoomName: string;
+  isVisible: boolean;
+  isFactChecked?: boolean;
+  imageGallery?: string[];
+  title?: string;
+  sources?: {
+    title: string;
+    uri: string;
+  }[];
+  externalVideo?: ExternalVideo;
+  ai_video_summary_status?: "PENDING" | "COMPLETED" | "FAILED";
+  fact_check_status?: "PENDING" | "COMPLETED" | "FAILED";
+  fact_check_data?: FactCheckResponse;
+  previewData?: LinkPreviewData;
+  thumbnail?: string;
+  isPreviewFeedItem?: boolean;
+}
+
+// Comparison function for memo - now includes all props since we simplified the interface
+function arePropsEqual(prevProps: FeedItemProps, nextProps: FeedItemProps) {
+  return (
+    prevProps.friendId === nextProps.friendId &&
+    prevProps.time === nextProps.time &&
+    prevProps.name === nextProps.name &&
+    prevProps.isLive === nextProps.isLive &&
+    prevProps.avatarUrl === nextProps.avatarUrl &&
+    prevProps.isPinned === nextProps.isPinned &&
+    prevProps.affiliatedIcon === nextProps.affiliatedIcon &&
+    prevProps.hasRecording === nextProps.hasRecording &&
+    prevProps.verificationId === nextProps.verificationId &&
+    prevProps.taskId === nextProps.taskId &&
+    prevProps.isPublic === nextProps.isPublic &&
+    prevProps.canPin === nextProps.canPin &&
+    prevProps.text === nextProps.text &&
+    prevProps.text_summary === nextProps.text_summary &&
+    prevProps.isSpace === nextProps.isSpace &&
+    prevProps.videoUrl === nextProps.videoUrl &&
+    prevProps.imageUrl === nextProps.imageUrl &&
+    prevProps.livekitRoomName === nextProps.livekitRoomName &&
+    prevProps.isVisible === nextProps.isVisible &&
+    prevProps.isFactChecked === nextProps.isFactChecked &&
+    prevProps.title === nextProps.title &&
+    prevProps.sources === nextProps.sources &&
+    prevProps.imageGallery === nextProps.imageGallery &&
+    prevProps.externalVideo === nextProps.externalVideo &&
+    prevProps.ai_video_summary_status === nextProps.ai_video_summary_status &&
+    prevProps.fact_check_status === nextProps.fact_check_status &&
+    prevProps.fact_check_data === nextProps.fact_check_data &&
+    prevProps.thumbnail === nextProps.thumbnail &&
+    prevProps.isPreviewFeedItem === nextProps.isPreviewFeedItem
+  );
 }
 
 function FeedItem({
   name,
-  time = "",
-  imageUrl,
-  videoUrl,
-  avatarUrl,
-  isVisible,
-  itemHeight,
-  verificationId,
+  time,
   friendId,
-  isStory = false,
-  text,
-  affiliatedIcon,
-  isPublic,
-  redirectUrl,
-  canPin,
+  isLive,
+  avatarUrl,
   isPinned,
-  locationName,
+  previewData,
+  affiliatedIcon,
+  hasRecording,
+  verificationId,
+  taskId,
+  isPublic,
+  canPin,
+  text,
+  text_summary,
+  isSpace,
+  videoUrl,
+  imageUrl,
+  livekitRoomName,
+  isVisible,
+  title,
+  imageGallery,
+  thumbnail,
+  isPreviewFeedItem,
 }: FeedItemProps) {
-  const router = useRouter();
-  const reportTask = useReportTask();
-  const blockUser = useBlockUser();
-  const { handleLike } = useLikeButton(verificationId);
-  const { taskId } = useLocalSearchParams<{ taskId: string }>();
   const { user } = useAuth();
+  const router = useRouter();
+  const theme = useTheme();
+  const formattedTime = formatRelativeTime(time);
+  const { closeLightbox } = useLightboxControls();
 
-  const pinFeedItem = usePinVerification();
-  const removePinnedFeedItem = useUnpinVerification();
+  // This can be used for real time information as this is actually polling the data from the server
+  const { data: verification } = useVerificationById(verificationId, true, {
+    refetchInterval: 5000,
+  });
 
-  const deleteFriendMutation = useDeleteFriendMutation();
-  const makePublicMutation = useMakePublicMutation(verificationId);
-
-  const handleDeleteFriend = () => {
-    deleteFriendMutation.mutate(friendId);
-  };
-
-  const handleBlockUser = () => {
-    blockUser.mutate(friendId);
-  };
-
-  const handleMakePublic = (isPublic: boolean) => {
-    makePublicMutation.mutate(isPublic);
-  };
-
-  const handleReport = () => {
-    reportTask.mutate(verificationId);
-  };
-
-  const handlePin = () => {
-    pinFeedItem.mutate({ taskId, verificationId });
-  };
-
-  const handleUnpin = () => {
-    removePinnedFeedItem.mutate({ taskId, verificationId });
-  };
-
-  const handleShare = async () => {
-    const shareUrl = `https://ment.ge/status/${verificationId}`;
-
-    try {
-      await Share.open({
-        message: shareUrl,
-        title: "Share this story",
-      });
-    } catch (error) {
-      console.error("Error sharing:", error);
+  const handleProfilePress = () => {
+    if (user?.id === friendId) {
+      return;
     }
+    router.navigate({
+      pathname: `/profile`,
+      params: {
+        userId: friendId,
+      },
+    });
   };
 
-  const timeZone = getTimezoneOffset(
-    "Asia/Tbilisi",
-    time ? new Date(time.replace("Z", "")) : new Date()
-  );
+  const localLinkPreview = useLinkPreview(text, false);
+  // We check if the current fetched item has a preview, if doesn't we fallback to real time source, it might get populated later.
+  // If not fallback to the local link preview.
+  const hasPreview =
+    !!previewData ||
+    !!verification?.preview_data ||
+    !!localLinkPreview.previewData;
 
-  const formattedTime = formatDistanceToNow(
-    time
-      ? new Date(time.replace("Z", "")).getTime() + timeZone
-      : new Date().getTime(),
-    {
-      addSuffix: true,
-      locale: ka,
-    }
-  )
-    .replace("წუთზე ნაკლები ხნის წინ", "წუთის წინ")
-    .replace("დაახლოებით ", "");
+  const previewDataToUse =
+    verification?.preview_data || previewData || localLinkPreview.previewData;
+  const realTimeImageUrl = verification?.image_gallery?.[0] || imageUrl;
 
-  const isAuthor = friendId === user.id;
-
+  const MemoizedMediaContent = useMemo(() => {
+    // Sometimes image gallery might be populated after the scraping of the post finishes. But item is already rendered.
+    return (
+      <MediaContent
+        videoUrl={videoUrl}
+        imageUrl={realTimeImageUrl}
+        isLive={isLive}
+        isVisible={isVisible}
+        itemHeight={400}
+        verificationId={verificationId}
+        taskId={taskId}
+        imageGallery={imageGallery}
+        name={name}
+        text={text}
+        livekitRoomName={livekitRoomName}
+        time={time}
+        avatarUrl={avatarUrl}
+        thumbnail={thumbnail}
+        previewData={
+          hasPreview && previewDataToUse ? previewDataToUse : undefined
+        }
+        hasAISummary={verification?.ai_video_summary_status === "COMPLETED"}
+        factuality={verification?.fact_check_data?.factuality}
+      />
+    );
+  }, [
+    isVisible,
+    verification?.image_gallery?.length,
+    imageUrl,
+    hasPreview,
+    previewDataToUse,
+    verification?.ai_video_summary_status,
+  ]);
+  // Create themed styles
+  const themedStyles = {
+    ...styles,
+    nameText: {
+      ...styles.nameText,
+      color: theme.colors.text,
+    },
+    timeText: {
+      ...styles.timeText,
+      color: theme.colors.feedItem.secondaryText,
+    },
+    recordingText: {
+      ...styles.recordingText,
+      color: theme.colors.feedItem.secondaryText,
+    },
+    locationText: {
+      ...styles.locationText,
+      color: theme.colors.primary,
+    },
+    titleText: {
+      ...styles.titleText,
+      color: theme.colors.text,
+    },
+  };
   return (
-    <View className={`flex-1 flex- w-full border-b border-gray-800/50 mb-4`}>
-      <View className="flex flex-1 flex-row w-full">
-        <View className="flex-shrink-0 w-12 mr-2">
-          <Pressable
-            onPress={() => {
-              if (isAuthor) {
-                return;
-              }
-              router.navigate({
-                pathname: "/(tabs)/liveusers/feed/[taskId]/profile-picture",
-                params: { imageUrl: avatarUrl, taskId, userId: friendId },
-              });
-            }}
-          >
-            <Avatar
-              alt="Avatar"
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 35,
+    <View style={themedStyles.container}>
+      <Pressable
+        style={themedStyles.contentWrapper}
+        onPress={() => {
+          router.navigate({
+            pathname: "/verification/[verificationId]",
+            params: { verificationId },
+          });
+        }}
+      >
+        {!isPreviewFeedItem && (
+          <View style={themedStyles.avatarContainer}>
+            <Pressable
+              onPress={(event) => {
+                event.stopPropagation();
+                handleProfilePress();
               }}
             >
-              <AvatarImage
-                source={{ uri: avatarUrl }}
-                className="w-full h-full rounded-full"
-              />
-            </Avatar>
-          </Pressable>
-        </View>
+              <Avatar
+                alt="Avatar"
+                style={{
+                  width: 50,
+                  height: 50,
+                  borderRadius: 35,
+                  borderWidth: isLive ? 1 : 0,
+                  borderColor: "transparent",
+                }}
+              >
+                <AvatarImage
+                  source={{ uri: avatarUrl }}
+                  style={themedStyles.avatarImage}
+                />
+              </Avatar>
+              {isLive && (
+                <View style={themedStyles.liveIndicator}>
+                  <Text style={themedStyles.liveText}>LIVE</Text>
+                </View>
+              )}
+            </Pressable>
+          </View>
+        )}
 
-        <View className="flex-1 items-start pl-3">
-          <View className="flex-row items-start justify-between">
-            <View className="flex-1">
-              <View className="flex-row items-center">
+        <View style={themedStyles.contentContainer}>
+          <View style={themedStyles.headerContainer}>
+            <View style={themedStyles.headerLeft}>
+              <View style={themedStyles.nameContainer}>
+                {isPinned && (
+                  <View style={themedStyles.pinnedContainer}>
+                    <Pin color={"#FFD700"} fill="#FFD700" size={14} />
+                  </View>
+                )}
                 <Text
-                  className={`text-white text-lg font-semibold ${
-                    isPinned ? "text-yellow-400" : ""
-                  }`}
+                  style={[
+                    themedStyles.nameText,
+                    isPinned && themedStyles.pinnedText,
+                  ]}
                 >
                   {name}
                 </Text>
                 {affiliatedIcon && (
                   <Image
                     source={{ uri: affiliatedIcon }}
-                    style={{
-                      width: 16,
-                      height: 16,
-                      marginLeft: 5,
-                      borderRadius: 3,
-                      overflow: "hidden",
-                    }}
+                    style={themedStyles.affiliatedIcon}
                   />
                 )}
-                {isPinned && (
-                  <View className="flex-row items-center ml-2 px-2 py-0.5 rounded-full">
-                    <Ionicons name="pin" size={14} color="#FFD700" />
-                  </View>
+
+                <Text style={themedStyles.timeText}>· {formattedTime}</Text>
+                {hasRecording && (
+                  <Text style={themedStyles.recordingText}>· იყო ლაივში</Text>
                 )}
-                <Text className="text-gray-400 text-sm ml-2">
-                  · {formattedTime}
-                </Text>
               </View>
-              {locationName && (
-                <Text className="text-md text-gray-400">{locationName}</Text>
-              )}
+              {/* {locationName && (
+                <Text style={themedStyles.locationText}>{locationName}</Text>
+              )} */}
             </View>
-            <MenuView
-              title="რა გსურთ?"
-              onPressAction={({ nativeEvent }) => {
-                if (nativeEvent.event === "report") {
-                  handleReport();
-                } else if (nativeEvent.event === "remove") {
-                  handleDeleteFriend();
-                } else if (nativeEvent.event === "block") {
-                  handleBlockUser();
-                } else if (nativeEvent.event === "hide-post") {
-                  handleMakePublic(false);
-                } else if (nativeEvent.event === "show-post") {
-                  handleMakePublic(true);
-                } else if (nativeEvent.event === "share") {
-                  handleShare();
-                } else if (nativeEvent.event === "pin") {
-                  handlePin();
-                } else if (nativeEvent.event === "unpin") {
-                  handleUnpin();
+            {!isWeb && (
+              <MenuView
+                verificationId={verificationId}
+                friendId={friendId}
+                isPublic={isPublic}
+                canPin={canPin}
+                isPinned={isPinned}
+                taskId={taskId}
+              />
+            )}
+          </View>
+          {title && (
+            <Pressable
+              onPress={() => {
+                if (!verificationId) return;
+                const wasLightboxActive = closeLightbox();
+
+                // If lightbox was active, wait for animation to complete before navigating
+                if (wasLightboxActive) {
+                  setTimeout(() => {
+                    router.navigate({
+                      pathname: "/verification/[verificationId]",
+                      params: { verificationId },
+                    });
+                  }, 300);
+                } else {
+                  router.navigate({
+                    pathname: "/verification/[verificationId]",
+                    params: { verificationId },
+                  });
                 }
               }}
-              themeVariant="dark"
-              actions={
-                isAuthor
-                  ? [
-                      {
-                        id: "share",
-                        title: "გაზიარება",
-                      },
-                      ...(canPin
-                        ? [
-                            {
-                              id: isPinned ? "unpin" : "pin",
-                              title: isPinned ? "დაპინვის წაშლა" : "დაპინვა",
-                            },
-                          ]
-                        : []),
-                      ...(isPublic
-                        ? [
-                            {
-                              id: "hide-post",
-                              title: "დამალვა",
-                            },
-                          ]
-                        : [
-                            {
-                              id: "show-post",
-                              title: "გამოჩენა ლოკაციაზე",
-                            },
-                          ]),
-                    ]
-                  : [
-                      {
-                        id: "share",
-                        title: "გაზიარება",
-                      },
-                      ...(isStory
-                        ? []
-                        : [
-                            {
-                              id: "remove",
-                              title: "მეგობრებიდან წაშლა",
-                            },
-                          ]),
-                      {
-                        id: "block",
-                        title: "დაბლოკვა",
-                        attributes: {
-                          destructive: true,
-                        },
-                      },
-                      {
-                        id: "report",
-                        title: "დაარეპორტე",
-                        attributes: {
-                          destructive: true,
-                        },
-                      },
-                    ]
-              }
+              android_ripple={{
+                color: theme.colors.feedItem.secondaryText + "40",
+              }}
+              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
             >
-              <Pressable hitSlop={10}>
-                <Ionicons name="ellipsis-horizontal" size={24} color={"#333"} />
-              </Pressable>
-            </MenuView>
-          </View>
+              <Text style={themedStyles.titleText} numberOfLines={10}>
+                {title}
+              </Text>
+            </Pressable>
+          )}
+          <ExpandableText
+            text={text_summary || text}
+            hideForSpace={isSpace}
+            noVideoMargin={!!videoUrl}
+            verificationId={verificationId}
+            enableNavigation
+            hasPreview={hasPreview}
+          />
 
-          {text && <Text className="text-white">{text}</Text>}
+          {MemoizedMediaContent}
 
-          <View className="flex flex-1 relative overflow-hidden flex-col w-full rounded-lg mb-4 mt-2">
-            {videoUrl ? (
-              <SimplifiedVideoPlayback
-                onVideoPress={(playingTime: number) => {
-                  if (!redirectUrl) {
-                    return;
-                  }
-
-                  router.navigate({
-                    pathname: redirectUrl,
-                    params: {
-                      verificationId,
-                      taskId,
-                      videoUrl,
-                      imageUrl,
-                      name,
-                      time,
-                      avatarUrl,
-                    },
-                  });
-                }}
-                src={videoUrl}
-                shouldPlay={isVisible}
-                minHeight={itemHeight}
-                maxHeight={itemHeight}
-              />
-            ) : imageUrl ? (
-              <View className="relative flex-1">
-                <ImageLoader
-                  source={{ uri: imageUrl }}
-                  noAnimation={true}
-                  className="w-full opacity-0 rounded-2xl"
-                  style={{
-                    height: itemHeight,
-                    minHeight: itemHeight,
-                    maxHeight: itemHeight,
-                    borderRadius: 10,
-                  }}
-                  resizeMode="cover"
-                />
-                <TouchableOpacity
-                  onPress={() => {
-                    if (!redirectUrl) {
-                      return;
-                    }
-
-                    router.navigate({
-                      pathname: redirectUrl,
-                      params: {
-                        verificationId,
-                        taskId,
-                        videoUrl,
-                        imageUrl,
-                        name,
-                        time,
-                        avatarUrl,
-                      },
-                    });
-                  }}
-                  className="absolute inset-0 z-40 flex flex-row h-full w-full items-center justify-center bg-opacity-50"
-                />
-              </View>
-            ) : null}
-
-            <View className="flex-row justify-between z-50 items-center mt-2">
-              <View className="flex-row items-center">
-                <LikeButton verificationId={verificationId} />
-                <LikeCount verificationId={verificationId} />
-                <ShareButton verificationId={verificationId} />
-              </View>
-              <ImpressionsCount verificationId={verificationId} />
-            </View>
-          </View>
+          {hasPreview && previewDataToUse && !realTimeImageUrl && (
+            <LinkPreview
+              previewData={previewDataToUse}
+              isLoading={false}
+              hasAISummary={
+                verification?.ai_video_summary_status === "COMPLETED"
+              }
+              verificationId={verificationId}
+              inFeedView={true}
+              factuality={verification?.fact_check_data?.factuality}
+            />
+          )}
+          <FeedActions
+            // hideUserRects={isPreviewFeedItem || false}
+            verificationId={verificationId}
+          />
         </View>
-      </View>
+      </Pressable>
     </View>
   );
 }
 
-export default FeedItem;
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    // backgroundColor: "#000",
+    paddingTop: 16,
+    paddingBottom: 0,
+    paddingHorizontal: 8,
+  },
+  contentWrapper: {
+    flexDirection: "row",
+    width: "100%",
+  },
+  avatarContainer: {
+    marginRight: 8,
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 9999,
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    width: "100%",
+    marginBottom: 3,
+  },
+  headerLeft: {
+    flex: 1,
+    marginRight: 8,
+  },
+  nameContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+  },
+  nameText: {
+    fontWeight: "600",
+    fontSize: 15,
+    // color: "#E7E9EA",
+  },
+  pinnedText: {
+    color: "#FFD700",
+  },
+  pinnedContainer: {
+    marginRight: 6,
+  },
+  timeText: {
+    fontWeight: "400",
+    fontSize: 15,
+    // color: "#71767B",
+    marginLeft: 4,
+  },
+  recordingText: {
+    fontWeight: "400",
+    fontSize: 15,
+    // color: "#71767B",
+    marginLeft: 4,
+  },
+  locationText: {
+    fontWeight: "500",
+    fontSize: 13,
+    // color: "#1D9BF0",
+    marginTop: 2,
+  },
+  affiliatedIcon: {
+    width: 16,
+    height: 16,
+    marginLeft: 2,
+  },
+  titleText: {
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 6,
+    marginTop: 4,
+    paddingRight: 20,
+  },
+  liveIndicator: {
+    position: "absolute",
+    bottom: -6,
+    alignSelf: "center",
+    backgroundColor: "#FF3B30",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  liveText: {
+    color: "#FFFFFF",
+    fontWeight: "bold",
+    fontSize: 10,
+  },
+});
+
+export default memo(FeedItem, arePropsEqual);
