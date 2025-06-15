@@ -1,15 +1,13 @@
 import { io } from "socket.io-client";
-import { isDev } from "@/lib/api/config";
-import ProtocolService from "@/lib/services/ProtocolService";
+import { API_BASE_URL } from "@/lib/api/config";
 // "undefined" means the URL will be computed from the `window.location` object
 
-const URL = isDev
-  ? process.env.EXPO_PUBLIC_SOCKET_DEV_API_URL
-  : process.env.EXPO_PUBLIC_SOCKET_API_URL;
-
 export const getSocket = (userId: string, publicKey: string) => {
-  return io(URL, {
+  return io(API_BASE_URL, {
     autoConnect: false,
+    reconnection: true,
+    reconnectionAttempts: 10,
+    reconnectionDelay: 1000,
     auth: {
       userId: userId,
       publicKey: publicKey,

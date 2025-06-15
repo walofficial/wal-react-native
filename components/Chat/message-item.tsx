@@ -4,7 +4,7 @@ import MessageItemLayout from "./message-item-layout";
 import MessageItemText from "./message-item-text";
 import MessageItemStatusMark from "./message-item-status-mark";
 import MessageItemAvatar from "./message-item-avatar";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 interface MessageItemProps {
   item: ChatMessage;
@@ -26,11 +26,11 @@ const MessageItem: React.FC<MessageItemProps> = ({
 
   return (
     <MessageItemLayout isAuthor={isAuthor}>
-      <View className="flex flex-row gap-3 items-center">
+      <View style={styles.messageContainer}>
         {!isAuthor && (
           <MessageItemAvatar photoUrl={selectedUser.photos[0].image_url[0]} />
         )}
-        <MessageItemText text={item.message} />
+        {/* <MessageItemText text={item.message} isAuthor={isAuthor} /> */}
         {isAuthor && (
           <MessageItemAvatar photoUrl={currentUser.photos[0].image_url[0]} />
         )}
@@ -43,5 +43,13 @@ const MessageItem: React.FC<MessageItemProps> = ({
     </MessageItemLayout>
   );
 };
+
+const styles = StyleSheet.create({
+  messageContainer: {
+    flexDirection: "row",
+    gap: 12,
+    alignItems: "center",
+  },
+});
 
 export default MessageItem;

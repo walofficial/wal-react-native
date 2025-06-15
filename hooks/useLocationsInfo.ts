@@ -1,17 +1,14 @@
 import api from "@/lib/api";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import useLocation from "./useLocation";
-import { useEffect } from "react";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { LocationsResponse } from "@/lib/interfaces";
 import useLocationSession from "./useLocationSession";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function useLocationsInfo(
   categoryId: string,
   enabled: boolean = true
 ) {
-  const { location } = useLocationSession();
-
+  const isFocused = useIsFocused();
+  const { location, errorMsg, isGettingLocation } = useLocationSession();
   const {
     data: locations,
     isFetching: locationsIsFetching,
@@ -24,12 +21,14 @@ export default function useLocationsInfo(
       categoryId,
       location?.coords.latitude,
       location?.coords.longitude,
+      errorMsg,
     ],
     queryFn: () => {
-      return api.fetchLocations(categoryId, location?.coords);
+      return api.fetchLocations(categoryId, location?.coords, errorMsg);
     },
-    enabled: !!categoryId && enabled && !!location,
+    enabled: !!categoryId && enabled && (!!location || !!errorMsg),
     placeholderData: keepPreviousData,
+    subscribed: isFocused,
   });
 
   return {
@@ -37,7 +36,9 @@ export default function useLocationsInfo(
       nearest_tasks: [],
       tasks_at_location: [],
     },
-    isFetching: locationsIsFetching,
+    location,
+    errorMsg,
+    isFetching: locationsIsFetching || isGettingLocation,
     error: locationsError,
     isRefetching: locationsIsRefetching,
     refetch: locationsRefetch,

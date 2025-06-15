@@ -14,9 +14,6 @@ export const useTrackImpression = () => {
 
       // Check if the cooldown period has passed
       if (now - lastTracked < COOLDOWN_PERIOD) {
-        console.log(
-          `Cooldown period active for verification ID: ${verificationId}`
-        );
         return Promise.resolve(); // Skip tracking if within cooldown
       }
 

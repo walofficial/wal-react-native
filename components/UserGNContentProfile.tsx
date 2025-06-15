@@ -1,45 +1,61 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useCallback, memo } from "react";
 import {
   View,
-  ActivityIndicator,
-  RefreshControl,
-  Platform,
   Dimensions,
+  StyleSheet,
+  ViewToken,
+  ViewabilityConfigCallbackPair,
   Text,
+  useColorScheme,
 } from "react-native";
 import { useUserVerificationsPaginated } from "@/hooks/useUserVerificationsPaginated";
-import { FlashList } from "@shopify/flash-list";
-import Animated from "react-native-reanimated";
-import ListUserGeneratedItem from "./StoryScene";
 import { LocationFeedPost } from "@/lib/interfaces";
 import { useAtomValue } from "jotai";
 import { HEADER_HEIGHT } from "@/lib/constants";
 import { itemHeightCoeff } from "@/lib/utils";
+import useAuth from "@/hooks/useAuth";
+import { isWeb } from "@/lib/platform";
+import PostsFeed from "./PostsFeed";
+import FeedItem from "./FeedItem";
+import { getVideoSrc } from "@/lib/utils";
+import ScrollableFeedProvider from "./ScrollableFeedProvider";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { styles } from "./CameraPage/StatusBarBlurBackground";
+import { useQueryClient } from "@tanstack/react-query";
 
-const AnimatedFlashList = Animated.createAnimatedComponent(FlashList);
+interface UserGNContentProfileProps {
+  topHeader: React.ReactNode;
+  userId: string;
+}
 
-export default function UserGNContentProfile({
-  topHeaderHeight,
-}: {
-  topHeaderHeight: React.ReactNode;
-}) {
+export default memo(function UserGNContentProfile({
+  topHeader,
+  userId,
+}: UserGNContentProfileProps) {
+  const colorSchema = useColorScheme();
   const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const queryClient = useQueryClient();
   const {
     items: userVerifications,
     isRefetching,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    isFetching,
     refetch,
-  } = useUserVerificationsPaginated({});
-
+  } = useUserVerificationsPaginated({ targetUserId: userId });
   const [currentViewableItemIndex, setCurrentViewableItemIndex] = useState(0);
   const [preloadedIndex, setPreloadedIndex] = useState(1);
 
   const viewabilityConfig = { viewAreaCoveragePercentThreshold: 50 };
-  const onViewableItemsChanged = ({ viewableItems }: any) => {
-    if (viewableItems.length > 0) {
-      const newIndex = viewableItems[0].index ?? 0;
+
+  const onViewableItemsChanged = (info: {
+    viewableItems: ViewToken[];
+    changed: ViewToken[];
+  }) => {
+    if (info.viewableItems.length > 0) {
+      const item = info.viewableItems[0];
+      const newIndex = item.index ?? 0;
       setCurrentViewableItemIndex(newIndex);
 
       if (
@@ -51,12 +67,9 @@ export default function UserGNContentProfile({
     }
   };
 
-  const viewabilityConfigCallbackPairs = useRef([
-    { viewabilityConfig, onViewableItemsChanged },
-  ]);
-
-  const dimensions = Dimensions.get("window");
-  const itemHeight = dimensions.height * itemHeightCoeff;
+  const viewabilityConfigCallbackPairs = useRef<
+    ViewabilityConfigCallbackPair[]
+  >([{ viewabilityConfig, onViewableItemsChanged }]);
 
   const loadMore = () => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -64,65 +77,91 @@ export default function UserGNContentProfile({
     }
   };
 
-  return (
-    <>
-      <AnimatedFlashList
-        data={userVerifications || []}
-        renderItem={({
-          item: verification,
-          index,
-        }: {
-          item: LocationFeedPost;
-          index: number;
-        }) => (
-          <ListUserGeneratedItem
-            item={verification}
-            shouldPlay={currentViewableItemIndex === index}
-            shouldPreload={preloadedIndex === index}
-            itemHeight={itemHeight}
-            feedItemProps={{
-              redirectUrl: "/(tabs)/user/verification/[verificationId]",
-              locationName: verification.task.display_name,
-            }}
-          />
-        )}
-        contentContainerStyle={{
-          paddingTop: headerHeight + 30,
-          paddingHorizontal: 20,
-        }}
-        estimatedItemSize={itemHeight}
-        estimatedListSize={
-          !userVerifications?.length
-            ? null
-            : {
-                height: itemHeight * userVerifications.length,
-                width: dimensions.width,
-              }
-        }
-        snapToAlignment="start"
-        decelerationRate="normal"
-        showsVerticalScrollIndicator={false}
-        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
-        ListHeaderComponent={topHeaderHeight}
-        onEndReached={loadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={() =>
-          isFetchingNextPage ? <ActivityIndicator color="white" /> : null
-        }
-        ListEmptyComponent={() => (
-          <View className="flex h-[100px] flex-1 items-center justify-center">
-            <Text className="text-white"></Text>
-          </View>
-        )}
-        refreshControl={
-          <RefreshControl
-            refreshing={isRefetching}
-            colors={Platform.OS === "ios" ? ["#fff"] : ["#000"]}
-            progressViewOffset={100}
-            onRefresh={refetch}
-          />
-        }
+  // Enhanced refetch function that also invalidates profile picture
+  const enhancedRefetch = useCallback(() => {
+    // Refetch user verifications
+    refetch();
+
+    // Also invalidate profile picture queries
+    queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+  }, [refetch, queryClient, userId]);
+
+  const renderItem = useCallback(
+    ({
+      item: verification,
+      index,
+    }: {
+      item: LocationFeedPost;
+      index: number;
+    }) => (
+      <FeedItem
+        key={verification.id}
+        name={verification.assignee_user?.username || ""}
+        time={verification.last_modified_date}
+        friendId={verification.assignee_user?.id || ""}
+        isLive={verification.is_live}
+        avatarUrl={verification.assignee_user?.photos[0]?.image_url[0] || ""}
+        isPinned={false}
+        affiliatedIcon={verification.assignee_user?.affiliated?.icon_url || ""}
+        hasRecording={verification.has_recording}
+        verificationId={verification.id}
+        taskId={verification.task_id}
+        isPublic={verification.is_public}
+        canPin={false}
+        text={verification.text_content || ""}
+        isSpace={false}
+        videoUrl={getVideoSrc(verification) || ""}
+        imageUrl={verification.verified_image || ""}
+        livekitRoomName={verification.livekit_room_name || ""}
+        isVisible={currentViewableItemIndex === index}
+        isFactChecked={verification.is_factchecked}
+        title={verification.title}
+        sources={verification.sources}
+        fact_check_data={verification.fact_check_data}
+        previewData={verification.preview_data}
+        thumbnail={verification.verified_media_playback?.thumbnail}
       />
-    </>
+    ),
+    [currentViewableItemIndex]
   );
-}
+
+  if (isFetching && userVerifications.length === 0) {
+    return null;
+  }
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ScrollableFeedProvider>
+        <PostsFeed
+          data={userVerifications || []}
+          renderItem={renderItem}
+          headerOffset={headerHeight}
+          ListHeaderComponent={
+            <View style={{ paddingTop: 20 }}>{topHeader}</View>
+          }
+          ListEmptyComponent={
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ color: colorSchema === "dark" ? "#fff" : "#000" }}>
+                პოსტები ვერ მოიძებნა
+              </Text>
+            </View>
+          }
+          loadMore={loadMore}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+          isRefetching={isRefetching}
+          refetch={enhancedRefetch}
+          viewabilityConfigCallbackPairs={
+            viewabilityConfigCallbackPairs.current
+          }
+        />
+      </ScrollableFeedProvider>
+    </GestureHandlerRootView>
+  );
+});

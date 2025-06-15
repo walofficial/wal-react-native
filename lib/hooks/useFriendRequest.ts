@@ -4,7 +4,6 @@ import { User } from "../interfaces";
 import { useSetAtom } from "jotai";
 import { displayedContactsAtom } from "@/components/ContactSyncSheet/atom";
 import { toast } from "@backpackapp-io/react-native-toast";
-import { SheetManager } from "react-native-actions-sheet";
 
 export const useFriendRequest = () => {
   const queryClient = useQueryClient();
@@ -12,8 +11,7 @@ export const useFriendRequest = () => {
 
   return useMutation({
     onMutate: () => {
-      SheetManager.hide("user-match-settings-sheet");
-      toast.success("მოთხოვნა გაიგზავნა");
+      // toast.success("მოთხოვნა გაიგზავნა");
     },
     mutationFn: (userId: string) => api.sendFriendRequest(userId),
     onSuccess: (data, variables) => {

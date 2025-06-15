@@ -1,30 +1,26 @@
-import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Dimensions,
-} from "react-native";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import React from "react";
+import { View, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
-import useChallangeUser from "@/hooks/useChallangeUser";
-import { useQueryClient } from "@tanstack/react-query";
-import { taskIdInViewAtom } from "../UserSelectedTask/atom";
-import { useAtom, useAtomValue } from "jotai";
-import { toast } from "@backpackapp-io/react-native-toast";
-import ChallangeToggle from "@/components/ChallangeToggle";
 import UserLiveItem from "@/components/UserLiveItem";
 import useLiveUser from "@/hooks/useLiveUser";
 import useAuth from "@/hooks/useAuth";
-import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import Animated, { FadeIn } from "react-native-reanimated";
+import { useTheme } from "@/lib/theme";
+import { locationUserListSheetState } from "@/lib/atoms/location";
+import { useAtom } from "jotai";
+import { useIsFocused } from "@react-navigation/native";
 
 const MAX_ITEMS = 30;
 const COLUMNS = 4;
 
 const HorizontalAnonList: React.FC<{ taskId: string }> = ({ taskId }) => {
+  const theme = useTheme();
+  const isFocused = useIsFocused();
+
   const { data, isFetching } = useInfiniteQuery({
-    enabled: !!taskId,
+    enabled: !!taskId && isFocused,
     queryKey: ["anon-list", taskId],
     queryFn: () => api.getAnonListForTask(taskId),
     initialPageParam: 1,
@@ -33,9 +29,13 @@ const HorizontalAnonList: React.FC<{ taskId: string }> = ({ taskId }) => {
       return lastPage.length === MAX_ITEMS ? nextPage : undefined;
     },
     refetchOnMount: false,
+    subscribed: isFocused,
     staleTime: 5000,
-    refetchInterval: 3000,
+    refetchInterval: isFocused ? 3000 : false,
   });
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
+    locationUserListSheetState
+  );
 
   const { user } = useAuth();
 
@@ -49,46 +49,48 @@ const HorizontalAnonList: React.FC<{ taskId: string }> = ({ taskId }) => {
       ) ?? [];
 
   return (
-    <View className="flex">
+    <View style={styles.container}>
       <BottomSheetScrollView showsHorizontalScrollIndicator={false}>
-        <View className="flex-row flex-wrap justify py-2">
+        <View style={styles.gridContainer}>
           {items.map((item, index) => (
-            <TouchableOpacity
-              className="mb-6 border-2"
-              style={{
-                width: Dimensions.get("window").width / COLUMNS - 5,
-              }}
+            <Animated.View
+              entering={FadeIn.delay(index * 100)}
               key={item.user.id}
-              onPress={() => {
-                if (item.user.id === user.id) return;
-                requestAnimationFrame(() => {
-                  joinChat.mutate({
-                    targetUserId: item.user.id,
-                  });
-                });
-              }}
             >
-              <UserLiveItem
-                showName={item.user.id !== user.id}
-                size="md"
-                color={
-                  item.user.id === user.id
-                    ? "gray"
-                    : item.is_friend
-                    ? "green"
-                    : "pink"
-                }
-                isLoading={
-                  joinChat.isPending &&
-                  joinChat.variables.targetUserId === item.user.id
-                }
-                isSuccess={
-                  joinChat.isSuccess &&
-                  joinChat.variables.targetUserId === item.user.id
-                }
-                user={item.user}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.itemContainer,
+                  {
+                    width: Dimensions.get("window").width / COLUMNS - 5,
+                    borderColor: theme.colors.border,
+                  },
+                ]}
+                onPress={() => {
+                  if (item.user.id === user.id) return;
+                  setIsBottomSheetOpen(false);
+                  requestAnimationFrame(() => {
+                    joinChat.mutate({
+                      targetUserId: item.user.id,
+                    });
+                  });
+                }}
+              >
+                <UserLiveItem
+                  showName={item.user.id !== user.id}
+                  size="md"
+                  color={"pink"}
+                  isLoading={
+                    joinChat.isPending &&
+                    joinChat.variables.targetUserId === item.user.id
+                  }
+                  isSuccess={
+                    joinChat.isSuccess &&
+                    joinChat.variables.targetUserId === item.user.id
+                  }
+                  user={item.user}
+                />
+              </TouchableOpacity>
+            </Animated.View>
           ))}
         </View>
       </BottomSheetScrollView>
@@ -96,81 +98,21 @@ const HorizontalAnonList: React.FC<{ taskId: string }> = ({ taskId }) => {
   );
 };
 
-const AnonAvatarContainer: React.FC = () => {
-  const taskIdInView = useAtomValue(taskIdInViewAtom);
-  const queryClient = useQueryClient();
-
-  const {
-    data: userPublicChallange,
-    isRefetching,
-    isFetching,
-  } = useQuery({
-    queryKey: ["isChallengingThisTask", taskIdInView],
-    queryFn: () => api.isChallengingThisTask(taskIdInView as string),
-    refetchOnWindowFocus: false,
-    refetchInterval: 5000,
-  });
-
-  const { makePublicChallange, rejectChallangeFromUser } = useChallangeUser();
-
-  const toggleChallenge = () => {
-    if (
-      userPublicChallange?.is_public_disabled &&
-      !userPublicChallange?.is_challenging
-    ) {
-      toast("3 ზე მეტ დავალებაზე ვერ გამოჩნდებით", {
-        id: "anon-list-warning",
-      });
-      return;
-    }
-    const isChallengingNow = userPublicChallange?.is_challenging;
-
-    // Optimistic update
-    queryClient.setQueryData(["isChallengingThisTask", taskIdInView], {
-      is_challenging: !isChallengingNow,
-    });
-
-    if (!isChallengingNow) {
-      makePublicChallange.mutate(taskIdInView as string, {
-        onError: () => {
-          queryClient.setQueryData(["isChallengingThisTask", taskIdInView], {
-            is_challenging: false,
-          });
-        },
-      });
-    } else {
-      rejectChallangeFromUser.mutate(
-        {
-          challenge_id: (userPublicChallange as any).challenge_id as string,
-          task_id: taskIdInView as string,
-        },
-        {
-          onError: () => {
-            queryClient.setQueryData(["isChallengingThisTask", taskIdInView], {
-              is_challenging: true,
-            });
-          },
-        }
-      );
-    }
-  };
-
-  const disabled =
-    isFetching ||
-    makePublicChallange.isPending ||
-    rejectChallangeFromUser.isPending;
-
-  const isChallenging = userPublicChallange?.is_challenging;
-  const isPublicDisabled = userPublicChallange?.is_public_disabled;
-
-  return (
-    <ChallangeToggle
-      disabled={disabled}
-      isChallenging={isChallenging}
-      isPublicDisabled={isPublicDisabled}
-      onPress={toggleChallenge}
-    />
-  );
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  gridContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "flex-start",
+    width: "100%",
+    paddingVertical: 8,
+  },
+  itemContainer: {
+    marginBottom: 24,
+    marginLeft: 4,
+  },
+});
 
 export default HorizontalAnonList;

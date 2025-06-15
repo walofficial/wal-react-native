@@ -5,7 +5,7 @@ import { toast } from "@backpackapp-io/react-native-toast";
 function usePokeLiveUser() {
   const pokeLiveUser = useMutation({
     mutationFn: (variables: { userId: string; taskId: string }) =>
-      api.pokeLiveUser(variables.userId, variables.taskId),
+      api.pokeLiveUser(variables.userId),
     onSuccess: (data, variables) => {
       toast.success("შეზანზარდა");
     },

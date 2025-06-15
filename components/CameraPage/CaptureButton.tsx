@@ -17,7 +17,7 @@ import type { Camera, VideoFile } from "react-native-vision-camera";
 import { CAPTURE_BUTTON_SIZE } from "./Constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toast } from "@backpackapp-io/react-native-toast";
-
+import { useHaptics } from "@/lib/haptics";
 const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.05;
 const MIN_RECORDING_TIME = 500; // 1 second in milliseconds
 const MAX_RECORDING_TIME = 30000; // 30 seconds in milliseconds
@@ -50,7 +50,7 @@ const _CaptureButton: React.FC<Props> = ({
   const isPressingButton = useSharedValue(false);
   const recordingProgress = useSharedValue(0);
   const recordingTimer = useRef<NodeJS.Timeout | null>(null);
-
+  const haptic = useHaptics();
   useEffect(() => {
     setRecordingTimeView(isRecording);
 
@@ -91,24 +91,26 @@ const _CaptureButton: React.FC<Props> = ({
       camera.current.startRecording({
         videoCodec: "h264",
         fileType: "mp4",
-        videoBitRate: "low",
         flash: flash,
         onRecordingError: (error) => {
           console.error("Recording failed!", error);
           setIsRecording(false);
           recordingProgress.value = withTiming(0);
+          haptic("Error");
         },
         onRecordingFinished: async (video) => {
           const recordingDuration =
             Date.now() - (recordingStartTime.current || Date.now());
           if (recordingDuration < MIN_RECORDING_TIME) {
             toast.error("ჩანაწერი მოკლეა");
+            haptic("Medium");
           } else {
             await AsyncStorage.setItem(
               `lastRecordedVideoPath_${matchId}`,
               video.path
             );
             onMediaCaptured(video, "video");
+            haptic("Medium");
           }
           setIsRecording(false);
           recordingProgress.value = withTiming(0);
@@ -117,12 +119,14 @@ const _CaptureButton: React.FC<Props> = ({
       recordingStartTime.current = Date.now();
       setIsRecording(true);
       recordingProgress.value = withTiming(1, { duration: MAX_RECORDING_TIME });
+      haptic("Medium");
 
       recordingTimer.current = setTimeout(() => {
         stopRecording();
       }, MAX_RECORDING_TIME);
     } catch (e) {
       console.error("Failed to start recording!", e);
+      haptic("Medium");
     }
   }, [
     camera,

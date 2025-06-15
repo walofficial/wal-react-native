@@ -1,11 +1,14 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 import { UserVerification } from "@/lib/interfaces";
+import { useIsFocused } from "@react-navigation/native";
 
 export function useUserVerificationsPaginated({
+  targetUserId,
   enabled = true,
   pageSize = 10,
 }: {
+  targetUserId: string;
   enabled?: boolean;
   pageSize?: number;
 }) {
@@ -20,9 +23,9 @@ export function useUserVerificationsPaginated({
     error,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["user-verifications-paginated"],
+    queryKey: ["user-verifications-paginated", targetUserId],
     queryFn: ({ pageParam = 1 }) =>
-      api.getUserVerifications(pageParam, pageSize),
+      api.getUserVerifications(targetUserId, pageParam, pageSize),
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.data.length < pageSize) {
         return undefined;

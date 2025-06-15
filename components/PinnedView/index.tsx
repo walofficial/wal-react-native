@@ -1,37 +1,66 @@
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Text } from "@/components/ui/text";
-import UserAvatarLayout from "@/components/UserAvatar";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Pin } from "lucide-react-native";
 
 function PinnedView({ imageUrl, text }: { imageUrl: string; text: string }) {
   return (
-    <View className="flex flex-col bg-black border border-gray-600 items-start p-3 rounded-lg">
-      <View className="flex-row mb-3 items-center">
-        <Pin fill={"gray"} size={18} className="mr-3" color="white" />
-        <Text className="text-white ml-2">დაპინული</Text>
+    <View style={styles.container}>
+      <View style={styles.headerContainer}>
+        <Pin fill={"gray"} size={18} style={styles.pinIcon} color="white" />
+        <Text style={styles.headerText}>დაპინული</Text>
       </View>
-      <View className="flex-row items-center">
-        <Avatar
-          style={{
-            width: 30,
-            height: 30,
-            borderRadius: 15,
-          }}
-          alt="Avatar"
-        >
-          <AvatarImage source={{ uri: imageUrl }} className="rounded-full" />
+      <View style={styles.contentContainer}>
+        <Avatar style={styles.avatar} alt="Avatar">
+          <AvatarImage source={{ uri: imageUrl }} style={styles.avatarImage} />
         </Avatar>
-        <Text
-          className="ml-3 text-white flex-1"
-          numberOfLines={1}
-          ellipsizeMode="tail"
-        >
+        <Text style={styles.contentText} numberOfLines={1} ellipsizeMode="tail">
           {text}
         </Text>
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "column",
+    borderWidth: 1,
+    borderColor: "#666666",
+    alignItems: "flex-start",
+    padding: 12,
+    borderRadius: 8,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    marginBottom: 12,
+    alignItems: "center",
+  },
+  pinIcon: {
+    marginRight: 12,
+  },
+  headerText: {
+    color: "white",
+    marginLeft: 8,
+  },
+  contentContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  avatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+  },
+  avatarImage: {
+    borderRadius: 15,
+  },
+  contentText: {
+    marginLeft: 12,
+    color: "white",
+    flex: 1,
+  },
+});
+i;
 
 export default PinnedView;

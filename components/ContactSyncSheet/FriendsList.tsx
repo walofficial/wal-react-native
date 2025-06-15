@@ -16,7 +16,6 @@ import { useSetAtom } from "jotai";
 import { useIsFocused } from "@react-navigation/native";
 import { FriendFeedItem } from "@/lib/interfaces";
 import useUnblockMutation from "@/hooks/useUnblockMutation";
-
 const PAGE_SIZE = 10;
 
 const FriendsList: React.FC = () => {
@@ -33,7 +32,8 @@ const FriendsList: React.FC = () => {
         return lastPage.length === PAGE_SIZE ? nextPage : undefined;
       },
       initialPageParam: 1,
-      refetchInterval: isFocused ? 4000 : false,
+      refetchInterval: isFocused ? 10000 : false,
+      subscribed: isFocused,
     });
 
   const deleteFriendMutation = useMutation({
@@ -80,7 +80,7 @@ const FriendsList: React.FC = () => {
   }
 
   return (
-    <View className="mb-3">
+    <View style={{ marginBottom: 12 }}>
       <ContactListHeader icon="people-outline" title="მეგობრები" />
       {friends.map((item) => (
         <ContactSyncFriendItem

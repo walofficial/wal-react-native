@@ -12,3 +12,5 @@ export const authenticatingState = atom<boolean>(false);
 export const hasAccessState = atom<boolean>(false);
 
 export const selectedTaskState = atom<Task | null>(null);
+
+export const publicKeyState = atom<string>("");

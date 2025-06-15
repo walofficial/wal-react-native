@@ -19,7 +19,6 @@ ios/*
 android/*
 !android/widget/
 removed_folders/
-credentials_folder
 
 # macOS
 .DS_Store
@@ -30,3 +29,14 @@ credentials_folder
 expo-env.d.ts
 # @end expo-cli
 .env.local
+service_account_play_service.json
+service_account.json
+credentials.json
+credentials_folder/
+.vscode
+build-android-development.sh
+build-android-preview.sh
+build-android.sh
+build-ios-development.sh
+build-ios-preview.sh
+build-ios.sh

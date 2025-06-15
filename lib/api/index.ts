@@ -5,8 +5,11 @@ import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   InternalAxiosRequestConfig,
+  AxiosRequestHeaders,
 } from "axios";
-import { WORKERS } from "./config";
+import { API_BASE_URL } from "./config";
+import { createUploadTask, FileSystemUploadType } from "expo-file-system";
+
 import {
   ChatMessages,
   FeedUser,
@@ -28,25 +31,29 @@ import {
   ChatRoom,
   LocationFeedPost,
   ChatMessage,
+  ProfileInformationResponse,
+  CreateSpaceResponse,
+  GetRoomPreviewResponse,
+  NewsItemResponse,
+  FactCheckResponse,
 } from "@/lib/interfaces";
 import { supabase } from "../supabase";
-import { Contact } from "expo-contacts";
 import ProtocolService from "../services/ProtocolService";
-
-const { AUTH_WORKER } = WORKERS;
+import { isWeb } from "../platform";
+import { CompressedVideo } from "../media/video/types";
+import { Contact } from "expo-contacts";
 
 export class ApiClient {
   supabaseUserToken?: string;
 
-  authWorker: AxiosInstance;
+  thebackend: AxiosInstance;
 
   constructor() {
     supabase.auth.onAuthStateChange((_event, session) => {
       this.supabaseUserToken = session?.access_token;
       this.updateAxiosInstancesWithToken();
     });
-
-    this.authWorker = this.createAxiosInstance(AUTH_WORKER);
+    this.thebackend = this.createAxiosInstance(API_BASE_URL);
   }
 
   createAxiosInstance(
@@ -56,7 +63,7 @@ export class ApiClient {
     const instance = axios.create({
       baseURL,
       headers: {
-        "x-impersonate-user-id": process.env.NEXT_PUBLIC_IMPERSONATE_USER_ID,
+        "x-is-anonymous": isWeb,
       },
     });
 
@@ -74,7 +81,7 @@ export class ApiClient {
       config.headers = {
         ...config.headers,
         Authorization: `Bearer ${this.supabaseUserToken}`,
-      };
+      } as AxiosRequestHeaders;
     }
     return config;
   };
@@ -94,11 +101,11 @@ export class ApiClient {
 
   updateAxiosInstancesWithToken() {
     if (this.supabaseUserToken) {
-      this.authWorker.defaults.headers.common[
+      this.thebackend.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${this.supabaseUserToken}`;
     } else {
-      delete this.authWorker.defaults.headers.common["Authorization"];
+      delete this.thebackend.defaults.headers.common["Authorization"];
     }
   }
 
@@ -107,24 +114,25 @@ export class ApiClient {
     this.updateAxiosInstancesWithToken();
   }
 
-  getUser = async (): Promise<null> => {
-    const response = await this.authWorker.get(WORKERS.AUTH_WORKER + "hey");
-
-    if (!response.data) {
-      throw new Error("API request failed");
-    }
+  getUser = async (): Promise<User> => {
+    const response = await this.thebackend.get("/user/get-user");
 
     return response.data;
   };
 
-  getUserVerifications = async (page: number, pageSize: number = 10) => {
+  getUserVerifications = async (
+    targetUserId: string,
+    page: number,
+    pageSize: number = 10
+  ) => {
     try {
-      const { data } = await this.authWorker.get<LocationFeedPost>(
+      const { data } = await this.thebackend.get<LocationFeedPost[]>(
         "/user/get-verifications",
         {
           params: {
             page,
             page_size: pageSize,
+            target_user_id: targetUserId,
           },
         }
       );
@@ -144,21 +152,21 @@ export class ApiClient {
     if (code === "anon") {
       return { ok: true };
     }
-    const { data } = await this.authWorker.post("/check-access-code", {
+    const { data } = await this.thebackend.post("/check-access-code", {
       code,
     });
     return data;
   };
 
   getAccess = async () => {
-    const { data } = await this.authWorker.get("/access/list-access-codes");
+    const { data } = await this.thebackend.get("/access/list-access-codes");
     return data as {
       codes: string[];
     };
   };
 
   inviteUserToMent = async (targetPhoneNumber: string): Promise<null> => {
-    const { data } = await this.authWorker.post("/access/send-access-code", {
+    const { data } = await this.thebackend.post("/access/send-access-code", {
       targetPhoneNumber,
     });
 
@@ -169,7 +177,7 @@ export class ApiClient {
     if (messages.some((message) => !message.id)) {
       throw new Error("All messages must have an id");
     }
-    await this.authWorker.post("/chat/update-messages", {
+    await this.thebackend.post("/chat/update-messages", {
       messages,
     });
   };
@@ -177,13 +185,13 @@ export class ApiClient {
     page: number | boolean,
     page_size: number,
     room_id: string,
-    recipientId: string,
     localUserId: string
   ) => {
     if (!page) {
       throw new Error("Fetched all pages");
     }
-    const { data } = await this.authWorker.get(`/chat/messages`, {
+
+    const { data } = await this.thebackend.get(`/chat/messages`, {
       params: {
         room_id,
         page: page,
@@ -193,7 +201,7 @@ export class ApiClient {
 
     let decryptedMessages: ChatMessages = [];
     try {
-      decryptedMessages = await Promise.all(
+      const processedMessages = await Promise.all(
         data.messages.map(async (message: ChatMessage) => {
           try {
             if (message.encrypted_content && message.nonce) {
@@ -201,7 +209,7 @@ export class ApiClient {
 
               decryptedMessage = await ProtocolService.decryptMessage(
                 localUserId === message.author_id
-                  ? recipientId
+                  ? message.recipient_id
                   : message.author_id,
                 {
                   encryptedMessage: message.encrypted_content,
@@ -216,25 +224,32 @@ export class ApiClient {
             }
             return message;
           } catch (decryptError) {
-            console.error(
-              `Failed to decrypt message ${message.id}:`,
-              decryptError
-            );
-            return {
-              ...message,
-              message: "[Unable to decrypt message]",
-            };
+            // console.error(
+            //   `Failed to decrypt message ${message.id}:`,
+            //   decryptError
+            // );
+            return null; // Return null for failed messages
           }
         })
       );
+
+      // Filter out null values from failed decryption attempts
+      decryptedMessages = processedMessages.filter(
+        (msg): msg is ChatMessage => msg !== null
+      );
     } catch (error) {
       console.error("Error processing messages", error);
-      decryptedMessages = data.messages.map((message) => ({
-        ...message,
-        message: message.encrypted_content
-          ? "[Unable to decrypt message]"
-          : message.message,
-      }));
+      decryptedMessages = data.messages
+        .map((message: ChatMessage) => {
+          if (message.encrypted_content) {
+            return null;
+          }
+          return {
+            ...message,
+            message: message.message,
+          };
+        })
+        .filter((msg: ChatMessage): msg is ChatMessage => msg !== null);
     }
 
     return {
@@ -256,13 +271,13 @@ export class ApiClient {
   };
 
   updateUser = async (data: any) => {
-    const response = await this.authWorker.put("/user/update", data);
+    const response = await this.thebackend.put("/user/update", data);
 
     return response;
   };
 
   createUser = async (data: any) => {
-    const { data: newUser } = await this.authWorker.post(
+    const { data: newUser } = await this.thebackend.post(
       "/user/create-user",
       data
     );
@@ -271,7 +286,7 @@ export class ApiClient {
   };
 
   getSingleTaskById = async (taskId: string): Promise<Task> => {
-    const { data } = await this.authWorker.get(`/tasks/single/${taskId}`);
+    const { data } = await this.thebackend.get(`/tasks/single/${taskId}`);
     return data as Task;
   };
 
@@ -279,7 +294,7 @@ export class ApiClient {
     if (!this.supabaseUserToken) {
       throw new Error("no token");
     }
-    const { data } = await this.authWorker.get("/user/task");
+    const { data } = await this.thebackend.get("/user/task");
     return data as Task;
   };
 
@@ -287,7 +302,7 @@ export class ApiClient {
     verificationId: string,
     isPublic: boolean
   ) => {
-    const { data } = await this.authWorker.post(
+    const { data } = await this.thebackend.post(
       "/user/update-verification-visibility",
       {
         verification_id: verificationId,
@@ -296,24 +311,12 @@ export class ApiClient {
     );
     return data as UserVerification[];
   };
-  getMatch = async (match_id: string): Promise<Match> => {
-    if (!match_id) {
-      throw new Error("Match id is required");
-    }
-    if (match_id.length < 10) {
-      throw new Error("Invalid match id");
-    }
-    const { data } = await this.authWorker.get(`/user/match`, {
-      params: { match_id },
-    });
-    return data as Match;
-  };
 
   getMessageRoom = async (roomId: string): Promise<ChatRoom> => {
-    const { data } = await this.authWorker.get(`/chat/message-chat-room`, {
+    const { data } = await this.thebackend.get(`/chat/message-chat-room`, {
       params: { room_id: roomId },
     });
-    if (data.target_user_public_key) {
+    if (data.user_public_key) {
       await ProtocolService.storeRemotePublicKey(
         data.target_user_id,
         data.user_public_key
@@ -323,7 +326,7 @@ export class ApiClient {
   };
 
   createRoom = async (targetUserId: string, keyBundle: any) => {
-    const { data } = await this.authWorker.post("/chat/create-chat-room", {
+    const { data } = await this.thebackend.post("/chat/create-chat-room", {
       target_user_id: targetUserId,
       user_public_key: keyBundle?.publicKey,
     });
@@ -336,11 +339,11 @@ export class ApiClient {
   };
 
   createTask = async (data: any) => {
-    await this.authWorker.post("/user/create-task", data);
+    await this.thebackend.post("/user/create-task", data);
   };
 
   selectTask = async (task_id: string | null) => {
-    const { data } = await this.authWorker.post("/user/select-task", {
+    const { data } = await this.thebackend.post("/user/select-task", {
       task_id,
     });
 
@@ -348,7 +351,7 @@ export class ApiClient {
   };
 
   getCity = async (latitude: any, longitude: any) => {
-    const { data } = await this.authWorker.post("/user/location", {
+    const { data } = await this.thebackend.post("/user/location", {
       latitude,
       longitude,
     });
@@ -357,7 +360,7 @@ export class ApiClient {
   };
 
   uploadPhotos = async (formData: any) => {
-    const { data } = await this.authWorker.post("/upload-photos", formData, {
+    const { data } = await this.thebackend.post("/upload-photos", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -366,17 +369,9 @@ export class ApiClient {
     return data;
   };
 
-  unmatch = async (matchId: string) => {
-    const { data } = await this.authWorker.post("/user/unmatch", {
-      match_id: matchId,
-    });
-
-    return data;
-  };
-
   trackImpression = async (verificationId: string) => {
     try {
-      const { data } = await this.authWorker.post(
+      const { data } = await this.thebackend.post(
         `/live-actions/track-impressions/${verificationId}`
       );
       return data;
@@ -387,14 +382,14 @@ export class ApiClient {
   };
 
   getVerificationImpressions = async (verificationId: string) => {
-    const { data } = await this.authWorker.get(
+    const { data } = await this.thebackend.get(
       `/live-actions/get-impressions/${verificationId}`
     );
     return data;
   };
 
   fetchSuggestedInterests = async (interests: string[]) => {
-    const { data } = await this.authWorker.post("/generate-interests", {
+    const { data } = await this.thebackend.post("/generate-interests", {
       chosen_interests: interests,
     });
     if (!data || !data.interests || !data.interests.length) {
@@ -404,7 +399,7 @@ export class ApiClient {
   };
 
   generateRandomTasks = async ({ refetch }: { refetch: boolean }) => {
-    const { data } = await this.authWorker.post("/tasks/random-tasks", {
+    const { data } = await this.thebackend.post("/tasks/random-tasks", {
       refetch,
     });
 
@@ -420,7 +415,7 @@ export class ApiClient {
       headers["user-location"] = `${coords.latitude},${coords.longitude}`;
     }
 
-    const { data } = await this.authWorker.get("/tasks/daily", {
+    const { data } = await this.thebackend.get("/tasks/daily", {
       params: {
         category_id: categoryId,
       },
@@ -431,39 +426,67 @@ export class ApiClient {
   };
 
   isUserNameAvailable = async (username: string) => {
-    const { data } = await this.authWorker.get(
+    const { data } = await this.thebackend.get(
       "/user/check-username/" + username
     );
     return data;
   };
 
+  requestLive = async (taskId: string, text: string) => {
+    const { data } = await this.thebackend.post("/live/request-live", {
+      task_id: taskId,
+      text_content: text,
+    });
+    return data as {
+      livekit_token: string;
+      room_name: string;
+    };
+  };
+
+  getLiveStreamToken = async (roomName: string) => {
+    const { data } = await this.thebackend.get("/live/get-live-stream-token", {
+      params: {
+        room_name: roomName,
+      },
+    });
+    return data as {
+      livekit_token: string;
+      room_name: string;
+    };
+  };
+
+  PUBLIC_fetchLocations = async (categoryId: string) => {
+    const { data } = await this.thebackend.get("/tasks/public/locations", {
+      params: {
+        category_id: categoryId,
+      },
+    });
+
+    return data;
+  };
+
   fetchLocations = async (
     categoryId: string,
-    coords?: { latitude: number; longitude: number }
+    coords?: { latitude: number; longitude: number },
+    errorMsg?: string | null
   ): Promise<LocationsResponse> => {
     const headers: Record<string, string> = {};
     if (coords) {
       headers["x-user-location-latitude"] = coords.latitude.toString();
       headers["x-user-location-longitude"] = coords.longitude.toString();
     }
-    try {
-      const { data } = await this.authWorker.get("/tasks/locations", {
-        params: {
-          category_id: categoryId,
-        },
-        headers,
-      });
-      return data;
-    } catch (error) {
-      return {
-        nearest_tasks: [],
-        tasks_at_location: [],
-      };
-    }
+    const { data } = await this.thebackend.get("/tasks/locations", {
+      params: {
+        category_id: categoryId,
+        ignore_location_check: !!errorMsg,
+      },
+      headers,
+    });
+    return data;
   };
 
   uploadTaskExamples = async (formData: any) => {
-    const { data } = await this.authWorker.post(
+    const { data } = await this.thebackend.post(
       "/verification-example-media",
       formData
     );
@@ -472,7 +495,7 @@ export class ApiClient {
   };
 
   deleteTaskExample = async (values: { taskId: string; exampleId: string }) => {
-    const { data } = await this.authWorker.delete(
+    const { data } = await this.thebackend.delete(
       "/verification-example-media",
       {
         params: {
@@ -486,7 +509,7 @@ export class ApiClient {
   };
 
   verifyPhotos = async (formData: any) => {
-    const { data } = await this.authWorker.post("/verify-photos", formData, {
+    const { data } = await this.thebackend.post("/verify-photos", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
@@ -496,7 +519,7 @@ export class ApiClient {
   };
 
   uploadPhotosToLocation = async (formData: any) => {
-    const { data } = await this.authWorker.post(
+    const { data } = await this.thebackend.post(
       "/verify-photos/upload-to-location",
       formData,
       {
@@ -513,7 +536,7 @@ export class ApiClient {
     uploadProgress: (progress: number) => void
   ) => {
     try {
-      const { data } = await this.authWorker.post("/verify-videos", formData, {
+      const { data } = await this.thebackend.post("/verify-videos", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -529,54 +552,60 @@ export class ApiClient {
     }
   };
 
-  uploadVideosToLocation = async (
-    formData: FormData,
-    uploadProgress: (progress: number) => void
-  ) => {
-    try {
-      const { data } = await this.authWorker.post(
-        "/verify-videos/upload-to-location",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-          onUploadProgress: (e) => {
-            if (e.total) {
-              uploadProgress((e.loaded / e.total) * 100);
-            }
-          },
-        }
-      );
-      return {
-        ...data,
-      };
-    } catch (error) {
-      throw error;
+  uploadVideosToLocation = (
+    video: CompressedVideo,
+    setProgress: (progress: number) => void,
+    params: {
+      task_id: string;
+      recording_time: number;
+      text_content: string;
     }
-  };
-
-  tryNextBatch = async () => {
-    const { data } = await this.authWorker.get("/user/feed/next-batch");
-    return data as FeedUser[];
-  };
-
-  getTaskStories = async () => {
-    const { data } = await this.authWorker.get<TaskInformationStory[]>(
-      "/user/feed/task-stories"
+  ) => {
+    return createUploadTask(
+      API_BASE_URL + "verify-videos/upload-to-location",
+      video.uri,
+      {
+        headers: {
+          "content-type": video.mimeType,
+          Authorization: `Bearer ${this.supabaseUserToken}`,
+        },
+        httpMethod: "POST",
+        fieldName: "video_file",
+        parameters: {
+          task_id: params.task_id,
+          recording_time: params.recording_time.toString(),
+          text_content: params.text_content,
+        },
+        mimeType: video.mimeType,
+        uploadType: FileSystemUploadType.MULTIPART,
+      },
+      (p) => setProgress(p.totalBytesSent / p.totalBytesExpectedToSend)
     );
-    return data.filter(
-      (item) => !!item.task.task_verification_example_sources?.length
+  };
+  public_getLocationFeedPaginated = async (taskId: string, page: number) => {
+    const { data } = await this.thebackend.get<LocationFeedPost[]>(
+      "/user/feed/public/location-feed/" + taskId,
+      {
+        params: {
+          page,
+        },
+      }
     );
+    return {
+      page,
+      data,
+    };
   };
 
-  getLocationFeedPaginated = async (taskId: string, page: number) => {
+  getLocationFeedPaginated = async (taskId: string, page: number, contentTypeFilter?: string, searchTerm?: string) => {
     try {
-      const { data } = await this.authWorker.get<PublicVerification[]>(
+      const { data } = await this.thebackend.get<LocationFeedPost[]>(
         "/user/feed/location-feed/" + taskId,
         {
           params: {
             page,
+            content_type_filter: contentTypeFilter,
+            search_term: searchTerm,
           },
         }
       );
@@ -594,7 +623,7 @@ export class ApiClient {
   };
 
   getTaskStoriesPaginated = async (taskId: string, page: number) => {
-    const { data } = await this.authWorker.get<LocationFeedPost[]>(
+    const { data } = await this.thebackend.get<LocationFeedPost[]>(
       "/user/feed/task-stories/" + taskId,
       {
         params: {
@@ -612,7 +641,7 @@ export class ApiClient {
   };
 
   upsertFCMData = async (token: string | null) => {
-    await this.authWorker.put("/user/upsert-fcm", {
+    await this.thebackend.put("/user/upsert-fcm", {
       data: {
         expo_push_token: token,
       },
@@ -622,7 +651,7 @@ export class ApiClient {
   };
 
   deleteFCMData = async (expoPushToken: string) => {
-    await this.authWorker.delete("/user/delete-fcm", {
+    await this.thebackend.delete("/user/delete-fcm", {
       data: {
         expo_push_token: expoPushToken,
       },
@@ -631,12 +660,12 @@ export class ApiClient {
   };
 
   getFCMData = async () => {
-    const { data } = await this.authWorker.get("/user/get-fcm");
+    const { data } = await this.thebackend.get("/user/get-fcm");
     return data;
   };
 
   acceptUser = async (target_user_id: string) => {
-    const { data } = await this.authWorker.post("/user/accept", {
+    const { data } = await this.thebackend.post("/user/accept", {
       target_user_id,
     });
 
@@ -644,7 +673,7 @@ export class ApiClient {
   };
 
   rejectUser = async (target_user_id: string) => {
-    const { data } = await this.authWorker.post("/user/reject", {
+    const { data } = await this.thebackend.post("/user/reject", {
       target_user_id,
     });
 
@@ -652,20 +681,18 @@ export class ApiClient {
   };
 
   getMatches = async () => {
-    const { data } = await this.authWorker.get("/user/matches");
+    const { data } = await this.thebackend.get("/user/matches");
 
     return data as Match[];
   };
 
-  pokeLiveUser = async (userId: string, taskId: string) => {
-    const { data } = await this.authWorker.post(
-      "/live-actions/poke/" + userId + "/" + taskId
-    );
+  pokeLiveUser = async (userId: string) => {
+    const { data } = await this.thebackend.post("/live-actions/poke/" + userId);
     return data;
   };
 
   getUserVerification = async (taskId: string, userId?: string) => {
-    const { data } = await this.authWorker.get("/user/get-verification", {
+    const { data } = await this.thebackend.get("/user/get-verification", {
       params: {
         task_id: taskId,
         user_id: userId,
@@ -676,7 +703,7 @@ export class ApiClient {
   };
 
   getPinnedFeedItem = async (taskId: string) => {
-    const { data } = await this.authWorker.get("/get_pinned_verification", {
+    const { data } = await this.thebackend.get("/get_pinned_verification", {
       params: {
         task_id: taskId,
       },
@@ -686,7 +713,7 @@ export class ApiClient {
   };
 
   pinFeedItem = async (taskId: string, verificationId: string) => {
-    const { data } = await this.authWorker.post("/pin_verification", {
+    const { data } = await this.thebackend.post("/pin_verification", {
       task_id: taskId,
       verification_id: verificationId,
     });
@@ -694,7 +721,7 @@ export class ApiClient {
   };
 
   removePinnedFeedItem = async (taskId: string, verificationId: string) => {
-    const { data } = await this.authWorker.delete("/pin_verification", {
+    const { data } = await this.thebackend.delete("/pin_verification", {
       params: {
         task_id: taskId,
       },
@@ -702,21 +729,100 @@ export class ApiClient {
     return data;
   };
 
+  getPublicVerificationById = async (verificationId: string) => {
+    const { data } = await this.thebackend.get(
+      "/user/public/get-verification",
+      {
+        params: {
+          verification_id: verificationId,
+        },
+      }
+    );
+    return data as LocationFeedPost;
+  };
+
+  getCountryFeed = async () => {
+    const { data } = await this.thebackend.get("/tasks/get-country-feed");
+
+    return data as Task;
+  };
+
   getVerificationById = async (verificationId: string) => {
     try {
-      const { data } = await this.authWorker.get("/user/get-verification", {
+      const { data } = await this.thebackend.get("/user/get-verification", {
         params: {
           verification_id: verificationId,
         },
       });
-      return data as PublicVerification;
+      return data as LocationFeedPost;
     } catch (error) {
-      return null;
+      console.error("Error fetching verification by ID:", error);
+      throw error;
+    }
+  };
+
+  getFactCheck = async (verificationId: string): Promise<FactCheckResponse> => {
+    try {
+      const response = await this.thebackend.get(
+        `/live-actions/fact-check/${verificationId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching fact-check data:", error);
+      throw error;
+    }
+  };
+
+  rateFactCheck = async (verificationId: string) => {
+    const { data } = await this.thebackend.post(
+      `/live-actions/rate-fact-check/${verificationId}`
+    );
+    return data;
+  };
+
+  unrateFactCheck = async (verificationId: string) => {
+    const { data } = await this.thebackend.delete(
+      `/live-actions/unrate-fact-check/${verificationId}`
+    );
+    return data;
+  };
+
+  getCuratedFeedPaginated = async (
+    taskId: string,
+    page: number,
+    pageSize: number = 10,
+    contentTypeFilter?: "youtube_only" | "social_media_only"
+  ): Promise<{ page: number; data: LocationFeedPost[] }> => {
+    try {
+      const { data } = await this.thebackend.get<LocationFeedPost[]>(
+        `/user/feed/curated/${taskId}`,
+        {
+          params: {
+            page,
+            page_size: pageSize,
+            content_type_filter: contentTypeFilter,
+          },
+        }
+      );
+
+      return {
+        page,
+        data,
+      };
+    } catch (error) {
+      console.error(
+        `Error fetching curated feed for taskId: ${taskId}, page: ${page}, pageSize: ${pageSize}`,
+        error
+      );
+      return {
+        page,
+        data: [],
+      };
     }
   };
 
   startPromo = async (matchId: string) => {
-    const { data } = await this.authWorker.post("/user/promotion", {
+    const { data } = await this.thebackend.post("/user/promotion", {
       match_id: matchId,
     });
 
@@ -732,17 +838,17 @@ export class ApiClient {
       headers["user-location"] = `${coords.latitude},${coords.longitude}`;
     }
 
-    const { data } = await this.authWorker.get(
+    const { data } = await this.thebackend.get(
       "/tasks/daily-tasks-categories",
       { headers }
     );
     return data.filter((category: TaskCategory) => !category.hidden);
   };
 
-  signup = async (values: any) => {};
+  signup = async (values: any) => { };
 
   deleteUser = async () => {
-    const { data } = await this.authWorker.delete("/user/delete");
+    const { data } = await this.thebackend.delete("/user/delete");
     return data;
   };
 
@@ -750,10 +856,12 @@ export class ApiClient {
     const phoneNumbers = contactsToCheck
       .flatMap(
         (contact) =>
-          contact.phoneNumbers?.map((phoneNumber) => phoneNumber.number) || []
+          contact.phoneNumbers?.map(
+            (phoneNumber: { number?: string }) => phoneNumber.number
+          ) || []
       )
-      .filter(Boolean);
-    const { data } = await this.authWorker.post(
+      .filter((number): number is string => typeof number === 'string');
+    const { data } = await this.thebackend.post(
       "/user/check_registered_users",
       {
         phone_numbers: phoneNumbers,
@@ -764,12 +872,12 @@ export class ApiClient {
   };
 
   getFriendRequests = async () => {
-    const { data } = await this.authWorker.get("/friends/requests");
+    const { data } = await this.thebackend.get("/friends/requests");
     return data as { user: User; request: FriendRequest }[];
   };
 
   sendFriendRequest = async (userId: string) => {
-    const response = await this.authWorker.post("/friends/request", {
+    const response = await this.thebackend.post("/friends/request", {
       target_user_id: userId,
     });
 
@@ -781,21 +889,21 @@ export class ApiClient {
   };
 
   acceptFriendRequest = async (requestId: string) => {
-    const { data } = await this.authWorker.put(
+    const { data } = await this.thebackend.put(
       `/friends/request/${requestId}/accept`
     );
     return data;
   };
 
   rejectFriendRequest = async (requestId: string) => {
-    const { data } = await this.authWorker.put(
+    const { data } = await this.thebackend.put(
       `/friends/request/${requestId}/reject`
     );
     return data;
   };
 
   getFriendsList = async (page: number, pageSize: number) => {
-    const { data } = await this.authWorker.get("/friends/list", {
+    const { data } = await this.thebackend.get("/friends/list", {
       params: {
         page,
         page_size: pageSize,
@@ -805,14 +913,14 @@ export class ApiClient {
   };
 
   deleteFriend = async (friendId: string) => {
-    const { data } = await this.authWorker.delete(
+    const { data } = await this.thebackend.delete(
       `/friends/remove/${friendId}`
     );
     return data;
   };
 
   getAnonListForTask = async (taskId: string) => {
-    const { data } = await this.authWorker.get("/tasks/anon-list", {
+    const { data } = await this.thebackend.get("/tasks/anon-list", {
       params: {
         task_id: taskId,
       },
@@ -825,7 +933,7 @@ export class ApiClient {
   };
 
   getAnonListCountForTask = async (taskId: string) => {
-    const { data } = await this.authWorker.get("/tasks/anon-list/count", {
+    const { data } = await this.thebackend.get("/tasks/anon-list/count", {
       params: {
         task_id: taskId,
       },
@@ -835,7 +943,7 @@ export class ApiClient {
 
   getMyChallangeRequests = async (): Promise<ChallangeRequest[]> => {
     try {
-      const { data } = await this.authWorker.get("/challenges/my-requests");
+      const { data } = await this.thebackend.get("/challenges/my-requests");
       return data as ChallangeRequest[];
     } catch (error) {
       console.log("error", error);
@@ -844,7 +952,7 @@ export class ApiClient {
   };
 
   getRatingForTask = async (taskId: string) => {
-    const { data } = await this.authWorker.get(
+    const { data } = await this.thebackend.get(
       "/user/feed/check-task-rating/" + taskId
     );
     return data;
@@ -855,15 +963,15 @@ export class ApiClient {
     rate_type: "like" | "dislike" | "close"
   ) => {
     try {
-      const { data } = await this.authWorker.post(
+      const { data } = await this.thebackend.post(
         "/user/feed/rate-task/" + taskId,
         {
           rate_type,
         }
       );
       return data;
-    } catch (error) {
-      console.log("error", JSON.stringify(error.response.data));
+    } catch (error: any) {
+      console.log("error", JSON.stringify(error.response?.data));
       throw error;
     }
   };
@@ -873,121 +981,50 @@ export class ApiClient {
     latitude: number,
     longitude: number
   ) => {
-    const { data } = await this.authWorker.get("/tasks/check-location", {
-      params: {
-        task_id: taskId,
-        latitude: latitude.toString(),
-        longitude: longitude.toString(),
-      },
-    });
-    return data as CheckLocationResponse;
-  };
-
-  approveVerification = async (verificationId: string) => {
-    const { data } = await this.authWorker.post(
-      "/admin-panel/approve/" + verificationId
-    );
-    return data;
-  };
-
-  isChallengingThisTask = async (taskId: string) => {
     try {
-      const { data } = await this.authWorker.get("/challenges/is-challenging", {
+      const { data } = await this.thebackend.get("/tasks/check-location", {
         params: {
           task_id: taskId,
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
         },
       });
-      return data as {
-        is_challenging: boolean;
-        challenge_id: string;
-        task_id: string;
-        is_public_disabled: boolean;
-      };
-    } catch (error) {
-      console.log("error", error);
-      return {
-        is_challenging: false,
-        is_public_disabled: false,
-      };
+      return data as CheckLocationResponse;
+    } catch (error: unknown) {
+      console.log(
+        "error",
+        error && typeof error === "object" && "response" in error
+          ? JSON.stringify((error as any).response.data)
+          : "Unknown error"
+      );
+      throw error;
     }
   };
 
-  makePublicChallange = async (taskId: string) => {
-    const { data } = await this.authWorker.post("/challenges/create", {
-      task_id: taskId,
-    });
-    return data;
-  };
-
   goLive = async (taskId: string) => {
-    const { data } = await this.authWorker.post("/tasks/go-live", {
+    const { data } = await this.thebackend.post("/tasks/go-live", {
       task_id: taskId,
-    });
-    return data;
-  };
-
-  rejectChallangeFromUser = async (challenge_id: string) => {
-    const { data } = await this.authWorker.post("/challenges/reject", {
-      challenge_id: challenge_id,
-    });
-
-    return data;
-  };
-
-  acceptChallange = async (challengeId: string) => {
-    const { data } = await this.authWorker.post("/challenges/accept", {
-      challenge_id: challengeId,
-    });
-    return data;
-  };
-
-  challangeUser = async (userId: string, taskId: string) => {
-    const { data } = await this.authWorker.post("/challenges/create", {
-      target_user_id: userId,
-      task_id: taskId,
-    });
-    return data;
-  };
-
-  getPublicChallenges = async () => {
-    const { data } = await this.authWorker.get("/challenges/public-challenges");
-    return data;
-  };
-
-  getFriendsFeed = async (page: number, pageSize: number) => {
-    const { data } = await this.authWorker.get("/friends/friends-tasks", {
-      params: {
-        page,
-        page_size: pageSize,
-      },
-    });
-    return data as FriendFeedItem[];
-  };
-
-  getAdminApprovals = async (taskId: string, page: number) => {
-    const { data } = await this.authWorker.get("/admin-panel/verifications", {
-      params: { task_id: taskId, page },
     });
     return data;
   };
 
   blockUser = async (userId: string) => {
-    const { data } = await this.authWorker.post("/user/block/" + userId);
+    const { data } = await this.thebackend.post("/user/block/" + userId);
     return data;
   };
 
   reportTask = async (taskId: string) => {
-    const { data } = await this.authWorker.post("/user/report/" + taskId);
+    const { data } = await this.thebackend.post("/user/report/" + taskId);
     return data;
   };
 
   getBlockedUsers = async () => {
-    const { data } = await this.authWorker.get("/friends/blocked");
+    const { data } = await this.thebackend.get("/friends/blocked");
     return data as User[];
   };
 
   unblockUser = async (userId: string) => {
-    const { data } = await this.authWorker.post("/user/unblock/" + userId);
+    const { data } = await this.thebackend.post("/user/unblock/" + userId);
     return data;
   };
   getNotificationsPaginated = async ({
@@ -997,7 +1034,7 @@ export class ApiClient {
     page: number;
     pageSize: number;
   }) => {
-    const { data } = await this.authWorker.get<NotificationResponse[]>(
+    const { data } = await this.thebackend.get<NotificationResponse[]>(
       "/notifications",
       {
         params: {
@@ -1013,57 +1050,324 @@ export class ApiClient {
   };
 
   getLikeCount = async (verificationId: string) => {
-    const { data } = await this.authWorker.get(
+    const { data } = await this.thebackend.get(
       `/live-actions/verification-likes/${verificationId}`
     );
     return data as { likes_count: number; has_liked: boolean };
   };
 
   likeVerification = async (verificationId: string) => {
-    const { data } = await this.authWorker.post(
+    const { data } = await this.thebackend.post(
       `/live-actions/like-verification/${verificationId}`
     );
     return data;
   };
 
   unlikeVerification = async (verificationId: string) => {
-    const { data } = await this.authWorker.delete(
+    const { data } = await this.thebackend.delete(
       `/live-actions/unlike-verification/${verificationId}`
     );
     return data;
   };
 
   getUnreadNotificationsCount = async () => {
-    const { data } = await this.authWorker.get("/notifications/unread-count");
+    const { data } = await this.thebackend.get("/notifications/unread-count");
     return data as { count: number };
   };
 
   markNotificationsAsRead = async () => {
-    const { data } = await this.authWorker.post("/notifications/mark-read");
+    const { data } = await this.thebackend.post("/notifications/mark-read");
     return data;
   };
 
-  publishPost = async (taskId: string, content: string) => {
-    const { data } = await this.authWorker.post("/tasks/publish-post", {
-      task_id: taskId,
-      content,
-    });
+  publishPost = async (taskId: string, formData: FormData | string) => {
+    const { data } = await this.thebackend.post(
+      "/tasks/publish-post",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return data;
   };
-
-  getChatRooms = async () => {
-    const { data } = await this.authWorker.get<{ chat_rooms: ChatRoom[] }>(
+  searchByUsername = async (username: string) => {
+    const { data } = await this.thebackend.get(
+      `/user/profile/username/${username}`
+    );
+    return data;
+  };
+  getChatRooms = async (localUserId: string) => {
+    const { data } = await this.thebackend.get<{ chat_rooms: ChatRoom[] }>(
       "/chat/chat-rooms"
     );
-    return data.chat_rooms;
+
+    // Save the message author ids public key before trying to decrypt.
+    // Note that this happens in other casess too. search for storeRemotePublicKey
+    await data.chat_rooms.map(async (room) => {
+      return await ProtocolService.storeRemotePublicKey(
+        room.last_message.author_id,
+        room.user_public_key
+      );
+    });
+
+    const decryptedRooms = await Promise.all(
+      data.chat_rooms.map(async (room) => ({
+        ...room,
+        last_message: {
+          ...room.last_message,
+          message: await ProtocolService.decryptMessage(
+            localUserId === room.last_message.author_id
+              ? room.last_message.recipient_id
+              : room.last_message.author_id,
+            {
+              encryptedMessage: room.last_message.encrypted_content,
+              nonce: room.last_message.nonce,
+            }
+          ),
+        },
+      }))
+    );
+    return decryptedRooms;
   };
 
   sendPublicKey = async (targetUserId: string, publicKey: string) => {
-    const { data } = await this.authWorker.post("/chat/send-public-key", {
+    const { data } = await this.thebackend.post("/chat/send-public-key", {
       user_id: targetUserId,
       public_key: publicKey,
     });
     return data;
+  };
+
+  getProfileInformation = async (
+    userId: string
+  ): Promise<ProfileInformationResponse> => {
+    const { data } = await this.thebackend.get(`/user/profile/${userId}`);
+    return data;
+  };
+
+  getRoomPreview = async (livekit_room_name: string) => {
+    const { data } = await this.thebackend.get<GetRoomPreviewResponse>(
+      `/space/preview/${livekit_room_name}`
+    );
+    return data;
+  };
+
+  subscribeToSpace = async (livekitRoomName: string) => {
+    const { data } = await this.thebackend.post(`/space/subscribe-space`, {
+      livekit_room_name: livekitRoomName,
+    });
+    return data;
+  };
+
+  startStream = async (livekitRoomName: string) => {
+    const { data } = await this.thebackend.post(`/space/create-stream`, {
+      livekit_room_name: livekitRoomName,
+    });
+    return data as {
+      livekit_room_name: string;
+      livekit_token: string;
+    };
+  };
+
+  joinSpace = async (livekitRoomName: string) => {
+    const { data } = await this.thebackend.post(`/space/join-stream`, {
+      livekit_room_name: livekitRoomName,
+    });
+    return data as {
+      livekit_room_name: string;
+      livekit_token: string;
+    };
+  };
+
+  stopStream = async (livekit_room_name: string) => {
+    const { data } = await this.thebackend.post(`/space/stop-stream`, {
+      livekit_room_name: livekit_room_name,
+    });
+    return data;
+  };
+
+  createSpace = async (data: {
+    text_content: string;
+    task_id: string;
+    scheduled_at?: string;
+  }) => {
+    const { data: response } = await this.thebackend.post<CreateSpaceResponse>(
+      "/space/create-space",
+      data
+    );
+    return response;
+  };
+
+  removeFromStage = async (
+    livekit_room_name: string,
+    participant_identity: string
+  ) => {
+    const { data } = await this.thebackend.post(`/space/remove-from-stage`, {
+      livekit_room_name,
+      participant_identity,
+    });
+    return data;
+  };
+
+  inviteToStage = async (
+    livekit_room_name: string,
+    participant_identity: string
+  ) => {
+    const { data } = await this.thebackend.post(`/space/invite-to-stage`, {
+      livekit_room_name,
+      participant_identity,
+    });
+    return data;
+  };
+
+  raiseHand = async (livekit_room_name: string) => {
+    const { data } = await this.thebackend.post(`/space/raise-hand`, {
+      livekit_room_name,
+    });
+    return data;
+  };
+  getNews = async () => {
+    // Simulate API delay
+    const { data } = await this.thebackend.get<NewsItemResponse>(`/news`);
+    return data.news;
+  };
+
+  getNewsById = async (newsId: string) => {
+    const { data } = await this.thebackend.get<NewsItemResponse>(
+      `/news/${newsId}`
+    );
+    return data;
+  };
+
+  getNewsComments = async (newsId: string) => {
+    const response = await this.thebackend.get(`/news/${newsId}/comments`);
+    return response.data;
+  };
+
+  deleteComment = async (commentId: string) => {
+    const { data } = await this.thebackend.delete(`/comments/${commentId}`);
+    return data;
+  };
+
+  // Comment-related endpoints
+  createComment = async (data: {
+    content: string;
+    verification_id: string;
+    parent_comment_id?: string;
+    tags?: Array<{ user_id: string; username: string }>;
+  }) => {
+    const { data: response } = await this.thebackend.post("/comments", data);
+    return response;
+  };
+
+  getVerificationComments = async (
+    verificationId: string,
+    sortBy: "recent" | "top" = "recent",
+    page: number = 1,
+    limit: number = 20
+  ) => {
+    const { data } = await this.thebackend.get(
+      `/comments/verification/${verificationId}`,
+      {
+        params: {
+          sort_by: sortBy,
+          page,
+          limit,
+        },
+      }
+    );
+    return data as {
+      comment: {
+        id: string;
+        content: string;
+        author_id: string;
+        author: {
+          id: string;
+          username: string;
+          avatar_url?: string;
+        };
+        verification_id: string;
+        parent_comment_id: string | null;
+        created_at: string;
+        updated_at: string;
+        likes_count: number;
+        score: number;
+        tags: Array<{
+          user_id: string;
+          username: string;
+        }>;
+        ai_analysis: Record<string, any>;
+      };
+      is_liked_by_user: boolean;
+    }[];
+  };
+
+  likeComment = async (commentId: string) => {
+    const { data } = await this.thebackend.post(`/comments/${commentId}/like`);
+    return data;
+  };
+
+  unlikeComment = async (commentId: string) => {
+    const { data } = await this.thebackend.delete(
+      `/comments/${commentId}/like`
+    );
+    return data;
+  };
+
+  getVerificationCommentsCount = async (verificationId: string) => {
+    const { data } = await this.thebackend.get(
+      `/comments/verification/${verificationId}/count`
+    );
+    return data as { count: number };
+  };
+
+  // Comment reaction endpoints
+  addReactionToComment = async (
+    commentId: string,
+    reactionType: string
+  ) => {
+    const { data } = await this.thebackend.post(
+      `/comments/${commentId}/reactions`,
+      { reaction_type: reactionType }
+    );
+    return data;
+  };
+
+  removeReactionFromComment = async (commentId: string) => {
+    const { data } = await this.thebackend.delete(
+      `/comments/${commentId}/reactions`
+    );
+    return data;
+  };
+
+  getCommentReactions = async (commentId: string) => {
+    const { data } = await this.thebackend.get(
+      `/comments/${commentId}/reactions`
+    );
+    return data;
+  };
+
+  getNewsFeed = async (taskId: string): Promise<LocationFeedPost[]> => {
+    try {
+      const { data } = await this.thebackend.get(`/user/feed/public/news-feed`);
+      return data;
+    } catch (error) {
+      console.error("Error fetching news feed:", error);
+      return [];
+    }
+  };
+
+  getCountry = async (): Promise<{ country_code: string }> => {
+    try {
+      const { data } = await this.thebackend.get("/get-country");
+      return data;
+    } catch (error) {
+      console.error("Error fetching country:", error);
+      // Return a default country code if the request fails
+      return { country_code: "GE" };
+    }
   };
 }
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Linking, Platform, View } from "react-native";
-import { Button } from "@/components/ui/button";
+import { Linking, Platform, View, StyleSheet } from "react-native";
+import Button from "@/components/Button";
 import * as Notifications from "expo-notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "@/lib/api";
@@ -14,7 +14,6 @@ import { useRouter } from "expo-router";
 import { Alert } from "react-native";
 import { useAtom } from "jotai";
 import { expoPushTokenAtom, isSubscribedAtom } from "./atom";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const openNotificationSettings = () => {
   return Linking.openSettings();
@@ -145,29 +144,31 @@ export default function EnableNotifications({
   return (
     <>
       <Button
-        className="my-2"
+        style={styles.button}
         variant={!isSubscribed ? "default" : "secondary"}
-        size="lg"
+        size="large"
         onPress={toggleNotifications}
         disabled={upsertFCM.isPending}
-      >
-        <Text>
-          {isSubscribed ? "შეტყობინებების გამორთვა" : "შეტყობინებების ჩართვა"}
-        </Text>
-      </Button>
+        loading={upsertFCM.isPending}
+        title={
+          isSubscribed ? "შეტყობინებების გამორთვა" : "შეტყობინებების ჩართვა"
+        }
+        icon={
+          isSubscribed ? "notifications-off-outline" : "notifications-outline"
+        }
+      />
       {isDev && (
         <Button
-          className="my-2"
-          variant={"secondary"}
-          size="lg"
+          style={styles.button}
+          variant="secondary"
+          size="large"
           onPress={() => sendPushNotification(expoPushToken)}
           disabled={upsertFCM.isPending}
-        >
-          <Text>{"Test notification"}</Text>
-        </Button>
+          title={"Test notification"}
+        />
       )}
       {isDev && (
-        <View style={{ alignItems: "center", justifyContent: "center" }}>
+        <View style={styles.devContainer}>
           <Text>
             Title: {notification && notification.request.content.title}{" "}
           </Text>
@@ -181,3 +182,13 @@ export default function EnableNotifications({
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    marginVertical: 8,
+  },
+  devContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});

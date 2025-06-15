@@ -11,6 +11,7 @@ export default function useTask(taskId: string) {
     queryFn: () => {
       return api.getSingleTaskById(taskId);
     },
+    enabled: !!taskId,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,

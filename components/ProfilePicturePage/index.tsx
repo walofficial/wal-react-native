@@ -16,6 +16,7 @@ import {
 import { convertToCDNUrl } from "@/lib/utils";
 import useLiveUser from "@/hooks/useLiveUser";
 import useAuth from "@/hooks/useAuth";
+import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
 
 const ProfilePicture = ({
   showMessageOption = false,
@@ -24,41 +25,12 @@ const ProfilePicture = ({
 }) => {
   const { imageUrl, userId } = useLocalSearchParams();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const { joinChat } = useLiveUser();
   const { user } = useAuth();
   const isAuthor = user?.id === userId;
+
   return (
     <SafeAreaView style={[styles.container]}>
-      <View
-        className="absolute top-0 left-0 right-0 flex-row justify-between z-40 px-5"
-        style={{ top: insets.top + 20 }}
-      >
-        <Pressable
-          hitSlop={20}
-          onPress={() => {
-            router.back();
-          }}
-        >
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </Pressable>
-        {showMessageOption && !isAuthor && (
-          <Pressable
-            disabled={joinChat.isPending}
-            hitSlop={20}
-            onPress={() => {
-              router.back();
-              joinChat.mutate({ targetUserId: userId as string });
-            }}
-          >
-            {joinChat.isPending ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <Ionicons name="chatbubble" size={24} color="white" />
-            )}
-          </Pressable>
-        )}
-      </View>
       <Image
         source={{ uri: convertToCDNUrl(imageUrl as string) }}
         style={styles.image}
@@ -71,7 +43,16 @@ const ProfilePicture = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+  },
+  headerContainer: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    zIndex: 40,
+    paddingHorizontal: 20,
   },
   backButton: {
     position: "absolute",

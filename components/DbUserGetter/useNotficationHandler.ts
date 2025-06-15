@@ -1,93 +1,112 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import { SheetManager } from "react-native-actions-sheet";
-import { InfiniteData, useQueryClient } from "@tanstack/react-query";
 import * as Notifications from "expo-notifications";
-import { FriendFeedItem } from "@/lib/interfaces";
-import useAuth from "@/hooks/useAuth";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function useNotificationHandler() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user } = useAuth();
 
   useEffect(() => {
     // Set up background notification handler
     const backgroundSubscription =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        if (response.notification.request.content.data?.roomId) {
-          //   SheetManager.hideAll();
-          router.push({
-            pathname: "/(tabs)/chatrooms/chat/[roomId]",
+        const { type, verificationId, roomId, taskId } = response.notification.request.content.data;
+        if (type === "poke") {
+          queryClient.invalidateQueries({
+            queryKey: ["verification-by-id", verificationId],
+          });
+          router.navigate({
+            pathname: "/(tabs)/(home)/verification/[verificationId]",
+            params: {
+              verificationId,
+            },
+          });
+          return;
+        }
+
+        if (
+          type ===
+          "fact_check_completed" ||
+          type ===
+          "video_summary_completed"
+        ) {
+          queryClient.invalidateQueries({
+            queryKey: ["verification-by-id", verificationId],
+          });
+          router.navigate({
+            pathname: "/(tabs)/(global)/verification/[verificationId]",
+            params: {
+              verificationId,
+            },
+          });
+          return;
+        }
+
+        if (
+          type === "new_message" &&
+          roomId
+        ) {
+          router.navigate({
+            pathname: "/(tabs)/(home)/chatrooms/[roomId]",
             params: {
               roomId: response.notification.request.content.data.roomId,
             },
           });
           return;
         }
-        if (response.notification.request.content.data?.taskId) {
-          //   SheetManager.hide("location-user-list");
-          //   SheetManager.hide("contact-sync-sheet");
-          router.push({
-            pathname: "/(tabs)/liveusers/feed/[taskId]",
+        if (taskId) {
+          router.navigate({
+            pathname: "/(tabs)/(home)/[taskId]",
             params: {
-              taskId: response.notification.request.content.data?.taskId,
+              taskId: taskId,
             },
           });
         }
 
         if (
-          response.notification.request.content.data?.type ===
-            "verification_like" ||
-          response.notification.request.content.data?.type === "poke"
+          type ===
+          "verification_like"
         ) {
-          router.push({
-            pathname: "/(tabs)/notifications",
+          queryClient.invalidateQueries({
+            queryKey: ["verification-by-id", verificationId],
           });
-          //   SheetManager.hide("location-user-list");
-          //   SheetManager.hide("contact-sync-sheet");
-          return;
-        }
-
-        if (
-          response.notification.request.content.data?.type === "pinned_post"
-        ) {
-          router.push({
-            pathname:
-              "/(tabs)/liveusers/feed/[taskId]/verification/[verificationId]",
+          router.navigate({
+            pathname: "/status/[verificationId]",
             params: {
-              taskId: response.notification.request.content.data.taskId,
-              verificationId:
-                response.notification.request.content.data.verificationId,
+              verificationId,
             },
           });
           return;
         }
 
         if (
-          response.notification.request.content.data?.type ===
+          type === "pinned_post"
+        ) {
+          queryClient.invalidateQueries({
+            queryKey: ["verification-by-id", verificationId],
+          });
+          router.navigate({
+            pathname: "/status/[verificationId]",
+            params: {
+              verificationId,
+            },
+          });
+          return;
+        }
+
+        if (
+          type ===
           "friend_request_sent"
         ) {
-          router.replace({
-            pathname: "/(tabs)/liveusers",
+          router.navigate({
+            pathname: "/(tabs)/(home)",
           });
-          SheetManager.hide("location-user-list");
-          queryClient.invalidateQueries({
-            queryKey: ["friendRequests"],
-          });
-          async () => {
-            const friendsFeeData = (await queryClient.getQueryData([
-              "friendsFeed",
-            ])) as InfiniteData<FriendFeedItem[]>;
-            if (friendsFeeData && friendsFeeData.pages.length !== 0) {
-              SheetManager.show("contact-sync-sheet");
-            }
-          };
         }
       });
 
     return () => {
       backgroundSubscription.remove();
     };
-  }, [user]);
+  }, []);
 }

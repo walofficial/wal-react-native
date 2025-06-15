@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
 import * as Location from "expo-location";
 import { Text } from "@/components/ui/text";
-import { Dimensions, Platform, TouchableOpacity, View } from "react-native";
+import {
+  Dimensions,
+  Platform,
+  TouchableOpacity,
+  View,
+  StyleSheet,
+} from "react-native";
 import StaticSafeAreaInsets from "react-native-static-safe-area-insets";
 import useCheckLocation from "@/hooks/useCheckLocation";
 import { openMap } from "@/utils/openMap";
@@ -13,6 +19,8 @@ import { colors } from "@/lib/colors";
 import { useRouter } from "expo-router";
 import { isDev } from "@/lib/api/config";
 import LocationLabel from "../LocationLabel";
+import { FontSizes } from "@/lib/theme";
+
 function IsInLocation({
   onCheckLocation,
   taskId,
@@ -82,7 +90,7 @@ function IsInLocation({
         const { status: newStatus } = await requestPermission();
         if (newStatus !== "granted") {
           setErrorMsg(
-            "საჭიროა ლოკაციაზე ინფორმაციის მიღებაზე დართოთ აპლიკაციას ნებართვა"
+            "სრული ფუნქციონალისთვის საჭიროა ლოკაციაზე ინფორმაციის მიღება"
           );
           setIsGettingLocation(false);
           return;
@@ -103,7 +111,6 @@ function IsInLocation({
         }
       );
 
-      // Set a timeout to show the loading indicator after 3 seconds
       timeoutId = setTimeout(() => {
         setShowLoadingIndicator(true);
       }, 3000);
@@ -119,15 +126,11 @@ function IsInLocation({
 
   const renderLocationText = () => {
     if (errorMsg) {
-      return (
-        <Large className="text-red-400 text-lg text-center font-semibold mb-2">
-          {errorMsg}
-        </Large>
-      );
+      return <Large style={styles.errorText}>{errorMsg}</Large>;
     }
     if (isError) {
       return (
-        <Large className="text-red-400 text-lg text-center font-semibold mb-2">
+        <Large style={styles.errorText}>
           სამწუხაროდ მისამართის შემოწმება ვერ მოხერხდა
         </Large>
       );
@@ -135,13 +138,11 @@ function IsInLocation({
     if (!nearestLocation) return null;
     if (!isInLocation) {
       return (
-        <View className="bg-white rounded-xl shadow-lg p-4 py-8 m-2">
-          <Text className="text-left text-blue-500 text-xl animate-pulse font-semibold mb-2">
-            ვამოწმებთ თქვენს მისამართს...
-          </Text>
-          <View className="flex flex-row items-center">
+        <View style={styles.locationContainer}>
+          <Text style={styles.checkingText}>ვამოწმებთ თქვენს მისამართს...</Text>
+          <View style={styles.iconContainer}>
             <IonIcon name="camera" color={colors.gray} size={24} />
-            <Text className="text-left text-black ml-3">
+            <Text style={styles.locationText}>
               გადასაღებად საჭიროა ლოკაციაზე მისვლა
             </Text>
           </View>
@@ -151,35 +152,9 @@ function IsInLocation({
   };
 
   return (
-    <View
-      style={[
-        {
-          position: "absolute",
-          top: 0,
-          opacity: 1,
-          left: 0,
-          paddingHorizontal: 15,
-          paddingBottom: 30,
-          paddingTop:
-            StaticSafeAreaInsets.safeAreaInsetsTop +
-            (Platform.OS === "android" ? 30 : 10),
-          width: "100%",
-          height:
-            Platform.OS === "ios" ? Dimensions.get("window").height : "100%",
-          zIndex: 1,
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-        },
-      ]}
-    >
+    <View style={styles.container}>
       <TouchableOpacity
-        style={{
-          position: "absolute",
-          top: 50,
-          left: 0,
-          padding: 16,
-        }}
+        style={styles.backButton}
         onPress={() => {
           toast.remove();
           router.back();
@@ -187,19 +162,16 @@ function IsInLocation({
       >
         <IonIcon name="arrow-back" color="white" size={24} />
       </TouchableOpacity>
-      <View className="">{renderLocationText()}</View>
+      <View>{renderLocationText()}</View>
       {nearestLocation && (
         <TouchableOpacity
           style={[
+            styles.mapButton,
             {
-              position: "absolute",
-              alignSelf: "center",
-              bottom: SAFE_AREA_PADDING.paddingBottom,
               opacity: loadingDataAndFirstLocation ? 0 : 1,
               pointerEvents: loadingDataAndFirstLocation ? "none" : "auto",
             },
           ]}
-          className="flex flex-row justify-center items-center mt-3 w-full p-4"
           onPress={handleOpenMap}
         >
           <LocationLabel
@@ -211,5 +183,80 @@ function IsInLocation({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    top: 0,
+    opacity: 1,
+    left: 0,
+    paddingHorizontal: 15,
+    paddingBottom: 30,
+    paddingTop:
+      StaticSafeAreaInsets.safeAreaInsetsTop +
+      (Platform.OS === "android" ? 30 : 10),
+    width: "100%",
+    height: Platform.OS === "ios" ? Dimensions.get("window").height : "100%",
+    zIndex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  backButton: {
+    position: "absolute",
+    top: 50,
+    left: 0,
+    padding: 16,
+  },
+  errorText: {
+    color: "#f87171",
+    fontSize: FontSizes.medium,
+    textAlign: "center",
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  locationContainer: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    padding: 16,
+    paddingVertical: 32,
+    margin: 8,
+  },
+  checkingText: {
+    textAlign: "left",
+    color: "#3b82f6",
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  iconContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  locationText: {
+    textAlign: "left",
+    color: "black",
+    marginLeft: 12,
+  },
+  mapButton: {
+    position: "absolute",
+    alignSelf: "center",
+    bottom: SAFE_AREA_PADDING.paddingBottom,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 12,
+    width: "100%",
+    padding: 16,
+  },
+});
 
 export default IsInLocation;

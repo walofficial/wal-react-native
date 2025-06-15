@@ -1,9 +1,23 @@
-import React, { useEffect } from "react";
-import { View, TouchableOpacity } from "react-native";
-import { Link, usePathname } from "expo-router";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  Platform,
+  Keyboard,
+  BackHandler,
+} from "react-native";
+import {
+  Link,
+  useLocalSearchParams,
+  useRouter,
+  useGlobalSearchParams,
+  usePathname,
+} from "expo-router";
 import { H1 } from "../ui/typography";
 import { TabBarIcon } from "../navigation/TabBarIcon";
-import { Badge } from "../ui/badge";
 import { Text } from "../ui/text";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
 import Animated, {
@@ -12,173 +26,381 @@ import Animated, {
   withTiming,
   Easing,
   withSpring,
+  cancelAnimation,
 } from "react-native-reanimated";
-import { statusBadgeTextState } from "@/lib/state/custom-status";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { LinearGradient } from "expo-linear-gradient";
-import UnreadCount from "../UnreadCount";
-import { useUnreadCount } from "@/hooks/useUnreadCount";
-import { useScrollReanimatedValue } from "../context/ScrollReanimatedValue";
 import { HEADER_HEIGHT } from "@/lib/constants";
+import { isWeb } from "@/lib/platform";
+import ProfileHeaderWeb from "./web";
+import { FontSizes, useTheme } from "@/lib/theme";
+import { useColorScheme } from "@/lib/useColorScheme";
+import SourceIcon from "../SourceIcon";
+import useCountryFeed from "@/hooks/useCountryFeed";
+import { scrollToTopState } from "@/lib/atoms/location";
+import { useMinimalShellHeaderTransform } from "@/hooks/useMinimalShellHeaderTransform";
+import {
+  isSearchActiveAtom,
+  searchInputValueAtom,
+  setDebouncedSearchAtom,
+  resetSearchAtom,
+} from "@/lib/state/search";
+// Location imports
+import useLocationsInfo from "@/hooks/useLocationsInfo";
+import useGoLive from "@/hooks/useGoLive";
+import { LocationsResponse } from "@/lib/interfaces";
+import { toast } from "@backpackapp-io/react-native-toast";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { statusBadgeTextState } from "@/lib/state/custom-status";
+import { Badge } from "../ui/badge";
+// Separated components
+import { AnimatedStatusBadge } from "./AnimatedStatusBadge";
+import { SearchBar } from "./SearchBar";
+import { SearchOverlay } from "./SearchOverlay";
+import { TabBar } from "./TabBar";
+import { convertToCDNUrl } from "@/lib/utils";
 
-export default function ProfileHeader({
+// Define layout type
+type TabLayout = { x: number; width: number };
+
+function ProfileHeader({
+  customTitle,
   customTitleComponent,
   customBottomView,
   isAnimated = true,
   customButtons,
+  showSearch = false,
+  showLocationTabs = false,
 }: {
+  customTitle?: string;
   customTitleComponent?: React.ReactNode;
   customBottomView?: React.ReactNode;
   isAnimated?: boolean;
   customButtons?: React.ReactNode;
+  showSearch?: boolean;
+  showLocationTabs?: boolean;
 }) {
-  const badgeWidth = useSharedValue(0);
+  const pathname = usePathname();
+
   const iconTranslateX = useSharedValue(0);
-  const insets = useSafeAreaInsets();
-  const { unreadCount } = useUnreadCount();
-  const { headerTranslateY, headerOpacity } = useScrollReanimatedValue();
-  const setHeaderHeight = useSetAtom(HEADER_HEIGHT);
+  const [headerHeight, setHeaderHeight] = useAtom(HEADER_HEIGHT);
+  const { isDarkColorScheme } = useColorScheme();
+  const { taskId, content_type } = useGlobalSearchParams<{
+    taskId: string;
+    content_type: string;
+  }>();
 
-  // useEffect(() => {
-  //   console.log("scrollY", scrollY.value);
-  // }, [scrollY.value]);
+  const router = useRouter();
+  const activeTab = content_type;
+  const { id: countryFeedId } = useCountryFeed();
+  const [scrollToTop, setScrollToTop] = useAtom(scrollToTopState);
 
-  useEffect(() => {
-    if (unreadCount > 0) {
-      badgeWidth.value = withSpring(30);
-      iconTranslateX.value = withSpring(-10);
-    } else {
-      badgeWidth.value = withSpring(0);
-      iconTranslateX.value = withSpring(0);
-    }
-  }, [unreadCount]);
+  // Location data for location tabs
+  const {
+    data: locationData,
+    isFetching: isLocationFetching,
+    errorMsg: locationError,
+  } = useLocationsInfo("669e9a03dd31644abb767337", showLocationTabs);
+  const { goLiveMutation } = useGoLive();
 
-  const badgeAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      width: badgeWidth.value + 10,
-      opacity: badgeWidth.value === 0 ? 0 : 1,
-      overflow: "hidden",
-    };
-  });
+  // Search state
+  const [isSearchActive, setIsSearchActive] = useAtom(isSearchActiveAtom);
+  const [searchValue, setSearchValue] = useAtom(searchInputValueAtom);
+  const setDebouncedSearch = useSetAtom(setDebouncedSearchAtom);
+
+  // MEMORY LEAK FIX: Add cleanup refs
+  const isMountedRef = useRef(true);
+
+  // Ref to track if header height has been set
+  const headerHeightSetRef = useRef(false);
+
+  // Animated values for header content
+  const headerContentOpacity = useSharedValue(1);
 
   const iconAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateX: iconTranslateX.value }],
     };
   });
-  const headerStyles = useAnimatedStyle(() => {
-    if (!isAnimated) return {};
 
+  const headerMinimalShellTransform = useMinimalShellHeaderTransform();
+
+  const titleStyle = {
+    ...styles.title,
+    color: isDarkColorScheme ? "#FFFFFF" : "#000000", // Force color with higher specificity
+  };
+
+  const handleTabPress = (tabKey: string) => {
+    if (!isMountedRef.current) return;
+
+    if (showLocationTabs) {
+      // Handle location tab navigation
+      handleLocationTabPress(tabKey);
+    } else {
+      // Handle regular content type tabs
+      router.setParams({ content_type: tabKey });
+      // Trigger scroll to top for the main list
+      setScrollToTop(Date.now());
+    }
+  };
+
+  const handleLocationTabPress = (tabKey: string) => {
+    if (!locationData) return;
+
+    // Handle task at location tabs (taskId format)
+    if (locationData.tasks_at_location?.find((task) => task.id === tabKey)) {
+      // Navigate to task at location
+      router.navigate({
+        pathname: "/(tabs)/(home)/[taskId]",
+        params: {
+          taskId: tabKey,
+        },
+      });
+      if (!isWeb && !locationError) {
+        goLiveMutation.mutateAsync(tabKey);
+      }
+      return;
+    }
+
+    // Handle nearest tasks tabs (nearTask_taskId format)
+    if (tabKey.startsWith("nearTask_")) {
+      const actualTaskId = tabKey.replace("nearTask_", "");
+      const nearTask = locationData.nearest_tasks?.find(
+        (item) => item.task.id === actualTaskId
+      );
+      if (nearTask) {
+        router.navigate({
+          pathname: "/(tabs)/(home)/[taskId]",
+          params: {
+            taskId: actualTaskId,
+          },
+        });
+        if (!isWeb && !locationError) {
+          goLiveMutation.mutateAsync(actualTaskId);
+        }
+      }
+    }
+  };
+
+  const handleSearchPress = () => {
+    setIsSearchActive(true);
+  };
+
+  const handleSearchCancel = () => {
+    // Dismiss keyboard
+    Keyboard.dismiss();
+
+    // Reset search state immediately - animations will be handled by useEffect
+    setIsSearchActive(false);
+    setSearchValue("");
+    setDebouncedSearch("");
+  };
+
+  // Tab config for locations
+  const locationTabItems = React.useMemo(() => {
+    if (!locationData) return [];
+
+    const items = [];
+
+    // Add tasks at location first
+    if (locationData.tasks_at_location?.length) {
+      items.push(
+        ...locationData.tasks_at_location.map((task) => ({
+          key: task.id,
+          label: task.display_name,
+          icon: null,
+          isCurrentLocation: true,
+          image: convertToCDNUrl(
+            task.task_verification_example_sources[0]?.image_media_url
+          ),
+          task,
+        }))
+      );
+    }
+
+    // Add nearby tasks
+    if (locationData.nearest_tasks?.length) {
+      items.push(
+        ...locationData.nearest_tasks.map(({ task, nearest_location }) => ({
+          key: `nearTask_${task.id}`,
+          label: task.display_name,
+          icon: null,
+          isCurrentLocation: false,
+          task,
+          address: nearest_location?.address,
+        }))
+      );
+    }
+
+    return items;
+  }, [locationData]);
+
+  // Only show tabs if on country feed (for content tabs) or showLocationTabs is true
+  const showTabs = showLocationTabs
+    ? true
+    : taskId === countryFeedId && pathname.includes(taskId);
+
+  const headerContentAnimatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateY: headerTranslateY.value }],
-      marginBottom: 20,
-      opacity: headerOpacity.value,
+      opacity: headerContentOpacity.value,
     };
   });
 
+  // Reset search when navigating away
+  useEffect(() => {
+    return () => {
+      if (isSearchActive) {
+        // Immediately reset search state without animation when navigating away
+        setIsSearchActive(false);
+        setSearchValue("");
+        setDebouncedSearch("");
+        Keyboard.dismiss();
+      }
+    };
+  }, [pathname]);
+
+  // Sync animations with search state
+  useEffect(() => {
+    if (isSearchActive) {
+      headerContentOpacity.value = withTiming(0, { duration: 200 });
+    } else {
+      headerContentOpacity.value = withTiming(1, { duration: 300 });
+    }
+  }, [isSearchActive]);
+
   return (
-    <Animated.View style={headerStyles}>
-      <LinearGradient
-        colors={[
-          "rgba(0,0,0,1)",
-          "rgba(0,0,0,0.98)",
-          "rgba(0,0,0,0.87)",
-          "rgba(0,0,0,0.70)",
-          !isAnimated ? "transparent" : "rgba(0,0,0,0.70)",
-          !isAnimated ? "transparent" : "rgba(0,0,0,0.70)",
-          !isAnimated ? "transparent" : "rgba(0,0,0,0.70)",
+    <Animated.View
+      style={[
+        headerMinimalShellTransform,
+        {
+          backgroundColor: isDarkColorScheme
+            ? "rgba(0,0,0,0.3)"
+            : "rgba(255,255,255,0.3)",
+        },
+      ]}
+    >
+      <View
+        onLayout={(event) => {
+          // Only set header height once because it causes render in a places where header height is used due to small changes for example from 75 pxiels to 76pxiels.
+          // This change was happening during tab navigation.
+          if (isMountedRef.current && !headerHeightSetRef.current) {
+            const height = event.nativeEvent.layout.height;
+            if (height > 5) {
+              setHeaderHeight(height);
+              headerHeightSetRef.current = true;
+            }
+          }
+        }}
+        style={[
+          styles.headerContainer,
+          {
+            borderBottomWidth: showTabs ? 0 : 1,
+            borderBottomColor: showTabs
+              ? "transparent"
+              : isAnimated
+              ? isDarkColorScheme
+                ? "rgba(255,255,255,0.1)"
+                : "rgba(0,0,0,0.1)"
+              : "transparent",
+          },
         ]}
       >
-        <View
-          onLayout={(event) => {
-            setHeaderHeight(event.nativeEvent.layout.height);
-          }}
-          className={`flex flex-row pr-5 pl-2 items-center w-full justify-between`}
-          style={{
-            paddingTop: insets.top,
-            borderBottomWidth: 1,
-            borderBottomColor: isAnimated
-              ? "rgba(255,255,255,0.1)"
-              : "transparent",
-          }}
+        {/* Animated header content */}
+        <Animated.View
+          style={[styles.headerContent, headerContentAnimatedStyle]}
         >
-          <Link href="/(tabs)/liveusers/feed" asChild>
-            {customTitleComponent || <H1 className="p-4 pl-3">{"MNT"}</H1>}
-          </Link>
-          <View className="flex-row items-center gap-4">
-            {customButtons}
-            {!customButtons && (
-              <Link href={"/(tabs)/chatrooms"} asChild>
-                <TouchableOpacity className="flex flex-row items-center">
-                  <Animated.View style={iconAnimatedStyle}>
-                    <TabBarIcon color="white" name="paper-plane-outline" />
-                  </Animated.View>
-                </TouchableOpacity>
-              </Link>
-            )}
-            {!customButtons && (
-              <Link href={"/(tabs)/notifications"} asChild>
-                <TouchableOpacity className="flex flex-row items-center">
-                  <Animated.View style={iconAnimatedStyle}>
-                    <TabBarIcon color="white" name="notifications-outline" />
-                  </Animated.View>
-                  {unreadCount > 0 && (
-                    <Badge className="bg-pink-600 pointer-events-none">
-                      <UnreadCount />
-                    </Badge>
+          {customTitleComponent ? (
+            customTitleComponent
+          ) : (
+            <Link href="/(home)/feed" asChild>
+              <H1 style={titleStyle}>{customTitle || "WAL"}</H1>
+            </Link>
+          )}
+          {!isWeb && (
+            <View style={styles.buttonsContainer}>
+              {/* Search component */}
+              <SearchBar
+                showSearch={showSearch}
+                isSearchActive={isSearchActive}
+                onSearchPress={handleSearchPress}
+                onSearchCancel={handleSearchCancel}
+              />
+
+              {/* Only show other buttons when search is not active */}
+              {!isSearchActive && !showSearch && (
+                <>
+                  {customButtons}
+                  {!customButtons && (
+                    <Link href={"/chatrooms"} asChild>
+                      <TouchableOpacity style={styles.buttonWrapper}>
+                        <Animated.View style={iconAnimatedStyle}>
+                          <TabBarIcon
+                            color={isDarkColorScheme ? "white" : "black"}
+                            name="paper-plane-outline"
+                          />
+                        </Animated.View>
+                      </TouchableOpacity>
+                    </Link>
                   )}
-                </TouchableOpacity>
-              </Link>
-            )}
-          </View>
-        </View>
-        {customBottomView}
-      </LinearGradient>
+                </>
+              )}
+            </View>
+          )}
+        </Animated.View>
+
+        {/* Search Overlay */}
+        <SearchOverlay
+          isSearchActive={isSearchActive}
+          onSearchCancel={handleSearchCancel}
+        />
+      </View>
+      {/* Tab Bar Component */}
+      <TabBar
+        showTabs={showTabs}
+        tabItems={locationTabItems}
+        activeTab={activeTab}
+        showLocationTabs={showLocationTabs}
+        onTabPress={handleTabPress}
+        taskId={taskId}
+      />
+      {customBottomView}
     </Animated.View>
   );
 }
 
-export function AnimatedStatusBadge() {
-  const [statusText, setStatusText] = useAtom(statusBadgeTextState);
-  const translateY = useSharedValue(-50);
+const styles = StyleSheet.create({
+  headerContainer: {
+    flexDirection: "row",
+    paddingRight: 20,
+    paddingLeft: 8,
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "space-between",
+    position: "relative",
+  },
+  headerContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "space-between",
+  },
+  title: {
+    padding: 16,
+    paddingLeft: 12,
+    fontSize: FontSizes.huge,
+    fontWeight: "bold",
+  },
+  buttonsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  buttonWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  badge: {
+    backgroundColor: "#db2777", // pink-600
+    pointerEvents: "none",
+  },
+});
 
-  useEffect(() => {
-    if (statusText) {
-      translateY.value = withTiming(0, {
-        duration: 300,
-        easing: Easing.out(Easing.exp),
-      });
-
-      const timer = setTimeout(() => {
-        translateY.value = withTiming(-50, {
-          duration: 300,
-          easing: Easing.in(Easing.exp),
-        });
-        setTimeout(() => setStatusText(""), 300); // Set text to empty after animation completes
-      }, 5000);
-
-      return () => clearTimeout(timer);
-    } else {
-      translateY.value = withTiming(-50, {
-        duration: 300,
-        easing: Easing.in(Easing.exp),
-      });
-    }
-  }, [statusText]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      marginRight: 10,
-      transform: [{ translateY: translateY.value }],
-      opacity: translateY.value === -50 ? 0 : 1, // Hide when fully up
-    };
-  });
-
-  return (
-    <Animated.View style={animatedStyle}>
-      <Badge className="mr-2 bg-pink-700 pointer-events-none">
-        <Text className="text-lg text-white">{statusText}</Text>
-      </Badge>
-    </Animated.View>
-  );
-}
+export default isWeb ? ProfileHeaderWeb : ProfileHeader;

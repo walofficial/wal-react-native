@@ -17,8 +17,9 @@ export function useFriendsFeed() {
     queryKey: ["friendsFeed"],
     // refetchInterval: 10000,
     initialPageParam: 1,
-    queryFn: ({ pageParam = 1 }) =>
-      api.getFriendsFeed(pageParam, ITEMS_PER_PAGE),
+    queryFn: ({ pageParam = 1 }) => {
+      return [];
+    },
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.length < ITEMS_PER_PAGE) return undefined;
       return pages.length + 1;
