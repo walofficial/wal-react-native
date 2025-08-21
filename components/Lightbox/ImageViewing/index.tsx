@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Copyright (c) JOB TODAY S.A. and its affiliates.
  *

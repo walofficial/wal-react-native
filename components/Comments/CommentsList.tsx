@@ -1,11 +1,5 @@
-import React, { useCallback, useRef, memo, useMemo } from "react";
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-} from "react-native";
+import React, { useCallback, useRef, memo } from "react";
+import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
 import { useKeyboardAnimation } from "react-native-keyboard-controller";
 import { useAtom } from "jotai";
 import { activeTabAtom } from "@/atoms/comments";
@@ -14,9 +8,20 @@ import {
   useQueryClient,
   useMutation,
 } from "@tanstack/react-query";
-import api from "@/lib/api";
+import {
+  deleteCommentMutation,
+  getVerificationCommentsInfiniteOptions,
+  getVerificationCommentsInfiniteQueryKey,
+  getVerificationCommentsQueryKey,
+  getVerificationsInfiniteQueryKey,
+  likeCommentMutation,
+  unlikeCommentMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
 import useAuth from "@/hooks/useAuth";
-import { CommentItemResponse } from "@/lib/interfaces";
+import {
+  CommentResponse,
+  GetVerificationCommentsResponse,
+} from "@/lib/api/generated";
 import CommentItem from "./CommentItem";
 import Animated, {
   LinearTransition,
@@ -26,19 +31,12 @@ import Animated, {
 import { isNative, isWeb, isIOS } from "@/lib/platform";
 import { List, ListMethods } from "../List";
 import { useThemeColor } from "@/hooks/useThemeColor";
-
-// Fixed interface to properly extend CommentItemResponse
-interface ExtendedComment extends Omit<CommentItemResponse, "comment"> {
-  comment: CommentItemResponse["comment"] & {
-    is_liked_by_user: boolean;
-    // ... other existing properties
-  };
-}
+import { t } from "@/lib/i18n";
 
 function EmptyListComponent() {
   return (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}></Text>
+      <Text style={styles.emptyText}>{t("common.no_comments_found")}</Text>
     </View>
   );
 }
@@ -63,13 +61,17 @@ const updateCommentsCache = (
   queryClient: any,
   postId: string,
   activeTab: string,
-  updateFn: (pages: any[]) => any[]
+  updateFn: (pages: CommentResponse[]) => CommentResponse[]
 ) => {
-  queryClient.setQueryData(["comments", postId, activeTab], (old: any) => {
+  const commentsQueryKey = getVerificationCommentsInfiniteQueryKey({
+    path: { verification_id: postId },
+    query: { sort_by: activeTab as any },
+  });
+  queryClient.setQueryData(commentsQueryKey, (old: any) => {
     if (!old) return old;
     return {
       ...old,
-      pages: old.pages.map((page: any[]) => updateFn(page)),
+      pages: old.pages.map((page: CommentResponse[]) => updateFn(page)),
     };
   });
 };
@@ -80,7 +82,10 @@ const CommentsList = memo(
     const queryClient = useQueryClient();
     const { user } = useAuth();
     const listRef = useRef<ListMethods>(null);
-    const { height } = useKeyboardAnimation();
+    const commnetsListOptions = getVerificationCommentsInfiniteOptions({
+      path: { verification_id: postId },
+      query: { sort_by: activeTab as any },
+    });
 
     const {
       data,
@@ -90,36 +95,31 @@ const CommentsList = memo(
       hasNextPage,
       isFetchingNextPage,
     } = useInfiniteQuery({
-      queryKey: ["comments", postId, activeTab],
-      queryFn: ({ pageParam }) =>
-        api.getVerificationComments(
-          postId,
-          activeTab as "recent" | "top",
-          pageParam as number
-        ),
-      getNextPageParam: (lastPage: any[], pages: any[][]) => {
-        if (lastPage.length === 0) return undefined;
-        return pages.length + 1;
+      ...commnetsListOptions,
+      getNextPageParam: (lastPage) => {
+        if (!Array.isArray(lastPage) || lastPage.length === 0) return undefined;
+        return lastPage.length + 1;
       },
       initialPageParam: 1,
     });
 
-    const deleteCommentMutation = useMutation({
-      mutationFn: (commentId: string) => api.deleteComment(commentId),
+    const deleteCommentMutationHook = useMutation({
+      ...deleteCommentMutation(),
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+        queryClient.invalidateQueries({
+          queryKey: getVerificationCommentsQueryKey({
+            path: { verification_id: postId },
+          }),
+        });
       },
     });
 
     const handleDeleteComment = async (commentId: string) => {
       if (!user) return;
 
-      // Optimistic update
-      const previousComments = queryClient.getQueryData([
-        "comments",
-        postId,
-        activeTab,
-      ]);
+      const previousComments = queryClient.getQueryData(
+        commnetsListOptions.queryKey
+      );
 
       // Remove the comment optimistically
       updateCommentsCache(queryClient, postId, activeTab, (page) =>
@@ -127,11 +127,13 @@ const CommentsList = memo(
       );
 
       try {
-        await deleteCommentMutation.mutateAsync(commentId);
+        await (deleteCommentMutationHook.mutateAsync as any)({
+          path: { comment_id: commentId },
+        });
       } catch (error) {
         // Revert optimistic update on error
         queryClient.setQueryData(
-          ["comments", postId, activeTab],
+          commnetsListOptions.queryKey,
           previousComments
         );
         console.error("Failed to delete comment:", error);
@@ -150,8 +152,8 @@ const CommentsList = memo(
                 comment: {
                   ...comment.comment,
                   likes_count: isLiked
-                    ? comment.comment.likes_count - 1
-                    : comment.comment.likes_count + 1,
+                    ? (comment.comment.likes_count ?? 0) - 1
+                    : (comment.comment.likes_count ?? 0) + 1,
                 },
                 is_liked_by_user: !isLiked,
               }
@@ -161,50 +163,63 @@ const CommentsList = memo(
 
       try {
         if (isLiked) {
-          await api.unlikeComment(commentId);
+          await (unlikeCommentMutation().mutationFn as any)({
+            path: { comment_id: commentId },
+          });
         } else {
-          await api.likeComment(commentId);
+          await (likeCommentMutation().mutationFn as any)({
+            path: { comment_id: commentId },
+          });
         }
       } catch (error) {
         // Revert optimistic update on error
-        queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+        queryClient.invalidateQueries({
+          queryKey: getVerificationCommentsQueryKey({
+            path: { verification_id: postId },
+          }),
+        });
         console.error("Failed to like/unlike comment:", error);
       }
     };
 
     const renderItem = useCallback(
-      ({ item }: { item: CommentItemResponse }) => (
-        <CommentItem
-          id={item.comment.id}
-          body={item.comment.content}
-          createdAt={new Date(item.comment.created_at)}
-          author={{
-            id: item.comment.author.id,
-            username: item.comment.author.username,
-            profilePicture: item.comment.author.photos[0].image_url[0] || "",
-          }}
-          isLiked={item.is_liked_by_user}
-          likesCount={item.comment.likes_count}
-          onLike={() =>
-            handleLikeComment(item.comment.id, item.is_liked_by_user)
-          }
-          onDelete={
-            user?.id === item.comment.author.id
-              ? () => handleDeleteComment(item.comment.id)
-              : undefined
-          }
-          comment={item.comment}
-          verificationId={postId}
-        />
-      ),
+      ({ item }: { item: CommentResponse }) => {
+        const author = item.comment.author;
+        if (!author) return null;
+
+        return (
+          <CommentItem
+            id={item.comment.id}
+            body={item.comment.content}
+            createdAt={new Date(item.comment.created_at || Date.now())}
+            author={{
+              id: author.id,
+              username: author.username || "",
+              profilePicture: author.photos?.[0]?.image_url?.[0] || "",
+            }}
+            isLiked={item.is_liked_by_user || false}
+            likesCount={item.comment.likes_count || 0}
+            onLike={() =>
+              handleLikeComment(item.comment.id, item.is_liked_by_user || false)
+            }
+            onDelete={
+              user?.id === author.id
+                ? () => handleDeleteComment(item.comment.id)
+                : undefined
+            }
+            comment={item.comment}
+            verificationId={postId}
+          />
+        );
+      },
       [handleLikeComment, handleDeleteComment, user?.id, postId]
     );
-    const allComments = data?.pages.flatMap((page) => page) || [];
 
+    const allComments = data?.pages.flatMap((page) => page.comments) || [];
     if (error) {
       return (
         <View>
-          <Text>Error</Text>
+          <Text>{t("common.error")}</Text>
         </View>
       );
     }

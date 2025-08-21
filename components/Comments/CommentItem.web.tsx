@@ -5,6 +5,7 @@ import { formatDistanceToNow, differenceInMinutes } from "date-fns";
 import { ka } from "date-fns/locale";
 import useAuth from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
+import { getCurrentLocale } from "@/lib/i18n";
 
 interface CommentItemProps {
   id: string;
@@ -53,7 +54,11 @@ const CommentItem = ({
     if (diffInMinutes < 1) {
       return "ახლა";
     }
-    return formatDistanceToNow(createdAt, { addSuffix: true, locale: ka });
+    const locale = getCurrentLocale();
+    return formatDistanceToNow(createdAt, {
+      addSuffix: true,
+      locale: locale === "ka" ? ka : undefined,
+    });
   };
 
   return (

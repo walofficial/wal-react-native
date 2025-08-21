@@ -6,8 +6,8 @@ import { StatusBar } from "expo-status-bar";
 import { SAFE_AREA_PADDING } from "@/components/CameraPage/Constants";
 
 export default function LiveStreamPage() {
-  const { taskId, livekit_token, room_name } = useLocalSearchParams<{
-    taskId: string;
+  const { feedId, livekit_token, room_name } = useLocalSearchParams<{
+    feedId: string;
     livekit_token: string;
     room_name: string;
   }>();
@@ -22,9 +22,9 @@ export default function LiveStreamPage() {
         roomName={room_name}
         onDisconnect={() => {
           router.replace({
-            pathname: "/(tabs)/(home)/[taskId]",
+            pathname: "/(tabs)/(home)/[feedId]",
             params: {
-              taskId: taskId as string,
+              feedId: feedId as string,
             },
           });
         }}

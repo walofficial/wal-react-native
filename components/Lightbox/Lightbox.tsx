@@ -4,11 +4,13 @@ import * as MediaLibrary from "expo-media-library";
 // import {saveImageToMediaLibrary, shareImageModal} from '#/lib/media/manip'
 import { useLightbox, useLightboxControls } from "@/lib/lightbox/lightbox";
 import ImageView from "./ImageViewing";
-import { toast } from "@backpackapp-io/react-native-toast";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 export function Lightbox() {
   const { activeLightbox } = useLightbox();
   const { closeLightbox } = useLightboxControls();
+  const { error: errorToast } = useToast();
 
   const onClose = React.useCallback(() => {
     closeLightbox();
@@ -20,21 +22,27 @@ export function Lightbox() {
   const saveImageToAlbumWithToasts = React.useCallback(
     async (uri: string) => {
       if (!permissionResponse || permissionResponse.granted === false) {
-        toast.error("Permission to access camera roll is required.");
+        errorToast({
+          title: t("errors.camera_permission_required"),
+          description: t("errors.camera_permission_required"),
+        });
         if (permissionResponse?.canAskAgain) {
           requestPermission();
         } else {
-          toast.error(
-            "Permission to access camera roll was denied. Please enable it in your system settings."
-          );
+          errorToast({
+            title: t("errors.camera_permission_denied"),
+            description: t("errors.camera_permission_denied"),
+          });
         }
         return;
       }
       try {
         // await saveImageToMediaLibrary({ uri });
-        toast.success("Saved to your camera roll");
       } catch (e: any) {
-        toast.error(`Failed to save image: ${String(e)}`);
+        errorToast({
+          title: t("errors.failed_save_image"),
+          description: `${t("errors.failed_save_image")}: ${String(e)}`,
+        });
       }
     },
     [permissionResponse, requestPermission]

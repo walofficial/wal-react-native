@@ -1,8 +1,7 @@
 import { Task } from "react-native";
-import { User } from "../interfaces";
 import { atom } from "jotai";
 
-export const authUser = atom<User>(null);
+export const authUser = atom<any>(null);
 export const authError = atom<string | null>(null);
 
 export const authInitializeTracker = atom<boolean>(false);

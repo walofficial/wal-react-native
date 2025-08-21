@@ -4,21 +4,23 @@ import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import useLocationsInfo from "@/hooks/useLocationsInfo";
 import useGoLive from "@/hooks/useGoLive";
-import { useAtomValue } from "jotai";
-import { HEADER_HEIGHT } from "@/lib/constants";
 import { FontSizes, useTheme } from "@/lib/theme";
 import { isWeb } from "@/lib/platform";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useFeeds from "@/hooks/useFeeds";
+import { useUserFeedIds } from "@/hooks/useUserFeedIds";
+import { useTranslation } from "@/hooks/useTranslation";
 
 export default function TaskScrollableView() {
+  const { t } = useTranslation();
+  const { categoryId } = useUserFeedIds();
   const {
     data: data,
     isFetching,
     location,
     errorMsg,
-  } = useLocationsInfo("669e9a03dd31644abb767337");
-
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  } = useLocationsInfo(categoryId);
+  const { headerHeight } = useFeeds();
   const theme = useTheme();
   const router = useRouter();
   const { goLiveMutation } = useGoLive();
@@ -28,31 +30,39 @@ export default function TaskScrollableView() {
   useEffect(() => {
     if (!isFetching && data) {
       // First try to navigate to a task at location
-      if (data.tasks_at_location && data.tasks_at_location.length > 0) {
-        const firstTask = data.tasks_at_location[0];
+      if (data.feeds_at_location && data.feeds_at_location.length > 0) {
+        const firstTask = data.feeds_at_location[0];
         router.replace({
-          pathname: "/(tabs)/(home)/[taskId]",
+          pathname: "/(tabs)/(home)/[feedId]",
           params: {
-            taskId: firstTask.id,
+            feedId: firstTask.id,
           },
         });
         if (!isWeb) {
-          goLiveMutation.mutateAsync(firstTask.id);
+          goLiveMutation.mutateAsync({
+            body: {
+              feed_id: firstTask.id,
+            },
+          });
         }
         return;
       }
 
       // If no tasks at location, try nearest tasks
-      if (data.nearest_tasks && data.nearest_tasks.length > 0) {
-        const firstNearTask = data.nearest_tasks[0];
+      if (data.nearest_feeds && data.nearest_feeds.length > 0) {
+        const firstNearTask = data.nearest_feeds[0];
         router.replace({
-          pathname: "/(tabs)/(home)/[taskId]",
+          pathname: "/(tabs)/(home)/[feedId]",
           params: {
-            taskId: firstNearTask.task.id,
+            feedId: firstNearTask.feed.id,
           },
         });
         if (!isWeb && !errorMsg) {
-          goLiveMutation.mutateAsync(firstNearTask.task.id);
+          goLiveMutation.mutateAsync({
+            body: {
+              feed_id: firstNearTask.feed.id,
+            },
+          });
         }
         return;
       }
@@ -74,20 +84,19 @@ export default function TaskScrollableView() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.text} />
           <Text style={[styles.loadingText, { color: theme.colors.text }]}>
-            ვამოწმებთ ლოკაციას...
+            {t("common.checking_location")}...
           </Text>
         </View>
       ) : errorMsg ? (
         <View style={styles.statusContainer}>
           <Text style={[styles.errorText, { color: theme.colors.text }]}>
-            სამწუხაროდ ლოკაციის შემოწმება ვერ მოხერხდა. გადაამოწმეთ GPS
-            პარამეტრები
+            {t("common.location_check_failed_gps_description")}
           </Text>
         </View>
-      ) : !data?.tasks_at_location?.length && !data?.nearest_tasks?.length ? (
+      ) : !data?.feeds_at_location?.length && !data?.nearest_feeds?.length ? (
         <View style={styles.statusContainer}>
           <Text style={[styles.emptyText, { color: theme.colors.text }]}>
-            ლოკაციები ვერ მოიძებნა
+            {t("common.no_locations_found_description")}
           </Text>
         </View>
       ) : null}

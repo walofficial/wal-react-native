@@ -79,7 +79,7 @@ const CardContent = React.forwardRef<
   ViewRef,
   React.ComponentPropsWithoutRef<typeof View>
 >(({ style, ...props }, ref) => (
-  <TextClassContext.Provider value="text-card-foreground">
+  <TextClassContext.Provider value={{ style: styles.cardContent }}>
     <View ref={ref} style={[styles.cardContent, style]} {...props} />
   </TextClassContext.Provider>
 ));

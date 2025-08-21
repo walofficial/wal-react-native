@@ -3,11 +3,11 @@ import { NativeScrollEvent } from "react-native";
 import { useAtomValue } from "jotai";
 import { clamp, interpolate, withSpring } from "react-native-reanimated";
 import { useSharedValue } from "react-native-reanimated";
-import { HEADER_HEIGHT } from "@/lib/constants";
 import { useMinimalShellMode } from "@/lib/context/header-transform";
 import { isNative } from "@/lib/platform";
 import { ScrollProvider } from "@/components/List/ScrollContext";
 import { usePathname } from "expo-router";
+import useFeeds from "@/hooks/useFeeds";
 
 interface ScrollableFeedProviderProps {
   children: React.ReactNode;
@@ -20,7 +20,8 @@ export default function ScrollableFeedProvider({
   const startDragOffset = useSharedValue<number | null>(null);
   const startMode = useSharedValue<number | null>(null);
   const didJustRestoreScroll = useSharedValue<boolean>(false);
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
+
   const pathname = usePathname();
   const previousTabDetails = useRef({
     pathname: "",

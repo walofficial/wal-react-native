@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { FontSizes, useTheme } from "@/lib/theme";
 import SourceIcon from "@/components/SourceIcon";
+import { t } from "@/lib/i18n";
 
 interface SourceInfoCardProps {
   hide?: boolean;
@@ -47,8 +48,7 @@ const SourceInfoCard: React.FC<SourceInfoCardProps> = ({ hide = false }) => {
               { color: theme.colors.text, fontSize: 15 },
             ]}
           >
-            ლინკის გაზიარებისას ავტომატურად შევაჯამებთ შინაარს და გადავამოწმებთ
-            ლინკთან დაკავშირებით ფაქტებს
+            {t("common.source_info_card_description")}
           </Text>
         </View>
       </View>

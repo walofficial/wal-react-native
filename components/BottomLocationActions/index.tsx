@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from "react";
 import { TouchableOpacity, View, Platform, StyleSheet } from "react-native";
 import TakeVideo from "../TakeVideo";
@@ -8,29 +9,30 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { useSetAtom } from "jotai";
 import {
   locationUserListSheetState,
-  locationUserListTaskIdState,
+  locationUserListfeedIdState,
 } from "@/lib/atoms/location";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { isIOS } from "@/lib/platform";
+
 export default function BottomLocationActions({
-  taskId,
+  feedId,
   isUserInSelectedLocation,
-  isCountryFeed,
+  isFactCheckFeed,
 }: {
-  taskId: string;
+  feedId: string;
   onExpandLiveUsers?: () => void; // Make this optional
   isUserInSelectedLocation: boolean;
-  isCountryFeed: boolean;
+  isFactCheckFeed: boolean;
 }) {
-  const { data } = useCountAnonList(taskId);
+  const { data } = useCountAnonList(feedId);
   const { isDarkColorScheme } = useColorScheme();
   const setIsBottomSheetOpen = useSetAtom(locationUserListSheetState);
-  const setTaskId = useSetAtom(locationUserListTaskIdState);
+  const setfeedId = useSetAtom(locationUserListfeedIdState);
 
   const handlePress = () => {
+    console.log("handlePress called with feedId:", feedId, data);
     setIsBottomSheetOpen(false);
-    if (data && data > 0) {
-      setTaskId(taskId);
+    if (data && data.count > 0) {
+      setfeedId(feedId);
       setIsBottomSheetOpen(true);
     }
   };
@@ -38,14 +40,14 @@ export default function BottomLocationActions({
   const bottomPosition = 20;
   return (
     <>
-      {isCountryFeed ? (
+      {isFactCheckFeed ? (
         <View
           style={[
             styles.floatingButtonContainer,
             { bottom: isIOS ? bottomPosition : 20 },
           ]}
         >
-          <CreatePostGlobal disabled={false} taskId={taskId} />
+          <CreatePostGlobal disabled={false} feedId={feedId} />
         </View>
       ) : (
         <View style={[styles.container, { bottom: bottomPosition }]}>
@@ -64,7 +66,7 @@ export default function BottomLocationActions({
               },
             ]}
           >
-            <LiveUserCountIndicator taskId={taskId} />
+            <LiveUserCountIndicator feedId={feedId} />
           </TouchableOpacity>
 
           <TakeVideo disabled={!isUserInSelectedLocation} />

@@ -2,9 +2,11 @@ import React from "react";
 import { View, Platform, StyleSheet } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { useTheme } from "@/lib/theme";
-import { toast } from "@backpackapp-io/react-native-toast";
+
 import { ImagePickerAsset } from "expo-image-picker";
 import { pasteImageFromClipboard } from "@/lib/clipboard";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 interface ClipboardPasteButtonProps {
   onImagePasted: (image: ImagePickerAsset) => void;
@@ -20,6 +22,7 @@ export default function ClipboardPasteButton({
   currentImageCount = 0,
 }: ClipboardPasteButtonProps) {
   const theme = useTheme();
+  const { error: errorToast } = useToast();
 
   // Check if iOS 16+ native paste button is available
   const isNativePasteButtonAvailable =
@@ -28,7 +31,10 @@ export default function ClipboardPasteButton({
   const handlePasteData = async (data: any) => {
     try {
       if (currentImageCount >= maxImages) {
-        toast.error(`Maximum ${maxImages} images allowed`);
+        errorToast({
+          title: t("errors.max_images_reached", { count: maxImages }),
+          description: t("errors.max_images_reached", { count: maxImages }),
+        });
         return;
       }
 
@@ -50,14 +56,16 @@ export default function ClipboardPasteButton({
         };
 
         onImagePasted(asset);
-        toast.success("Image pasted successfully");
       } else if (data.type === "text") {
         // Handle text paste if needed
         console.log("Text pasted:", data.text);
       }
     } catch (error) {
       console.error("Error handling paste data:", error);
-      toast.error("Failed to paste content");
+      errorToast({
+        title: t("errors.failed_paste_content"),
+        description: t("errors.failed_paste_content"),
+      });
     }
   };
 

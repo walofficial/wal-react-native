@@ -1,10 +1,11 @@
-import { HEADER_HEIGHT } from "@/lib/constants";
+
 import { isIOS } from "@/lib/platform";
-import { useAtomValue } from "jotai";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import useFeeds from "./useFeeds";
 
 function useKeyboardVerticalOffset() {
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
+
   const { top, bottom } = useSafeAreaInsets();
   // Android etc
   if (!isIOS) {

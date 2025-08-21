@@ -8,7 +8,7 @@ interface MessageItemAvatarProps {
 
 const MessageItemAvatar: React.FC<MessageItemAvatarProps> = ({ photoUrl }) => {
   return (
-    <Avatar style={styles.avatar}>
+    <Avatar style={styles.avatar} alt="Avatar">
       <AvatarImage src={photoUrl} width={6} height={6} style={styles.image} />
     </Avatar>
   );

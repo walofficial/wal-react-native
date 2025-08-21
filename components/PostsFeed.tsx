@@ -6,9 +6,10 @@ import {
   RefreshControl,
 } from "react-native";
 import { useAtomValue } from "jotai";
-import { HEADER_HEIGHT } from "@/lib/constants";
 import { isWeb } from "@/lib/platform";
 import { List, ListMethods } from "./List";
+import { useScrollToTop } from "@react-navigation/native";
+import useFeeds from "@/hooks/useFeeds";
 
 interface PostsFeedProps<T> {
   data: T[];
@@ -43,8 +44,10 @@ const PostsFeed = forwardRef<ListMethods, PostsFeedProps<any>>((props, ref) => {
     viewabilityConfigCallbackPairs,
     headerOffset,
   } = props;
+  useScrollToTop(ref as any);
 
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
+
   const keyExtractor = useCallback((item: any) => {
     return item.id;
   }, []);
@@ -76,7 +79,8 @@ const PostsFeed = forwardRef<ListMethods, PostsFeedProps<any>>((props, ref) => {
         isFetchingNextPage ? <ActivityIndicator color="white" /> : null
       }
       onRefresh={refetch}
-      refreshing={isFetchingNextPage}
+      // Use isRefetching instead of isFetchingNextPage for the pull-to-refresh state
+      // refreshing={props.isRefetching}
       ListEmptyComponent={ListEmptyComponent}
       ListHeaderComponent={ListHeaderComponent}
     />

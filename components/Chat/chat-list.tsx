@@ -19,7 +19,7 @@ import {
 } from "react-native";
 import ChatBottombar from "./chat-bottombar";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChatMessage, User } from "@/lib/interfaces";
+import { User, ChatMessage } from "@/lib/api/generated";
 import useAuth from "@/hooks/useAuth";
 import { SocketContext } from "./socket/context";
 import useMessageUpdates from "./useMessageUpdates";
@@ -54,8 +54,9 @@ import Animated, {
   runOnJS,
   useAnimatedScrollHandler,
 } from "react-native-reanimated";
-import { HEADER_HEIGHT } from "@/lib/constants";
+
 import { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes";
+import useFeeds from "@/hooks/useFeeds";
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === "android") {
@@ -63,22 +64,6 @@ if (Platform.OS === "android") {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 }
-
-// Faster animation configuration to reduce chances of conflict
-const FAST_ANIMATION_CONFIG = {
-  duration: 150,
-  create: {
-    type: LayoutAnimation.Types.easeInEaseOut,
-    property: LayoutAnimation.Properties.opacity,
-  },
-  update: {
-    type: LayoutAnimation.Types.easeInEaseOut,
-  },
-  delete: {
-    type: LayoutAnimation.Types.easeInEaseOut,
-    property: LayoutAnimation.Properties.opacity,
-  },
-};
 
 export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const messagesContainerRef = useRef<ScrollView>(null);
@@ -91,10 +76,8 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const socketContext = useContext(SocketContext);
   const scrolledFirstTime = useRef(false);
 
-  const queryClient = useQueryClient();
   const [refetchInterval, setRefetchInterval] = useState(0);
   const { room, isFetching } = useMessageRoom(params.roomId, false);
-  const insets = useSafeAreaInsets();
   const {
     orderedPages,
     fetchNextPage,
@@ -113,7 +96,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
     params.roomId,
     trackedMessageIdsRef
   );
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
 
   useEffect(() => {
     setTimeout(() => {
@@ -132,7 +115,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
 
   useEffect(() => {
     if (messagesContainerRef.current) {
-      const lastMessage = firstPage?.data[firstPage.data.length - 1];
+      const lastMessage = firstPage?.messages[firstPage.messages.length - 1];
       if (!lastMessage) {
         return;
       }
@@ -145,11 +128,11 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
 
       messagesContainerRef.current.scrollToEnd({ animated: true });
     }
-  }, [firstPage?.data.length]);
+  }, [firstPage?.messages.length]);
 
   useEffect(() => {
     orderedPages.forEach((page) => {
-      page.data.forEach((item: ChatMessage, messageIndex: number) => {
+      page.messages.forEach((item: ChatMessage, messageIndex: number) => {
         if (item.author_id !== user.id) {
           if (page.page === 1 && messageIndex === 0) {
             socketContext?.emit("notify_single_message_seen", {
@@ -188,7 +171,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const convertedMessagesForGiftedChat = useMemo(
     () =>
       orderedPages.map((page, pageIndex) =>
-        page.data.map((message, messageIndex) => ({
+        page.messages.map((message, messageIndex) => ({
           _id: message.id || message.temporary_id,
           text: message.message,
           createdAt:
@@ -281,7 +264,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
           room_id: params.roomId,
         });
       } catch (error) {
-        console.log("error", error);
         Sentry.captureException(error, {
           extra: {
             userId: user.id,

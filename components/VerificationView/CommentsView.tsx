@@ -13,23 +13,19 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import CommentsList from "@/components/Comments/CommentsList";
 import useAuth from "@/hooks/useAuth";
 import LiveStreamViewer from "@/components/LiveStreamViewer";
 import SpaceView from "@/components/FeedItem/SpaceView";
-import { LocationFeedPost, Source } from "@/lib/interfaces";
-import { convertToCDNUrl, getVideoSrc } from "@/lib/utils";
-import { useAtomValue, useAtom } from "jotai";
-import { HEADER_HEIGHT } from "@/lib/constants";
+import { LocationFeedPost, Source } from "@/lib/api/generated";
+import { getVideoSrc } from "@/lib/utils";
+import { useAtom } from "jotai";
 import FeedActions from "../FeedItem/FeedActions";
 import { FontSizes, useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { SourceIcon } from "@/components/SourceIcon";
 import { activeSourcesState, newsBottomSheetState } from "@/lib/atoms/news";
-import { formatRelativeTime } from "@/lib/utils/date";
-import { CheckCircle } from "lucide-react-native";
 import PostHeader from "./PostHeader";
 import FeedItemMediaContent from "@/components/FeedItem/MediaContent";
 import FactCheckBox from "@/components/ui/FactCheckBox";
@@ -44,11 +40,103 @@ import useVerificationById from "@/hooks/useVerificationById";
 import NewsSourcesBottomSheet from "../FeedItem/NewsSourcesBottomSheet";
 import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
 import FactCheckBottomSheet from "../FactCheckBottomSheet";
-import FactualityBadge, {
-  FactualityBadgeType,
-} from "@/components/ui/FactualityBadge";
-import { Image } from "expo-image";
-import { getFaviconUrl } from "@/utils/urlUtils";
+import { useUniqueSources } from "@/utils/sourceUtils";
+import useFeeds from "@/hooks/useFeeds";
+import { t } from "@/lib/i18n";
+
+// Tab types for news content
+type NewsTab = "neutral" | "opposition" | "government";
+
+// News Tabs Component
+const NewsTabs = memo(
+  ({
+    activeTab,
+    onTabChange,
+    tabContentAvailability,
+  }: {
+    activeTab: NewsTab;
+    onTabChange: (tab: NewsTab) => void;
+    tabContentAvailability: Record<NewsTab, boolean>;
+  }) => {
+    const theme = useTheme();
+    const { isDarkColorScheme } = useColorScheme();
+
+    const tabs = [
+      {
+        key: "neutral" as NewsTab,
+        label: t("common.neutral"),
+        color: isDarkColorScheme ? "#6b7280" : "#4b5563",
+      },
+      {
+        key: "opposition" as NewsTab,
+        label: t("common.opposition"),
+        color: isDarkColorScheme ? "#dc2626" : "#b91c1c",
+      },
+      {
+        key: "government" as NewsTab,
+        label: t("common.government"),
+        color: isDarkColorScheme ? "#2563eb" : "#1d4ed8",
+      },
+    ];
+
+    return (
+      <View
+        style={[
+          styles.tabsContainer,
+          {
+            backgroundColor: isDarkColorScheme
+              ? "rgba(255, 255, 255, 0.05)"
+              : "rgba(0, 0, 0, 0.03)",
+          },
+        ]}
+      >
+        <View style={styles.tabsRow}>
+          {tabs.map((tab) => {
+            const hasContent = tabContentAvailability[tab.key];
+            const isActive = activeTab === tab.key;
+            const isDisabled = !hasContent;
+
+            return (
+              <TouchableOpacity
+                key={tab.key}
+                style={[
+                  styles.tab,
+                  {
+                    backgroundColor: isActive ? tab.color : "transparent",
+                    opacity: isDisabled ? 0.6 : 1,
+                  },
+                ]}
+                onPress={() => hasContent && onTabChange(tab.key)}
+                disabled={isDisabled}
+              >
+                <Text
+                  style={[
+                    styles.tabText,
+                    {
+                      color: isActive
+                        ? "#ffffff"
+                        : isDisabled
+                        ? isDarkColorScheme
+                          ? "rgba(255, 255, 255, 0.5)"
+                          : "rgba(0, 0, 0, 0.5)"
+                        : isDarkColorScheme
+                        ? "rgba(255, 255, 255, 0.7)"
+                        : "rgba(0, 0, 0, 0.7)",
+                    },
+                  ]}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
+    );
+  }
+);
+
+NewsTabs.displayName = "NewsTabs";
 
 // Reusable component for rendering sources section
 const SourcesSection = memo(
@@ -65,23 +153,7 @@ const SourcesSection = memo(
     if (!sources || sources.length === 0) return null;
 
     // Filter sources to only include unique domains/hosts
-    const uniqueSources = useMemo(() => {
-      const uniqueDomains = new Set();
-      return sources.filter((source) => {
-        try {
-          const url = new URL(source.uri);
-          const domain = url.hostname;
-          if (uniqueDomains.has(domain)) {
-            return false;
-          }
-          uniqueDomains.add(domain);
-          return true;
-        } catch (e) {
-          // If URL parsing fails, include the source
-          return true;
-        }
-      });
-    }, [sources]);
+    const uniqueSources = useUniqueSources(sources || []);
 
     return (
       <TouchableOpacity
@@ -108,8 +180,8 @@ const SourcesSection = memo(
             {uniqueSources.slice(0, maxSources).map((source, index) => (
               <SourceIcon
                 key={index}
-                sourceUrl={source.uri}
-                fallbackUrl={source.uri}
+                sourceUrl={source.uri || source.url || ""}
+                fallbackUrl={source.uri || source.url || ""}
               />
             ))}
             {uniqueSources.length > maxSources && (
@@ -143,7 +215,8 @@ const SourcesSection = memo(
                 { color: theme.colors.text, opacity: 0.8 },
               ]}
             >
-              {uniqueSources.length} წყარო{uniqueSources.length !== 1 ? "" : ""}
+              {uniqueSources.length} {t("common.sources")}
+              {""}
             </Text>
           </View>
         </View>
@@ -154,192 +227,51 @@ const SourcesSection = memo(
 
 SourcesSection.displayName = "SourcesSection";
 
-// Top Metadata Section Component (Sources + Factuality)
-const TopMetadataSection = memo(
-  ({
-    verification,
-    onSourcePress,
-  }: {
-    verification: LocationFeedPost;
-    onSourcePress: () => void;
-  }) => {
-    const theme = useTheme();
-    const { isDarkColorScheme } = useColorScheme();
-
-    // Get unique sources similar to NewsCardItem
-    const uniqueSources = useMemo(() => {
-      if (!verification.sources || verification.sources.length === 0) return [];
-
-      const uniqueDomains = new Set();
-      return verification.sources.filter((source) => {
-        try {
-          const url = new URL(source.uri);
-          const domain = url.hostname;
-          if (uniqueDomains.has(domain)) {
-            return false;
-          }
-          uniqueDomains.add(domain);
-          return true;
-        } catch (e) {
-          return true;
-        }
-      });
-    }, [verification.sources]);
-
-    // Calculate factuality badge info similar to NewsCardItem
-    const badgeInfo = useMemo((): {
-      text: string;
-      type: "truth" | "misleading" | "neutral";
-    } | null => {
-      // Check if verification has factuality property (it might not exist on this type)
-      const score = verification.fact_check_data?.factuality;
-
-      if (score === undefined || score === null) {
-        return null;
-      }
-
-      let badgeText = "";
-      let badgeType: "truth" | "misleading" | "neutral" = "neutral";
-
-      if (score >= 0.5) {
-        badgeText = `${Math.round(score * 100)}% სიმართლე`;
-        badgeType = "truth";
-      } else {
-        badgeText = `${Math.round((1 - score) * 100)}% სიცრუე`;
-        badgeType = "misleading";
-      }
-
-      return { text: badgeText, type: badgeType };
-    }, [verification.fact_check_data?.factuality]);
-
-    const sharedBadgeType: FactualityBadgeType | undefined = useMemo(() => {
-      if (!badgeInfo) return undefined;
-
-      if (badgeInfo.type === "neutral") {
-        return "needs-context";
-      } else {
-        return badgeInfo.type as FactualityBadgeType;
-      }
-    }, [badgeInfo]);
-
-    if (uniqueSources.length === 0 && !badgeInfo) return null;
-
-    return (
-      <View style={styles.topMetadataContainer}>
-        <View style={styles.metadataRow}>
-          {/* Sources Section */}
-          {uniqueSources.length > 0 && (
-            <TouchableOpacity
-              style={[
-                styles.sourcesCompactContainer,
-                {
-                  backgroundColor: isDarkColorScheme
-                    ? "rgba(255, 255, 255, 0.04)"
-                    : "rgba(0, 0, 0, 0.02)",
-                  borderColor: isDarkColorScheme
-                    ? "rgba(255, 255, 255, 0.08)"
-                    : "rgba(0, 0, 0, 0.06)",
-                },
-              ]}
-              onPress={onSourcePress}
-            >
-              <View style={styles.sourcesCompactRow}>
-                <View style={styles.sourceIconsCompactContainer}>
-                  {uniqueSources.length > 6 && (
-                    <View
-                      style={[
-                        styles.moreSourcesIndicator,
-                        {
-                          backgroundColor: isDarkColorScheme
-                            ? "#e0e0e0"
-                            : "#808080",
-                          borderColor: theme.colors.background,
-                        },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.moreSourcesText,
-                          { color: isDarkColorScheme ? "#333333" : "#ffffff" },
-                        ]}
-                      >
-                        +{uniqueSources.length - 3}
-                      </Text>
-                    </View>
-                  )}
-                  {uniqueSources
-                    .slice(0, 6)
-                    .reverse()
-                    .map((source, idx) => (
-                      <View
-                        key={idx}
-                        style={[
-                          styles.sourceIconCompact,
-                          {
-                            marginRight: idx > 0 ? -8 : 0,
-                            zIndex: 3 - idx,
-                          },
-                        ]}
-                      >
-                        <Image
-                          source={{ uri: getFaviconUrl(source.uri) }}
-                          style={[
-                            styles.sourceIconImage,
-                            {
-                              borderColor: theme.colors.background,
-                            },
-                          ]}
-                        />
-                      </View>
-                    ))}
-                </View>
-                <Text
-                  style={[
-                    styles.sourcesCompactLabel,
-                    { color: theme.colors.text, opacity: 0.7 },
-                  ]}
-                >
-                  {uniqueSources.length} წყარო
-                </Text>
-              </View>
-            </TouchableOpacity>
-          )}
-
-          {/* Factuality Badge */}
-          {badgeInfo && sharedBadgeType && (
-            <View style={styles.factualityWrapper}>
-              <FactualityBadge
-                text={badgeInfo.text}
-                type={sharedBadgeType}
-                style={[styles.factualityBadge]}
-              />
-            </View>
-          )}
-        </View>
-      </View>
-    );
-  }
-);
-
-TopMetadataSection.displayName = "TopMetadataSection";
-
 // Post Content Component
 const PostContent = memo(
   ({
     verification,
     verificationId,
-    handleMediaPress,
     user,
   }: {
     verification: LocationFeedPost;
     verificationId: string;
-    handleMediaPress: () => void;
     user: any;
   }) => {
     const theme = useTheme();
-    const imageUrl =
-      convertToCDNUrl(verification.verified_image || "") ||
-      verification.image_gallery?.[0];
+
+    // Calculate which tabs have content
+    const tabContentAvailability: Record<NewsTab, boolean> = useMemo(
+      () => ({
+        neutral: !!verification.neutral_summary?.trim(),
+        opposition: !!verification.opposition_summary?.trim(),
+        government: !!verification.government_summary?.trim(),
+      }),
+      [
+        verification.neutral_summary,
+        verification.opposition_summary,
+        verification.government_summary,
+      ]
+    );
+
+    // Find the first tab that has content, defaulting to neutral if none have content
+    const getInitialActiveTab = useCallback((): NewsTab => {
+      if (tabContentAvailability.neutral) return "neutral";
+      if (tabContentAvailability.opposition) return "opposition";
+      if (tabContentAvailability.government) return "government";
+      return "neutral"; // fallback
+    }, [tabContentAvailability]);
+
+    const [activeTab, setActiveTab] = useState<NewsTab>(getInitialActiveTab());
+
+    // Update active tab if current tab loses content
+    useEffect(() => {
+      if (!tabContentAvailability[activeTab]) {
+        setActiveTab(getInitialActiveTab());
+      }
+    }, [activeTab, tabContentAvailability, getInitialActiveTab]);
+
+    const imageUrl = verification.image_gallery_with_dims?.[0];
     const mediaSource = getVideoSrc(verification);
     const title = verification.title;
     const isLive = verification.is_live;
@@ -352,6 +284,9 @@ const PostContent = memo(
         setIsBottomSheetOpen(true);
       }
     }, [verification.sources, setActiveSources, setIsBottomSheetOpen]);
+    // IMAGE GALLERY IS DEPRECATED we should use image_gallery_with_dims instead.
+    const realTimeImageUrl =
+      verification?.image_gallery_with_dims?.[0]?.url || imageUrl;
 
     const localLinkPreview = useLinkPreview(
       verification.text_content || "",
@@ -360,10 +295,10 @@ const PostContent = memo(
     const hasPreview =
       !!verification.preview_data || !!localLinkPreview.previewData;
     const visibleTextContent = hasPreview
-      ? (verification.text_content || "")
+      ? (verification?.text_content || "")
           .replace(/(https?:\/\/[^\s]+)/g, "")
           .trim()
-      : (verification.text_content || "").trim();
+      : (verification?.text_content || "").trim();
     // --- END FEED ITEM-LIKE PREVIEW LOGIC ---
 
     // Handle Space view
@@ -374,14 +309,15 @@ const PostContent = memo(
             <SpaceView
               description={verification.text_content || ""}
               roomName={verification.livekit_room_name}
-              isHost={verification.assignee_user.id === user.id}
-              scheduledAt={verification.scheduled_at}
+              isHost={verification.assignee_user?.id === user.id}
+              scheduledAt={verification.scheduled_at || undefined}
             />
           </View>
           <View style={styles.actionsContainer}>
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
+              isOwner={verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -416,6 +352,7 @@ const PostContent = memo(
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
+              isOwner={verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -431,7 +368,7 @@ const PostContent = memo(
                 styles.titleText,
                 {
                   color: theme.colors.text,
-                  opacity: 1, // Full opacity for title to make it stand out more
+                  opacity: 0.9, // Reduced opacity to make it less prominent
                 },
               ]}
             >
@@ -439,18 +376,43 @@ const PostContent = memo(
             </Text>
           )}
 
-          {visibleTextContent && (
-            <View style={{ opacity: 0.8 }}>
-              <RenderMdx content={visibleTextContent} />
+          {verification.is_generated_news &&
+            (verification.government_summary ||
+              verification.opposition_summary ||
+              verification.neutral_summary) && (
+              <NewsTabs
+                activeTab={activeTab}
+                onTabChange={setActiveTab}
+                tabContentAvailability={tabContentAvailability}
+              />
+            )}
+
+          {verification.is_generated_news ? (
+            // Render tab-specific content for generated news
+            <View style={{ opacity: 1 }}>
+              <RenderMdx
+                content={
+                  activeTab === "government"
+                    ? verification.government_summary || ""
+                    : activeTab === "opposition"
+                    ? verification.opposition_summary || ""
+                    : verification.neutral_summary || ""
+                }
+              />
             </View>
+          ) : (
+            // Render original content for non-generated news
+            visibleTextContent && (
+              <View style={{ opacity: 1 }}>
+                <RenderMdx content={visibleTextContent} />
+              </View>
+            )
           )}
           <FeedItemMediaContent
             videoUrl={mediaSource}
-            imageUrl={imageUrl}
-            imageGallery={verification.image_gallery}
+            imageGalleryWithDims={verification.image_gallery_with_dims || []}
             isLive={isLive}
             isVisible={true}
-            itemHeight={300}
             verificationId={verificationId}
             name={verification.assignee_user?.username || user.username}
             time={verification.last_modified_date}
@@ -458,10 +420,10 @@ const PostContent = memo(
               verification.assignee_user?.photos[0]?.image_url[0] ||
               user.photos[0]?.image_url[0]
             }
-            livekitRoomName={verification.livekit_room_name}
+            livekitRoomName={verification.livekit_room_name || undefined}
             isSpace={isSpace}
-            scheduledAt={verification.scheduled_at}
-            text={verification.text_content}
+            scheduledAt={verification.scheduled_at || undefined}
+            text={verification.text_content || undefined}
             thumbnail={verification.verified_media_playback?.thumbnail}
             mediaAlt="Verification image"
             creatorUserId={verification.assignee_user?.id}
@@ -475,28 +437,32 @@ const PostContent = memo(
               verification.ai_video_summary_status === "PENDING"
             }
           />
-          {hasPreview && !imageUrl && !verification.image_gallery?.length && (
-            <LinkPreview
-              previewData={
-                verification.preview_data
-                  ? verification.preview_data
-                  : localLinkPreview.previewData || undefined
-              }
-              isLoading={false}
-              hasAISummary={
-                verification.ai_video_summary_status === "COMPLETED" ||
-                verification.ai_video_summary_status === "PENDING"
-              }
-              verificationId={verificationId}
-              inFeedView={false}
-              factuality={verification.fact_check_data?.factuality}
-            />
-          )}
+          {hasPreview &&
+            !imageUrl &&
+            !realTimeImageUrl &&
+            verification.preview_data &&
+            localLinkPreview.previewData && (
+              <LinkPreview
+                previewData={
+                  verification.preview_data
+                    ? verification.preview_data
+                    : localLinkPreview.previewData
+                }
+                isLoading={false}
+                hasAISummary={
+                  verification.ai_video_summary_status === "COMPLETED" ||
+                  verification.ai_video_summary_status === "PENDING"
+                }
+                verificationId={verificationId}
+                inFeedView={false}
+                factuality={verification.fact_check_data?.factuality}
+              />
+            )}
 
           {verification.external_video &&
             verification.ai_video_summary_status === "COMPLETED" && (
               <AISummaryBox
-                aiSummary={verification.ai_video_summary}
+                aiSummary={verification.ai_video_summary || undefined}
                 videoData={verification.external_video}
                 status={verification.ai_video_summary_status}
                 style={styles.aiSummaryBox}
@@ -512,7 +478,11 @@ const PostContent = memo(
         )}
 
         <View style={styles.actionsContainer}>
-          <FeedActions verificationId={verificationId} sourceComponent={null} />
+          <FeedActions
+            verificationId={verificationId}
+            sourceComponent={null}
+            isOwner={verification.assignee_user?.id === user.id}
+          />
         </View>
       </View>
     );
@@ -529,9 +499,9 @@ const CommentsView = ({
   verification: LocationFeedPost;
   verificationId: string;
 }) => {
-  const router = useRouter();
   const { user } = useAuth();
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
+
   const theme = useTheme();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const factCheckBottomSheetRef = useRef<BottomSheetModal>(null);
@@ -543,19 +513,6 @@ const CommentsView = ({
 
   // Use fresh data if available, otherwise fall back to initial data
   const verification = verificationData || initialVerification;
-
-  const handleMediaPress = useCallback(() => {
-    router.replace(`/(tabs)/(home)/verification/${verificationId}`);
-  }, [verificationId, router]);
-
-  const [, setActiveSources] = useAtom(activeSourcesState);
-  const [, setIsBottomSheetOpen] = useAtom(newsBottomSheetState);
-  const handleSourcePress = useCallback(() => {
-    if (verification.sources && verification.sources.length > 0) {
-      setActiveSources(verification.sources);
-      setIsBottomSheetOpen(true);
-    }
-  }, [verification.sources, setActiveSources, setIsBottomSheetOpen]);
 
   const keyboardVerticalOffset = useKeyboardVerticalOffset();
   return (
@@ -572,34 +529,26 @@ const CommentsView = ({
           {/* Header Section */}
           {!verification.title ? (
             <PostHeader
-              name={verification.assignee_user?.username || user.username}
+              name={verification.assignee_user?.username || user.username || ""}
               time={verification.last_modified_date}
               avatarUrl={
                 verification.assignee_user?.photos[0]?.image_url[0] ||
                 user.photos[0]?.image_url[0]
               }
-              friendId={verification.assignee_user?.id || user.id}
+              posterId={verification.assignee_user?.id || user.id}
               headerHeight={headerHeight}
               hasFactCheck={!!verification.fact_check_data}
               isLive={verification.is_live}
             />
           ) : (
             <View
-              style={{ paddingTop: headerHeight - 10, position: "relative" }}
+              style={{ paddingTop: headerHeight - 20, position: "relative" }}
             ></View>
-          )}
-
-          {verification.title && (
-            <TopMetadataSection
-              verification={verification}
-              onSourcePress={handleSourcePress}
-            />
           )}
 
           <PostContent
             verification={verification}
             verificationId={verificationId}
-            handleMediaPress={handleMediaPress}
             user={user}
           />
 
@@ -619,227 +568,6 @@ const CommentsView = ({
   );
 };
 
-const getStyles = (theme: any) =>
-  StyleSheet.create({
-    scrollView: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    container: {
-      flex: 1,
-    },
-    postContentContainer: {
-      marginBottom: 12,
-    },
-    titleText: {
-      color: theme.colors.text,
-      fontSize: 28,
-      fontWeight: "700",
-      marginBottom: 16,
-      lineHeight: 34,
-      letterSpacing: -0.5,
-    },
-    spaceContainer: {
-      padding: 12,
-    },
-    textContentContainer: {
-      paddingTop: 0,
-      paddingVertical: 16,
-      paddingHorizontal: 8,
-    },
-    textContent: {
-      color: theme.colors.text,
-      fontSize: FontSizes.medium,
-      fontWeight: "400",
-      letterSpacing: 0.5,
-      lineHeight: 24,
-      marginBottom: 5,
-      opacity: 0.9,
-    },
-    mediaContainer: {
-      position: "relative",
-      paddingHorizontal: 8,
-      flex: 1,
-    },
-    actionsContainer: {
-      paddingHorizontal: 8,
-      marginTop: 8,
-    },
-    sourcesHorizontalContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    sourcesContainer: {
-      paddingHorizontal: 8,
-      marginTop: 4,
-      marginBottom: 16,
-      gap: 4,
-    },
-    sourcesRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      width: "100%",
-    },
-    sourcesIconsContainer: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 6,
-    },
-    sourcesLabel: {
-      paddingHorizontal: 8,
-      paddingVertical: 4,
-      borderRadius: 8,
-    },
-    sourcesLabelText: {
-      fontSize: 12,
-      fontWeight: "600",
-    },
-    sourceIconRounded: {
-      width: 24,
-      height: 24,
-      borderRadius: 12,
-      marginRight: 4,
-      justifyContent: "center",
-      alignItems: "center",
-      overflow: "hidden",
-    },
-    sourceCountText: {
-      fontSize: 10,
-      fontWeight: "600",
-    },
-    factCheckBadgePosition: {
-      position: "absolute",
-      top: -24,
-      left: 0,
-      zIndex: 10,
-    },
-    titleContainer: {
-      position: "relative",
-      marginBottom: 8,
-    },
-    titleRow: {
-      flexDirection: "row",
-      alignItems: "center",
-    },
-    factCheckBox: {
-      marginHorizontal: 6,
-      marginVertical: 12,
-    },
-    dateText: {
-      color: "rgb(101, 104, 108)",
-      fontSize: 14,
-      fontWeight: "500",
-      paddingHorizontal: 8,
-    },
-    aiSummaryBox: {
-      marginBottom: 8,
-    },
-    commentsContainer: {
-      marginTop: 8,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.border,
-    },
-    commentsHeaderContainer: {
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-    },
-    commentsHeaderText: {
-      color: theme.colors.text,
-      fontWeight: "500",
-      fontSize: 16,
-    },
-    emptyCommentsContainer: {
-      padding: 16,
-      alignItems: "center",
-    },
-    emptyCommentsText: {
-      color: "rgb(101, 104, 108)",
-      fontSize: 14,
-    },
-    loadingContainer: {
-      padding: 20,
-      alignItems: "center",
-    },
-    errorContainer: {
-      padding: 16,
-      alignItems: "center",
-    },
-    errorText: {
-      color: "#ef4444",
-      fontSize: 14,
-    },
-    loadMoreIndicator: {
-      marginVertical: 16,
-    },
-    postHeaderFactCheckBadge: {
-      flexDirection: "row",
-      alignItems: "center",
-      marginRight: 8,
-    },
-    topMetadataContainer: {
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-    },
-    metadataRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      gap: 12,
-    },
-    sourcesCompactContainer: {
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      borderWidth: 1,
-      borderRadius: 12,
-    },
-    sourcesCompactRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      gap: 8,
-    },
-    sourceIconsCompactContainer: {
-      flexDirection: "row-reverse",
-      alignItems: "center",
-    },
-    sourceIconCompact: {
-      marginLeft: 0,
-    },
-    sourcesCompactLabel: {
-      fontSize: 12,
-      fontWeight: "600",
-    },
-    factualityWrapper: {
-      marginLeft: "auto",
-    },
-    factualityBadge: {
-      borderRadius: 12,
-    },
-    moreSourcesIndicator: {
-      width: 22,
-      height: 22,
-      borderRadius: 11,
-      justifyContent: "center",
-      alignItems: "center",
-      marginRight: -8,
-      borderWidth: 1.5,
-      zIndex: 4,
-    },
-    moreSourcesText: {
-      fontSize: 10,
-      fontWeight: "600",
-    },
-    sourceIconImage: {
-      width: 22,
-      height: 22,
-      borderRadius: 11,
-      borderWidth: 1.5,
-    },
-  });
-
-// Use a theme-based stylesheet
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
@@ -851,11 +579,11 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   titleText: {
-    fontSize: 26,
-    fontWeight: "700",
-    marginBottom: 16,
-    lineHeight: 34,
-    letterSpacing: -0.5,
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 12,
+    lineHeight: 26,
+    letterSpacing: -0.3,
   },
   spaceContainer: {
     padding: 12,
@@ -1004,6 +732,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderWidth: 1,
     borderRadius: 12,
+    marginRight: 10,
   },
   sourcesCompactRow: {
     flexDirection: "row",
@@ -1021,9 +750,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  factualityWrapper: {
-    marginLeft: 10,
-  },
+  factualityWrapper: {},
   factualityBadge: {
     borderRadius: 12,
   },
@@ -1046,6 +773,26 @@ const styles = StyleSheet.create({
     height: 22,
     borderRadius: 11,
     borderWidth: 1.5,
+  },
+  tabsContainer: {
+    marginVertical: 12,
+    borderRadius: 12,
+  },
+  tabsRow: {
+    flexDirection: "row",
+    gap: 2,
+  },
+  tab: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 

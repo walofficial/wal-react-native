@@ -8,6 +8,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/lib/theme";
 import SimpleGoBackHeaderPost from "@/components/SimpleGoBackHeaderPost";
 import React from "react";
+import { CustomTitle } from "@/components/CustomTitle";
+import { t } from "@/lib/i18n";
 
 export default function Layout() {
   const { user } = useAuth();
@@ -38,7 +40,9 @@ export default function Layout() {
             headerTransparent: true,
             header: () => (
               <ProfileHeader
-                customTitle={user?.username}
+                customTitleComponent={
+                  <CustomTitle text={user?.username || "..."} />
+                }
                 customButtons={
                   <Link href={"/(tabs)/(user)/settings"} asChild>
                     <TouchableOpacity
@@ -55,15 +59,6 @@ export default function Layout() {
                 }
               />
             ),
-          }}
-        />
-        <Stack.Screen
-          name="notifications"
-          options={{
-            title: "შეტყობინებები",
-            headerStyle: {
-              backgroundColor: theme.colors.background,
-            },
           }}
         />
 
@@ -88,7 +83,9 @@ export default function Layout() {
           options={{
             title: "",
             headerTransparent: true,
-            header: () => <SimpleGoBackHeader title="შეცვალე ფოტო" />,
+            header: () => (
+              <SimpleGoBackHeader title={t("common.change_photo")} />
+            ),
             headerStyle: {
               backgroundColor: theme.colors.background,
             },
@@ -122,7 +119,21 @@ export default function Layout() {
           options={{
             title: "",
             headerTransparent: true,
-            header: () => <SimpleGoBackHeader title="პარამეტრები" />,
+            header: () => <SimpleGoBackHeader title={t("common.settings")} />,
+            headerStyle: {
+              backgroundColor: theme.colors.background,
+            },
+            headerTintColor: theme.colors.text,
+          }}
+        />
+        <Stack.Screen
+          name="language-region"
+          options={{
+            title: "",
+            headerTransparent: true,
+            header: () => (
+              <SimpleGoBackHeader title={t("settings.language_and_region")} />
+            ),
             headerStyle: {
               backgroundColor: theme.colors.background,
             },

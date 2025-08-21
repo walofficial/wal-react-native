@@ -12,13 +12,11 @@ import { useColorScheme } from "@/lib/useColorScheme";
 export default function ProfileHeaderWeb({
   customTitle,
   customTitleComponent,
-  customBottomView,
   isAnimated = true,
   customButtons,
 }: {
   customTitle?: string;
   customTitleComponent?: React.ReactNode;
-  customBottomView?: React.ReactNode;
   isAnimated?: boolean;
   customButtons?: React.ReactNode;
 }) {
@@ -59,7 +57,6 @@ export default function ProfileHeaderWeb({
           {!customButtons && <></>}
         </View>
       </View>
-      {customBottomView}
     </View>
   );
 }

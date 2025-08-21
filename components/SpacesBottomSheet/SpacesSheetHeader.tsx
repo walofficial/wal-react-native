@@ -1,13 +1,14 @@
+// @ts-nocheck
 import React from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { activeLivekitRoomState } from "./atom";
 import { useAtomValue, useSetAtom } from "jotai";
-import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import ShareButton from "../FeedItem/ShareButton";
 import { useHaptics } from "@/lib/haptics";
+import { getRoomPreviewDataOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 interface SpacesSheetHeaderProps {
   bottomSheetRef: React.RefObject<BottomSheetModal>;
@@ -20,11 +21,11 @@ const SpacesSheetHeader: React.FC<SpacesSheetHeaderProps> = ({
   const haptic = useHaptics();
   const livekitRoom = useAtomValue(activeLivekitRoomState);
   const roomPreview = useQuery({
-    queryFn: () =>
-      livekitRoom?.livekit_room_name
-        ? api.getRoomPreview(livekitRoom.livekit_room_name)
-        : null,
-    queryKey: ["room-preview", livekitRoom?.livekit_room_name],
+    ...getRoomPreviewDataOptions({
+      path: {
+        room_name: livekitRoom?.livekit_room_name,
+      },
+    }),
     enabled: !!livekitRoom?.livekit_room_name,
   });
 

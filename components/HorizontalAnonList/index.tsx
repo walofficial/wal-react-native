@@ -1,7 +1,6 @@
 import React from "react";
 import { View, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
 import UserLiveItem from "@/components/UserLiveItem";
 import useLiveUser from "@/hooks/useLiveUser";
 import useAuth from "@/hooks/useAuth";
@@ -11,25 +10,23 @@ import { useTheme } from "@/lib/theme";
 import { locationUserListSheetState } from "@/lib/atoms/location";
 import { useAtom } from "jotai";
 import { useIsFocused } from "@react-navigation/native";
+import { getLiveUsersOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 const MAX_ITEMS = 30;
 const COLUMNS = 4;
 
-const HorizontalAnonList: React.FC<{ taskId: string }> = ({ taskId }) => {
+const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
   const theme = useTheme();
   const isFocused = useIsFocused();
 
-  const { data, isFetching } = useInfiniteQuery({
-    enabled: !!taskId && isFocused,
-    queryKey: ["anon-list", taskId],
-    queryFn: () => api.getAnonListForTask(taskId),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, pages) => {
-      const nextPage = pages.length + 1;
-      return lastPage.length === MAX_ITEMS ? nextPage : undefined;
-    },
+  const { data, isFetching } = useQuery({
+    ...getLiveUsersOptions({
+      query: {
+        feed_id: feedId,
+      },
+    }),
+    enabled: !!feedId && isFocused,
     refetchOnMount: false,
-    subscribed: isFocused,
     staleTime: 5000,
     refetchInterval: isFocused ? 3000 : false,
   });
@@ -40,13 +37,11 @@ const HorizontalAnonList: React.FC<{ taskId: string }> = ({ taskId }) => {
   const { user } = useAuth();
 
   const { joinChat } = useLiveUser();
-  const items =
-    data?.pages
-      .flatMap((page) => page)
-      .slice(0, MAX_ITEMS)
-      .sort((a, b) =>
-        a.user.id === user.id ? -1 : b.user.id === user.id ? 1 : 0
-      ) ?? [];
+  const items = (data || [])
+    .slice(0, MAX_ITEMS)
+    .sort((a, b) =>
+      a.user.id === user.id ? -1 : b.user.id === user.id ? 1 : 0
+    );
 
   return (
     <View style={styles.container}>

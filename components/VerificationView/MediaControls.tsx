@@ -6,8 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import LikeButton from "@/components/FeedItem/LikeButton";
 import CommentButton from "@/components/FeedItem/CommentButton";
 import ShareButton from "@/components/FeedItem/ShareButton";
-import ImpressionsCount from "@/components/FeedItem/ImpressionsCount";
-import { LocationFeedPost } from "@/lib/interfaces";
+import { LocationFeedPost } from "@/lib/api/generated";
 import { useTheme } from "@/lib/theme";
 
 interface MediaControlsProps {
@@ -32,21 +31,24 @@ const MediaControls = ({
         onPress={() => {
           router.push({
             pathname: "/(tabs)/(home)/profile",
-            params: { userId: verification.assignee_user.id },
+            params: { userId: verification.assignee_user?.id || "" },
           });
         }}
       >
-        <Avatar style={styles.avatar} alt={verification.assignee_user.username}>
+        <Avatar
+          style={styles.avatar}
+          alt={verification.assignee_user?.username || ""}
+        >
           <AvatarImage
             source={{
-              uri: verification.assignee_user.photos[0].image_url[0],
+              uri: verification.assignee_user?.photos[0].image_url[0] || "",
             }}
           />
         </Avatar>
       </TouchableOpacity>
       <View style={styles.userTextContainer}>
         <Text style={styles.username}>
-          {verification.assignee_user.username}
+          {verification.assignee_user?.username || ""}
         </Text>
         <Text style={styles.timestamp}>{formattedTime}</Text>
       </View>
@@ -61,7 +63,6 @@ const MediaControls = ({
           <CommentButton bright verificationId={verificationId} large />
         </View>
         <View style={styles.actionGroup}>
-          {/* <ImpressionsCount verificationId={verificationId} /> */}
           <ShareButton bright verificationId={verificationId} />
         </View>
       </View>

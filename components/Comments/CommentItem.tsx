@@ -23,7 +23,8 @@ import { formatRelativeTime } from "@/lib/utils/date";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useTheme } from "@/lib/theme";
 import CommentReactions from "./CommentReactions";
-import { Comment } from "@/lib/interfaces";
+import { Comment } from "@/lib/api/generated";
+import { t } from "@/lib/i18n";
 
 interface CommentItemProps {
   id: string;
@@ -98,11 +99,11 @@ const CommentItem = ({
   const handleDelete = () => {
     Alert.alert("წაშლა", "ნამდვილად გსურთ კომენტარის წაშლა?", [
       {
-        text: "გაუქმება",
+        text: t("common.cancel"),
         style: "cancel",
       },
       {
-        text: "წაშლა",
+        text: t("common.delete"),
         style: "destructive",
         onPress: onDelete,
       },

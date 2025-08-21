@@ -21,7 +21,8 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Text } from "@/components/ui/text";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/Button";
+// import { Button } from "@/components/ui/button";
 import { OtpInput } from "react-native-otp-entry";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { authenticatingState } from "@/lib/state/auth";
@@ -41,19 +42,20 @@ import {
 } from "./atom";
 import { FontSizes } from "@/lib/theme";
 import { BlurView } from "expo-blur";
-import { useTheme } from "@/lib/theme";
-import { HOME_TASK_ID } from "@/constants/home";
 import CountrySelector from "@/components/CountrySelector";
 import { Country } from "@/lib/countries";
 import { validatePhoneNumber } from "@/lib/phoneValidation";
 import PhoneInputField from "./PhoneInputField";
 import { useDefaultCountry } from "@/hooks/useDefaultCountry";
+import { useToast } from "../ToastUsage";
+import { t } from "@/lib/i18n";
+import { isDev } from "@/lib/api/config";
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const formSchema = z.object({
-  phoneNumber: z.string().min(1, "შეიყვანეთ ტელეფონის ნომერი"),
+  phoneNumber: z.string().min(1, t("common.please_enter_phone_number")),
   pin: z
     .union([z.string().length(0), z.string().min(4)])
     .optional()
@@ -168,43 +170,31 @@ const TimerButton = React.memo(
     if (isAuthenticating) {
       return (
         <Button
-          style={[styles.submitButton, { backgroundColor: "#e2e8f0" }]}
+          variant="secondary"
+          size="large"
           onPress={onPress}
           disabled={isPending || timer > 0}
-        >
-          <ActivityIndicator color="black" />
-        </Button>
+          glassy={true}
+          loading={isPending}
+        />
       );
     }
 
     const isButtonDisabled = isDisabled || isPending || timer > 0;
 
     return (
-      <TouchableOpacity
-        style={[
-          styles.submitButton,
-          { backgroundColor: "#e2e8f0" },
-          isButtonDisabled && styles.disabledButton,
-        ]}
+      <Button
+        style={{ marginTop: 12 }}
         onPress={onPress}
-        disabled={isButtonDisabled}
-      >
-        {isPending ? (
-          <ActivityIndicator color="black" />
-        ) : (
-          <Text style={[styles.buttonText, { color: "black" }]}>
-            {timer > 0 ? (
-              <Text style={{ textAlign: "center" }}>
-                <Text style={styles.timerPrefix}>დარჩა </Text>
-                <Text style={[styles.timerValue]}>{timer}</Text>
-                <Text style={styles.timerSuffix}> წამი</Text>
-              </Text>
-            ) : (
-              "კოდის მიღება"
-            )}
-          </Text>
-        )}
-      </TouchableOpacity>
+        disabled={isButtonDisabled && !isDev}
+        variant="outline"
+        size="large"
+        glassy={true}
+        loading={isPending}
+        title={
+          timer > 0 ? t("common.wait_seconds", { timer }) : t("common.get_code")
+        }
+      />
     );
   }
 );
@@ -228,7 +218,6 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   const [shouldResetTimer, setShouldResetTimer] = useState(false);
 
   const androidAutoSMSRef = useRef<AndroidAutoSMSRef>(null);
-  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -250,31 +239,41 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
     // This callback is called when timer starts in TimerButton
   }, []);
 
+  const { error } = useToast();
+
   const signupMutation = useMutation({
     mutationFn: async (values: z.infer<typeof formSchema>) => {
       // Validate the phone number before sending
-      const validation = validatePhoneNumber(
-        values.phoneNumber,
-        selectedCountry
-      );
-
-      if (!validation.isValid) {
-        throw new Error(
-          validation.errorMessageGeo || "არასწორი ტელეფონის ნომერი"
+      if (!isDev) {
+        const validation = validatePhoneNumber(
+          values.phoneNumber,
+          selectedCountry
         );
+
+        if (!validation.isValid) {
+          throw new Error(
+            validation.errorMessageGeo || t("common.please_enter_phone_number")
+          );
+        }
+
+        const fullPhoneNumber =
+          selectedCountry.callingCode + values.phoneNumber;
+
+        const { data, error } = await supabase.auth.signInWithOtp({
+          phone: fullPhoneNumber,
+        });
+
+        if (error?.message === "User already registered") {
+          throw new Error(t("common.user_already_exists"));
+        } else if (!!error) {
+          throw new Error(t("common.system_error_short"));
+        }
+        return data;
       }
-
-      const fullPhoneNumber = selectedCountry.callingCode + values.phoneNumber;
-
       const { data, error } = await supabase.auth.signInWithOtp({
-        phone: fullPhoneNumber,
+        phone: values.phoneNumber,
       });
 
-      if (error?.message === "User already registered") {
-        throw new Error("მომხმარებელი უკვე არსებობს");
-      } else if (!!error) {
-        throw new Error("სისტემური შეცდომა");
-      }
       return data;
     },
     onSuccess: () => {
@@ -284,10 +283,9 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
         androidAutoSMSRef.current?.start();
       }
     },
-    onError: (error: Error) => {
-      toast.error(error.message, {
-        id: "signup-error",
-      });
+    onError: (error: any) => {
+      console.log("error", error);
+      error({ title: error.message || t("common.system_error") });
       console.log(error);
     },
   });
@@ -304,7 +302,11 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
     resetField("pin");
   }, [watch("phoneNumber"), resetField]);
 
-  const { data: access, isFetching: checkingAccess } = useQuery({
+  const {
+    data: access,
+    isFetching: checkingAccess,
+    error: accessError,
+  } = useQuery({
     queryKey: [
       "access-code",
       pin,
@@ -326,8 +328,8 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   useEffect(() => {
     if (access && access.error) {
       if (access.error.message === "Token has expired or is invalid") {
-        toast.error("არასწორი კოდი. სცადეთ ხელახლა ან შეიყვანეთ სწორი ნომერი", {
-          id: "invalid-code",
+        error({
+          title: t("common.invalid_code_try_again"),
         });
       }
     }
@@ -356,7 +358,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   useEffect(() => {
     if (access && access.data.user) {
       setShowPhoneInput(true);
-      router.replace(`/(tabs)/(global)/${HOME_TASK_ID}`);
+      // router.replace(`/(tabs)/(news)/${NEWS_FEED_ID}`);
     }
   }, [access]);
 
@@ -474,31 +476,28 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   ]);
 
   // Memoize the terms section to prevent re-renders
-  const termsSection = useMemo(
-    () => (
-      <View style={{ marginTop: 24 }}>
-        <Text style={[styles.termsText, { color: "gray" }]}>
-          By continuing, you agree to our{" "}
-          <Text
-            style={[styles.termsLink, { color: "#a0a0a0" }]}
-            onPress={openTermsOfService}
-          >
-            Terms of Service
-          </Text>
+  const termsSection = (
+    <View style={{ marginTop: 24 }}>
+      <Text style={[styles.termsText, { color: "gray" }]}>
+        By continuing, you agree to our{" "}
+        <Text
+          style={[styles.termsLink, { color: "#a0a0a0" }]}
+          onPress={openTermsOfService}
+        >
+          {t("common.terms_of_service")}
         </Text>
-        <Text style={[styles.termsText, { marginTop: 4, color: "gray" }]}>
-          and{" "}
-          <Text
-            style={[styles.termsLink, { color: "#a0a0a0" }]}
-            onPress={openPrivacyPolicy}
-          >
-            Privacy Policy
-          </Text>
-          .
+      </Text>
+      <Text style={[styles.termsText, { marginTop: 4, color: "gray" }]}>
+        and{" "}
+        <Text
+          style={[styles.termsLink, { color: "#a0a0a0" }]}
+          onPress={openPrivacyPolicy}
+        >
+          {t("common.privacy_policy")}
         </Text>
-      </View>
-    ),
-    []
+        .
+      </Text>
+    </View>
   );
 
   // Show country selector screen
@@ -533,7 +532,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
 
       {!showPhoneInput && (
         <Text style={[styles.instructionText, { color: "white" }]}>
-          {"შეიყვანეთ ნომერზე მოსული SMS"}
+          {t("common.enter_sms_code")}
         </Text>
       )}
 
@@ -579,7 +578,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
 
       <TimerButton
         onPress={() => {
-          if (!isPhoneNumberValid()) {
+          if (!isPhoneNumberValid() && !isDev) {
             return;
           }
           handleSubmit(onSubmit)();
@@ -595,11 +594,10 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
       {!showPhoneInput && !isAuthenticating && (
         <Button
           style={styles.tryAgainButton}
-          variant={"ghost"}
+          variant="subtle"
           onPress={onTryAgain}
-        >
-          <Text style={{ color: "white" }}>სხვა ნომრით ცდა</Text>
-        </Button>
+          title={t("common.try_again_with_other_number")}
+        />
       )}
 
       {showPhoneInput && termsSection}

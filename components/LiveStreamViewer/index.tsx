@@ -1,4 +1,4 @@
-import { toast } from "@backpackapp-io/react-native-toast";
+import { useToast } from "@/components/ToastUsage";
 import {
   LiveKitRoom,
   useRemoteParticipants,
@@ -28,6 +28,7 @@ import { useEffect } from "react";
 import TopGradient from "../VideoPlayback/TopGradient";
 import CloseButton from "../CloseButton";
 import { FontSizes } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 // Component for constraining video to portrait aspect ratio
 function ConstrainedLiveVideo({ children }: { children: React.ReactNode }) {
@@ -67,8 +68,14 @@ function LiveStreamViewer({
 }) {
   const { data, isLoading, error } = useLiveStreamToken(liveKitRoomName);
   const router = useRouter();
-  if (isLoading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  const { error: errorToast } = useToast();
+  if (isLoading) return <Text>{t("common.loading")}</Text>;
+  if (error)
+    return (
+      <Text>
+        {t("common.error_colon")} {error.message}
+      </Text>
+    );
 
   return (
     <LiveKitRoom
@@ -83,7 +90,10 @@ function LiveStreamViewer({
         adaptiveStream: { pixelDensity: "screen" },
       }}
       onDisconnected={() => {
-        toast.error("ლაივ სტრიმი გაითიშა");
+        errorToast({
+          title: t("common.live_stream_disconnected"),
+          description: t("common.live_stream_disconnected"),
+        });
         router.back();
       }}
     >
@@ -96,6 +106,7 @@ function RoomView({ topControls }: { topControls: React.ReactNode }) {
   const tracks = useParticipantTracks([Track.Source.Camera], "identity");
   const router = useRouter();
   const connectionState = useConnectionState();
+  const { error: errorToast } = useToast();
 
   useEffect(() => {
     const startAudioSession = async () => {
@@ -119,7 +130,7 @@ function RoomView({ topControls }: { topControls: React.ReactNode }) {
         <ConstrainedLiveVideo>
           <View style={styles.noStreamContainer}>
             <Text style={styles.noStreamText}>
-              პირდაპირი ეთერი დასრულდა ან არ არის ხელმისაწვდომი
+              {t("common.live_stream_unavailable")}
             </Text>
             <CloseButton variant="x" onClick={() => router.back()} />
           </View>

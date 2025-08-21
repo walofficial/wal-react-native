@@ -1,11 +1,13 @@
+// @ts-nocheck
 import { useMutation } from "@tanstack/react-query";
 import { Platform } from "react-native";
-import api from "@/lib/api";
 import { isWeb } from "@/lib/platform";
+import { goLiveMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 function useGoLive() {
-  const goLiveMutation = useMutation({
-    onMutate: (taskId: string) => {
+  const goLiveMutationHook = useMutation({
+    ...goLiveMutation(),
+    onMutate: (feedId: string) => {
       // Skip onMutate logic for web platform
       if (isWeb) {
         throw new Error("Go live is not supported on web");
@@ -13,12 +15,11 @@ function useGoLive() {
 
       // ... existing onMutate logic for mobile platforms
     },
-    mutationFn: (taskId: string) => api.goLive(taskId),
-    onSuccess: (res, taskId) => {},
+    onSuccess: (res, feedId) => { },
   });
 
   return {
-    goLiveMutation,
+    goLiveMutation: goLiveMutationHook,
   };
 }
 

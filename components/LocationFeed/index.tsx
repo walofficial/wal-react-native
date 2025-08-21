@@ -1,57 +1,34 @@
-import {
-  View,
-  Dimensions,
-  ActivityIndicator,
-  RefreshControl,
-  Platform,
-  FlatList,
-} from "react-native";
-import {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  ReactElement,
-  JSXElementConstructor,
-  Suspense,
-  useMemo,
-} from "react";
+import { View } from "react-native";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
-import { dimensionsState } from "@/components/ActualDimensionsProvider";
-import { HEADER_HEIGHT } from "@/lib/constants";
 import { useLocationFeedPaginated } from "@/hooks/useLocationFeedPaginated";
 import Animated, {
   useSharedValue,
-  useAnimatedScrollHandler,
   useAnimatedStyle,
-  SharedValue,
-  withTiming,
 } from "react-native-reanimated";
-import { useScrollReanimatedValue } from "../context/ScrollReanimatedValue";
 import useIsUserInSelectedLocation from "@/hooks/useIsUserInSelectedLocation";
 import { openMap } from "@/utils/openMap";
 import React from "react";
 import type { ViewabilityConfig } from "react-native";
 import { ListEmptyComponent } from "./ListEmptyComponent";
 import BottomSheet from "@gorhom/bottom-sheet";
-import type {
-  AnimatedFlashListProps,
-  LocationFeedPost,
-  Task,
-} from "@/lib/interfaces";
-import { useQueryClient } from "@tanstack/react-query";
+import type { Feed, LocationFeedPost } from "@/lib/api/generated";
+import { queryOptions, useQueryClient } from "@tanstack/react-query";
 import { isWeb } from "@/lib/platform";
 import BottomLocationActions from "../BottomLocationActions";
 import FeedItem from "../FeedItem";
+import NewsCardItem from "../NewsCard/NewsCardItem";
 import { getVideoSrc } from "@/lib/utils";
 import PostsFeed from "../PostsFeed";
-import NewsFeed from "../NewsFeed";
 import { scrollToTopState } from "@/lib/atoms/location";
 import LocationUserListSheet from "../LocationUserListSheet";
-import NewsCardItem from "../NewsCard/NewsCardItem";
 import { useRouter, usePathname } from "expo-router";
 import { useLightboxControls } from "@/lib/lightbox/lightbox";
 import { shouldFocusCommentInputAtom } from "@/atoms/comments";
+import useFeeds from "@/hooks/useFeeds";
+import { getUserVerificationOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { ThemedText } from "../ThemedText";
+import { getCurrentLocale } from "@/lib/i18n";
 
 type Location = {
   nearest_location: {
@@ -59,23 +36,24 @@ type Location = {
     address: string;
     location: [number, number];
   };
-  task: Task;
+  feed: Feed;
 };
 
 interface LocationFeedProps {
-  taskId: string;
+  feedId: string;
   content_type: "last24h" | "youtube_only" | "social_media_only";
 }
 
 export default function LocationFeed({
-  taskId,
+  feedId,
   content_type,
 }: LocationFeedProps) {
   const {
     isUserInSelectedLocation,
     selectedLocation,
     isGettingLocation,
-    isCountryFeed,
+    isFactCheckFeed,
+    isNewsFeed,
   } = useIsUserInSelectedLocation();
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -92,7 +70,7 @@ export default function LocationFeed({
     isRefetching,
     refetch,
   } = useLocationFeedPaginated({
-    taskId: taskId as string,
+    feedId: feedId as string,
     content_type: content_type as
       | "last24h"
       | "youtube_only"
@@ -100,9 +78,10 @@ export default function LocationFeed({
   });
 
   const locationUserListSheetRef = useRef<BottomSheet>(null);
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
+
   const flashListRef = useRef<any>(null);
-  const queryStatePopulatedOptimistic = useRef(false);
+  const populatedItemIdsRef = useRef<Set<string>>(new Set());
 
   const defaultStoryIndex = 0;
 
@@ -160,7 +139,7 @@ export default function LocationFeed({
     if (selectedLocation?.nearest_location?.location) {
       openMap(
         selectedLocation.nearest_location.location,
-        selectedLocation.task.display_name
+        selectedLocation.feed.display_name
       );
     }
   };
@@ -211,57 +190,85 @@ export default function LocationFeed({
     [closeLightbox, pathname, setShouldFocusInput, router]
   );
 
-  // Optimized renderItem - conditionally render NewsCardItem or FeedItem
+  // Helper function to convert LocationFeedPost to NewsItem format
+  const convertToNewsItem = useCallback((item: LocationFeedPost) => {
+    return {
+      verification_id: item.id,
+      title: item.title || item.text_content || "",
+      description: item.text_content || "",
+      last_modified_date: item.last_modified_date,
+      sources: item.sources?.map((source) => ({
+        title: source.title || "",
+        uri: source.uri || "",
+      })),
+      factuality: item.fact_check_data?.factuality,
+    };
+  }, []);
+
   const renderItem = useCallback(
     ({ item, index }: { item: LocationFeedPost; index: number }) => {
       const { last_modified_date } = item;
 
-      // Render regular FeedItem for non-news items
+      // Check if this is a generated news item
+      if (item.is_generated_news) {
+        return (
+          <NewsCardItem
+            key={item.id}
+            item={item}
+            onPress={handleNavigateToVerification}
+          />
+        );
+      }
+      // Default FeedItem rendering for regular posts
       return (
         <FeedItem
           key={item.id}
           name={item.assignee_user?.username || ""}
           time={last_modified_date}
-          friendId={item.assignee_user?.id || ""}
+          posterId={item.assignee_user?.id || ""}
           isLive={item.is_live}
           avatarUrl={item.assignee_user?.photos[0]?.image_url[0] || ""}
-          isPinned={false}
-          affiliatedIcon={item.assignee_user?.affiliated?.icon_url || ""}
+          // affiliatedIcon={item.assignee_user?.affiliated?.icon_url || ""}
           hasRecording={item.has_recording}
           verificationId={item.id}
-          taskId={item.task_id}
+          feedId={item.feed_id}
           isPublic={item.is_public}
-          canPin={false}
           text={item.text_content || ""}
           isSpace={false}
           videoUrl={getVideoSrc(item) || ""}
-          imageUrl={item.verified_image || ""}
+          externalVideo={item.external_video}
           livekitRoomName={item.livekit_room_name || ""}
           isVisible={currentViewableItemIndex === index}
-          isFactChecked={item.is_factchecked}
           title={item.title}
-          sources={item.sources}
-          imageGallery={item.image_gallery}
-          externalVideo={item.external_video}
+          imageGalleryWithDims={item.image_gallery_with_dims}
           fact_check_data={item.fact_check_data}
           previewData={item.preview_data}
-          thumbnail={item.verified_media_playback?.thumbnail}
+          thumbnail={item.verified_media_playback?.thumbnail || ""}
         />
       );
     },
-    [handleNavigateToVerification, currentViewableItemIndex]
+    [handleNavigateToVerification, currentViewableItemIndex, convertToNewsItem]
   );
 
   useEffect(() => {
-    if (items && !queryStatePopulatedOptimistic.current) {
-      items.forEach((item) => {
-        queryClient.setQueryData(["verification-by-id", item.id], {
-          ...item,
-        });
+    if (!items || items.length === 0) return;
+
+    items.forEach((item) => {
+      if (populatedItemIdsRef.current.has(item.id)) return;
+
+      const queryOptions = getUserVerificationOptions({
+        query: {
+          verification_id: item.id,
+        },
       });
-      queryStatePopulatedOptimistic.current = true;
-    }
-  }, [items]);
+
+      queryClient.setQueryData(queryOptions.queryKey, {
+        ...item,
+      });
+
+      populatedItemIdsRef.current.add(item.id);
+    });
+  }, [items, queryClient]);
 
   const [scrollToTop] = useAtom(scrollToTopState);
 
@@ -279,21 +286,27 @@ export default function LocationFeed({
     refetch();
 
     // Also invalidate news feed queries
-    queryClient.invalidateQueries({ queryKey: ["news-feed", taskId] });
-  }, [refetch, queryClient, taskId]);
+    queryClient.invalidateQueries({ queryKey: ["news-feed", feedId] });
+  }, [refetch, queryClient, feedId]);
 
   return (
     <>
       <PostsFeed
         ref={flashListRef}
         data={items}
+        headerOffset={headerHeight}
         renderItem={renderItem}
         ListHeaderComponent={
-          isCountryFeed ? (
-            <NewsFeed taskId={taskId as string} />
-          ) : (
-            <View style={{ height: headerHeight + 80 }} />
-          )
+          isNewsFeed ? (
+            <ThemedText
+              style={{ fontSize: 24, padding: 20, fontWeight: "bold" }}
+            >
+              {new Date().toLocaleDateString(getCurrentLocale(), {
+                month: "long",
+                day: "numeric",
+              })}
+            </ThemedText>
+          ) : undefined
         }
         ListEmptyComponent={
           <ListEmptyComponent
@@ -302,7 +315,6 @@ export default function LocationFeed({
             isUserInSelectedLocation={isUserInSelectedLocation}
             selectedLocation={selectedLocation as Location}
             handleOpenMap={handleOpenMap}
-            isCountryFeed={isCountryFeed}
           />
         }
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
@@ -313,19 +325,19 @@ export default function LocationFeed({
         refetch={enhancedRefetch}
       />
 
-      {!isWeb && (
+      {!isWeb && !isNewsFeed && (
         <Suspense fallback={null}>
           <Animated.View style={bottomActionsStyle}>
             <BottomLocationActions
-              taskId={taskId as string}
+              feedId={feedId as string}
               isUserInSelectedLocation={isUserInSelectedLocation}
-              isCountryFeed={isCountryFeed}
+              isFactCheckFeed={isFactCheckFeed}
             />
           </Animated.View>
         </Suspense>
       )}
 
-      {!isWeb && !isCountryFeed && (
+      {!isWeb && !isFactCheckFeed && !isNewsFeed && (
         <LocationUserListSheet bottomSheetRef={locationUserListSheetRef} />
       )}
     </>

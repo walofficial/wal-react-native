@@ -5,15 +5,16 @@ import { useTheme } from "@/lib/theme";
 import { useShareIntentContext } from "expo-share-intent";
 import { useEffect, useRef } from "react";
 import { isIOS } from "@/lib/platform";
+import { t } from "@/lib/i18n";
 
 interface CreatePostProps {
   disabled: boolean;
-  taskId: string;
+  feedId: string;
 }
 
 export default function CreatePostGlobal({
   disabled,
-  taskId,
+  feedId,
 }: CreatePostProps) {
   const router = useRouter();
   const theme = useTheme();
@@ -39,9 +40,9 @@ export default function CreatePostGlobal({
       ]}
       onPress={() => {
         router.push({
-          pathname: `/(tabs)/(global)/[taskId]/create-post`,
+          pathname: `/(tabs)/(fact-check)/[feedId]/create-post`,
           params: {
-            taskId,
+            feedId,
             disableRoomCreation: "true",
             sharedContent: params.sharedContent,
           },
@@ -50,7 +51,7 @@ export default function CreatePostGlobal({
     >
       <Ionicons name="add" size={18} color={contentColor} style={styles.icon} />
       <Text style={[styles.buttonText, { color: contentColor }]}>
-        გადაამოწმე
+        {t("common.check_fact")}
       </Text>
     </TouchableOpacity>
   );

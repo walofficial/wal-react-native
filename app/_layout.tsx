@@ -12,7 +12,6 @@ import * as Sentry from "@sentry/react-native";
 import { createStore, Provider, useAtom } from "jotai";
 import { isDev } from "@/lib/api/config";
 import AppStateHandler from "../components/AppStateHandler";
-import CustomToast from "@/components/CustomToast";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useState, useEffect } from "react";
 import { useOTAUpdates } from "@/hooks/useOTAUpdates";
@@ -33,7 +32,39 @@ import {
   DefaultTheme,
   ThemeProvider as NavigationThemeProvider,
 } from "@react-navigation/native";
-import * as NavigationBar from "expo-navigation-bar";
+import { appLocaleAtom } from "@/hooks/useAppLocalization";
+import { getCurrentLocale, setLocale } from "@/lib/i18n";
+
+function AppLocaleGate({ children }: { children: React.ReactNode }) {
+  const [appLocale, setAppLocale] = useAtom(appLocaleAtom);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const storedLocale = await AsyncStorage.getItem("app-locale");
+        const initialLocale = storedLocale || getCurrentLocale();
+        if (!appLocale) {
+          setAppLocale(initialLocale);
+        }
+        setLocale(initialLocale);
+      } catch {
+        const fallback = getCurrentLocale();
+        setLocale(fallback);
+        if (!appLocale) setAppLocale(fallback);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (appLocale) {
+      setLocale(appLocale);
+    }
+  }, [appLocale]);
+
+  return (
+    <React.Fragment key={appLocale || "default"}>{children}</React.Fragment>
+  );
+}
 
 export const myStore = createStore();
 import "react-native-get-random-values";
@@ -44,11 +75,13 @@ export {
 } from "expo-router";
 
 Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
+  handleNotification: async (notification) => {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    };
+  },
 });
 
 // Prevent the splash screen from auto-hiding before getting the color scheme.
@@ -94,6 +127,7 @@ const queryClient = new QueryClient({
 import NetInfo from "@react-native-community/netinfo";
 import { onlineManager } from "@tanstack/react-query";
 import { Lightbox } from "@/components/Lightbox/Lightbox";
+import { ToastProviderWithViewport } from "@/components/ToastUsage";
 
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
@@ -105,6 +139,8 @@ export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useAtom(appIsReadyState);
   const theme = useTheme();
   const { colorScheme } = useColorScheme();
+  // Initialize and keep app localization in sync
+  const [appLocale, setAppLocale] = useAtom(appLocaleAtom);
 
   // Use the new OTA updates hook
   useOTAUpdates();
@@ -112,6 +148,31 @@ export default function RootLayout() {
   useEffect(() => {
     SplashScreen.hideAsync();
   }, [appIsReady]);
+
+  // Initialize locale from storage/device on first mount
+  useEffect(() => {
+    (async () => {
+      try {
+        const storedLocale = await AsyncStorage.getItem("app-locale");
+        const initialLocale = storedLocale || getCurrentLocale();
+        if (!appLocale) {
+          setAppLocale(initialLocale);
+        }
+        setLocale(initialLocale);
+      } catch {
+        const fallback = getCurrentLocale();
+        setLocale(fallback);
+        if (!appLocale) setAppLocale(fallback);
+      }
+    })();
+  }, []);
+
+  // React to locale changes
+  useEffect(() => {
+    if (appLocale) {
+      setLocale(appLocale);
+    }
+  }, [appLocale]);
 
   function onAppStateChange(status: AppStateStatus) {
     if (Platform.OS !== "web") {
@@ -139,43 +200,50 @@ export default function RootLayout() {
                     }
                   : {
                       ...DefaultTheme,
-                      colors: { ...DefaultTheme.colors, background: "#efefef" },
+                      colors: {
+                        ...DefaultTheme.colors,
+                        background: "#efefef",
+                      },
                     }
               }
             >
               <ThemeProvider>
-                <AuthLayer>
-                  <GestureHandlerRootView
-                    style={{
-                      flex: 1,
-                      backgroundColor: theme.colors.background,
-                    }}
-                  >
-                    <Provider store={myStore}>
-                      <ShareIntentProvider
-                        options={{
-                          debug: false,
-                          resetOnBackground: true,
-                        }}
-                      >
-                        <Slot />
-                        <AppStateHandler />
-                      </ShareIntentProvider>
-                    </Provider>
-                    <CustomToast />
-                    {Platform.OS === "android" && (
-                      <StatusBar
-                        backgroundColor={
-                          colorScheme === "dark" ? "black" : "#efefef"
-                        }
-                        style={colorScheme === "dark" ? "light" : "dark"}
-                      />
-                    )}
-                    <Lightbox />
-                  </GestureHandlerRootView>
+                <ToastProviderWithViewport>
+                  <Provider store={myStore}>
+                    <AppLocaleGate>
+                      <AuthLayer>
+                        <GestureHandlerRootView
+                          key={appLocale || "default"}
+                          style={{
+                            flex: 1,
+                            backgroundColor: theme.colors.background,
+                          }}
+                        >
+                          <ShareIntentProvider
+                            options={{
+                              debug: false,
+                              resetOnBackground: true,
+                            }}
+                          >
+                            <Slot />
+                            <AppStateHandler />
+                          </ShareIntentProvider>
+                          {Platform.OS === "android" && (
+                            <StatusBar
+                              backgroundColor={
+                                colorScheme === "dark" ? "black" : "#efefef"
+                              }
+                              style={colorScheme === "dark" ? "light" : "dark"}
+                            />
+                          )}
+                          <Lightbox />
+                        </GestureHandlerRootView>
 
-                  <PortalHost />
-                </AuthLayer>
+                        <PortalHost />
+                      </AuthLayer>
+                    </AppLocaleGate>
+                  </Provider>
+                </ToastProviderWithViewport>
               </ThemeProvider>
             </NavigationThemeProvider>
           </LightboxStateProvider>

@@ -1,20 +1,20 @@
+//@ts-nocheck
 import { useQuery } from "@tanstack/react-query";
 import { getLinkPreview } from "link-preview-js";
 import { extractSocialMediaURL, extractURL } from "../utils/socialMediaUtils";
-import { LinkPreviewData, LinkPreviewResponse } from "@/lib/interfaces";
+import { LinkPreviewData } from "@/lib/api/generated";
 
 const fetchLinkPreview = async (
   url: string
-): Promise<LinkPreviewData | null> => {
-  if (!url) return null;
+): Promise<LinkPreviewData> => {
 
-  const data = (await getLinkPreview(url, {
+  const data = await getLinkPreview(url, {
     timeout: 5000,
     followRedirects: "follow",
     headers: {
       "user-agent": "googlebot/1.0",
     },
-  })) as LinkPreviewResponse;
+  })
 
   // Check if this is a social media URL to set platform
   const socialMediaInfo = extractSocialMediaURL(url);

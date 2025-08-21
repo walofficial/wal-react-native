@@ -19,8 +19,9 @@ import useGetBlockedUsers from "@/hooks/useGetBlockedUsers";
 import { User } from "lucide-react-native";
 import { useTheme } from "@/lib/theme";
 import { useAtomValue } from "jotai";
-import { HEADER_HEIGHT } from "@/lib/constants";
 import { FontSizes } from "@/lib/theme";
+import useFeeds from "@/hooks/useFeeds";
+import { t } from "@/lib/i18n";
 interface ProfileButtonProps {
   href: any;
   icon: React.ReactNode | ((props: { color?: string }) => React.ReactNode);
@@ -51,7 +52,7 @@ export default function ProfileMain() {
   const { blockedUsers, isLoading } = useGetBlockedUsers();
   const hasBlockedUsers = blockedUsers && blockedUsers.length > 0;
   const theme = useTheme();
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
   const openTelegramChannel = () => {
     Linking.openURL("https://t.me/waldiscuss");
   };
@@ -74,18 +75,25 @@ export default function ProfileMain() {
                 color={theme.colors.icon}
               />
             }
-            text="ზოგადი"
+            text={t("settings.general")}
           />
 
           <ProfileButton
             href="(user)/change-photo"
             icon={({ color }) => <Image color={color} />}
-            text="ფოტოს შეცვლა"
+            text={t("settings.change_photo")}
           />
           <ProfileButton
             href="(user)/profile-settings"
             icon={({ color }) => <User color={color} />}
-            text="ანგარიში"
+            text={t("settings.account")}
+          />
+          <ProfileButton
+            href="(user)/language-region"
+            icon={({ color }) => (
+              <Ionicons size={28} name="globe-outline" color={color} />
+            )}
+            text={t("settings.language_and_region")}
           />
         </View>
       </ScrollView>
@@ -100,7 +108,7 @@ export default function ProfileMain() {
             <Telegram color={theme.colors.icon} />
           </View>
           <Text style={[styles.buttonText, { color: theme.colors.text }]}>
-            Telegram არხი
+            {t("settings.telegram_channel")}
           </Text>
         </AnimatedPressable>
         {hasBlockedUsers && (
@@ -115,7 +123,7 @@ export default function ProfileMain() {
               color={theme.colors.icon}
             />
             <Text style={[styles.buttonText, { color: theme.colors.text }]}>
-              დაბლოკილი მომხმარებლები
+              {t("settings.blocked_users")}
             </Text>
           </AnimatedPressable>
         )}
@@ -129,7 +137,9 @@ export default function ProfileMain() {
             }}
             style={styles.footerLink}
           >
-            <Text style={styles.footerLinkText}>Terms of Service</Text>
+            <Text style={styles.footerLinkText}>
+              {t("settings.terms_of_service")}
+            </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
@@ -139,7 +149,9 @@ export default function ProfileMain() {
             }}
             style={styles.footerLink}
           >
-            <Text style={styles.footerLinkText}>Privacy Policy</Text>
+            <Text style={styles.footerLinkText}>
+              {t("settings.privacy_policy")}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>

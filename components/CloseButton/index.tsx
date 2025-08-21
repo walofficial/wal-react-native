@@ -1,4 +1,4 @@
-import { TouchableOpacity, StyleSheet } from "react-native";
+import { TouchableOpacity, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { XIcon } from "@/lib/icons";
 import { ArrowLeft, ChevronLeft } from "lucide-react-native";
@@ -19,7 +19,8 @@ export default function CloseButton({
   const iconColor = style?.color || theme.colors.text;
 
   return (
-    <TouchableOpacity
+    <Pressable
+      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       style={[styles.button, style]}
       onPress={() => {
         if (onClick) {
@@ -34,12 +35,12 @@ export default function CloseButton({
       ) : (
         <ChevronLeft color={iconColor} size={35} />
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    padding: 8,
+    padding: 0,
   },
 });

@@ -1,16 +1,20 @@
+// @ts-nocheck
 import { useState, useEffect } from "react";
-import api from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
-import { CheckLocationResponse } from "@/lib/interfaces";
+import { CheckLocationResponse } from "@/lib/api/generated";
+import { checkLocationOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
-function useCheckLocation(taskId: string, latitude: number, longitude: number) {
+function useCheckLocation(feedId: string, latitude: number, longitude: number) {
   const { data, isFetching, isSuccess, isError } =
     useQuery<CheckLocationResponse>({
-      queryKey: ["check-location", taskId, latitude, longitude],
-      queryFn: () => {
-        return api.checkLocation(taskId, latitude, longitude);
-      },
-      enabled: !!taskId,
+      ...checkLocationOptions({
+        query: {
+          feed_id: feedId,
+          latitude: latitude,
+          longitude: longitude,
+        },
+      }),
+      enabled: !!feedId,
       retry: 2,
       refetchOnMount: true,
       retryDelay: 1000,

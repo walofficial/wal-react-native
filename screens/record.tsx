@@ -4,10 +4,13 @@ import { useRouter } from "expo-router";
 import CameraPage from "@/components/CameraPage";
 import { Text, View, StyleSheet } from "react-native";
 import { toast } from "@backpackapp-io/react-native-toast";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 export default function RecordPage() {
   const router = useRouter();
   const [permissionsGranted, setPermissionsGranted] = useState(false);
+  const { error } = useToast();
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -21,9 +24,9 @@ export default function RecordPage() {
         setPermissionsGranted(true);
       } else {
         // Redirect back if either permission is not granted
-        toast.error(
-          "საჭიროა ნება დართოთ ვიდეოსა და ფოტოს გადაღებაზე აპლიკაციას პარამეტრებიდან"
-        );
+        error({
+          title: t("common.permission_needed_for_photo_and_video"),
+        });
         router.back();
       }
     };
@@ -34,10 +37,7 @@ export default function RecordPage() {
   if (!permissionsGranted) {
     return (
       <View style={styles.centered}>
-        <Text>
-          საჭიროა ნება დართოთ ვიდეოსა და ფოტოს გადაღებას აპლიკაციას
-          პარამეტრებიდან
-        </Text>
+        <Text>{t("common.permission_needed_for_photo_and_video")}</Text>
       </View>
     );
   }

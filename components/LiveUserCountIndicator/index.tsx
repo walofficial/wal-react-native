@@ -5,9 +5,9 @@ import { ActivityIndicator, View, StyleSheet } from "react-native";
 import { useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
 
-function LiveUserCountIndicator({ taskId }: { taskId: string }) {
+function LiveUserCountIndicator({ feedId }: { feedId: string }) {
   const { data, isFetching, isRefetching, isSuccess, isError } =
-    useCountAnonList(taskId);
+    useCountAnonList(feedId);
   const theme = useTheme();
   const { isDarkColorScheme } = useColorScheme();
 
@@ -22,7 +22,7 @@ function LiveUserCountIndicator({ taskId }: { taskId: string }) {
       {standardIcon}
       <View style={styles.badge}>
         <Text style={[styles.text, { color: theme.colors.text }]}>
-          {data || 0}
+          {data?.count || 0}
         </Text>
       </View>
     </View>

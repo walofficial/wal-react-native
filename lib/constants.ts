@@ -22,6 +22,9 @@ export const NAV_THEME = {
 export const HEADER_HEIGHT = atom<number>(
   Platform.OS === "web" ? 0 : Dimensions.get("window").height * 0.1
 );
+export const HEADER_HEIGHT_WITH_TABS = atom<number>(
+  Platform.OS === "web" ? 0 : Dimensions.get("window").height * 0.1
+);
 
 export const SUPPORTED_MIME_TYPES = [
   "video/mp4",
@@ -38,3 +41,11 @@ export const POST_IMG_MAX = {
   height: 2000,
   size: 1000000,
 };
+
+
+// Legacy constants - kept for backward compatibility
+// These are the Georgian region feed IDs
+export const FACT_CHECK_FEED_ID = "67bb256786841cb3e7074bcd";
+export const NEWS_FEED_ID = "687960db5051460a7afd6e63";
+export const CATEGORY_ID = "669e9a03dd31644abb767337";
+

@@ -1,6 +1,50 @@
+import * as FileSystem from "expo-file-system";
 import { AbortError } from "@/lib/async/cancelable";
 import { CompressedVideo } from "@/lib/media/video/types";
-import api from "@/lib/api";
+import { UploadToLocationResponse } from "@/lib/api/generated";
+import { API_BASE_URL } from "@/lib/api/config";
+import { supabase } from "@/lib/supabase";
+
+async function getCurrentAuthToken(): Promise<string | null> {
+  const { data } = await supabase.auth.getSession();
+  return data.session?.access_token || null;
+}
+
+const uploadVideosToLocation = async (
+  video: CompressedVideo,
+  setProgress: (progress: number) => void,
+  params: {
+    feed_id: string;
+    recording_time: number;
+    text_content: string;
+  }
+) => {
+  const token = await getCurrentAuthToken();
+  if (!token) {
+    throw new Error("No authentication token available");
+  }
+
+  return FileSystem.createUploadTask(
+    API_BASE_URL + "verify-videos/upload-to-location",
+    video.uri,
+    {
+      headers: {
+        "content-type": video.mimeType,
+        Authorization: `Bearer ${token}`,
+      },
+      httpMethod: "POST",
+      fieldName: "video_file",
+      parameters: {
+        feed_id: params.feed_id,
+        recording_time: params.recording_time.toString(),
+        text_content: params.text_content,
+      },
+      mimeType: video.mimeType,
+      uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+    },
+    (p) => setProgress(p.totalBytesSent / p.totalBytesExpectedToSend)
+  );
+};
 
 export async function uploadVideo({
   video,
@@ -12,7 +56,7 @@ export async function uploadVideo({
   setProgress: (progress: number) => void;
   signal: AbortSignal;
   params: {
-    task_id: string;
+    feed_id: string;
     recording_time: number;
     text_content: string;
   };
@@ -25,11 +69,12 @@ export async function uploadVideo({
     throw new AbortError();
   }
 
-  const uploadTask = api.uploadVideosToLocation(video, setProgress, params);
+  const uploadTask = await uploadVideosToLocation(video, setProgress, params);
 
   if (signal.aborted) {
     throw new AbortError();
   }
+
   const res = await uploadTask.uploadAsync();
 
   if (!res?.body) {
@@ -41,5 +86,5 @@ export async function uploadVideo({
   if (signal.aborted) {
     throw new AbortError();
   }
-  return responseBody;
+  return responseBody as UploadToLocationResponse;
 }

@@ -24,9 +24,10 @@ import { useTheme } from "@/lib/theme";
 import { useAtom } from "jotai";
 import {
   locationUserListSheetState,
-  locationUserListTaskIdState,
+  locationUserListfeedIdState,
 } from "@/lib/atoms/location";
 import { NativeEventSubscription } from "react-native";
+import { t } from "@/lib/i18n";
 
 interface LocationUserListSheetProps {
   bottomSheetRef: RefObject<BottomSheet>;
@@ -41,7 +42,7 @@ const LocationUserListSheet = ({
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
     locationUserListSheetState
   );
-  const [taskId] = useAtom(locationUserListTaskIdState);
+  const [feedId] = useAtom(locationUserListfeedIdState);
   const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(
     null
   );
@@ -104,7 +105,6 @@ const LocationUserListSheet = ({
     ),
     [scheme]
   );
-
   return (
     <>
       <BottomSheet
@@ -121,10 +121,10 @@ const LocationUserListSheet = ({
       >
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText, { color: theme.colors.text }]}>
-            აქტიური
+            {t("common.active")}
           </Text>
         </View>
-        {visible && taskId && <HorizontalAnonList taskId={taskId} />}
+        {visible && feedId && <HorizontalAnonList feedId={feedId} />}
       </BottomSheet>
     </>
   );

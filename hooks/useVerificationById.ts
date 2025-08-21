@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { LocationFeedPost } from "@/lib/interfaces";
+import { getUserVerification, LocationFeedPost } from "@/lib/api/generated";
 import { isWeb } from "@/lib/platform";
+import { getUserVerificationOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 function useVerificationById(
   verificationId: string,
@@ -13,13 +14,13 @@ function useVerificationById(
   } = {}
 ) {
   const { data, isLoading, isSuccess, isError } =
-    useQuery<LocationFeedPost | null>({
-      queryKey: ["verification-by-id", verificationId],
-      queryFn: () => {
-        return isWeb
-          ? api.getPublicVerificationById(verificationId)
-          : api.getVerificationById(verificationId);
-      },
+    useQuery({
+      ...getUserVerificationOptions({
+        query: {
+          verification_id: verificationId,
+        },
+      }),
+      throwOnError: true,
       enabled: enabled,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
@@ -38,7 +39,6 @@ function useVerificationById(
       },
       // placeholderData: keepPreviousData,
     });
-
   return { data, isLoading, isSuccess, isError };
 }
 

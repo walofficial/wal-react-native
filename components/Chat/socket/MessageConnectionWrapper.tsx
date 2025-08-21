@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { getSocket } from "./socket";
 import { SocketContext } from "./context";
-import { ChatMessage } from "@/lib/interfaces";
+import { ChatMessage } from "@/lib/api/generated";
 import { useSetAtom } from "jotai";
 import { isChatUserOnlineState } from "@/lib/state/chat";
 import useAuth from "@/hooks/useAuth";
@@ -20,17 +20,33 @@ export function useSocket() {
 }
 import { useQueryClient } from "@tanstack/react-query";
 import ProtocolService from "@/lib/services/ProtocolService";
-import { toast } from "@backpackapp-io/react-native-toast";
 import { useIsFocused } from "@react-navigation/native";
+import {
+  getMessagesChatMessagesGetInfiniteOptions,
+  getMessagesChatMessagesGetInfiniteQueryKey,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
 
-export default function MessageConnectionWrapper({ children, publicKey }) {
+export default function MessageConnectionWrapper({
+  children,
+  publicKey,
+}: {
+  children: React.ReactNode;
+  publicKey: string;
+}) {
   const [isConnected, setIsConnected] = useState(false);
   const { user } = useAuth();
-  const { roomId } = useGlobalSearchParams();
+  const { roomId } = useGlobalSearchParams<{ roomId: string }>();
   const queryClient = useQueryClient();
   const socketRef = useRef(getSocket(user.id, publicKey));
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const isFocused = useIsFocused();
+  const pageSize = 15;
+  const messageOptions = getMessagesChatMessagesGetInfiniteOptions({
+    query: {
+      page_size: pageSize,
+      room_id: roomId,
+    },
+  });
 
   useEffect(() => {
     if (isFocused) {
@@ -51,7 +67,7 @@ export default function MessageConnectionWrapper({ children, publicKey }) {
       setIsChatUserOnline(false);
     }
 
-    function onError(error) {
+    function onError(error: any) {
       console.log("error", JSON.stringify(error));
     }
 
@@ -82,14 +98,14 @@ export default function MessageConnectionWrapper({ children, publicKey }) {
     };
 
     const handleMessageSeen = (readMessage: ChatMessage) => {
-      queryClient.setQueryData(["messages", roomId], (oldData: any) => {
+      queryClient.setQueryData(messageOptions.queryKey, (oldData) => {
         if (!oldData) return oldData;
 
         const updatedPages = oldData.pages.map((page, index) => {
           if (page.page === 1) {
             return {
               ...page,
-              data: page.data.map((item) => {
+              data: page.messages.map((item) => {
                 if (item.temporary_id === readMessage.temporary_id) {
                   return {
                     ...item,
@@ -110,7 +126,13 @@ export default function MessageConnectionWrapper({ children, publicKey }) {
     };
 
     // Define the message handler separately so we can reference it in cleanup
-    const handlePrivateMessage = (privateMessage: ChatMessage) => {
+    const handlePrivateMessage = (privateMessage: {
+      encrypted_content: string;
+      nonce: string;
+      sender: string;
+      id: string;
+      temporary_id: string;
+    }) => {
       const addIncomingMessage = async (newMessage: {
         encrypted_content: string;
         nonce: string;
@@ -139,21 +161,27 @@ export default function MessageConnectionWrapper({ children, publicKey }) {
         if (!decryptedMessage) {
           return;
         }
-        queryClient.setQueryData(["messages", roomId], (oldData: any) => {
+        queryClient.setQueryData(messageOptions.queryKey, (oldData) => {
           if (!oldData) return oldData;
 
-          const updatedPages = oldData.pages.map((page, index) => {
+          const updatedPages = oldData.pages.map((page) => {
             if (page.page === 1) {
               return {
                 ...page,
-                data: [
-                  ...page.data,
+                messages: [
+                  ...page.messages,
                   {
                     temporary_id: newMessage.temporary_id,
                     id: newMessage.id,
                     message: decryptedMessage,
                     author_id: newMessage.sender,
-                  },
+                    room_id: roomId || "",
+                    recipient_id: user?.id || "",
+                    encrypted_content: null,
+                    nonce: null,
+                    message_state: "SENT",
+                    sent_date: new Date().toISOString(),
+                  } as ChatMessage,
                 ],
               };
             }
@@ -166,7 +194,7 @@ export default function MessageConnectionWrapper({ children, publicKey }) {
         });
       };
 
-      addIncomingMessage(privateMessage);
+      addIncomingMessage(privateMessage as any);
     };
 
     socket.on("user_connection_status", handleConnectionStatus);

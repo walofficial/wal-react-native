@@ -16,7 +16,6 @@ import {
   useGlobalSearchParams,
   usePathname,
 } from "expo-router";
-import { H1 } from "../ui/typography";
 import { TabBarIcon } from "../navigation/TabBarIcon";
 import { Text } from "../ui/text";
 import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
@@ -28,13 +27,11 @@ import Animated, {
   withSpring,
   cancelAnimation,
 } from "react-native-reanimated";
-import { HEADER_HEIGHT } from "@/lib/constants";
+import { HEADER_HEIGHT, HEADER_HEIGHT_WITH_TABS } from "@/lib/constants";
 import { isWeb } from "@/lib/platform";
 import ProfileHeaderWeb from "./web";
 import { FontSizes, useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
-import SourceIcon from "../SourceIcon";
-import useCountryFeed from "@/hooks/useCountryFeed";
 import { scrollToTopState } from "@/lib/atoms/location";
 import { useMinimalShellHeaderTransform } from "@/hooks/useMinimalShellHeaderTransform";
 import {
@@ -46,71 +43,60 @@ import {
 // Location imports
 import useLocationsInfo from "@/hooks/useLocationsInfo";
 import useGoLive from "@/hooks/useGoLive";
-import { LocationsResponse } from "@/lib/interfaces";
-import { toast } from "@backpackapp-io/react-native-toast";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { statusBadgeTextState } from "@/lib/state/custom-status";
-import { Badge } from "../ui/badge";
 // Separated components
-import { AnimatedStatusBadge } from "./AnimatedStatusBadge";
 import { SearchBar } from "./SearchBar";
 import { SearchOverlay } from "./SearchOverlay";
 import { TabBar } from "./TabBar";
-import { convertToCDNUrl } from "@/lib/utils";
-
-// Define layout type
-type TabLayout = { x: number; width: number };
+import { useUserFeedIds } from "@/hooks/useUserFeedIds";
 
 function ProfileHeader({
   customTitle,
   customTitleComponent,
-  customBottomView,
   isAnimated = true,
   customButtons,
   showSearch = false,
   showLocationTabs = false,
+  showTabs = false,
 }: {
   customTitle?: string;
   customTitleComponent?: React.ReactNode;
-  customBottomView?: React.ReactNode;
   isAnimated?: boolean;
   customButtons?: React.ReactNode;
   showSearch?: boolean;
   showLocationTabs?: boolean;
+  showTabs?: boolean;
 }) {
   const pathname = usePathname();
 
   const iconTranslateX = useSharedValue(0);
-  const [headerHeight, setHeaderHeight] = useAtom(HEADER_HEIGHT);
+  const setHeaderHeight = useSetAtom(HEADER_HEIGHT);
+  const setHeaderHeightWithTabs = useSetAtom(HEADER_HEIGHT_WITH_TABS);
   const { isDarkColorScheme } = useColorScheme();
-  const { taskId, content_type } = useGlobalSearchParams<{
-    taskId: string;
+  const { feedId, content_type } = useGlobalSearchParams<{
+    feedId: string;
     content_type: string;
   }>();
 
   const router = useRouter();
   const activeTab = content_type;
-  const { id: countryFeedId } = useCountryFeed();
-  const [scrollToTop, setScrollToTop] = useAtom(scrollToTopState);
+  const setScrollToTop = useSetAtom(scrollToTopState);
+  const { categoryId } = useUserFeedIds();
 
   // Location data for location tabs
   const {
     data: locationData,
     isFetching: isLocationFetching,
     errorMsg: locationError,
-  } = useLocationsInfo("669e9a03dd31644abb767337", showLocationTabs);
+  } = useLocationsInfo(categoryId, showLocationTabs);
   const { goLiveMutation } = useGoLive();
 
   // Search state
   const [isSearchActive, setIsSearchActive] = useAtom(isSearchActiveAtom);
-  const [searchValue, setSearchValue] = useAtom(searchInputValueAtom);
+  const setSearchValue = useSetAtom(searchInputValueAtom);
   const setDebouncedSearch = useSetAtom(setDebouncedSearchAtom);
 
   // MEMORY LEAK FIX: Add cleanup refs
   const isMountedRef = useRef(true);
-
-  // Ref to track if header height has been set
-  const headerHeightSetRef = useRef(false);
 
   // Animated values for header content
   const headerContentOpacity = useSharedValue(1);
@@ -145,36 +131,44 @@ function ProfileHeader({
   const handleLocationTabPress = (tabKey: string) => {
     if (!locationData) return;
 
-    // Handle task at location tabs (taskId format)
-    if (locationData.tasks_at_location?.find((task) => task.id === tabKey)) {
+    // Handle task at location tabs (feedId format)
+    if (locationData.feeds_at_location?.find((task) => task.id === tabKey)) {
       // Navigate to task at location
       router.navigate({
-        pathname: "/(tabs)/(home)/[taskId]",
+        pathname: "/(tabs)/(home)/[feedId]",
         params: {
-          taskId: tabKey,
+          feedId: tabKey,
         },
       });
       if (!isWeb && !locationError) {
-        goLiveMutation.mutateAsync(tabKey);
+        goLiveMutation.mutateAsync({
+          body: {
+            feed_id: tabKey,
+          },
+        });
       }
       return;
     }
 
-    // Handle nearest tasks tabs (nearTask_taskId format)
+    // Handle nearest tasks tabs (nearTask_feedId format)
     if (tabKey.startsWith("nearTask_")) {
-      const actualTaskId = tabKey.replace("nearTask_", "");
-      const nearTask = locationData.nearest_tasks?.find(
-        (item) => item.task.id === actualTaskId
+      const actualfeedId = tabKey.replace("nearTask_", "");
+      const nearTask = locationData.nearest_feeds?.find(
+        (item) => item.feed.id === actualfeedId
       );
       if (nearTask) {
         router.navigate({
-          pathname: "/(tabs)/(home)/[taskId]",
+          pathname: "/(tabs)/(home)/[feedId]",
           params: {
-            taskId: actualTaskId,
+            feedId: actualfeedId,
           },
         });
         if (!isWeb && !locationError) {
-          goLiveMutation.mutateAsync(actualTaskId);
+          goLiveMutation.mutateAsync({
+            body: {
+              feed_id: actualfeedId,
+            },
+          });
         }
       }
     }
@@ -201,30 +195,27 @@ function ProfileHeader({
     const items = [];
 
     // Add tasks at location first
-    if (locationData.tasks_at_location?.length) {
+    if (locationData.feeds_at_location?.length) {
       items.push(
-        ...locationData.tasks_at_location.map((task) => ({
+        ...locationData.feeds_at_location.map((task) => ({
           key: task.id,
           label: task.display_name,
           icon: null,
           isCurrentLocation: true,
-          image: convertToCDNUrl(
-            task.task_verification_example_sources[0]?.image_media_url
-          ),
           task,
         }))
       );
     }
 
     // Add nearby tasks
-    if (locationData.nearest_tasks?.length) {
+    if (locationData.nearest_feeds?.length) {
       items.push(
-        ...locationData.nearest_tasks.map(({ task, nearest_location }) => ({
-          key: `nearTask_${task.id}`,
-          label: task.display_name,
+        ...locationData.nearest_feeds.map(({ feed, nearest_location }) => ({
+          key: `nearTask_${feed.id}`,
+          label: feed.display_name,
           icon: null,
           isCurrentLocation: false,
-          task,
+          feed,
           address: nearest_location?.address,
         }))
       );
@@ -232,11 +223,6 @@ function ProfileHeader({
 
     return items;
   }, [locationData]);
-
-  // Only show tabs if on country feed (for content tabs) or showLocationTabs is true
-  const showTabs = showLocationTabs
-    ? true
-    : taskId === countryFeedId && pathname.includes(taskId);
 
   const headerContentAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -276,19 +262,20 @@ function ProfileHeader({
             : "rgba(255,255,255,0.3)",
         },
       ]}
+      onLayout={(event) => {
+        // Only set header height once because it causes render in a places where header height is used due to small changes for example from 75 pxiels to 76pxiels.
+        // This change was happening during tab navigation.
+        const height = event.nativeEvent.layout.height;
+        if (height > 5) {
+          if (showTabs || showLocationTabs) {
+            setHeaderHeightWithTabs(height);
+          } else {
+            setHeaderHeight(height);
+          }
+        }
+      }}
     >
       <View
-        onLayout={(event) => {
-          // Only set header height once because it causes render in a places where header height is used due to small changes for example from 75 pxiels to 76pxiels.
-          // This change was happening during tab navigation.
-          if (isMountedRef.current && !headerHeightSetRef.current) {
-            const height = event.nativeEvent.layout.height;
-            if (height > 5) {
-              setHeaderHeight(height);
-              headerHeightSetRef.current = true;
-            }
-          }
-        }}
         style={[
           styles.headerContainer,
           {
@@ -311,7 +298,7 @@ function ProfileHeader({
             customTitleComponent
           ) : (
             <Link href="/(home)/feed" asChild>
-              <H1 style={titleStyle}>{customTitle || "WAL"}</H1>
+              <Text style={titleStyle}>{customTitle || "WAL"}</Text>
             </Link>
           )}
           {!isWeb && (
@@ -359,9 +346,8 @@ function ProfileHeader({
         activeTab={activeTab}
         showLocationTabs={showLocationTabs}
         onTabPress={handleTabPress}
-        taskId={taskId}
+        feedId={feedId}
       />
-      {customBottomView}
     </Animated.View>
   );
 }
@@ -385,7 +371,7 @@ const styles = StyleSheet.create({
   title: {
     padding: 16,
     paddingLeft: 12,
-    fontSize: FontSizes.huge,
+    fontSize: FontSizes.xxlarge,
     fontWeight: "bold",
   },
   buttonsContainer: {

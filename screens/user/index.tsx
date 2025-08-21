@@ -8,11 +8,11 @@ import FriendRequests from "@/components/ContactSyncSheet/FriendRequests";
 import UserGNContentProfile from "@/components/UserGNContentProfile";
 import { SectionHeader } from "@/components/SectionHeader";
 import useAuth from "@/hooks/useAuth";
-import { useEffect } from "react";
 import ProfileView from "@/components/ProfileView";
 import { useTheme } from "@/lib/theme";
 import BottomSheet from "@gorhom/bottom-sheet";
 import ContactSyncSheet from "@/components/ContactSyncSheet";
+import { t } from "@/lib/i18n";
 
 export default function ProfileMain() {
   const { user } = useAuth();
@@ -30,7 +30,7 @@ export default function ProfileMain() {
               <View style={styles.sectionContainer}>
                 <SectionHeader
                   icon={<Search size={26} color={theme.colors.icon} />}
-                  text="მეგობრები"
+                  text={t("common.friends")}
                 />
                 <Button
                   style={styles.friendButton}
@@ -39,9 +39,10 @@ export default function ProfileMain() {
                   onPress={() => {
                     contactSyncSheetRef.current?.expand();
                   }}
+                  glassy={true}
                   icon="people-outline"
                   iconPosition="left"
-                  title="მეგობრების დამატება"
+                  title={t("common.add_friends_action")}
                 />
                 <FriendRequests hideMyRequests limit={3} />
               </View>
@@ -54,7 +55,7 @@ export default function ProfileMain() {
                       color={theme.colors.icon}
                     />
                   }
-                  text="ისტორია"
+                  text={t("common.history")}
                 />
               </View>
             </View>

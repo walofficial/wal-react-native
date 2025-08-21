@@ -9,9 +9,8 @@ import {
   Pressable,
   TouchableOpacity,
 } from "react-native";
-import LikeButton from "./LikeButton";
+import Svg, { Circle } from "react-native-svg";
 import CommentButton from "./CommentButton";
-import ImpressionsCount from "./ImpressionsCount";
 import ShareButton from "./ShareButton";
 import { useTheme } from "@/lib/theme";
 import { useRouter, usePathname } from "expo-router";
@@ -19,12 +18,67 @@ import { useLightboxControls } from "@/lib/lightbox/lightbox";
 import FactualityBadge from "../ui/FactualityBadge";
 import { toast } from "@backpackapp-io/react-native-toast";
 import useVerificationById from "@/hooks/useVerificationById";
+import { getFactCheckBadgeInfo } from "@/utils/factualityUtils";
+import { t } from "@/lib/i18n";
 
 interface FeedActionsProps {
   verificationId: string;
   sourceComponent?: React.ReactNode;
   hideUserRects?: boolean;
+  showFactualityBadge?: boolean;
+  isOwner: boolean;
 }
+
+// Animated loading circle component
+const LoadingCircle = ({
+  color,
+  size = 16,
+}: {
+  color: string;
+  size?: number;
+}) => {
+  const rotateValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.timing(rotateValue, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: false, // SVG animations need useNativeDriver: false
+      })
+    );
+    animation.start();
+    return () => animation.stop();
+  }, []);
+
+  const rotate = rotateValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+  });
+
+  const radius = size / 2 - 1;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference * 0.75; // Show 25% of the circle
+
+  return (
+    <Animated.View style={{ transform: [{ rotate }] }}>
+      <Svg width={size} height={size}>
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
+          fill="transparent"
+        />
+      </Svg>
+    </Animated.View>
+  );
+};
 
 // Factuality loader component with pulsing effect
 const FactualityLoader = ({ style }: { style?: any }) => {
@@ -33,7 +87,7 @@ const FactualityLoader = ({ style }: { style?: any }) => {
   const isDarkColorScheme = colorScheme === "dark";
 
   const handlePress = () => {
-    toast("ფოსტის შემოწმებას უნდა 5 დან 10 წუთამდე", {
+    toast(t("common.post_checking_time"), {
       duration: 3000,
       id: "factuality-loader",
     });
@@ -53,8 +107,9 @@ const FactualityLoader = ({ style }: { style?: any }) => {
           style,
         ]}
       >
+        <LoadingCircle color="#34C759" size={16} />
         <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          მოწმდება...
+          {t("common.loading")}
         </Text>
       </Animated.View>
     </Pressable>
@@ -68,7 +123,7 @@ const SummaryLoader = ({ style }: { style?: any }) => {
   const isDarkColorScheme = colorScheme === "dark";
 
   const handlePress = () => {
-    toast("ტექსტის ანალიზი მიმდინარეობს", {
+    toast(t("common.text_analysis_in_progress"), {
       duration: 3000,
       id: "summary-loader",
     });
@@ -87,8 +142,9 @@ const SummaryLoader = ({ style }: { style?: any }) => {
           style,
         ]}
       >
+        <LoadingCircle color="#007AFF" size={16} />
         <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          ვაანალიზებთ...
+          {t("common.analyzing_post")}
         </Text>
       </Animated.View>
     </Pressable>
@@ -102,7 +158,7 @@ const MetadataLoader = ({ style }: { style?: any }) => {
   const isDarkColorScheme = colorScheme === "dark";
 
   const handlePress = () => {
-    toast("მეტადატას ვამოწმებთ", {
+    toast(t("common.please_wait"), {
       duration: 3000,
       id: "metadata-loader",
     });
@@ -121,8 +177,9 @@ const MetadataLoader = ({ style }: { style?: any }) => {
           style,
         ]}
       >
+        <LoadingCircle color="#34C759" size={16} />
         <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          გადავამოწმებთ...
+          {t("common.analyzing_post")}
         </Text>
       </Animated.View>
     </Pressable>
@@ -133,12 +190,13 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   hideUserRects,
   verificationId,
   sourceComponent,
+  showFactualityBadge,
+  isOwner,
 }) => {
   // Use the same hook as CommentsView to ensure consistent data
-  const { data: verification } = useVerificationById(verificationId, true, {
+  const { data: verification } = useVerificationById(verificationId, isOwner, {
     refetchInterval: 5000, // Same interval as CommentsView uses
   });
-
   // Extract the data from verification object
   const factuality = verification?.fact_check_data?.factuality;
   const isFactualityLoading = verification?.fact_check_status === "PENDING";
@@ -161,35 +219,7 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   const pathname = usePathname();
   const { closeLightbox } = useLightboxControls();
 
-  // Calculate factuality badge info
-  const getFactCheckBadgeInfo = (): {
-    text: string;
-    type: "truth" | "misleading" | "needs-context";
-  } | null => {
-    const score = factuality;
-
-    if (score === undefined || score === null) {
-      return null;
-    }
-
-    let badgeText = "";
-    let badgeType: "truth" | "misleading" | "needs-context";
-
-    if (score >= 0.75) {
-      badgeText = `${Math.round(score * 100)}% სიმართლე`;
-      badgeType = "truth";
-    } else if (score >= 0.5) {
-      badgeText = `${Math.round(score * 100)}% სიმართლე`;
-      badgeType = "needs-context";
-    } else {
-      badgeText = `${Math.round((1 - score) * 100)}% სიცრუე`;
-      badgeType = "misleading";
-    }
-
-    return { text: badgeText, type: badgeType };
-  };
-
-  const badgeInfo = getFactCheckBadgeInfo();
+  const badgeInfo = getFactCheckBadgeInfo(factuality);
 
   useEffect(() => {
     if (isFactualityLoading) {
@@ -248,7 +278,6 @@ const FeedActions: React.FC<FeedActionsProps> = ({
     const isOnVerificationPage = pathname === `/verification/${verificationId}`;
 
     if (isOnVerificationPage) {
-      console.log("isOnVerificationPage", isOnVerificationPage);
       // Potentially scroll to a relevant section or do nothing
       return;
     }
@@ -293,7 +322,8 @@ const FeedActions: React.FC<FeedActionsProps> = ({
                 { marginLeft: hideUserRects ? 0 : 12 },
               ]}
             >
-              {/* {badgeInfo &&
+              {badgeInfo &&
+                showFactualityBadge &&
                 !isFactualityLoading &&
                 !isSummaryLoading &&
                 !metadataLoading && (
@@ -301,7 +331,7 @@ const FeedActions: React.FC<FeedActionsProps> = ({
                     text={badgeInfo.text}
                     type={badgeInfo.type}
                   />
-                )} */}
+                )}
               {isFactualityLoading && (
                 <FactualityLoader
                   style={{
@@ -309,14 +339,23 @@ const FeedActions: React.FC<FeedActionsProps> = ({
                   }}
                 />
               )}
-              {!isFactualityLoading && isSummaryLoading && <SummaryLoader />}
+              {!isFactualityLoading && isSummaryLoading && (
+                <SummaryLoader
+                  style={{
+                    opacity: summaryLoaderOpacity,
+                  }}
+                />
+              )}
               {!isFactualityLoading && !isSummaryLoading && metadataLoading && (
-                <MetadataLoader />
+                <MetadataLoader
+                  style={{
+                    opacity: metadataLoaderOpacity,
+                  }}
+                />
               )}
             </Pressable>
           </View>
           <View style={styles.actionGroup}>
-            {/* <ImpressionsCount verificationId={verificationId} /> */}
             <ShareButton verificationId={verificationId} />
           </View>
         </View>
@@ -359,6 +398,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 28,
     justifyContent: "center",
+    gap: 8,
   },
   loaderText: {
     fontSize: 13,
@@ -367,7 +407,7 @@ const styles = StyleSheet.create({
   factualityContainer: {
     marginLeft: 12,
     height: 28,
-    width: 150,
+    maxWidth: 200,
     justifyContent: "center",
     alignItems: "flex-start",
   },

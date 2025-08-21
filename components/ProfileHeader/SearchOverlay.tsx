@@ -22,6 +22,7 @@ import {
   searchInputValueAtom,
   setDebouncedSearchAtom,
 } from "@/lib/state/search";
+import { t } from "@/lib/i18n";
 
 interface SearchOverlayProps {
   isSearchActive: boolean;
@@ -146,7 +147,7 @@ export function SearchOverlay({
             value={searchValue}
             onChangeText={handleSearchChange}
             onSubmitEditing={handleSearchSubmit}
-            placeholder={Platform.OS === "ios" ? "ძებნა" : "ძებნა"}
+            placeholder={t("common.search")}
             placeholderTextColor={isDarkColorScheme ? "#8E8E93" : "#8E8E93"}
             returnKeyType="search"
             autoCorrect={false}
@@ -171,7 +172,7 @@ export function SearchOverlay({
                 : styles.cancelTextLight,
             ]}
           >
-            გაუქმება
+            {t("common.cancel")}
           </Text>
         </TouchableOpacity>
       </View>

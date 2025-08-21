@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import * as Notifications from "expo-notifications";
@@ -109,9 +110,6 @@ export const convertToCDNUrl = (url: string) => {
 export const getVideoSrc = (
   verification: UserVerification | LocationFeedPost
 ) => {
-  if (verification.verified_image) {
-    return "";
-  }
   const streamSrc =
     Platform.OS === "ios"
       ? verification?.verified_media_playback?.hls

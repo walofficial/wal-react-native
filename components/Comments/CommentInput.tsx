@@ -8,8 +8,16 @@ import {
   Animated,
   StyleSheet,
 } from "react-native";
-import api from "@/lib/api";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  createCommentCommentsPostMutation,
+  getVerificationCommentsInfiniteOptions,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
+
+import {
+  InfiniteData,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import useAuth from "@/hooks/useAuth";
 import { useAtom } from "jotai";
 import { activeTabAtom, shouldFocusCommentInputAtom } from "@/atoms/comments";
@@ -19,6 +27,8 @@ import * as Haptics from "expo-haptics";
 import { useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
 import Button from "@/components/Button";
+import { GetVerificationCommentsResponse } from "@/lib/api/generated";
+import { t } from "@/lib/i18n";
 
 interface CommentInputProps {
   postId: string;
@@ -44,13 +54,13 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
   const theme = useTheme();
   const { isDarkColorScheme } = useColorScheme();
 
+  const commentsQuery = getVerificationCommentsInfiniteOptions({
+    path: { verification_id: postId },
+    query: { sort_by: activeTab as any },
+  });
   // Mutation setup
   const { mutate: submitComment, isPending } = useMutation({
-    mutationFn: (newContent: string) =>
-      api.createComment({
-        content: newContent.trim(),
-        verification_id: postId,
-      }),
+    ...createCommentCommentsPostMutation(),
     onMutate: async (newContent) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({
@@ -58,17 +68,12 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
       });
 
       // Snapshot the previous value
-      const previousComments = queryClient.getQueryData([
-        "comments",
-        postId,
-        activeTab,
-      ]);
-
+      const previousComments = queryClient.getQueryData(commentsQuery.queryKey);
       // Create optimistic comment
       const optimisticComment = {
         comment: {
           id: Date.now().toString(),
-          content: newContent.trim(),
+          content: newContent.body.content,
           created_at: new Date().toISOString(),
           author: {
             id: user?.id,
@@ -82,13 +87,32 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
       };
 
       // Optimistically update the cache
-      queryClient.setQueryData(["comments", postId, activeTab], (old: any) => ({
-        ...old,
-        pages: [
-          [optimisticComment, ...(old?.pages[0] || [])],
-          ...(old?.pages.slice(1) || []),
-        ],
-      }));
+      queryClient.setQueryData<InfiniteData<GetVerificationCommentsResponse>>(
+        commentsQuery.queryKey,
+        (old) => {
+          if (!old) {
+            return {
+              pageParams: [],
+              pages: [
+                {
+                  comments: [optimisticComment as any],
+                },
+              ],
+            };
+          }
+
+          const firstPage = old.pages[0] ?? { comments: [] };
+          const updatedFirstPage: GetVerificationCommentsResponse = {
+            ...firstPage,
+            comments: [optimisticComment as any, ...(firstPage.comments ?? [])],
+          };
+
+          return {
+            ...old,
+            pages: [updatedFirstPage, ...old.pages.slice(1)],
+          };
+        }
+      );
 
       // Clear input immediately
       setContent("");
@@ -99,7 +123,7 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
     onError: (err, newContent, context) => {
       // Revert to previous state on error
       queryClient.setQueryData(
-        ["comments", postId, activeTab],
+        commentsQuery.queryKey,
         context?.previousComments
       );
       console.error("Failed to create comment:", err);
@@ -107,7 +131,7 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
     onSettled: () => {
       // Refetch after error or success
       queryClient.invalidateQueries({
-        queryKey: ["comments", postId, activeTab],
+        queryKey: commentsQuery.queryKey,
       });
     },
   });
@@ -128,7 +152,9 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
   const handleSubmit = () => {
     if (!content.trim() || !user) return;
     haptic("Medium");
-    submitComment(content);
+    submitComment({
+      body: { content: content.trim(), verification_id: postId },
+    } as any);
     setContent("");
     // Keep focus on the input after submitting
     inputRef.current?.focus();
@@ -187,15 +213,15 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
             setIsFocused(false);
             onFocusChange?.(false);
           }}
-          placeholder="კომენტარი..."
+          placeholder={t("common.comment_placeholder")}
           placeholderTextColor={isDarkColorScheme ? "#6b7280" : "#9ca3af"}
           style={[styles.textInput, { color: theme.colors.text }]}
           multiline
           autoFocus={false}
           maxLength={MAX_CHARS}
           returnKeyType="default"
-          accessibilityLabel="კომენტარის ველი"
-          accessibilityHint="შეიყვანე კომენტარი აქ"
+          accessibilityLabel={t("common.comment_field_accessibility_label")}
+          accessibilityHint={t("common.comment_field_accessibility_hint")}
         />
 
         <View style={styles.sendButtonContainer}>

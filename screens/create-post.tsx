@@ -10,11 +10,14 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { PublicVerification } from "@/lib/interfaces";
-import { toast } from "@backpackapp-io/react-native-toast";
+import {
+  LinkPreviewData,
+  LocationFeedPost,
+  publishPost,
+} from "@/lib/api/generated";
+import { useToast } from "@/lib/context/ToastContext";
 import PostControls from "@/components/PostControls";
 import {
   useAnimatedStyle,
@@ -37,6 +40,12 @@ import SourceInfoCard from "@/components/CreatePost/SourceInfoCard";
 import { useColorScheme } from "react-native";
 import { useMinimalShellMode } from "@/lib/context/header-transform";
 import * as Clipboard from "expo-clipboard";
+import {
+  getLocationFeedPaginatedInfiniteOptions,
+  getLocationFeedPaginatedInfiniteQueryKey,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
+import { formDataBodySerializer } from "@/lib/utils/form-data";
+import { t } from "@/lib/i18n";
 
 const MAX_CHARS = 1500;
 
@@ -105,13 +114,13 @@ const styles = StyleSheet.create({
 
 export default function CreatePost() {
   const {
-    taskId,
+    feedId,
     disableImagePicker,
     disableRoomCreation,
     sharedContent,
     sharedImages,
   } = useLocalSearchParams<{
-    taskId: string;
+    feedId: string;
     disableImagePicker?: string;
     disableRoomCreation?: string;
     sharedContent?: string;
@@ -127,6 +136,7 @@ export default function CreatePost() {
   const [isInvalidLink, setIsInvalidLink] = useState(false);
   const { user } = useAuth();
   const theme = useTheme();
+  const { success, error: errorToast } = useToast();
 
   const queryClient = useQueryClient();
   const {
@@ -160,7 +170,7 @@ export default function CreatePost() {
         }
       } catch (error) {
         console.error("Error parsing shared images:", error);
-        toast.error("Failed to load shared images");
+        errorToast({ title: "Failed to load shared images" });
       }
     }
   }, [sharedImages, setSelectedImages]);
@@ -205,13 +215,7 @@ export default function CreatePost() {
         throw new Error("Post cannot be empty");
       }
 
-      const formData = new FormData();
-      formData.append("task_id", taskId);
-      formData.append("content", trimmedText);
-      formData.append(
-        "should_factcheck",
-        disableRoomCreation === "true" ? "true" : "false"
-      );
+      const files = [];
 
       // Compress and append images
       for (const image of selectedImages) {
@@ -236,14 +240,21 @@ export default function CreatePost() {
           ? compressedImage.path
           : "file://" + compressedImage.path;
 
-        formData.append("files", {
+        files.push({
           uri: finalUri,
           type: "image/jpeg",
           name: compressedImage.path.split("/").pop(),
-        } as any);
+        });
       }
 
-      return api.publishPost(taskId, formData);
+      return publishPost({
+        ...formDataBodySerializer,
+        body: {
+          feed_id: feedId,
+          content: trimmedText,
+          files: files as any,
+        },
+      });
     },
     onSuccess: (publishedDoc) => {
       let navigationTargetContentType:
@@ -276,60 +287,61 @@ export default function CreatePost() {
         cacheUpdateContentType = "last24h";
       }
 
-      queryClient.setQueryData(
-        ["location-feed-paginated", taskId, cacheUpdateContentType],
-        (data: any) => {
-          if (!data) {
-            return {
-              pages: [],
-              index: 0,
-            };
-          }
+      const queryOptions = getLocationFeedPaginatedInfiniteOptions({
+        query: {
+          page_size: 10,
+          content_type_filter: cacheUpdateContentType,
+        },
+        path: {
+          feed_id: feedId,
+        },
+      });
+
+      queryClient.setQueryData(queryOptions.queryKey, (data) => {
+        if (!data) {
           return {
-            ...data,
-            pages: data.pages.map(
-              (
-                page: {
-                  data: PublicVerification[];
-                  page: number;
-                },
-                index: number
-              ) => {
-                return index === 0
-                  ? {
-                      ...page,
-                      data: [
-                        {
-                          ...publishedDoc,
-                          assignee_user: user,
-                        },
-                        ...page.data,
-                      ],
-                    }
-                  : page;
-              }
-            ),
+            pages: [],
+            pageParams: [],
           };
         }
-      );
+        return {
+          ...data,
+          pages: data.pages.map((page, index) => {
+            return index === 0
+              ? {
+                  ...page,
+                  data: [
+                    {
+                      ...publishedDoc,
+                      assignee_user: user,
+                    },
+                    ...page,
+                  ],
+                }
+              : page;
+          }),
+        };
+      });
 
       queryClient.invalidateQueries({
-        queryKey: ["location-feed-paginated", taskId, cacheUpdateContentType],
+        queryKey: queryOptions.queryKey,
+        exact: false,
       });
 
       if (navigationTargetContentType) {
+        router.back();
         router.replace({
-          pathname: `/(tabs)/(global)/[taskId]`,
+          pathname: `/(tabs)/(fact-check)/[feedId]`,
           params: {
-            taskId,
-            content_type: navigationTargetContentType,
+            feedId,
+            content_type: "last24h",
           },
         });
       } else if (isShareIntent) {
         router.navigate({
-          pathname: `/(tabs)/(global)/[taskId]`,
+          pathname: `/(tabs)/(fact-check)/[feedId]`,
           params: {
-            taskId,
+            feedId,
             content_type: "social_media_only", // Default for share intent if no specific link
           },
         });
@@ -343,27 +355,46 @@ export default function CreatePost() {
         // The cacheUpdateContentType is already invalidated above.
         if (cacheUpdateContentType !== "social_media_only") {
           queryClient.invalidateQueries({
-            queryKey: ["location-feed-paginated", taskId, "social_media_only"],
+            queryKey: getLocationFeedPaginatedInfiniteQueryKey({
+              path: { feed_id: feedId },
+              query: {
+                content_type_filter: "social_media_only",
+              },
+            }),
           });
         }
         if (cacheUpdateContentType !== "youtube_only") {
           queryClient.invalidateQueries({
-            queryKey: ["location-feed-paginated", taskId, "youtube_only"],
+            queryKey: getLocationFeedPaginatedInfiniteQueryKey({
+              path: { feed_id: feedId },
+              query: {
+                content_type_filter: "youtube_only",
+              },
+            }),
           });
         }
         // Always invalidate last24h for share intents if it wasn't the primary updated one
         if (cacheUpdateContentType !== "last24h") {
           queryClient.invalidateQueries({
-            queryKey: ["location-feed-paginated", taskId, "last24h"],
+            queryKey: getLocationFeedPaginatedInfiniteQueryKey({
+              path: { feed_id: feedId },
+              query: {
+                content_type_filter: "last24h",
+              },
+            }),
           });
         }
       }
       setMode(false);
     },
     onError: (error) => {
-      toast.error(
-        error instanceof Error ? error.message : "პოსტი ვერ გამოქვეყნდა"
-      );
+      errorToast({
+        title: t("errors.post_publish_failed"),
+        description:
+          error instanceof Error
+            ? error.message
+            : t("errors.post_publish_failed"),
+      });
     },
   });
 
@@ -372,7 +403,10 @@ export default function CreatePost() {
 
   const handlePublish = () => {
     if (text.trim().length === 0 && selectedImages.length === 0) {
-      toast.error("არ უნდა იყოს ცარიელი");
+      errorToast({
+        title: t("errors.post_empty"),
+        description: t("errors.post_empty"),
+      });
       return;
     }
     mutate();
@@ -412,7 +446,6 @@ export default function CreatePost() {
       if (hasImage) {
         e.preventDefault();
         await handlePasteImage();
-        toast.success("Image pasted from clipboard");
         return;
       }
       // Otherwise, allow default paste (text)
@@ -426,7 +459,6 @@ export default function CreatePost() {
       if (hasImage) {
         // Optionally, prompt user before pasting
         await handlePasteImage();
-        toast.success("Image pasted from clipboard");
       }
     }
   };
@@ -468,7 +500,7 @@ export default function CreatePost() {
                 color: theme.colors.text,
               },
             ]}
-            placeholder={"ფოტო, ტექსტი ან ლინკი გადასამოწმებლად"}
+            placeholder={t("common.recheck_description")}
             placeholderTextColor={theme.colors.feedItem.secondaryText}
             multiline
             maxLength={MAX_CHARS}
@@ -493,7 +525,7 @@ export default function CreatePost() {
           {(previewData || isPreviewLoading) && (
             <Animated.View style={animatedStyle}>
               <LinkPreview
-                previewData={previewData || null}
+                previewData={previewData as LinkPreviewData}
                 isLoading={isPreviewLoading}
                 onInvalidLinkChange={setIsInvalidLink}
               />
@@ -527,7 +559,7 @@ export default function CreatePost() {
         <SourceInfoCard hide={!!text || !!previewData} />
 
         <PostControls
-          taskId={taskId}
+          feedId={feedId}
           charactersLeft={charactersLeft}
           onImagePress={handleImagePick}
           disableImagePicker={disableImagePicker === "true"}

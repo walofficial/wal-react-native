@@ -5,9 +5,10 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { isAndroid } from "@/lib/platform";
 import { useTheme } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 interface PostControlsProps {
-  taskId: string;
+  feedId: string;
   charactersLeft: number;
   onImagePress: () => void;
   disableImagePicker?: boolean;
@@ -20,7 +21,7 @@ interface PostControlsProps {
 }
 
 export default function PostControls({
-  taskId,
+  feedId,
   charactersLeft,
   onImagePress,
   disableImagePicker = false,
@@ -34,6 +35,11 @@ export default function PostControls({
   const router = useRouter();
   const inserts = useSafeAreaInsets();
   const theme = useTheme();
+
+  // Calculate if we should show character count (when user has used > 80% of chars)
+  const MAX_CHARS = 1500; // This should match the MAX_CHARS from create-post.tsx
+  const charsUsed = MAX_CHARS - charactersLeft;
+  const showCharCount = charsUsed > MAX_CHARS * 0.8;
 
   return (
     <View
@@ -58,7 +64,7 @@ export default function PostControls({
               <Text
                 style={[styles.imageButtonText, { color: theme.colors.text }]}
               >
-                დაამატე ფოტო
+                {t("common.add_photo")}
               </Text>
             </TouchableOpacity>
           )}
@@ -67,8 +73,8 @@ export default function PostControls({
             <TouchableOpacity
               onPress={() => {
                 router.replace({
-                  pathname: "/(tabs)/(home)/[taskId]/create-space",
-                  params: { taskId },
+                  pathname: "/(tabs)/(home)/[feedId]/create-space",
+                  params: { feedId },
                 });
               }}
               style={styles.roomButton}
@@ -88,11 +94,19 @@ export default function PostControls({
             {selectedImagesCount}/{maxImages}
           </Text>
         )}
-        <Text
-          style={[styles.charactersLeft, { color: theme.colors.secondary }]}
-        >
-          {charactersLeft}
-        </Text>
+        {showCharCount && (
+          <Text
+            style={[
+              styles.charactersLeft,
+              {
+                color:
+                  charactersLeft < 100 ? "#ef4444" : theme.colors.secondary,
+              },
+            ]}
+          >
+            {charactersLeft}
+          </Text>
+        )}
       </View>
     </View>
   );

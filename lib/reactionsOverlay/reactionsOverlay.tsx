@@ -2,7 +2,7 @@ import React from "react";
 import { nanoid } from "nanoid/non-secure";
 
 import { useNonReactiveCallback } from "@/lib/hooks/useNonReactiveCallback";
-import { ReactionType } from "@/lib/interfaces";
+import { ReactionType } from "@/lib/api/generated";
 
 export type ReactionsOverlay = {
   id: string;

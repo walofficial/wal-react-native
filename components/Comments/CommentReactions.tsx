@@ -6,7 +6,6 @@ import {
   StyleSheet,
   useColorScheme,
   Dimensions,
-  findNodeHandle,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -16,7 +15,8 @@ import Animated, {
   withTiming,
   runOnJS,
 } from "react-native-reanimated";
-import { ReactionType, Comment, ReactionsSummary } from "@/lib/interfaces";
+
+import { Comment, ReactionType } from "@/lib/api/generated/types.gen";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { useAddReaction, useRemoveReaction } from "@/hooks/useCommentReactions";
 import { useAtomValue } from "jotai";
@@ -34,14 +34,14 @@ interface CommentReactionsProps {
 }
 
 const getReactionEmoji = (reactionType: ReactionType): string => {
-  const emojiMap = {
-    [ReactionType.LIKE]: "👍",
-    [ReactionType.LOVE]: "❤️",
-    [ReactionType.LAUGH]: "😂",
-    [ReactionType.ANGRY]: "😠",
-    [ReactionType.SAD]: "😢",
-    [ReactionType.WOW]: "😮",
-    [ReactionType.DISLIKE]: "👎",
+  const emojiMap: Record<ReactionType, string> = {
+    like: "👍",
+    love: "❤️",
+    laugh: "😂",
+    angry: "😠",
+    sad: "😢",
+    wow: "😮",
+    dislike: "👎",
   };
   return emojiMap[reactionType];
 };
@@ -54,7 +54,6 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
   const colorScheme = useColorScheme() ?? "light";
   const textColor = useThemeColor({}, "text");
   const iconColor = useThemeColor({}, "icon");
-  const backgroundColor = useThemeColor({}, "background");
   const activeTab = useAtomValue(activeTabAtom);
   const addReactionMutation = useAddReaction(verificationId, activeTab);
   const removeReactionMutation = useRemoveReaction(verificationId, activeTab);
@@ -73,33 +72,34 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
 
   const scale = useSharedValue(1);
 
-  const reactions = comment.reactions_summary || {
-    like: { count: 0 },
-    love: { count: 0 },
-    laugh: { count: 0 },
-    angry: { count: 0 },
-    sad: { count: 0 },
-    wow: { count: 0 },
-    dislike: { count: 0 },
+  const reactions: Record<ReactionType, { count: number }> = {
+    like: { count: comment.reactions_summary?.like?.count ?? 0 },
+    love: { count: comment.reactions_summary?.love?.count ?? 0 },
+    laugh: { count: comment.reactions_summary?.laugh?.count ?? 0 },
+    angry: { count: comment.reactions_summary?.angry?.count ?? 0 },
+    sad: { count: comment.reactions_summary?.sad?.count ?? 0 },
+    wow: { count: comment.reactions_summary?.wow?.count ?? 0 },
+    dislike: { count: comment.reactions_summary?.dislike?.count ?? 0 },
   };
 
   const currentUserReaction = comment.current_user_reaction?.type;
 
   // Get the top reactions with counts > 0, filtered to only allowed types
-  const allowedReactionTypes = [
-    ReactionType.LOVE,
-    ReactionType.LAUGH,
-    ReactionType.WOW,
-    ReactionType.SAD,
-    ReactionType.DISLIKE,
+  const allowedReactionTypes: ReactionType[] = [
+    "love",
+    "laugh",
+    "wow",
+    "sad",
+    "dislike",
   ];
+
   const topReactionsWithCounts = allowedReactionTypes.filter(
-    (reactionType) => reactions[reactionType].count > 0
+    (reactionType) => reactions[reactionType]?.count > 0
   );
 
   // Calculate total reactions only from allowed types
   const totalReactions = allowedReactionTypes.reduce(
-    (sum, reactionType) => sum + reactions[reactionType].count,
+    (sum, reactionType) => sum + (reactions[reactionType]?.count || 0),
     0
   );
 
@@ -128,15 +128,22 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
       withTiming(0.95, { duration: 80 }),
       withSpring(1, { damping: 15, stiffness: 300 })
     );
-
     if (currentUserReaction === reactionType) {
       // Remove reaction if same type is pressed
-      removeReactionMutation.mutate({ commentId: comment.id });
+      removeReactionMutation.mutate({
+        path: {
+          comment_id: comment.id,
+        },
+      });
     } else {
       // Add or change reaction
       addReactionMutation.mutate({
-        commentId: comment.id,
-        reactionType,
+        path: {
+          comment_id: comment.id,
+        },
+        body: {
+          reaction_type: reactionType,
+        },
       });
     }
   };

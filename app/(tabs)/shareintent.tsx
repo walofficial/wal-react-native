@@ -14,20 +14,23 @@ import {
 } from "expo-share-intent";
 import { useSession } from "@/components/AuthLayer";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useCountryFeed from "@/hooks/useCountryFeed";
+import useFeeds from "@/hooks/useFeeds";
 import { toast } from "@backpackapp-io/react-native-toast";
+import { useToast } from "@/components/ToastUsage";
 
 export default function ShareIntent() {
   const insets = useSafeAreaInsets();
   const { session, isLoading } = useSession();
-  const { id: countryFeedId } = useCountryFeed();
+  const { factCheckFeedId, newsFeedId } = useFeeds();
   const { shareIntent } = useShareIntentContext();
   const sharedContent = shareIntent?.text;
   const sharedFiles = shareIntent?.files;
   const router = useRouter();
+  const { error } = useToast();
+
   useEffect(() => {
     if (shareIntent && !session) {
-      toast.error("გთხოვთ შეხვიდეთ სისტემაში გასაგრძელებლად");
+      error({ title: "გთხოვთ შეხვიდეთ სისტემაში გასაგრძელებლად" });
     } else if (shareIntent && session) {
       // Check if we have images or text content to share
       const hasContent =
@@ -64,7 +67,7 @@ export default function ShareIntent() {
 
         // Build navigation params
         const params: any = {
-          taskId: countryFeedId,
+          feedId: factCheckFeedId,
           disableRoomCreation: "true",
         };
 
@@ -79,12 +82,12 @@ export default function ShareIntent() {
         // Navigate to create-post-shareintent for any shared content (text or images)
         router.replace({
           pathname:
-            `/(tabs)/(global)/${countryFeedId}/create-post-shareintent` as any,
+            `/(tabs)/(fact-check)/${factCheckFeedId}/create-post-shareintent` as any,
           params,
         });
       }
     }
-  }, [shareIntent, session, sharedContent, sharedFiles, countryFeedId]);
+  }, [shareIntent, session, sharedContent, sharedFiles, factCheckFeedId]);
 
   if (isLoading) {
     return (

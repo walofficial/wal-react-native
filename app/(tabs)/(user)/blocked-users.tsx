@@ -12,7 +12,11 @@ const BlockedUsers: React.FC = () => {
   const unblockUserMutation = useUnblockMutation();
 
   const handleUnblockUser = (userId: string) => {
-    unblockUserMutation.mutate(userId);
+    unblockUserMutation.mutate({
+      path: {
+        target_id: userId,
+      },
+    });
   };
 
   if (isLoading) {

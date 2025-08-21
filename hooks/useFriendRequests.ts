@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { useIsFocused } from "@react-navigation/native";
+import { getFriendRequestsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export function useFriendRequests() {
   const isFocused = useIsFocused()
@@ -11,8 +11,7 @@ export function useFriendRequests() {
     isRefetching,
     isFetching,
   } = useQuery({
-    queryKey: ["friendRequests"],
-    queryFn: api.getFriendRequests,
+    ...getFriendRequestsOptions(),
     subscribed: isFocused,
     enabled: isFocused,
     refetchInterval: isFocused ? 30000 : false,

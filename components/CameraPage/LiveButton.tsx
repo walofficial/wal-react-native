@@ -6,8 +6,9 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useMutation } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { toast } from "@backpackapp-io/react-native-toast";
+import { requestLivekitIngressMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 interface LiveButtonProps {
   isLive: boolean;
@@ -18,26 +19,26 @@ interface LiveButtonProps {
     livekit_token: string;
     room_name: string;
   }) => void;
-  taskId: string;
+  feedId: string;
   textContent: string;
 }
 
 export function LiveButton({
   onShowRoom,
-  taskId,
+  feedId,
   textContent,
 }: LiveButtonProps) {
+  const { error: errorToast } = useToast();
   const { mutate: requestLive, isPending } = useMutation({
-    mutationFn: async () => {
-      return api.requestLive(taskId, textContent?.trim());
-    },
+    ...requestLivekitIngressMutation(),
     onSuccess: (data) => {
       onShowRoom(data);
     },
     onError: (error) => {
       console.error("Failed to start live stream:", error);
-      toast.error("Failed to start live stream", {
-        duration: 2000,
+      errorToast({
+        title: t("errors.failed_to_start_live_stream"),
+        description: t("errors.failed_to_start_live_stream"),
       });
     },
   });
@@ -46,7 +47,9 @@ export function LiveButton({
     <TouchableOpacity
       style={[styles.button, isPending && styles.pendingButton]}
       onPress={() => {
-        requestLive();
+        (requestLive as any)({
+          body: { feed_id: feedId, text_content: textContent?.trim() },
+        });
       }}
       disabled={isPending}
     >

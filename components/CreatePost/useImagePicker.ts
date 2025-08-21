@@ -1,12 +1,13 @@
 import { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { toast } from "@backpackapp-io/react-native-toast";
 import {
   hasClipboardImage,
   pasteImageFromClipboard,
   copyImageToClipboard,
   addClipboardListener
 } from "@/lib/clipboard";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 const MAX_IMAGES = 3;
 
@@ -16,6 +17,7 @@ export function useImagePicker() {
   >([]);
   const [hasClipboardImageAvailable, setHasClipboardImageAvailable] = useState(false);
   const [isPastingImage, setIsPastingImage] = useState(false);
+  const { error: errorToast } = useToast();
 
   // Check clipboard on mount and set up listener
   useEffect(() => {
@@ -42,7 +44,10 @@ export function useImagePicker() {
 
   const handleImagePick = async () => {
     if (selectedImages.length >= MAX_IMAGES) {
-      toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+      errorToast({
+        title: t("errors.max_images_reached", { count: MAX_IMAGES }),
+        description: t("errors.max_images_reached", { count: MAX_IMAGES })
+      });
       return;
     }
 
@@ -57,7 +62,10 @@ export function useImagePicker() {
     if (!result.canceled) {
       const newImages = result.assets;
       if (selectedImages.length + newImages.length > MAX_IMAGES) {
-        toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+        errorToast({
+          title: t("errors.max_images_reached", { count: MAX_IMAGES }),
+          description: t("errors.max_images_reached", { count: MAX_IMAGES })
+        });
         return;
       }
       setSelectedImages([...selectedImages, ...newImages]);
@@ -66,13 +74,21 @@ export function useImagePicker() {
 
   const handlePasteImage = async () => {
     if (selectedImages.length >= MAX_IMAGES) {
-      toast.error(`Maximum ${MAX_IMAGES} images allowed`);
+      errorToast({
+        title: t("errors.max_images_reached", { count: MAX_IMAGES }),
+        description: t("errors.max_images_reached", { count: MAX_IMAGES })
+      });
       return;
     }
 
     setIsPastingImage(true);
     try {
-      const pastedImage = await pasteImageFromClipboard();
+      const pastedImage = await pasteImageFromClipboard((message) => {
+        errorToast({
+          title: message,
+          description: message
+        });
+      });
       if (pastedImage) {
         setSelectedImages([...selectedImages, pastedImage]);
         // Update clipboard status after pasting
@@ -80,7 +96,6 @@ export function useImagePicker() {
       }
     } catch (error) {
       console.error("Error pasting image:", error);
-      toast.error("Failed to paste image");
     } finally {
       setIsPastingImage(false);
     }
@@ -91,7 +106,6 @@ export function useImagePicker() {
       await copyImageToClipboard(imageUri);
     } catch (error) {
       console.error("Error copying image:", error);
-      toast.error("Failed to copy image");
     }
   };
 

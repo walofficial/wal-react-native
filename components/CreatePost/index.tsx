@@ -5,10 +5,10 @@ import { useTheme } from "@/lib/theme";
 
 interface CreatePostProps {
   disabled: boolean;
-  taskId: string;
+  feedId: string;
 }
 
-export default function CreatePost({ disabled, taskId }: CreatePostProps) {
+export default function CreatePost({ disabled, feedId }: CreatePostProps) {
   const router = useRouter();
   const theme = useTheme();
 
@@ -23,9 +23,9 @@ export default function CreatePost({ disabled, taskId }: CreatePostProps) {
       ]}
       onPress={() => {
         router.push({
-          pathname: `/(tabs)/(home)/[taskId]/create-post`,
+          pathname: `/(tabs)/(home)/[feedId]/create-post`,
           params: {
-            taskId,
+            feedId,
             disableImagePicker: "true",
           },
         });

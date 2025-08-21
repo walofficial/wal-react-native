@@ -1,20 +1,19 @@
-import useTask from "@/hooks/useTask";
+import useFeed from "@/hooks/useFeed";
 import { useGlobalSearchParams } from "expo-router";
-import { H1, H2 } from "../ui/typography";
 import Animated, {
-  withTiming,
   useAnimatedStyle,
   withSpring,
-  FadeIn,
 } from "react-native-reanimated";
 import { isWeb } from "@/lib/platform";
 import { StyleSheet } from "react-native";
 import { FontSizes, useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
+import { Text } from "react-native";
+import { H1, H2 } from "../ui/typography";
 
-function CustomTitle() {
-  const { taskId } = useGlobalSearchParams<{ taskId: string }>();
-  const { task } = useTask(taskId);
+function TaskTitle() {
+  const { feedId } = useGlobalSearchParams<{ feedId: string }>();
+  const { task } = useFeed(feedId);
   const { isDarkColorScheme } = useColorScheme();
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -34,7 +33,7 @@ function CustomTitle() {
   };
 
   const heading = isWeb ? (
-    <H2 style={headingStyle}>{task?.display_name || "WAL"}</H2>
+    <Text style={headingStyle}>{task?.display_name || "WAL"}</Text>
   ) : (
     <H1 style={headingStyle}>{task?.display_name || "WAL"}</H1>
   );
@@ -46,7 +45,7 @@ type CustomTitleWithTextProps = {
   text: string;
 };
 
-function CustomTitleWithText({ text }: CustomTitleWithTextProps) {
+function CustomTitle({ text }: CustomTitleWithTextProps) {
   const { isDarkColorScheme } = useColorScheme();
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -66,9 +65,9 @@ function CustomTitleWithText({ text }: CustomTitleWithTextProps) {
   };
 
   const heading = isWeb ? (
-    <H2 style={headingStyle}>{text}</H2>
+    <Text style={headingStyle}>{text}</Text>
   ) : (
-    <H1 style={headingStyle}>{text}</H1>
+    <Text style={headingStyle}>{text}</Text>
   );
 
   return <Animated.View style={animatedStyle}>{heading}</Animated.View>;
@@ -78,9 +77,9 @@ const styles = StyleSheet.create({
   heading: {
     padding: 16,
     paddingLeft: 12,
-    fontSize: FontSizes.huge,
+    fontSize: FontSizes.xxlarge,
     fontWeight: "bold",
   },
 });
 
-export { CustomTitle, CustomTitleWithText };
+export { TaskTitle, CustomTitle };

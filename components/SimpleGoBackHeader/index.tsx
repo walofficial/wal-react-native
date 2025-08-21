@@ -14,13 +14,16 @@ import ShareButton from "../FeedItem/ShareButton";
 import CloseButton from "../CloseButton";
 import { useTheme } from "@/lib/theme";
 import useAuth from "@/hooks/useAuth";
-import { HOME_TASK_ID } from "@/constants/home";
+import { FACT_CHECK_FEED_ID, NEWS_FEED_ID } from "@/lib/constants";
 
 interface SimpleGoBackHeaderProps {
   title?: string;
   rightSection?: React.ReactNode;
   verificationId?: string;
   timestamp?: string;
+  middleSection?: React.ReactNode;
+  // If true, the back button will just go back because user is already auth and is in the global screen and not sharable status screen.
+  justInstantGoBack?: boolean;
 }
 
 const SimpleGoBackHeader = ({
@@ -28,16 +31,14 @@ const SimpleGoBackHeader = ({
   rightSection,
   verificationId,
   timestamp,
+  middleSection,
+  justInstantGoBack,
 }: SimpleGoBackHeaderProps) => {
   const { user } = useAuth();
   const router = useRouter();
   const theme = useTheme();
 
-  const finalRightSection = verificationId ? (
-    <ShareButton verificationId={verificationId} bright={true} />
-  ) : (
-    rightSection
-  );
+  const finalRightSection = verificationId ? null : rightSection;
   const Header = () =>
     !isWeb && (
       <View
@@ -49,22 +50,27 @@ const SimpleGoBackHeader = ({
         <CloseButton
           variant="back"
           onClick={() => {
+            if (justInstantGoBack) {
+              router.back();
+              return;
+            }
             if (user) {
-              router.replace(`/(tabs)/(global)/${HOME_TASK_ID}`);
+              router.replace(`/(tabs)/(news)/${NEWS_FEED_ID}`);
             } else {
               router.navigate("/(auth)/sign-in");
             }
           }}
           style={{ color: theme.colors.text }}
         />
-        {(title || timestamp) && (
-          <Text
-            style={[styles.title, { color: theme.colors.text }]}
-            numberOfLines={1}
-          >
-            {timestamp || title}
-          </Text>
-        )}
+        {middleSection ||
+          ((title || timestamp) && (
+            <Text
+              style={[styles.title, { color: theme.colors.text }]}
+              numberOfLines={1}
+            >
+              {timestamp || title}
+            </Text>
+          ))}
         {finalRightSection}
       </View>
     );
@@ -79,13 +85,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     height: 56,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
   },
   backButton: {
-    padding: 5,
     justifyContent: "center",
     alignItems: "center",
-    minWidth: 40,
   },
   title: {
     fontSize: 17,

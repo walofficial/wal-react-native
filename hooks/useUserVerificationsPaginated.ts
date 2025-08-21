@@ -1,7 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { UserVerification } from "@/lib/interfaces";
-import { useIsFocused } from "@react-navigation/native";
+import { getVerificationsInfiniteOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export function useUserVerificationsPaginated({
   targetUserId,
@@ -23,14 +21,17 @@ export function useUserVerificationsPaginated({
     error,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["user-verifications-paginated", targetUserId],
-    queryFn: ({ pageParam = 1 }) =>
-      api.getUserVerifications(targetUserId, pageParam, pageSize),
+    ...getVerificationsInfiniteOptions({
+      query: {
+        target_user_id: targetUserId,
+        page_size: pageSize,
+      },
+    }),
     getNextPageParam: (lastPage, pages) => {
-      if (lastPage.data.length < pageSize) {
+      if (lastPage.length < pageSize) {
         return undefined;
       }
-      return lastPage.page + 1;
+      return lastPage.length + 1;
     },
     enabled,
     initialPageParam: 1,
@@ -41,7 +42,7 @@ export function useUserVerificationsPaginated({
     refetchIntervalInBackground: false,
   });
 
-  const items = data?.pages.flatMap((page) => page.data) || [];
+  const items = data?.pages.flatMap((page) => page) || [];
   return {
     items,
     fetchNextPage,

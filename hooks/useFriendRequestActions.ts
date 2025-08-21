@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import { acceptFriendRequestMutation, getFriendRequestsQueryKey, rejectFriendRequestMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export const useFriendRequestActions = () => {
   const queryClient = useQueryClient();
 
   const acceptRequest = useMutation({
     onMutate(variables) {
-      queryClient.setQueryData(["friendRequests"], (oldData: any) => {
+      queryClient.setQueryData(getFriendRequestsQueryKey(), (oldData: any) => {
         if (oldData) {
           return oldData.filter((item: any) => {
             if (item.request.id === variables) {
@@ -17,19 +17,18 @@ export const useFriendRequestActions = () => {
         }
       });
     },
-    mutationFn: api.acceptFriendRequest,
+    ...acceptFriendRequestMutation(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
-      queryClient.invalidateQueries({ queryKey: ["friendsFeed"] });
+      queryClient.invalidateQueries({ queryKey: getFriendRequestsQueryKey() });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: getFriendRequestsQueryKey() });
     },
   });
 
   const rejectRequest = useMutation({
     onMutate(variables) {
-      queryClient.setQueryData(["friendRequests"], (oldData: any) => {
+      queryClient.setQueryData(getFriendRequestsQueryKey(), (oldData: any) => {
         if (oldData) {
           return oldData.filter((item: any) => {
             if (item.request.id === variables) {
@@ -41,12 +40,12 @@ export const useFriendRequestActions = () => {
         return oldData;
       });
     },
-    mutationFn: api.rejectFriendRequest,
+    ...rejectFriendRequestMutation(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: getFriendRequestsQueryKey() });
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      queryClient.invalidateQueries({ queryKey: getFriendRequestsQueryKey() });
     },
   });
 

@@ -20,22 +20,15 @@ import { Image } from "expo-image";
 import { useThemeColor } from "@/hooks/useThemeColor";
 import { convertToCDNUrl } from "@/lib/utils";
 import FactualityBadge from "./ui/FactualityBadge";
-
-interface LinkPreviewData {
-  url: string;
-  title?: string;
-  description?: string;
-  images?: string[];
-  siteName?: string;
-}
+import { getFactCheckBadgeInfo } from "@/utils/factualityUtils";
+import { LinkPreviewData } from "@/lib/api/generated";
 
 interface LinkPreviewProps {
-  previewData: LinkPreviewData | null;
+  previewData: LinkPreviewData;
   isLoading?: boolean;
   hasAISummary?: boolean;
   inFeedView?: boolean;
   onInvalidLinkChange?: (isInvalid: boolean) => void;
-  isPreviewFeedItem?: boolean;
   verificationId?: string;
   metadataLoading?: boolean;
   factuality?: number;
@@ -53,14 +46,12 @@ export default function LinkPreview({
   hasAISummary = false,
   inFeedView = false,
   onInvalidLinkChange,
-  isPreviewFeedItem,
   verificationId,
   metadataLoading = false,
   factuality,
 }: LinkPreviewProps) {
-  const { taskId } = useLocalSearchParams();
+  const { feedId } = useLocalSearchParams();
   const router = useRouter();
-  const setAISummaryBottomSheetOpen = useSetAtom(aiSummaryBottomSheetState);
   const [isInvalidLink, setIsInvalidLink] = useState(false);
 
   const cardBackgroundColor = useThemeColor({}, "background");
@@ -68,43 +59,12 @@ export default function LinkPreview({
   const secondaryTextColor = useThemeColor({}, "text");
   const borderColor = useThemeColor({}, "background");
 
-  // Calculate factuality badge info
-  const getFactCheckBadgeInfo = (): {
-    text: string;
-    type: "truth" | "misleading" | "needs-context";
-  } | null => {
-    const score = factuality;
-
-    if (score === undefined || score === null) {
-      return null;
-    }
-
-    let badgeText = "";
-    let badgeType: "truth" | "misleading" | "needs-context";
-
-    if (score >= 0.75) {
-      badgeText = `${Math.round(score * 100)}% სიმართლე`;
-      badgeType = "truth";
-    } else if (score >= 0.5) {
-      badgeText = `${Math.round(score * 100)}% სიმართლე`;
-      badgeType = "needs-context";
-    } else {
-      badgeText = `${Math.round((1 - score) * 100)}% სიცრუე`;
-      badgeType = "misleading";
-    }
-
-    return { text: badgeText, type: badgeType };
-  };
-
-  const badgeInfo = getFactCheckBadgeInfo();
+  const badgeInfo = getFactCheckBadgeInfo(factuality);
 
   // Calculate container height based on props
   let containerHeight: DimensionValue;
 
-  if (isPreviewFeedItem) {
-    // Force strict 16:9 when isPreviewFeedItem is true
-    containerHeight = CARD_HEIGHT_16_9;
-  } else if (!previewData?.images || previewData.images.length === 0) {
+  if (!previewData?.images || previewData.images.length === 0) {
     // Use auto height for text-only previews
     containerHeight = "auto";
   } else {
@@ -187,7 +147,7 @@ export default function LinkPreview({
         pathname: "/verification/[verificationId]",
         params: {
           verificationId,
-          taskId,
+          feedId,
         },
       });
     } else if (previewData?.url) {
@@ -309,9 +269,11 @@ export default function LinkPreview({
               <View style={styles.textBackground}>
                 <View style={styles.headerRow}>
                   <Text style={styles.invalidLinkTitle}>არავალიდური ლინკი</Text>
-                  <View style={styles.iconContainer}>
-                    <SourceIcon sourceUrl={previewData.url} size={20} />
-                  </View>
+                  {previewData.url && (
+                    <View style={styles.iconContainer}>
+                      <SourceIcon sourceUrl={previewData.url} size={20} />
+                    </View>
+                  )}
                 </View>
                 <Text style={styles.invalidLinkDescription}>
                   ლინკი არავალიდურია ან ვერ ტვირთავს ლინკის გადახედვას
@@ -361,9 +323,11 @@ export default function LinkPreview({
                       <Text style={styles.title} numberOfLines={2}>
                         {previewData.title}
                       </Text>
-                      <View style={styles.iconContainer}>
-                        <SourceIcon sourceUrl={previewData.url} size={20} />
-                      </View>
+                      {previewData.url && (
+                        <View style={styles.iconContainer}>
+                          <SourceIcon sourceUrl={previewData.url} size={20} />
+                        </View>
+                      )}
                     </View>
 
                     {previewData.description && (
@@ -382,8 +346,19 @@ export default function LinkPreview({
                       )}
                       {hasAISummary && (
                         <View style={styles.aiSummaryBadge}>
-                          <Ionicons name="sparkles" size={14} color="#fff" />
-                          <Text style={styles.aiSummaryText}>ანალიზი</Text>
+                          <Ionicons
+                            name="sparkles"
+                            size={14}
+                            color="rgba(255, 255, 255, 0.9)"
+                          />
+                          <Text
+                            style={[
+                              styles.aiSummaryText,
+                              { color: "rgba(255, 255, 255, 0.95)" },
+                            ]}
+                          >
+                            ანალიზი
+                          </Text>
                         </View>
                       )}
                     </View>
@@ -396,10 +371,7 @@ export default function LinkPreview({
           // Text-only layout when no images are available
           <View style={styles.textOnlyContent}>
             <View style={styles.textOnlyHeader}>
-              <View style={styles.iconContainer}>
-                <SourceIcon sourceUrl={previewData.url} size={20} />
-              </View>
-              <View style={[styles.badgeContainer, { marginLeft: 8 }]}>
+              <View style={[styles.badgeContainer]}>
                 {badgeInfo && (
                   <FactualityBadge
                     text={badgeInfo.text}
@@ -414,8 +386,13 @@ export default function LinkPreview({
                       styles.textOnlyAISummaryBadge,
                     ]}
                   >
-                    <Ionicons name="sparkles" size={12} color="#fff" />
-                    <Text style={[styles.aiSummaryText, { fontSize: 12 }]}>
+                    <Ionicons name="sparkles" size={12} color={textColor} />
+                    <Text
+                      style={[
+                        styles.aiSummaryText,
+                        { fontSize: 12, color: textColor },
+                      ]}
+                    >
                       ანალიზი
                     </Text>
                   </View>
@@ -650,19 +627,26 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
   },
   aiSummaryBadge: {
-    backgroundColor: "rgba(71, 85, 105, 0.85)",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 8,
+    borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
     alignSelf: "flex-start",
     height: 28,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.1)",
   },
   textOnlyAISummaryBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
+    backgroundColor: "rgba(0, 0, 0, 0.08)",
+    borderWidth: 1,
+    borderColor: "rgba(0, 0, 0, 0.1)",
+    boxShadow: "0px 2px 6px 0px rgba(0, 0, 0, 0.08)",
   },
   linkPreviewBadge: {
     backgroundColor: "rgba(0, 0, 0, 0.85)",

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import * as Location from "expo-location";
-import { toast } from "@backpackapp-io/react-native-toast";
 import { isWeb } from "@/lib/platform";
+import { t } from "@/lib/i18n";
+import { useToast } from "@/lib/context/ToastContext";
 
 export default function useLocation() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -9,6 +10,7 @@ export default function useLocation() {
   );
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(true);
+  const { error: errorToast } = useToast();
 
   // Use the location permission hook instead of directly requesting permissions
   const [permissionResponse, requestPermission] = Location.useForegroundPermissions();
@@ -23,7 +25,7 @@ export default function useLocation() {
           const { status } = await requestPermission();
           if (status !== "granted") {
             setErrorMsg(
-              "საჭიროა ლოკაციაზე ინფორმაციის მიღებაზე დართოთ აპლიკაციას ნებართვა"
+              t("common.location_permission_needed")
             );
             setIsGettingLocation(false);
             return;
@@ -71,8 +73,9 @@ export default function useLocation() {
         );
       } catch (error) {
         setIsGettingLocation(false);
-        toast.error("სამწუხაროდ მისამართის შემოწმება ვერ მოხერხდა, ნახეთ GPS", {
-          id: "location-error",
+        errorToast({
+          title: t("common.location_check_failed_gps"),
+          description: t("common.location_check_failed_gps")
         });
       }
     })();
@@ -88,8 +91,9 @@ export default function useLocation() {
 
   useEffect(() => {
     if (errorMsg) {
-      toast.error(errorMsg, {
-        id: "location-error",
+      errorToast({
+        title: errorMsg,
+        description: errorMsg
       });
     }
   }, [errorMsg]);

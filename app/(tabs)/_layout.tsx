@@ -18,7 +18,7 @@ import { isAndroid, isIOS, isWeb } from "@/lib/platform";
 import LocationProvider from "@/components/LocationProvider";
 import SpacesBottomSheet from "@/components/SpacesBottomSheet";
 import { Lightbox } from "@/components/Lightbox/Lightbox";
-import useCountryFeed from "@/hooks/useCountryFeed";
+import useFeeds from "@/hooks/useFeeds";
 import { useLightboxControls } from "@/lib/lightbox/lightbox";
 import { Georgia } from "@/lib/icons/Georgia";
 import { useShareIntentContext } from "expo-share-intent";
@@ -37,8 +37,7 @@ import { locationUserListSheetState } from "@/lib/atoms/location";
 export default function TabLayout() {
   const pathname = usePathname();
   const isRecord = pathname.includes("record");
-  const { id: countryFeedId } = useCountryFeed();
-  useNotificationHandler();
+  const { factCheckFeedId, newsFeedId } = useFeeds();
   const theme = useTheme();
   const { isDarkColorScheme } = useColorScheme();
   // Theme-aware tab colors
@@ -105,7 +104,7 @@ export default function TabLayout() {
 
         // Build navigation params
         const params: any = {
-          taskId: countryFeedId,
+          feedId: factCheckFeedId,
           disableRoomCreation: "true",
         };
 
@@ -122,7 +121,7 @@ export default function TabLayout() {
 
         // Navigate to create-post-shareintent for any shared content (text or images)
         router.navigate({
-          pathname: `/(tabs)/(global)/[taskId]/create-post-shareintent`,
+          pathname: `/(tabs)/(fact-check)/[feedId]/create-post-shareintent`,
           params,
         });
       }
@@ -157,7 +156,6 @@ export default function TabLayout() {
 
     return <Redirect href="/(auth)/sign-in" />;
   }
-
   // Order here is important, if we don't have user info we show loader, user might be registered or not
 
   if (userIsLoading) {
@@ -247,14 +245,34 @@ export default function TabLayout() {
                   ),
                 }}
               />
-
               <Tabs.Screen
-                name="(global)"
+                name="(news)"
                 options={{
                   href: {
-                    pathname: "/(tabs)/(global)/[taskId]",
+                    pathname: "/(tabs)/(news)/[feedId]",
                     params: {
-                      taskId: countryFeedId,
+                      feedId: newsFeedId,
+                    },
+                  },
+                  tabBarIcon: ({ color, focused }) => (
+                    <TabBarIcon
+                      size={24}
+                      name={focused ? "newspaper" : "newspaper-outline"}
+                      color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
+                      // style={
+                      //   focused ? { transform: [{ scale: 1.15 }] } : undefined
+                      // }
+                    />
+                  ),
+                }}
+              />
+              <Tabs.Screen
+                name="(fact-check)"
+                options={{
+                  href: {
+                    pathname: "/(tabs)/(fact-check)/[feedId]",
+                    params: {
+                      feedId: factCheckFeedId,
                     },
                   },
                   tabBarIcon: ({ color, focused }) => (
@@ -273,6 +291,7 @@ export default function TabLayout() {
                   ),
                 }}
               />
+
               <Tabs.Screen
                 name="(user)"
                 options={{

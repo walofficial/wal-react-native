@@ -4,13 +4,12 @@ import { usePathname, useRouter } from "expo-router";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { formatRelativeTime } from "@/lib/utils/date";
 import { FontSizes, useTheme } from "@/lib/theme";
-import FactCheckBadge from "@/components/ui/FactCheckBadge";
 
 interface PostHeaderProps {
   name: string;
   time: string;
   avatarUrl: string;
-  friendId: string;
+  posterId: string;
   headerHeight: number;
   hasFactCheck?: boolean;
   isLive?: boolean;
@@ -21,7 +20,7 @@ const PostHeader = memo(
     name,
     time,
     avatarUrl,
-    friendId,
+    posterId,
     headerHeight,
     hasFactCheck,
     isLive,
@@ -35,9 +34,9 @@ const PostHeader = memo(
     const handleProfilePress = useCallback(() => {
       router.navigate({
         pathname: `/(tabs)/(home)/profile`,
-        params: { userId: friendId },
+        params: { userId: posterId },
       });
-    }, [friendId, router]);
+    }, [posterId, router]);
 
     return (
       <View

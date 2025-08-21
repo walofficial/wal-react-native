@@ -1,12 +1,11 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import { useProfileInformation } from "@/hooks/useProfileInformation";
-import { convertToCDNUrl, formatNumber } from "@/lib/utils";
+import { convertToCDNUrl } from "@/lib/utils";
 import UserCircleProfile from "../UserCircleProfile";
-import Text from "../ui/StyledText";
 import { spacing } from "@/utils/styleUtils";
-import { useTheme } from "@/lib/theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Text } from "@/components/ui/text";
 
 interface ProfileViewProps {
   userId: string;
@@ -18,7 +17,6 @@ export default function ProfileView({ userId }: ProfileViewProps) {
     isLoading,
     isFetching,
   } = useProfileInformation(userId);
-
   const isLoadingData = isLoading || isFetching;
 
   if (!profile && !isLoadingData) {
@@ -31,7 +29,7 @@ export default function ProfileView({ userId }: ProfileViewProps) {
         photo={
           isLoadingData
             ? undefined
-            : convertToCDNUrl(profile?.photos[0]?.image_url[0])
+            : convertToCDNUrl(profile?.photos[0].image_url[0] || "")
         }
         userId={userId}
       />

@@ -16,6 +16,7 @@ import { useColorScheme } from "@/lib/useColorScheme";
 import { FontSizes } from "@/lib/theme";
 import SourceIcon from "../SourceIcon";
 import { isWeb } from "@/lib/platform";
+import { t } from "@/lib/i18n";
 
 // Define layout type
 type TabLayout = { x: number; width: number };
@@ -36,7 +37,7 @@ interface TabBarProps {
   activeTab: string;
   showLocationTabs: boolean;
   onTabPress: (tabKey: string) => void;
-  taskId?: string;
+  feedId?: string;
 }
 
 export function TabBar({
@@ -45,7 +46,7 @@ export function TabBar({
   activeTab,
   showLocationTabs,
   onTabPress,
-  taskId,
+  feedId,
 }: TabBarProps) {
   const { isDarkColorScheme } = useColorScheme();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -93,7 +94,7 @@ export function TabBar({
   const contentTabItems = [
     {
       key: "last24h",
-      label: "ყველა",
+      label: t("common.all"),
       icon: null,
     },
     {
@@ -151,7 +152,7 @@ export function TabBar({
       >
         {displayTabItems.map((tab: TabItem) => {
           const isActive = showLocationTabs
-            ? taskId ===
+            ? feedId ===
               (tab.key.startsWith("nearTask_")
                 ? tab.key.replace("nearTask_", "")
                 : tab.key)

@@ -22,13 +22,13 @@ export default function SubmitButton({
   caption?: string;
   videoDuration?: string;
 }) {
-  const { taskId } = useLocalSearchParams<{
-    taskId: string;
+  const { feedId } = useLocalSearchParams<{
+    feedId: string;
   }>();
   const theme = useTheme();
   const [isProcessing, setIsProcessing] = React.useState(false);
   const { uploadBlob } = useUploadVideo({
-    taskId: taskId as string,
+    feedId: feedId as string,
     isPhoto,
     isLocationUpload: true,
   });
@@ -64,26 +64,17 @@ export default function SubmitButton({
         }
       }
 
-      // Use the existing mutation to upload the media
-      const formData = new FormData();
-      if (isPhoto) {
-        formData.append("photo_file", {
-          uri: "file://" + compressedPath,
-          type: "image/jpeg",
-          name: compressedPath.split("/").pop(),
-        } as unknown as Blob);
-      }
-      formData.append("task_id", taskId);
-      formData.append("uri", "file://" + compressedPath);
-      if (videoDuration) {
-        formData.append("recording_time", videoDuration.toString());
-      }
-      formData.append("text_content", caption || "");
+      const file = {
+        uri: "file://" + compressedPath,
+        type: isPhoto ? "image/jpeg" : "video/mp4",
+        name: compressedPath.split("/").pop(),
+      };
+
       await uploadBlob.mutateAsync({
-        formData,
+        photo: file,
         video: compressedVideo,
         params: {
-          task_id: taskId,
+          feed_id: feedId,
           recording_time: videoDuration ? parseInt(videoDuration) : 0,
           text_content: caption || "",
         },
@@ -104,6 +95,7 @@ export default function SubmitButton({
       loading={isProcessing || uploadBlob.isPending}
       icon="checkmark"
       style={styles.button}
+      glassy
     />
   );
 }

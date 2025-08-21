@@ -38,6 +38,6 @@ const Telegram = (props: any) => (
   </Svg>
 );
 
-iconWithClassName(Telegram);
+iconWithClassName(Telegram as any);
 
 export { Telegram };

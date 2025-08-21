@@ -1,22 +1,22 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { isWeb } from "@/lib/platform";
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useAtomValue } from "jotai";
 import { debouncedSearchValueAtom } from "@/lib/state/search";
+import { getLocationFeedPaginatedInfiniteOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export function useLocationFeedPaginated({
   enabled = true,
-  taskId,
+  feedId,
   pageSize = 10,
   content_type,
   searchTerm: externalSearchTerm,
   debounceDelay = 500,
 }: {
   enabled?: boolean;
-  taskId: string;
+  feedId: string;
   pageSize?: number;
   content_type: "last24h" | "youtube_only" | "social_media_only";
   searchTerm?: string;
@@ -71,22 +71,24 @@ export function useLocationFeedPaginated({
     hasPreviousPage,
     isPending,
   } = useInfiniteQuery({
-    queryKey: ["location-feed-paginated", taskId, content_type, finalSearchTerm],
-    queryFn: ({ pageParam = 1 }) => {
-      // For now, we'll call the existing API without search
-      // The search filtering can be done on the client side or
-      // you can update your API to support search parameters
-      if (isWeb) {
-        return api.public_getLocationFeedPaginated(taskId, pageParam);
-      } else {
-        return api.getLocationFeedPaginated(taskId, pageParam, content_type, finalSearchTerm || "");
-      }
-    },
-    getNextPageParam: (lastPage: any) => {
-      if (lastPage.data.length < pageSize) {
+    ...getLocationFeedPaginatedInfiniteOptions({
+      query: {
+        page_size: pageSize,
+        search_term: finalSearchTerm,
+        content_type_filter: content_type,
+      },
+      path: {
+        feed_id: feedId,
+      },
+    }),
+    getNextPageParam: (lastPage, allPages) => {
+      // If we received fewer items than pageSize, there is no next page
+      if (lastPage.length < pageSize) {
         return undefined;
       }
-      return lastPage.page + 1;
+      // Use the number of pages already loaded to compute the next page number
+      // Starts at 1, so next page after N pages is N + 1
+      return allPages.length + 1;
     },
     enabled,
     initialPageParam: 1,
@@ -96,7 +98,7 @@ export function useLocationFeedPaginated({
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
     refetchInterval: (data) => {
-      const hasLiveStream = data?.state.data?.pages?.[0]?.data.some(
+      const hasLiveStream = data?.state.data?.pages?.[0]?.some(
         (item) => item.is_live
       );
 
@@ -104,8 +106,7 @@ export function useLocationFeedPaginated({
     },
     // subscribed: isFocused,
   });
-
-  const items = data?.pages.flatMap((page) => page.data) || [];
+  const items = data?.pages.flatMap((page) => page) || [];
 
   return {
     items,

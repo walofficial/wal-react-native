@@ -36,6 +36,8 @@ import Button from "@/components/Button";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toast } from "@backpackapp-io/react-native-toast";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 const requestSavePermission = async (): Promise<boolean> => {
   // On Android 13 and above, scoped storage is used instead and no permission is needed
@@ -59,10 +61,10 @@ const isVideoOnLoadEvent = (
 ): event is AVPlaybackStatus => "isLoaded" in event && event.isLoaded;
 
 export default function MediaPage(): React.ReactElement {
-  const { path, type, taskId, recordingTime } = useLocalSearchParams<{
+  const { path, type, feedId, recordingTime } = useLocalSearchParams<{
     path: string;
     type: "photo" | "video";
-    taskId: string;
+    feedId: string;
     recordingTime: string;
   }>();
 
@@ -74,6 +76,9 @@ export default function MediaPage(): React.ReactElement {
   const [savingState, setSavingState] = useState<"none" | "saving" | "saved">(
     "none"
   );
+
+  const { success } = useToast();
+
   const [mediaPath, setMediaPath] = useState<string | null>(null);
   const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -88,7 +93,7 @@ export default function MediaPage(): React.ReactElement {
         setMediaPath(path as string);
       } else {
         const cachedPath = await AsyncStorage.getItem(
-          `lastRecordedVideoPath_${taskId}`
+          `lastRecordedVideoPath_${feedId}`
         );
         setMediaPath(cachedPath);
       }
@@ -101,7 +106,7 @@ export default function MediaPage(): React.ReactElement {
         videoRef.current.unloadAsync();
       }
     };
-  }, [path, taskId]);
+  }, [path, feedId]);
 
   useEffect(() => {
     if (videoRef.current) {
@@ -143,11 +148,9 @@ export default function MediaPage(): React.ReactElement {
         type: type as "video" | "photo",
       });
       setSavingState("saved");
-      toast.success("შენახულია", {
-        id: "save-success",
-      });
+      success({ title: "შენახულია" });
       // Remove the saved video path from AsyncStorage after saving to camera roll
-      await AsyncStorage.removeItem(`lastRecordedVideoPath_${taskId}`);
+      await AsyncStorage.removeItem(`lastRecordedVideoPath_${feedId}`);
     } catch (e) {
       const message = e instanceof Error ? e.message : JSON.stringify(e);
       setSavingState("none");
@@ -156,7 +159,7 @@ export default function MediaPage(): React.ReactElement {
         `An unexpected error occured while trying to save your ${type}. ${message}`
       );
     }
-  }, [path, type, taskId]);
+  }, [path, type, feedId]);
 
   const onSharePressed = useCallback(async () => {
     try {
@@ -215,9 +218,9 @@ export default function MediaPage(): React.ReactElement {
       videoRef.current.unloadAsync();
     }
     router.navigate({
-      pathname: "/(tabs)/(home)/[taskId]",
+      pathname: "/(tabs)/(home)/[feedId]",
       params: {
-        taskId: taskId as string,
+        feedId: feedId as string,
       },
     });
   }, [router]);
@@ -299,6 +302,7 @@ export default function MediaPage(): React.ReactElement {
               onPress={togglePlayPause}
             >
               <Button
+                glassy
                 icon="play"
                 size="large"
                 variant="primary"
@@ -344,7 +348,7 @@ export default function MediaPage(): React.ReactElement {
                   borderRadius: 8,
                 },
               ]}
-              placeholder="დაამატე აღწერა..."
+              placeholder={t("common.add_caption")}
               placeholderTextColor="rgba(255, 255, 255, 0.6)"
               value={caption}
               onChangeText={setCaption}
@@ -356,10 +360,11 @@ export default function MediaPage(): React.ReactElement {
             {isInputFocused && (
               <Button
                 icon="checkmark"
-                variant="primary"
-                size="medium"
+                variant="subtle"
                 onPress={handleAcceptCaption}
-                style={styles.actionButton}
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                }}
               />
             )}
           </View>

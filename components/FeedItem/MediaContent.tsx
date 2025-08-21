@@ -10,6 +10,7 @@ import {
   Text,
   TouchableOpacity,
   Pressable,
+  Linking,
 } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
@@ -24,25 +25,23 @@ import { MeasuredDimensions, runOnJS, runOnUI } from "react-native-reanimated";
 import { HandleRef } from "@/lib/hooks/useHandleRef";
 import { useLightboxControls } from "@/lib/lightbox/lightbox";
 import { Dimensions } from "@/components/Lightbox/ImageViewing/@types";
-import { useTheme } from "@/lib/theme";
 import { convertToCDNUrl } from "@/lib/utils";
 import FactualityBadge from "../ui/FactualityBadge";
-import useVerificationById from "@/hooks/useVerificationById";
-import { LinkPreviewData } from "@/lib/interfaces";
+import { FeedPost, ImageWithDims, LinkPreviewData } from "@/lib/api/generated";
 import SourceIcon from "../SourceIcon";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
+import { getFactCheckBadgeInfo } from "@/utils/factualityUtils";
+import { t } from "@/lib/i18n";
 
 interface MediaContentProps {
   videoUrl?: string;
-  imageUrl?: string;
-  imageGallery?: string[];
+  imageGalleryWithDims: FeedPost["image_gallery_with_dims"];
   isLive?: boolean;
   isVisible: boolean;
-  itemHeight: number;
   redirectUrl?: string;
   verificationId: string;
-  taskId?: string;
+  feedId?: string;
   name: string;
   time: string;
   avatarUrl: string;
@@ -60,12 +59,11 @@ interface MediaContentProps {
 
 function MediaContent({
   videoUrl,
-  imageUrl,
-  imageGallery,
+  imageGalleryWithDims,
   isLive,
   isVisible,
   verificationId,
-  taskId,
+  feedId,
   livekitRoomName,
   isSpace,
   thumbnail,
@@ -75,42 +73,17 @@ function MediaContent({
 }: MediaContentProps) {
   const router = useRouter();
 
-  // Calculate factuality badge info
-  const getFactCheckBadgeInfo = (): {
-    text: string;
-    type: "truth" | "misleading" | "needs-context";
-  } | null => {
-    const score = factuality;
-
-    if (score === undefined || score === null) {
-      return null;
-    }
-
-    let badgeText = "";
-    let badgeType: "truth" | "misleading" | "needs-context";
-
-    if (score >= 0.75) {
-      badgeText = `${Math.round(score * 100)}% სიმართლე`;
-      badgeType = "truth";
-    } else if (score >= 0.5) {
-      badgeText = `${Math.round(score * 100)}% სიმართლე`;
-      badgeType = "needs-context";
-    } else {
-      badgeText = `${Math.round((1 - score) * 100)}% სიცრუე`;
-      badgeType = "misleading";
-    }
-
-    return { text: badgeText, type: badgeType };
-  };
-
-  const badgeInfo = getFactCheckBadgeInfo();
-
-  const images =
-    imageGallery && imageGallery.length > 0
-      ? imageGallery
-      : imageUrl
-      ? [imageUrl]
-      : [];
+  const badgeInfo = getFactCheckBadgeInfo(factuality);
+  const images = (imageGalleryWithDims || []).map((img: ImageWithDims) => ({
+    uri: img.url,
+    thumbUri: img.url,
+    alt: img.url,
+    verificationId: verificationId,
+    aspectRatio: {
+      width: img.aspectRatio.width,
+      height: img.aspectRatio.height,
+    },
+  }));
 
   const handleSingleTap = () => {
     // Only navigate if there are no images and no video (i.e., text-only content)
@@ -119,7 +92,7 @@ function MediaContent({
         pathname: "/verification/[verificationId]",
         params: {
           verificationId,
-          taskId,
+          feedId,
           livekitRoomName,
         },
       });
@@ -130,7 +103,7 @@ function MediaContent({
     if (Platform.OS === "ios") {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: ["გაუქმება", `გადმოწერა`],
+          options: [t("common.cancel"), t("common.download")],
           cancelButtonIndex: 0,
         },
         async (buttonIndex) => {
@@ -141,9 +114,9 @@ function MediaContent({
       );
     } else {
       // For Android, show a simple alert with options
-      Alert.alert("გადმოწერა", `გსურს გადმოწერა?`, [
-        { text: "გაუქმება", style: "cancel" },
-        { text: "გადმოწერა", onPress: () => downloadMedia(url, type) },
+      Alert.alert(t("common.download"), t("common.want_to_download"), [
+        { text: t("common.cancel"), style: "cancel" },
+        { text: t("common.download"), onPress: () => downloadMedia(url, type) },
       ]);
     }
   };
@@ -151,9 +124,10 @@ function MediaContent({
   const longPressGesture = Gesture.LongPress().onStart(() => {
     if (videoUrl) {
       runOnJS(handleLongPress)(videoUrl, "video");
-    } else if (imageUrl) {
-      runOnJS(handleLongPress)(imageUrl, "photo");
     }
+    // } else if (imageUrl) {
+    //   runOnJS(handleLongPress)(imageUrl, "photo");
+    // }
   });
 
   const singleTapGesture = Gesture.Tap()
@@ -173,25 +147,18 @@ function MediaContent({
 
   const { openLightbox } = useLightboxControls();
 
-  const items = images.map((img) => ({
-    uri: img,
-    thumbUri: img,
-    alt: img,
-    verificationId: verificationId,
-    dimensions: { width: 1, height: 1 },
-  }));
-
   const _openLightbox = (
     index: number,
     thumbRects: (MeasuredDimensions | null)[],
     fetchedDims: (Dimensions | null)[]
   ) => {
     openLightbox({
-      images: items.map((item, i) => ({
+      images: images.map((item, i) => ({
         ...item,
         thumbRect: thumbRects[i] ?? null,
         thumbDimensions: fetchedDims[i] ?? null,
         type: "image",
+        dimensions: fetchedDims[i] ?? null,
       })),
       index,
     });
@@ -202,8 +169,8 @@ function MediaContent({
       const { status } = await MediaLibrary.requestPermissionsAsync();
       if (status !== "granted") {
         Alert.alert(
-          "თანხმობაა საჭირო",
-          "საჭიროა თანხმობა სურათის ან ვიდეოს გადმოსაწერად"
+          t("common.permission_needed_short"),
+          t("common.download_media_permission")
         );
         return;
       }
@@ -216,10 +183,24 @@ function MediaContent({
 
       await FileSystem.deleteAsync(uri); // Cleanup downloaded file after saving
 
-      Alert.alert("შეინახულია");
+      Alert.alert(t("common.saved"));
     } catch (error) {
-      Alert.alert("შეცდომა", "ვერ მოხერხდა გადმოწერა");
+      Alert.alert(t("common.error_title"), t("common.download_failed"));
       console.error("Download error:", error);
+    }
+  };
+
+  const handleSourcePress = async (url: string) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert(t("common.error_title"), t("common.error_opening_link"));
+      }
+    } catch (error) {
+      Alert.alert(t("common.error_title"), t("common.error_opening_link"));
+      console.error("Error opening URL:", error);
     }
   };
 
@@ -229,7 +210,6 @@ function MediaContent({
     fetchedDims: (Dimensions | null)[]
   ) => {
     const handles = containerRefs.map((r) => r.current);
-
     runOnUI(() => {
       "worklet";
       const rects = handles.map(measureHandle);
@@ -239,7 +219,7 @@ function MediaContent({
 
   const handlePressIn = (index: number) => {
     InteractionManager.runAfterInteractions(() => {
-      Image.prefetch(images.map((img) => convertToCDNUrl(img)));
+      Image.prefetch(images.map((img) => convertToCDNUrl(img.uri)));
     });
   };
 
@@ -251,7 +231,7 @@ function MediaContent({
     return null;
   }
 
-  if (!videoUrl && !imageUrl && !imageGallery?.length) return null;
+  if (!videoUrl && !imageGalleryWithDims?.length) return null;
 
   const renderContent = () => (
     <GestureDetector gesture={gestures}>
@@ -263,7 +243,7 @@ function MediaContent({
     <>
       {images?.length > 1 ? (
         <ImageGrid
-          images={images}
+          images={images.map((img) => img.uri)}
           onImagePress={handleSingleTap}
           aspectRatio={1}
           verificationId={verificationId}
@@ -276,13 +256,16 @@ function MediaContent({
           loop={false}
           thumbnail={convertToCDNUrl(thumbnail || "")}
         />
-      ) : imageUrl || images[0] ? (
+      ) : images[0] ? (
         <View style={styles.singleImageContainer}>
           <AutoSizedImage
             image={{
-              thumb: { uri: images[0] },
+              thumb: { uri: images[0].uri },
               alt: mediaAlt || "Verification image",
-              aspectRatio: { width: 1, height: 1.5 },
+              aspectRatio: {
+                width: images[0].aspectRatio.width ?? 1,
+                height: images[0]?.aspectRatio.height ?? 1,
+              },
             }}
             onPressIn={() => handlePressIn(0)}
             onPress={(containerRef, dims) => {
@@ -302,29 +285,29 @@ function MediaContent({
                 colors={["transparent", "rgba(0,0,0,0.8)"]}
                 style={styles.linkPreviewGradient}
               />
-              <View style={styles.linkPreviewContent} pointerEvents="none">
+              <View style={styles.linkPreviewContent}>
                 {previewData && (
                   <>
-                    <View style={styles.linkPreviewHeader}>
-                      <SourceIcon sourceUrl={previewData.url} size={20} />
-                    </View>
-                    {previewData.title && (
-                      <Text style={styles.linkPreviewTitle} numberOfLines={3}>
-                        {previewData.title}
-                      </Text>
-                    )}
-                    {previewData.description && (
-                      <Text
-                        style={styles.linkPreviewDescription}
-                        numberOfLines={4}
-                      >
-                        {previewData.description}
-                      </Text>
+                    {previewData.url && (
+                      <View style={styles.linkPreviewHeader}>
+                        <TouchableOpacity
+                          onPress={() =>
+                            handleSourcePress(previewData.url || "")
+                          }
+                          style={styles.sourceIconButton}
+                          activeOpacity={0.7}
+                        >
+                          <SourceIcon sourceUrl={previewData.url} size={20} />
+                        </TouchableOpacity>
+                      </View>
                     )}
                   </>
                 )}
                 {badgeInfo && (
-                  <View style={styles.factualityBadgeOverlay}>
+                  <View
+                    style={styles.factualityBadgeOverlay}
+                    pointerEvents="none"
+                  >
                     <FactualityBadge
                       text={badgeInfo.text}
                       type={badgeInfo.type}
@@ -387,6 +370,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     marginBottom: 8,
+  },
+  sourceIconButton: {
+    padding: 4,
+    borderRadius: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   aiSummaryBadge: {
     backgroundColor: "#007AFF",

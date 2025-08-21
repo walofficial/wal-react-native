@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { Image } from "expo-image";
-import { AIVideoSummary, ExternalVideo } from "@/lib/interfaces";
+import { AiVideoSummary, ExternalVideo } from "@/lib/api/generated";
 import { Ionicons } from "@expo/vector-icons";
 import { renderFormattedText } from "@/lib/utils/text";
 import { useTheme } from "@/lib/theme";
@@ -30,7 +30,7 @@ const COLORS = {
 };
 
 interface AISummaryBoxProps {
-  aiSummary?: AIVideoSummary;
+  aiSummary?: AiVideoSummary;
   videoData: ExternalVideo;
   style?: ViewStyle;
   status?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
@@ -206,7 +206,9 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
                         styles.clipButton,
                         { backgroundColor: themeColors.relevant },
                       ]}
-                      onPress={() => handleTimestampClick(statement.timestamp)}
+                      onPress={() =>
+                        handleTimestampClick(statement.timestamp || "")
+                      }
                     >
                       <Ionicons
                         name="play"
@@ -293,34 +295,6 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
 
   return (
     <View style={[styles.container, style]}>
-      {videoData.thumbnail_url && (
-        <TouchableOpacity
-          onPress={handleVideoPress}
-          style={styles.thumbnailContainer}
-        >
-          <Image
-            source={{ uri: videoData.thumbnail_url }}
-            style={styles.thumbnail}
-            contentFit="cover"
-          />
-          <View style={styles.playButton}>
-            <Ionicons name="play" size={24} color={COLORS.light} />
-          </View>
-          {videoData.duration && (
-            <View style={styles.durationBadge}>
-              <Text style={styles.durationText}>{videoData.duration}</Text>
-            </View>
-          )}
-          {aiSummary?.title && (
-            <View style={styles.titleContainer}>
-              <Text style={styles.videoTitle} numberOfLines={2}>
-                {aiSummary.title}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
-      )}
-
       {/* Only render tabs container if there are available tabs */}
       {availableTabs.length > 0 && (
         <View
