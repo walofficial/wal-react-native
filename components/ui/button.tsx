@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
   },
   // Sizes
-  default: {
+  defaultSize: {
     height: 48, // native:h-12
     paddingHorizontal: 20, // native:px-5
     paddingVertical: 12, // native:py-3

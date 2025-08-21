@@ -7,23 +7,14 @@ import {
 } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Ionicons } from "@expo/vector-icons";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import { FriendRequestStatus } from "@/lib/interfaces";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { FontSizes } from "@/lib/theme";
 import { useTheme } from "@/lib/theme";
+import { FriendRequest, User } from "@/lib/api/generated";
 
 interface FriendRequestItemProps {
-  user: {
-    id: string;
-    username: string;
-    photos?: { image_url: string[] }[];
-  };
-  request: {
-    id: string;
-    status: FriendRequestStatus;
-    sender_id: string;
-  };
+  user: User;
+  request: FriendRequest;
   onAccept: (id: string) => void;
   onReject: (id: string) => void;
   isAccepting: boolean;
@@ -69,76 +60,74 @@ const FriendRequestItem: React.FC<FriendRequestItemProps> = ({
               />
             ) : (
               <Text style={[styles.avatarText, { color: theme.colors.text }]}>
-                {user.username.charAt(0).toUpperCase()}
+                {user.username?.charAt(0).toUpperCase() || ""}
               </Text>
             )}
           </View>
         </Avatar>
         <View style={styles.usernameContainer}>
           <Text style={[styles.username, { color: theme.colors.text }]}>
-            {user.username}
+            {user.username || ""}
           </Text>
         </View>
       </View>
-      {request.status === FriendRequestStatus.PENDING &&
-        request.sender_id === user.id && (
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[
-                styles.acceptButton,
-                { backgroundColor: theme.colors.primary },
-              ]}
-              onPress={() => onAccept(request.id)}
-              disabled={isAccepting || isRejecting}
-            >
-              {isAccepting ? (
-                <ActivityIndicator
-                  size="small"
-                  color={theme.colors.button.text}
-                />
-              ) : (
-                <Ionicons
-                  name="checkmark"
-                  size={24}
-                  color={theme.colors.button.text}
-                />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.rejectButton,
-                { backgroundColor: theme.colors.accent },
-              ]}
-              onPress={() => onReject(request.id)}
-              disabled={isAccepting || isRejecting}
-            >
-              {isRejecting ? (
-                <ActivityIndicator
-                  size="small"
-                  color={theme.colors.button.text}
-                />
-              ) : (
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={theme.colors.button.text}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        )}
-      {request.status === FriendRequestStatus.PENDING &&
-        request.sender_id !== user.id && (
-          <Text style={[styles.pendingText, { color: theme.colors.text }]}>
-            გაგზავნილია
-          </Text>
-        )}
-      {request.status === FriendRequestStatus.ACCEPTED && (
+      {request.status === "pending" && request.sender_id === user.id && (
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={[
+              styles.acceptButton,
+              { backgroundColor: theme.colors.primary },
+            ]}
+            onPress={() => onAccept(request.id)}
+            disabled={isAccepting || isRejecting}
+          >
+            {isAccepting ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.button.text}
+              />
+            ) : (
+              <Ionicons
+                name="checkmark"
+                size={24}
+                color={theme.colors.button.text}
+              />
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.rejectButton,
+              { backgroundColor: theme.colors.accent },
+            ]}
+            onPress={() => onReject(request.id)}
+            disabled={isAccepting || isRejecting}
+          >
+            {isRejecting ? (
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.button.text}
+              />
+            ) : (
+              <Ionicons
+                name="close"
+                size={24}
+                color={theme.colors.button.text}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
+      {request.status === "pending" && request.sender_id !== user.id && (
+        <Text style={[styles.pendingText, { color: theme.colors.text }]}>
+          გაგზავნილია
+        </Text>
+      )}
+      {request.status === "accepted" && (
         <Text style={[styles.acceptedText, { color: theme.colors.primary }]}>
           Accepted
         </Text>
       )}
-      {request.status === FriendRequestStatus.REJECTED && (
+      {request.status === "rejected" && (
         <Text style={[styles.rejectedText, { color: theme.colors.accent }]}>
           Rejected
         </Text>

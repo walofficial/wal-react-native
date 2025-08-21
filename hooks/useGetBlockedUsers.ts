@@ -1,11 +1,10 @@
-import api from "@/lib/api";
 
+import { getBlockedFriendsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { useQuery } from "@tanstack/react-query";
 
 function useGetBlockedUsers() {
   const { data: blockedUsers, isLoading } = useQuery({
-    queryKey: ["blockedUsers"],
-    queryFn: api.getBlockedUsers,
+    ...getBlockedFriendsOptions(),
   });
 
   return { blockedUsers, isLoading };

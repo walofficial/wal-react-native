@@ -10,7 +10,6 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import useUserChats from "@/hooks/useUserChats";
 import ChatItem from "../ChatItem";
-import api from "@/lib/api";
 import useAuth from "@/hooks/useAuth";
 
 export default function ChatRoomList() {
@@ -28,9 +27,9 @@ export default function ChatRoomList() {
 
   // Prefetch messages for each chat room when chat list is loaded
   useEffect(() => {
-    if (chats && chats.length > 0) {
+    if (chats && chats.chat_rooms.length > 0) {
       // Prefetch the first few chat rooms' messages
-      chats.slice(0, 3).forEach((chat) => {
+      chats.chat_rooms.slice(0, 3).forEach((chat) => {
         // Skip if already prefetched
         if (prefetchedChatsRef.current.has(chat.id)) {
           return;
@@ -39,20 +38,20 @@ export default function ChatRoomList() {
         const recipientId =
           chat.participants.find((p) => p.id !== user.id)?.id || "";
 
-        // Prefetch message room data
-        queryClient.prefetchQuery({
-          queryKey: ["user-chat-room", chat.id],
-          queryFn: () => api.getMessageRoom(chat.id),
-          staleTime: 60 * 1000, // 1 minute
-        });
+        // // Prefetch message room data
+        // queryClient.prefetchQuery({
+        //   queryKey: ["user-chat-room", chat.id],
+        //   queryFn: () => api.getMessageRoom(chat.id),
+        //   staleTime: 60 * 1000, // 1 minute
+        // });
 
-        // Prefetch first page of messages
-        queryClient.prefetchInfiniteQuery({
-          queryKey: ["messages", chat.id],
-          queryFn: ({ pageParam = 1 }) =>
-            api.fetchMessages(pageParam, 30, chat.id, user.id),
-          initialPageParam: 1,
-        });
+        // // Prefetch first page of messages
+        // queryClient.prefetchInfiniteQuery({
+        //   queryKey: ["messages", chat.id],
+        //   queryFn: ({ pageParam = 1 }) =>
+        //     api.fetchMessages(pageParam, 30, chat.id, user.id),
+        //   initialPageParam: 1,
+        // });
 
         // Mark as prefetched
         prefetchedChatsRef.current.add(chat.id);
@@ -61,7 +60,9 @@ export default function ChatRoomList() {
   }, [chats, queryClient, user.id]);
 
   function renderList() {
-    return chats.map((item) => <ChatItem key={item.id} item={item} />);
+    return chats?.chat_rooms.map((item) => (
+      <ChatItem key={item.id} item={item} />
+    ));
   }
 
   return (
@@ -76,7 +77,9 @@ export default function ChatRoomList() {
         ) : (
           <>
             {renderList()}
-            {!isFetching && !chats.length && <View style={{ height: 100 }} />}
+            {!isFetching && !chats?.chat_rooms.length && (
+              <View style={{ height: 100 }} />
+            )}
           </>
         )}
       </ScrollView>

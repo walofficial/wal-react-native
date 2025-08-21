@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
-import { DimensionValue, Pressable, View } from "react-native";
+import { type DimensionValue, Pressable, View } from "react-native";
+import { type AnimatedRef } from "react-native-reanimated";
 import { Image } from "expo-image";
 
-import { HandleRef, useHandleRef } from "@/lib/hooks/useHandleRef";
+import { useHandleRef } from "@/lib/hooks/useHandleRef";
 import type { Dimensions } from "@/lib/media/types";
 import { isNative } from "@/lib/platform";
 
@@ -15,15 +16,14 @@ export function ConstrainedImage({
   fullBleed?: boolean;
   children: React.ReactNode;
 }) {
+  /**
+   * Computed as a % value to apply as `paddingTop`, this basically controls
+   * the height of the image.
+   */
   const outerAspectRatio = React.useMemo<DimensionValue>(() => {
-    // For portrait view, we want to ensure height > width
-    // If aspectRatio < 1, it's already portrait, otherwise we need to constrain it
-    const portraitRatio = aspectRatio < 1 ? aspectRatio : 3 / 4; // Default to 3:4 portrait if not already portrait
-
     const ratio = isNative
-      ? Math.min(1 / portraitRatio, 16 / 9) // 9:16 portrait bounding box
-      : Math.min(1 / portraitRatio, 4 / 3); // 3:4 portrait bounding box for non-native
-
+      ? Math.min(1 / aspectRatio, 16 / 9) // 9:16 bounding box
+      : Math.min(1 / aspectRatio, 1); // 1:1 bounding box
     return `${ratio * 100}%`;
   }, [aspectRatio]);
 
@@ -48,9 +48,7 @@ export function ConstrainedImage({
                 overflow: "hidden",
                 backgroundColor: "rgba(0,0,0,0.25)",
               },
-              fullBleed
-                ? { width: "100%" }
-                : { aspectRatio: aspectRatio < 1 ? aspectRatio : 3 / 4 },
+              fullBleed ? { width: "100%" } : { aspectRatio },
             ]}
           >
             {children}
@@ -72,7 +70,10 @@ export function AutoSizedImage({
   image: any;
   crop?: "none" | "square" | "constrained";
   hideBadge?: boolean;
-  onPress?: (containerRef: HandleRef, fetchedDims: Dimensions | null) => void;
+  onPress?: (
+    containerRef: AnimatedRef<any>,
+    fetchedDims: Dimensions | null
+  ) => void;
   onLongPress?: () => void;
   onPressIn?: () => void;
 }) {
@@ -87,26 +88,20 @@ export function AutoSizedImage({
       aspectRatio = undefined;
     }
   }
-
   let constrained: number | undefined;
   let max: number | undefined;
   let rawIsCropped: boolean | undefined;
   if (aspectRatio !== undefined) {
-    // For portrait view, we want to ensure height > width (aspectRatio < 1)
-    // If not already portrait, constrain to 3:4 portrait ratio
-    const portraitRatio = aspectRatio < 1 ? aspectRatio : 3 / 4;
-
-    // Use portrait-friendly ratios
-    const ratio = 2 / 3; // 2:3 portrait ratio for feed
-    constrained = Math.min(portraitRatio, ratio); // Ensure it doesn't exceed our desired portrait ratio
-    max = Math.min(portraitRatio, 3 / 4); // Max of 3:4 ratio in thread (portrait)
-
-    rawIsCropped = aspectRatio !== constrained;
+    const ratio = 1 / 2; // max of 1:2 ratio in feeds
+    constrained = Math.max(aspectRatio, ratio);
+    max = Math.max(aspectRatio, 0.25); // max of 1:4 in thread
+    rawIsCropped = aspectRatio < constrained;
   }
 
   const cropDisabled = crop === "none";
   const isCropped = rawIsCropped && !cropDisabled;
   const isContain = aspectRatio === undefined;
+  const hasAlt = !!image.alt;
 
   const contents = (
     <View ref={containerRef} collapsable={false} style={{ flex: 1 }}>
@@ -114,6 +109,10 @@ export function AutoSizedImage({
         contentFit={isContain ? "contain" : "cover"}
         style={{ width: "100%", height: "100%" }}
         source={image.thumb}
+        accessible={true} // Must set for `accessibilityLabel` to work
+        accessibilityIgnoresInvertColors
+        accessibilityLabel={image.alt}
+        accessibilityHint=""
         onLoad={(e) => {
           if (!isContain) {
             fetchedDimsRef.current = {
@@ -124,8 +123,9 @@ export function AutoSizedImage({
         }}
       />
 
-      {isCropped && !hideBadge ? (
+      {(hasAlt || isCropped) && !hideBadge ? (
         <View
+          accessible={false}
           style={{
             position: "absolute",
             bottom: 8,
@@ -133,7 +133,47 @@ export function AutoSizedImage({
             flexDirection: "row",
             gap: 3,
           }}
-        ></View>
+        >
+          {isCropped && (
+            <View
+              style={{
+                borderRadius: 4,
+                backgroundColor: "rgba(0,0,0,0.25)",
+                padding: 3,
+                opacity: 0.8,
+              }}
+            >
+              {/* Fullscreen icon placeholder */}
+              <View
+                style={{
+                  width: 12,
+                  height: 12,
+                  backgroundColor: "white",
+                }}
+              />
+            </View>
+          )}
+          {hasAlt && (
+            <View
+              style={{
+                justifyContent: "center",
+                borderRadius: 4,
+                backgroundColor: "rgba(0,0,0,0.25)",
+                padding: 3,
+                opacity: 0.8,
+              }}
+            >
+              {/* ALT text placeholder */}
+              <View
+                style={{
+                  width: 20,
+                  height: 8,
+                  backgroundColor: "white",
+                }}
+              />
+            </View>
+          )}
+        </View>
       ) : null}
     </View>
   );
@@ -141,15 +181,18 @@ export function AutoSizedImage({
   if (cropDisabled) {
     return (
       <Pressable
-        onPress={() => onPress?.(containerRef, fetchedDimsRef.current)}
+        onPress={() => onPress?.(containerRef as any, fetchedDimsRef.current)}
         onLongPress={onLongPress}
         onPressIn={onPressIn}
+        // alt here is what screen readers actually use
+        accessibilityLabel={image.alt}
+        accessibilityHint="Views full image"
         style={{
           width: "100%",
           borderRadius: 8,
           overflow: "hidden",
           backgroundColor: "rgba(0,0,0,0.25)",
-          aspectRatio: aspectRatio && aspectRatio > 1 ? 3 / 4 : max ?? 3 / 4, // Enforce portrait for landscape images
+          aspectRatio: max ?? 1,
         }}
       >
         {contents}
@@ -159,12 +202,15 @@ export function AutoSizedImage({
     return (
       <ConstrainedImage
         fullBleed={crop === "square"}
-        aspectRatio={constrained ?? 3 / 4} // Default to 3:4 portrait ratio if undefined
+        aspectRatio={constrained ?? 1}
       >
         <Pressable
-          onPress={() => onPress?.(containerRef, fetchedDimsRef.current)}
+          onPress={() => onPress?.(containerRef as any, fetchedDimsRef.current)}
           onLongPress={onLongPress}
           onPressIn={onPressIn}
+          // alt here is what screen readers actually use
+          accessibilityLabel={image.alt}
+          accessibilityHint="Views full image"
           style={{ height: "100%" }}
         >
           {contents}

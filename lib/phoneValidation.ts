@@ -11,25 +11,6 @@ export interface PhoneValidationResult {
     errorMessageGeo?: string; // Georgian error message
 }
 
-// Test phone numbers that should always be considered valid
-const TEST_PHONE_NUMBERS = [
-    '995555555555',
-    '995232323232',
-    '995222222222',
-    '995333333333',
-    '995777777777',
-    // Also support without country code
-    '555555555',
-    '232323232',
-    '222222222',
-    '333333333',
-    '777777777'
-];
-
-const isTestPhoneNumber = (phoneNumber: string): boolean => {
-    const cleanedNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
-    return TEST_PHONE_NUMBERS.includes(cleanedNumber);
-};
 
 export const validatePhoneNumber = (
     phoneNumber: string,
@@ -39,21 +20,6 @@ export const validatePhoneNumber = (
         // Remove any spaces, dashes, or other formatting
         const cleanedNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
 
-        // Check if this is a test phone number
-        if (isTestPhoneNumber(cleanedNumber)) {
-            // If it's a 9-digit number (national format), add country code for international format
-            const isNationalFormat = cleanedNumber.length === 9;
-            const nationalNumber = isNationalFormat ? cleanedNumber : cleanedNumber.substring(3);
-            const internationalNumber = isNationalFormat ? `+995${cleanedNumber}` : `+${cleanedNumber}`;
-
-            return {
-                isValid: true,
-                isPossible: true,
-                formattedNumber: nationalNumber,
-                nationalNumber: nationalNumber,
-                internationalNumber: internationalNumber,
-            };
-        }
 
         // If the number starts with the country calling code, remove it
         let numberToValidate = cleanedNumber;
@@ -109,21 +75,6 @@ export const validatePhoneNumberLength = (
         };
     }
 
-    // Check if this is a test phone number - allow them to pass
-    if (isTestPhoneNumber(cleanedNumber)) {
-        // If it's a 9-digit number (national format), add country code for international format
-        const isNationalFormat = cleanedNumber.length === 9;
-        const nationalNumber = isNationalFormat ? cleanedNumber : cleanedNumber.substring(3);
-        const internationalNumber = isNationalFormat ? `+995${cleanedNumber}` : `+${cleanedNumber}`;
-
-        return {
-            isValid: true,
-            isPossible: true,
-            formattedNumber: nationalNumber,
-            nationalNumber: nationalNumber,
-            internationalNumber: internationalNumber,
-        };
-    }
 
     // If too short, return early
     if (cleanedNumber.length < 3) {
@@ -169,10 +120,6 @@ export const formatAsYouType = (
     try {
         const cleanedNumber = phoneNumber.replace(/[\s\-\(\)]/g, '');
 
-        // Handle test phone numbers
-        if (isTestPhoneNumber(cleanedNumber)) {
-            return cleanedNumber;
-        }
 
         // Remove country calling code if present
         let numberToFormat = cleanedNumber;

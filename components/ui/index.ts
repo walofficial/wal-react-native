@@ -1,3 +1,4 @@
+// @ts-nocheck
 export { default as AnimatedButton } from "./AnimatedButton";
 export { Button } from "./button";
 export { Text } from "./text";

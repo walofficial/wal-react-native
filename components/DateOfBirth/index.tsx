@@ -18,6 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { FontSizes, useTheme } from "@/lib/theme";
 import { Calendar } from "lucide-react-native";
+import { getCurrentLocale, t } from "@/lib/i18n";
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -26,6 +27,7 @@ export default function DateOfBirth({ control }: { control: any }) {
   const pressed = useSharedValue(0);
   const colorScheme = useColorScheme();
   const theme = useTheme();
+  const locale = getCurrentLocale();
 
   const formatDate = (dateString: string) => {
     return parse(dateString, "dd/MM/yyyy", new Date());
@@ -107,7 +109,7 @@ export default function DateOfBirth({ control }: { control: any }) {
                 >
                   {value
                     ? `${formatDateToString(formatDate(value))}`
-                    : "დაბადების თარიღი"}
+                    : t("common.date_of_birth")}
                 </Text>
               </View>
               <Text
@@ -119,20 +121,20 @@ export default function DateOfBirth({ control }: { control: any }) {
                   },
                 ]}
               >
-                {value ? "შეცვლა" : "არჩევა"}
+                {value ? t("common.change") : t("common.select")}
               </Text>
             </AnimatedTouchable>
             <DatePicker
               modal
-              title="დაბადების თარიღი"
+              title={t("common.date_of_birth")}
               buttonColor={
                 colorScheme === "dark" ? "white" : theme.colors.primary
               }
               mode="date"
-              locale="ka"
+              locale={locale}
               theme={colorScheme === "dark" ? "dark" : "light"}
-              confirmText="დადასტურება"
-              cancelText="გაუქმება"
+              confirmText={t("common.confirm")}
+              cancelText={t("common.cancel")}
               open={open}
               minimumDate={new Date(1940, 1, 1)}
               maximumDate={pastDate}

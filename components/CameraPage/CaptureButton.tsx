@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import type { ViewProps } from "react-native";
-import { StyleSheet, View, Alert } from "react-native";
+import { StyleSheet, View } from "react-native";
 import type { TapGestureHandlerStateChangeEvent } from "react-native-gesture-handler";
 import { State, TapGestureHandler } from "react-native-gesture-handler";
 import Reanimated, {
@@ -18,6 +18,8 @@ import { CAPTURE_BUTTON_SIZE } from "./Constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toast } from "@backpackapp-io/react-native-toast";
 import { useHaptics } from "@/lib/haptics";
+import { useToast } from "../ToastUsage";
+import { t } from "@/lib/i18n";
 const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.05;
 const MIN_RECORDING_TIME = 500; // 1 second in milliseconds
 const MAX_RECORDING_TIME = 30000; // 30 seconds in milliseconds
@@ -31,7 +33,7 @@ interface Props extends ViewProps {
   enabled: boolean;
   setRecordingTimeView: (visible: boolean) => void;
   setIsPressingButton: (isPressingButton: boolean) => void;
-  matchId: string;
+  feedId: string;
 }
 
 const _CaptureButton: React.FC<Props> = ({
@@ -42,14 +44,14 @@ const _CaptureButton: React.FC<Props> = ({
   setIsPressingButton,
   style,
   setRecordingTimeView,
-  matchId,
+  feedId,
   ...props
 }): React.ReactElement => {
   const [isRecording, setIsRecording] = useState(false);
   const recordingStartTime = useRef<number | null>(null);
   const isPressingButton = useSharedValue(false);
   const recordingProgress = useSharedValue(0);
-  const recordingTimer = useRef<NodeJS.Timeout | null>(null);
+  const recordingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const haptic = useHaptics();
   useEffect(() => {
     setRecordingTimeView(isRecording);
@@ -83,6 +85,7 @@ const _CaptureButton: React.FC<Props> = ({
       console.error("Failed to stop recording!", e);
     }
   }, [camera, recordingProgress]);
+  const { error } = useToast();
 
   const startRecording = useCallback(() => {
     try {
@@ -96,17 +99,17 @@ const _CaptureButton: React.FC<Props> = ({
           console.error("Recording failed!", error);
           setIsRecording(false);
           recordingProgress.value = withTiming(0);
-          haptic("Error");
+          haptic("Medium");
         },
         onRecordingFinished: async (video) => {
           const recordingDuration =
             Date.now() - (recordingStartTime.current || Date.now());
           if (recordingDuration < MIN_RECORDING_TIME) {
-            toast.error("ჩანაწერი მოკლეა");
+            error({ title: t("common.short_recording_error") });
             haptic("Medium");
           } else {
             await AsyncStorage.setItem(
-              `lastRecordedVideoPath_${matchId}`,
+              `lastRecordedVideoPath_${feedId}`,
               video.path
             );
             onMediaCaptured(video, "video");
@@ -134,7 +137,7 @@ const _CaptureButton: React.FC<Props> = ({
     onMediaCaptured,
     recordingProgress,
     stopRecording,
-    matchId,
+    feedId,
   ]);
 
   const onHandlerStateChanged = useCallback(

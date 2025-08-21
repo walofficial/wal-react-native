@@ -9,17 +9,23 @@ import Svg, { Circle, Path } from "react-native-svg";
 import UserLogin from "../UserLogin";
 import VideoPlayer from "../VideoPlayer";
 import { useRef, useEffect } from "react";
+import { useAtom } from "jotai";
 import BottomSheet, { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { FontSizes } from "@/lib/theme";
 import { isAndroid } from "@/lib/platform";
 import * as NavigationBar from "expo-navigation-bar";
 import { StatusBar } from "expo-status-bar";
+import { useTranslation } from "@/hooks/useTranslation";
+import LanguageSelectionOverlay from "@/components/LanguageOverlay";
+import { appLocaleAtom } from "@/hooks/useAppLocalization";
 
 const VIDEO_URI =
   "https://cdn.wal.ge/video-verifications/transcoded/f2897541-6768-4ae2-ab28-1894d3e96e5f/manifest.mpd";
 
 export default function HomePage() {
   const userLoginRef = useRef<BottomSheet>(null);
+  const [appLocale] = useAtom(appLocaleAtom);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (isAndroid) {
@@ -40,9 +46,9 @@ export default function HomePage() {
           <View style={styles.bottomContent}>
             <Text style={styles.logo}>WAL</Text>
             <View style={styles.textContainer}>
-              <Text style={styles.title}>რა ხდება?</Text>
+              <Text style={styles.title}>{t("common.what_happening")}</Text>
               <Text style={styles.subtitle}>
-                მიიღე გაუფილტრავი, გადამოწმებული ინფორმაცია რეალურ დროში
+                {t("common.unfiltered_verified_info")}
               </Text>
             </View>
             <TouchableOpacity
@@ -51,11 +57,12 @@ export default function HomePage() {
               }}
               style={styles.button}
             >
-              <Text style={styles.buttonText}>შესვლა</Text>
+              <Text style={styles.buttonText}>{t("common.sign_in")}</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
+      <LanguageSelectionOverlay />
       <UserLogin ref={userLoginRef} />
     </BottomSheetModalProvider>
   );

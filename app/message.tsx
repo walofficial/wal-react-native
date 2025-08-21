@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Text } from "@/components/ui/text";
 import { useAtom } from "jotai";
 import { firebaseRemoteConfigState } from "@/lib/state/storage";
-import { Redirect, useRouter } from "expo-router";
+import { Redirect } from "expo-router";
 import { H1 } from "@/components/ui/typography";
 import { isDev } from "@/lib/api/config";
 
@@ -12,7 +12,7 @@ export default function RemoteConfigMessage() {
   const remoteConfigData = useAtom(firebaseRemoteConfigState);
   const insets = useSafeAreaInsets();
 
-  if (isDev) return <Redirect href="/(auth)/sign-in" />;
+  // if (isDev) return <Redirect href="/(auth)/sign-in" />;
 
   if (!remoteConfigData) return <Redirect href="/(auth)/sign-in" />;
 
@@ -34,7 +34,9 @@ export default function RemoteConfigMessage() {
       <View style={styles.contentContainer}>
         <View style={styles.messageContainer}>
           <H1 style={styles.title}>WAL</H1>
-          <Text style={styles.message}>{remoteConfigData[0].message}</Text>
+          <Text style={styles.message}>
+            {(remoteConfigData[0] as any)?.message ?? "გამარჯობა"}
+          </Text>
         </View>
       </View>
     </View>

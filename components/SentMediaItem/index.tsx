@@ -4,6 +4,7 @@ import { Text, StyleSheet, View, useColorScheme } from "react-native";
 import { FontSizes } from "@/lib/theme";
 import { formatDistanceToNow } from "date-fns";
 import Animated, { FadeIn, SlideInUp } from "react-native-reanimated";
+import { t } from "@/lib/i18n";
 
 interface MessageItemProps {
   id: string;
@@ -21,21 +22,20 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
   ({ id, content, isAuthor, createdAt, isLastFromAuthor }) => {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === "dark";
-
     const formattedTime = createdAt
       ? formatDistanceToNow(new Date(createdAt), { addSuffix: false })
-          .replace("less than a minute", "ახლა")
+          .replace("less than a minute", t("common.now"))
           .replace("about ", "")
-          .replace("minute", "m")
-          .replace("minutes", "m")
-          .replace("hour", "h")
-          .replace("hours", "h")
-          .replace("day", "d")
-          .replace("days", "d")
-          .replace("month", "mo")
-          .replace("months", "mo")
-          .replace("year", "y")
-          .replace("years", "y")
+          .replace("minute", t("common.minute_short"))
+          .replace("minutes", t("common.minute_short"))
+          .replace("hour", t("common.hour_short"))
+          .replace("hours", t("common.hour_short"))
+          .replace("day", t("common.day_short"))
+          .replace("days", t("common.day_short"))
+          .replace("month", t("common.month_short"))
+          .replace("months", t("common.month_short"))
+          .replace("year", t("common.year_short"))
+          .replace("years", t("common.year_short"))
       : "";
 
     return (

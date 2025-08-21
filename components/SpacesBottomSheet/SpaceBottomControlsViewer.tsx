@@ -14,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
 import { useHaptics } from "@/lib/haptics";
+import { t } from "@/lib/i18n";
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
@@ -63,7 +64,7 @@ function SpaceBottomControlsViewer() {
         onPress={async () => {
           haptic("Heavy");
           removeFromStage({
-            livekit_room_name: livekitRoom?.livekit_room_name,
+            livekit_room_name: livekitRoom?.livekit_room_name || "",
             participant_identity: localParticipant.identity,
           });
         }}
@@ -85,7 +86,7 @@ function SpaceBottomControlsViewer() {
               await Haptics.notificationAsync(
                 Haptics.NotificationFeedbackType.Success
               );
-              raiseHand(livekitRoom?.livekit_room_name);
+              raiseHand(livekitRoom?.livekit_room_name || "");
             }}
           >
             <Text style={styles.acceptButtonText}>თანხმობა</Text>
@@ -97,12 +98,12 @@ function SpaceBottomControlsViewer() {
             onPressOut={handlePressOut}
             onPress={() => {
               removeFromStage({
-                livekit_room_name: livekitRoom?.livekit_room_name,
+                livekit_room_name: livekitRoom?.livekit_room_name || "",
                 participant_identity: localParticipant.identity,
               });
             }}
           >
-            <Text style={styles.cancelButtonText}>გაუქმება</Text>
+            <Text style={styles.cancelButtonText}>{t("common.cancel")}</Text>
           </AnimatedPressable>
         </View>
       </View>
@@ -124,11 +125,11 @@ function SpaceBottomControlsViewer() {
         onPress={() => {
           if (!localMetadata.hand_raised) {
             handleHandRaise();
-            raiseHand(livekitRoom?.livekit_room_name);
+            raiseHand(livekitRoom?.livekit_room_name || "");
           } else {
             setIsHandRaised(false);
             removeFromStage({
-              livekit_room_name: livekitRoom?.livekit_room_name,
+              livekit_room_name: livekitRoom?.livekit_room_name || "",
               participant_identity: localParticipant.identity,
             });
           }

@@ -1,4 +1,4 @@
-import { User } from "@/lib/interfaces";
+import { User } from "@/lib/api/generated";
 import { atom } from "jotai";
 
 export const hasMessageAtom = atom<boolean>(false);

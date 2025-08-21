@@ -10,68 +10,66 @@ import useReportTask from "@/hooks/useReportTask";
 import useBlockUser from "@/hooks/useBlockUser";
 import useDeleteFriendMutation from "@/hooks/useDeleteFriendMutation";
 import { useMakePublicMutation } from "@/hooks/useMakePublicMutation";
-import usePinVerification from "@/hooks/usePinVerification";
-import useUnpinVerification from "@/hooks/useUnpinVerification";
 import { shareUrl } from "@/lib/share";
 import { app_name_slug } from "@/app.config";
 import { useTheme } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 interface MenuViewProps {
   verificationId: string;
-  friendId: string;
+  posterId: string;
   isStory?: boolean;
   isPublic?: boolean;
-  canPin?: boolean;
-  isPinned?: boolean;
-  taskId?: string;
+  feedId?: string;
 }
 
 function MenuView({
   verificationId,
-  friendId,
+  posterId,
   isPublic,
-  canPin,
-  isPinned,
-  taskId,
+  feedId,
 }: MenuViewProps) {
   const menuRef = useRef<MenuComponentRef>(null);
   const { user } = useAuth();
   const reportTask = useReportTask();
   const blockUser = useBlockUser();
-  const pinFeedItem = usePinVerification();
-  const removePinnedFeedItem = useUnpinVerification();
   const deleteFriendMutation = useDeleteFriendMutation();
-  const makePublicMutation = useMakePublicMutation(verificationId);
+  const makePublicMutation = useMakePublicMutation();
   const theme = useTheme();
 
-  const isAuthor = friendId === user?.id;
+  const isAuthor = posterId === user?.id;
 
   const handleDeleteFriend = () => {
-    deleteFriendMutation.mutate(friendId);
+    deleteFriendMutation.mutate({
+      path: {
+        friend_id: posterId,
+      },
+    });
   };
 
   const handleBlockUser = () => {
-    blockUser.mutate(friendId);
+    blockUser.mutate({
+      path: {
+        target_id: posterId,
+      },
+    });
   };
 
   const handleMakePublic = (isPublic: boolean) => {
-    makePublicMutation.mutate(isPublic);
+    makePublicMutation.mutate({
+      body: {
+        verification_id: verificationId,
+        is_public: isPublic,
+      },
+    });
   };
 
   const handleReport = () => {
-    reportTask.mutate(verificationId);
-  };
-
-  const handlePin = () => {
-    if (taskId) {
-      pinFeedItem.mutate({ taskId, verificationId });
-    }
-  };
-
-  const handleUnpin = () => {
-    if (taskId) {
-      removePinnedFeedItem.mutate({ taskId, verificationId });
-    }
+    reportTask.mutate({
+      body: {
+        target_id: posterId,
+      },
+    });
   };
 
   const handleShare = async () => {
@@ -85,7 +83,7 @@ function MenuView({
   return (
     <RNMenuView
       ref={menuRef}
-      title="რა გსურთ?"
+      title={t("common.what_do_you_want")}
       onPressAction={({ nativeEvent }) => {
         if (nativeEvent.event === "report") {
           handleReport();
@@ -99,10 +97,6 @@ function MenuView({
           handleMakePublic(true);
         } else if (nativeEvent.event === "share") {
           handleShare();
-        } else if (nativeEvent.event === "pin") {
-          handlePin();
-        } else if (nativeEvent.event === "unpin") {
-          handleUnpin();
         }
       }}
       shouldOpenOnLongPress={false}
@@ -111,47 +105,39 @@ function MenuView({
           ? [
               {
                 id: "share",
-                title: "გაზიარება",
+                title: t("common.share"),
                 imageColor: "#46F289",
               },
-              ...(canPin
-                ? [
-                    {
-                      id: isPinned ? "unpin" : "pin",
-                      title: isPinned ? "დაპინვის წაშლა" : "დაპინვა",
-                    },
-                  ]
-                : []),
               ...(isPublic
                 ? [
                     {
                       id: "hide-post",
-                      title: "დამალვა",
+                      title: t("common.hide"),
                     },
                   ]
                 : [
                     {
                       id: "show-post",
-                      title: "გამოჩენა",
+                      title: t("common.show"),
                     },
                   ]),
             ]
           : [
               {
                 id: "share",
-                title: "გაზიარება",
+                title: t("common.share"),
                 imageColor: "#46F289",
               },
               {
                 id: "block",
-                title: "დაბლოკვა",
+                title: t("common.block"),
                 attributes: {
                   destructive: true,
                 },
               },
               {
                 id: "report",
-                title: "დაარეპორტე",
+                title: t("common.report"),
                 attributes: {
                   destructive: true,
                 },

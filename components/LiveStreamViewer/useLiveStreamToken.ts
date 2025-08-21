@@ -1,10 +1,13 @@
-import api from "@/lib/api";
+import { getLiveStreamTokenOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { useQuery } from "@tanstack/react-query";
 
 function useLiveStreamToken(livekitRoomName: string) {
   const token = useQuery({
-    queryKey: ["live-stream-token", livekitRoomName],
-    queryFn: () => api.getLiveStreamToken(livekitRoomName),
+    ...getLiveStreamTokenOptions({
+      query: {
+        room_name: livekitRoomName,
+      },
+    }),
   });
 
   return token;

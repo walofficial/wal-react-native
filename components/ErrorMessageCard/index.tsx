@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/lib/theme";
 import Button from "@/components/Button";
+import { t } from "@/lib/i18n";
 
 function ErrorMessageCard({
   title,
@@ -28,7 +29,7 @@ function ErrorMessageCard({
           {description}
         </Text>
         <Button
-          title="უკან"
+          title={t("common.go_back")}
           variant="primary"
           size="medium"
           onPress={handleSignInPress}

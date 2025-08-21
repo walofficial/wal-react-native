@@ -1,6 +1,6 @@
 import { ChatList } from "./chat-list";
 import React, { useEffect, useState } from "react";
-import { User } from "@/lib/interfaces";
+import { User, ChatMessage } from "@/lib/api/generated";
 
 interface ChatProps {
   messages?: any[];

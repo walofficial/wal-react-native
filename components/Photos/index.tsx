@@ -1,41 +1,37 @@
 import React, { useRef, useState, useCallback, memo } from "react";
 import { View, TouchableOpacity, Alert, StyleSheet } from "react-native";
-import Button from "@/components/Button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
-import api from "@/lib/api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import ImageLoader from "@/components/ImageLoader";
-import { cx } from "class-variance-authority";
 import * as ImageManipulator from "expo-image-manipulator";
 import { ActivityIndicator } from "react-native";
 import { Text } from "@/components/ui/text";
 import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { toast } from "@backpackapp-io/react-native-toast";
 import { convertToCDNUrl } from "@/lib/utils";
 import { Ionicons } from "@expo/vector-icons";
 import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import {
-  bottomSheetBackgroundStyle,
-  getBottomSheetBackgroundStyle,
-} from "@/lib/styles";
+import { getBottomSheetBackgroundStyle } from "@/lib/styles";
 import useAuth from "@/hooks/useAuth";
 import { FontSizes, useTheme } from "@/lib/theme";
+import {
+  updateUserMutation,
+  uploadUserPhotosMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
+import { formDataBodySerializer } from "@/lib/utils/form-data";
+import { t } from "@/lib/i18n";
 
 const formSchema = z.object({
   photo: z
     .object({
-      blur_hash: z.string(),
-      image_id: z.string(),
-      image_url: z.array(z.string()),
+      blur_hash: z.string().nullable().optional(),
+      image_id: z.string().optional(),
+      image_url: z.array(z.string()).optional(),
     })
     .optional(),
-  isPhotosHidden: z.boolean(),
 });
-
-type PhotoItem = z.infer<typeof formSchema>["photo"];
 
 export default function Photos({ redirectURL }: { redirectURL?: string }) {
   const { user, setAuthUser } = useAuth();
@@ -56,29 +52,29 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      photo: user?.photos?.[0] || undefined,
-      isPhotosHidden: user!.is_photos_hidden || false,
+      photo: user?.photos?.[0]
+        ? {
+            blur_hash: user.photos[0].blur_hash ?? undefined,
+            image_id: user.photos[0].image_id ?? undefined,
+            image_url: user.photos[0].image_url?.filter(Boolean) as
+              | string[]
+              | undefined,
+          }
+        : undefined,
     },
     reValidateMode: "onChange",
   });
 
   const photo = watch("photo");
-  const isPhotosHidden = watch("isPhotosHidden");
 
-  const updateUserMutation = useMutation({
-    onMutate: ({ photo, isPhotosHidden }) => {
+  const updateUser = useMutation({
+    onMutate: (variables) => {
       setAuthUser({
         ...user,
-        photos: photo ? [photo] : [],
-        isPhotosHidden,
+        photos: variables.body.photos ? [variables.body.photos[0]] : [],
       });
     },
-    mutationFn: (values: z.infer<typeof formSchema>) => {
-      return api.updateUser({
-        photos: values.photo ? [values.photo] : [],
-        isPhotosHidden: values.isPhotosHidden,
-      });
-    },
+    ...updateUserMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({
@@ -99,7 +95,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       }
     },
     onError: (error) => {
-      Alert.alert("ხარვეზი", "ვერ მოხერხდა მომხმარებლის განახლება");
+      Alert.alert(t("common.error_title"), t("common.user_update_failed"));
     },
   });
 
@@ -130,24 +126,22 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
   };
 
   const uploadMutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-      return api.uploadPhotos(formData);
-    },
+    ...uploadUserPhotosMutation(),
     onSuccess: (data) => {
-      setValue("photo", data.uploaded[0]);
+      setValue("photo", data[0]);
       trigger("photo");
       setIsLoading(false);
       bottomSheetRef.current?.close();
 
-      const formData = {
-        photo: data.uploaded[0],
-        isPhotosHidden: isPhotosHidden,
-      };
-      updateUserMutation.mutate(formData);
+      updateUser.mutate({
+        body: {
+          photos: [data[0]],
+        },
+      });
     },
     onError: (error) => {
       console.log(JSON.stringify(error));
-      Alert.alert("ხარვეზი", "Error uploading photos");
+      Alert.alert(t("common.error_title"), t("common.photo_upload_failed"));
       setIsLoading(false);
     },
   });
@@ -156,7 +150,10 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
     bottomSheetRef.current?.close();
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== "granted") {
-      Alert.alert("Permission needed", "Camera permission is required");
+      Alert.alert(
+        t("common.permission_needed"),
+        t("common.camera_permission_required")
+      );
       return;
     }
 
@@ -171,13 +168,17 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       setIsLoading(true);
       const resizedUri = await resizeImage(result.assets[0].uri);
       if (resizedUri) {
-        const formData = new FormData();
-        formData.append("files", {
+        const file = {
           uri: resizedUri,
-          name: "profile99",
+          name: "photo.jpg",
           type: "image/jpeg",
-        } as any);
-        uploadMutation.mutate(formData);
+        };
+        uploadMutation.mutate({
+          ...formDataBodySerializer,
+          body: {
+            files: [file as any],
+          },
+        });
       }
     }
   };
@@ -196,20 +197,19 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       setIsLoading(true);
       const resizedUri = await resizeImage(result.assets[0].uri);
       if (resizedUri) {
-        const formData = new FormData();
-        formData.append("files", {
+        const file = {
           uri: resizedUri,
-          name: "profile99",
+          name: "photo.jpg",
           type: "image/jpeg",
-        } as any);
-        uploadMutation.mutate(formData);
+        };
+        uploadMutation.mutate({
+          ...formDataBodySerializer,
+          body: {
+            files: [file as any],
+          },
+        });
       }
     }
-  };
-
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!isValid) return;
-    updateUserMutation.mutate(values);
   };
 
   return (
@@ -219,7 +219,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       >
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText, { color: theme.colors.text }]}>
-            პროფილის ფოტო
+            {t("common.profile_photo")}
           </Text>
         </View>
         <View style={styles.photosContainer}>
@@ -235,12 +235,16 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
               },
             ]}
           >
-            {photo && !isPhotosHidden ? (
+            {photo ? (
               <ImageLoader
                 aspectRatio={1}
                 alt="Profile Photo"
-                source={convertToCDNUrl(photo.image_url[0])}
-                blurhash={photo.blur_hash}
+                source={
+                  photo.image_url?.[0]
+                    ? convertToCDNUrl(photo.image_url[0])
+                    : undefined
+                }
+                blurhash={photo.blur_hash ?? undefined}
                 style={styles.image}
               />
             ) : (
@@ -256,7 +260,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
             {/* Loading overlay */}
             {(isLoading ||
               uploadMutation.isPending ||
-              updateUserMutation.isPending) && (
+              updateUser.isPending) && (
               <View style={styles.loadingOverlay}>
                 <ActivityIndicator size="large" color={theme.colors.primary} />
               </View>
@@ -290,7 +294,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
                 { color: theme.colors.text },
               ]}
             >
-              კამერა
+              {t("common.camera")}
             </Text>
           </TouchableOpacity>
 
@@ -309,7 +313,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
                 { color: theme.colors.text },
               ]}
             >
-              ატვირთე გალერიიდან
+              {t("common.upload_from_gallery")}
             </Text>
           </TouchableOpacity>
         </View>

@@ -8,26 +8,26 @@ import {
   Pressable,
 } from "react-native";
 import { Image } from "expo-image";
-import { ChevronRight } from "lucide-react-native";
 import { ThemedText } from "../ThemedText";
-import { formatRelativeTime } from "@/lib/utils/date";
 import { getFaviconUrl } from "@/utils/urlUtils";
-import { NewsItem } from "./index";
 import * as Haptics from "expo-haptics";
-import { differenceInHours, parseISO } from "date-fns";
+// timestamp/date removed from UI
 import { useTheme } from "@/lib/theme";
 import { useColorScheme } from "react-native";
 import FactualityBadge, { FactualityBadgeType } from "../ui/FactualityBadge";
+import { t } from "@/lib/i18n";
+import { FeedPost } from "@/lib/api/generated";
+import { SourceIcon } from "../SourceIcon";
 
 const MAX_SOURCES = 5;
 
 // Helper function to get unique favicon URLs from sources
-const getUniqueSourceIcons = (sources?: NewsItem["sources"]) => {
+const getUniqueSourceIcons = (sources?: FeedPost["sources"]) => {
   if (!sources || sources.length === 0) return [];
 
   const uniqueUrls = new Map();
 
-  sources.forEach((source) => {
+  sources.forEach((source: { title: string; uri: string }) => {
     if (source.uri) {
       const faviconUrl = getFaviconUrl(source.uri);
       if (!uniqueUrls.has(faviconUrl)) {
@@ -40,7 +40,7 @@ const getUniqueSourceIcons = (sources?: NewsItem["sources"]) => {
 };
 
 interface NewsCardItemProps {
-  item: NewsItem;
+  item: FeedPost;
   onPress: (verificationId: string) => void;
 }
 
@@ -54,35 +54,17 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
     if (Platform.OS !== "web") {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
-    onPress(item.verification_id);
-  }, [onPress, item.verification_id]);
+    onPress(item.id);
+  }, [onPress, item.id]);
 
-  // Memoize the timestamp opacity calculation
-  const timestampOpacity = useMemo(() => {
-    try {
-      const itemDate = parseISO(item.last_modified_date);
-      const hoursDiff = differenceInHours(new Date(), itemDate);
-
-      if (hoursDiff < 1) {
-        return 1;
-      } else if (hoursDiff < 6) {
-        return 0.9;
-      } else if (hoursDiff < 24) {
-        return 0.8;
-      }
-      return 0.7;
-    } catch (error) {
-      console.error("Error parsing date:", error);
-      return 0.7;
-    }
-  }, [item.last_modified_date]);
+  // Timestamp removed per design
 
   // Memoize the fact check badge info calculation
   const badgeInfo = useMemo((): {
     text: string;
     type: "truth" | "misleading" | "neutral";
   } | null => {
-    const score = item.factuality;
+    const score = item.fact_check_data?.factuality;
 
     if (score === undefined || score === null) {
       return null;
@@ -92,15 +74,15 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
     let badgeType: "truth" | "misleading" | "neutral" = "neutral";
 
     if (score >= 0.5) {
-      badgeText = `${Math.round(score * 100)}% სიმართლე`;
+      badgeText = `${Math.round(score * 100)}% ${t("common.truth")}`;
       badgeType = "truth";
     } else {
-      badgeText = `${Math.round((1 - score) * 100)}% სიცრუე`;
+      badgeText = `${Math.round((1 - score) * 100)}% ${t("common.falsehood")}`;
       badgeType = "misleading";
     }
 
     return { text: badgeText, type: badgeType };
-  }, [item.factuality]);
+  }, [item.fact_check_data?.factuality]);
 
   // Memoize the shared badge type
   const sharedBadgeType: FactualityBadgeType | undefined = useMemo(() => {
@@ -117,6 +99,16 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
   const uniqueSourceIcons = useMemo(() => {
     return getUniqueSourceIcons(item.sources);
   }, [item.sources]);
+  // Determine image source and aspect ratio
+  const firstImage = item.image_gallery_with_dims?.[0];
+  const imageUrl =
+    firstImage?.url ||
+    "https://storage.googleapis.com/ment-verification/video-verifications/raw/Georgia_International_Criticism_PACE_US_NGOs_bc1fa75a21bc4f869800a65216a2cec6.jpg";
+  const aspectRatio =
+    firstImage?.width && firstImage?.height
+      ? firstImage.width / firstImage.height
+      : 16 / 9;
+
   return (
     <Pressable
       onPress={handlePress}
@@ -129,111 +121,86 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
         style={[
           styles.newsItem,
           {
-            backgroundColor: "rgba(0,0,0,0.2)",
+            backgroundColor: isDark ? "#1a1a1a" : "#F2F2F7",
             borderColor: isDark
-              ? theme.colors.border
-              : "rgba(230, 230, 230, 0.8)",
+              ? "rgba(255, 255, 255, 0.1)"
+              : "rgba(0, 0, 0, 0.08)",
             ...Platform.select({
               ios: {
-                shadowColor: isDark ? "#000" : "#e0e0e0",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: isDark ? 0.25 : 0.05,
-                shadowRadius: isDark ? 3 : 1,
+                shadowColor: "#000000",
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: isDark ? 0.3 : 0.1,
+                shadowRadius: 8,
               },
               android: {
-                elevation: isDark ? 3 : 0.5,
+                elevation: isDark ? 4 : 2,
               },
             }),
           },
         ]}
       >
         <View style={styles.newsContent}>
-          <View style={styles.newsContentHeader}>
-            <View style={styles.newsTextContainer}>
-              <ThemedText numberOfLines={4} style={[styles.newsText]}>
-                {item.title}
-              </ThemedText>
-            </View>
+          <View style={styles.imageWrapper}>
+            <Image
+              source={{ uri: imageUrl }}
+              transition={300}
+              contentFit="cover"
+              style={{ width: "100%", aspectRatio }}
+            />
           </View>
-          <View style={styles.newsFooter}>
-            <View style={styles.footerLeftSection}>
-              <ThemedText
-                style={[styles.timestampText, { opacity: timestampOpacity }]}
-              >
-                {formatRelativeTime(item.last_modified_date)}
-              </ThemedText>
-              <View style={styles.badgeAndSourcesRow}>
-                {badgeInfo && sharedBadgeType && (
-                  <View style={styles.badgeWrapper}>
-                    <FactualityBadge
-                      text={badgeInfo.text}
-                      type={sharedBadgeType}
-                      style={[
-                        styles.newsCardBadgeStyles,
-                        Platform.OS === "ios" && styles.iosBadgeShadow,
-                      ]}
-                    />
-                  </View>
-                )}
-                <View style={styles.sourceIconsContainer}>
-                  {item.sources &&
-                    uniqueSourceIcons
-                      .slice(0, MAX_SOURCES)
-                      .map((source, idx) => (
-                        <View
-                          key={idx}
-                          style={[
-                            styles.sourceIcon,
-                            {
-                              marginLeft: idx > 0 ? -8 : 0,
-                              zIndex: 3 - idx,
-                            },
-                          ]}
-                        >
-                          {source.uri && (
-                            <Image
-                              transition={300}
-                              source={{ uri: getFaviconUrl(source.uri) }}
-                              style={{
-                                width: 22,
-                                height: 22,
-                                borderRadius: 11,
-                                borderWidth: 1.5,
-                                borderColor: theme.colors.card.background,
-                              }}
-                            />
-                          )}
-                        </View>
-                      ))}
-                  {item.sources && uniqueSourceIcons.length > MAX_SOURCES && (
+          <View style={styles.textSection}>
+            <ThemedText numberOfLines={6} style={styles.titleBelowText}>
+              {item.title}
+            </ThemedText>
+            <View style={styles.badgeAndSourcesRow}>
+              {badgeInfo && sharedBadgeType && (
+                <View style={styles.badgeWrapper}>
+                  <FactualityBadge
+                    text={badgeInfo.text}
+                    type={sharedBadgeType}
+                    style={[
+                      styles.newsCardBadgeStyles,
+                      Platform.OS === "ios" && styles.iosBadgeShadow,
+                    ]}
+                  />
+                </View>
+              )}
+              <View style={styles.sourceIconsContainer}>
+                {item.sources &&
+                  uniqueSourceIcons.slice(0, MAX_SOURCES).map((source, idx) => (
                     <View
+                      key={idx}
                       style={[
-                        styles.moreSourcesIndicator,
+                        styles.sourceIcon,
                         {
-                          backgroundColor: isDark ? "#e0e0e0" : "#808080",
-                          borderColor: theme.colors.card.background,
+                          marginLeft: 3,
                         },
                       ]}
                     >
-                      <Text
-                        style={[
-                          styles.moreSourcesText,
-                          { color: isDark ? "#333333" : "#ffffff" },
-                        ]}
-                      >
-                        +{uniqueSourceIcons.length - 3}
-                      </Text>
+                      <SourceIcon sourceUrl={source.uri} size={20} />
                     </View>
-                  )}
-                </View>
+                  ))}
+                {item.sources && uniqueSourceIcons.length > MAX_SOURCES && (
+                  <View
+                    style={[
+                      styles.moreSourcesIndicator,
+                      {
+                        backgroundColor: isDark ? "#e0e0e0" : "#808080",
+                        borderColor: theme.colors.card.background,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.moreSourcesText,
+                        { color: isDark ? "#333333" : "#ffffff" },
+                      ]}
+                    >
+                      +{uniqueSourceIcons.length - 3}
+                    </Text>
+                  </View>
+                )}
               </View>
-            </View>
-            <View style={styles.footerRightSection}>
-              <ChevronRight
-                size={16}
-                color={theme.colors.text}
-                style={styles.navIcon}
-              />
             </View>
           </View>
         </View>
@@ -253,6 +220,8 @@ const styles = StyleSheet.create({
         // Android and iOS will use the native feedback
       },
     }),
+    paddingHorizontal: 16,
+    marginBottom: 12,
   },
   pressedState: {
     opacity: 0.9,
@@ -261,10 +230,9 @@ const styles = StyleSheet.create({
   newsItem: {
     flexDirection: "column",
     justifyContent: "space-between",
-    padding: 16,
-    minHeight: 180,
     borderRadius: 12,
     borderWidth: 1,
+    overflow: "hidden",
   },
   lastNewsItem: {
     marginBottom: 12,
@@ -282,27 +250,20 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
   },
-  newsContentHeader: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    flex: 1,
+  imageWrapper: {
+    position: "relative",
+    width: "100%",
     overflow: "hidden",
+    borderRadius: 10,
   },
-  newsTextContainer: {
-    flex: 1,
-    overflow: "hidden",
+  textSection: {
+    marginTop: 0,
+    padding: 12,
   },
-  newsText: {
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: "500",
-    flex: 1,
-  },
-  newsFooter: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 8,
+  titleBelowText: {
+    fontSize: 18,
+    lineHeight: 24,
+    fontWeight: "600",
   },
   footerLeftSection: {
     flexDirection: "column",
@@ -319,7 +280,7 @@ const styles = StyleSheet.create({
     marginLeft: 0,
   },
   timestampText: {
-    fontSize: 12,
+    display: "none",
   },
   singleNewsItem: {
     borderWidth: 1,
@@ -347,7 +308,7 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     justifyContent: "center",
     alignItems: "center",
-    marginLeft: -8,
+    marginLeft: 3,
     borderWidth: 1.5,
     zIndex: 4,
   },
@@ -365,17 +326,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginTop: 4,
+    marginTop: 10,
   },
 });
 
 export default React.memo(NewsCardItem, (prevProps, nextProps) => {
   // Custom comparison function to prevent unnecessary re-renders
   return (
-    prevProps.item.verification_id === nextProps.item.verification_id &&
+    prevProps.item.id === nextProps.item.id &&
     prevProps.item.title === nextProps.item.title &&
     prevProps.item.last_modified_date === nextProps.item.last_modified_date &&
-    prevProps.item.factuality === nextProps.item.factuality &&
+    prevProps.item.fact_check_data?.factuality ===
+      nextProps.item.fact_check_data?.factuality &&
     prevProps.onPress === nextProps.onPress
   );
 });

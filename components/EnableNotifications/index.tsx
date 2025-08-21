@@ -3,7 +3,6 @@ import { Linking, Platform, View, StyleSheet } from "react-native";
 import Button from "@/components/Button";
 import * as Notifications from "expo-notifications";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { Text } from "../ui/text";
 import { isDev } from "@/lib/api/config";
 import {
@@ -14,6 +13,13 @@ import { useRouter } from "expo-router";
 import { Alert } from "react-native";
 import { useAtom } from "jotai";
 import { expoPushTokenAtom, isSubscribedAtom } from "./atom";
+import {
+  deleteFcmMutation,
+  getFcmTokenOptions,
+  getFcmTokenQueryKey,
+  upsertFcmMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
+import { t } from "@/lib/i18n";
 
 export const openNotificationSettings = () => {
   return Linking.openSettings();
@@ -34,25 +40,22 @@ export default function EnableNotifications({
     Notifications.Notification | undefined
   >(undefined);
 
-  const upsertFCM = useMutation({
-    mutationKey: ["fcm-save"],
-    mutationFn: (token: string | null) => api.upsertFCMData(token),
+  const saveToken = useMutation({
+    ...upsertFcmMutation(),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["fcm-get"] });
+      queryClient.invalidateQueries({ queryKey: getFcmTokenQueryKey() });
     },
   });
 
   const deleteFCM = useMutation({
-    mutationKey: ["fcm-delete"],
-    mutationFn: (token: string) => api.deleteFCMData(token),
+    ...deleteFcmMutation(),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["fcm-get"] });
+      queryClient.invalidateQueries({ queryKey: getFcmTokenQueryKey() });
     },
   });
 
   const getFcm = useQuery({
-    queryKey: ["fcm-get"],
-    queryFn: () => api.getFCMData(),
+    ...getFcmTokenOptions(),
   });
 
   useEffect(() => {
@@ -63,19 +66,11 @@ export default function EnableNotifications({
     }
   }, [getFcm.data, expoPushToken]);
 
-  const enableNotifications = async () => {
-    const token = await registerForPushNotificationsAsync();
-    if (token) {
-      setExpoPushToken(token);
-      upsertFCM.mutate(token);
-    }
-  };
-
   const toggleNotifications = async () => {
     if (isSubscribed) {
       // Unsubscribe logic
       await Notifications.unregisterForNotificationsAsync();
-      deleteFCM.mutate(expoPushToken);
+      deleteFCM.mutate({});
       setUserDismissed(true);
     } else {
       // Subscribe logic
@@ -83,17 +78,17 @@ export default function EnableNotifications({
         const token = await registerForPushNotificationsAsync();
         if (!token) {
           Alert.alert(
-            "შეტყობინებების ჩართვა",
-            "გადადით პარამეტრებში რომ გააქტიუროთ შეტყობინებები",
+            t("common.enable_notifications"),
+            t("common.go_to_settings_enable_notifications"),
             [
               {
-                text: "პარამეტრები",
+                text: t("common.settings"),
                 onPress: () => {
                   openNotificationSettings();
                 },
               },
               {
-                text: "გაუქმება",
+                text: t("common.cancel"),
                 style: "destructive",
               },
             ]
@@ -102,7 +97,11 @@ export default function EnableNotifications({
         }
         if (token) {
           setExpoPushToken(token);
-          upsertFCM.mutate(token);
+          saveToken.mutate({
+            body: {
+              expo_push_token: token,
+            } as any,
+          });
           setUserDismissed(false);
         }
       } catch (error) {
@@ -144,14 +143,17 @@ export default function EnableNotifications({
   return (
     <>
       <Button
+        glassy={true}
         style={styles.button}
         variant={!isSubscribed ? "default" : "secondary"}
         size="large"
         onPress={toggleNotifications}
-        disabled={upsertFCM.isPending}
-        loading={upsertFCM.isPending}
+        disabled={saveToken.isPending}
+        loading={saveToken.isPending}
         title={
-          isSubscribed ? "შეტყობინებების გამორთვა" : "შეტყობინებების ჩართვა"
+          isSubscribed
+            ? t("common.disable_notifications")
+            : t("common.enable_notifications")
         }
         icon={
           isSubscribed ? "notifications-off-outline" : "notifications-outline"
@@ -159,11 +161,12 @@ export default function EnableNotifications({
       />
       {isDev && (
         <Button
+          glassy={true}
           style={styles.button}
           variant="secondary"
           size="large"
           onPress={() => sendPushNotification(expoPushToken)}
-          disabled={upsertFCM.isPending}
+          disabled={saveToken.isPending}
           title={"Test notification"}
         />
       )}

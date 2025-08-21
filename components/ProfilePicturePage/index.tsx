@@ -14,9 +14,7 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { convertToCDNUrl } from "@/lib/utils";
-import useLiveUser from "@/hooks/useLiveUser";
 import useAuth from "@/hooks/useAuth";
-import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
 
 const ProfilePicture = ({
   showMessageOption = false,
@@ -24,10 +22,6 @@ const ProfilePicture = ({
   showMessageOption?: boolean;
 }) => {
   const { imageUrl, userId } = useLocalSearchParams();
-  const router = useRouter();
-  const { joinChat } = useLiveUser();
-  const { user } = useAuth();
-  const isAuthor = user?.id === userId;
 
   return (
     <SafeAreaView style={[styles.container]}>

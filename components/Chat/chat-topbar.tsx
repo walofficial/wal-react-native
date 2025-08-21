@@ -9,7 +9,6 @@ import { Skeleton } from "../ui/skeleton";
 import { Text } from "../ui/text";
 import { router, useGlobalSearchParams } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useTheme } from "@/lib/theme";
 
 import Animated, {
@@ -28,9 +27,9 @@ import usePokeLiveUser from "@/hooks/usePokeUser";
 import { User } from "lucide-react-native";
 
 export default function ChatTopbar() {
-  const { roomId, taskId } = useGlobalSearchParams<{
+  const { roomId, feedId } = useGlobalSearchParams<{
     roomId: string;
-    taskId: string;
+    feedId: string;
   }>();
   const { room, isFetching } = useMessageRoom(roomId);
   const { user } = useAuth();
@@ -39,7 +38,6 @@ export default function ChatTopbar() {
   const [isChatUserOnline, setIsChatUserOnline] = useAtom(
     isChatUserOnlineState
   );
-  const insets = useSafeAreaInsets();
 
   const selectedUser = room?.participants.find((p) => p.id !== user.id);
 
@@ -73,7 +71,11 @@ export default function ChatTopbar() {
 
   const handleAddFriend = () => {
     if (selectedUser) {
-      sendFriendRequest(selectedUser.id);
+      sendFriendRequest({
+        body: {
+          target_user_id: selectedUser.id,
+        },
+      });
     }
   };
 
@@ -82,8 +84,9 @@ export default function ChatTopbar() {
   const handlePoke = () => {
     if (selectedUser) {
       pokeLiveUser.mutate({
-        userId: selectedUser.id,
-        taskId: taskId,
+        path: {
+          target_user_id: selectedUser.id,
+        },
       });
     }
   };
@@ -137,7 +140,7 @@ export default function ChatTopbar() {
                 router.navigate({
                   pathname: "/(tabs)/(home)/profile-picture",
                   params: {
-                    taskId: taskId,
+                    feedId: feedId,
                     roomId: roomId,
                     imageUrl: userPhoto,
                   },
@@ -181,7 +184,11 @@ export default function ChatTopbar() {
           </Pressable>
           <View style={styles.usernameContainer}>
             {selectedUser?.username ? (
-              <Text style={[styles.username, { color: theme.colors.text }]}>
+              <Text
+                style={[styles.username, { color: theme.colors.text }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
                 {selectedUser?.username}
               </Text>
             ) : (

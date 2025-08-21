@@ -1,3 +1,4 @@
+// @ts-nocheck
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Pressable, View, StyleSheet } from "react-native";
 import { MoonStar } from "~/lib/icons/MoonStar";

@@ -3,11 +3,13 @@ import { interpolate, useAnimatedStyle } from 'react-native-reanimated'
 import { useMinimalShellMode } from '@/lib/context/header-transform'
 import { HEADER_HEIGHT } from '@/lib/constants'
 import { useAtomValue } from 'jotai'
+import useFeeds from './useFeeds';
 
 // Keep these separated so that we only pay for useAnimatedStyle that gets used.
 
 export function useMinimalShellHeaderTransform() {
-    const headerHeight = useAtomValue(HEADER_HEIGHT)
+    const { headerHeight } = useFeeds();
+
     const { headerMode } = useMinimalShellMode()
 
     const headerTransform = useAnimatedStyle(() => {

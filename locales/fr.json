@@ -1,0 +1,33 @@
+{
+  "settings": {
+    "general": "Général",
+    "account": "Compte",
+    "change_photo": "Changer la photo",
+    "telegram_channel": "Canal Telegram",
+    "blocked_users": "Utilisateurs bloqués",
+    "preferred_region": "Région préférée",
+    "preferred_content_language": "Langue du contenu",
+    "language_and_region": "Langue et région",
+    "region_explanation": "Sélectionnez le pays ou la région à partir duquel vous souhaitez recevoir le contenu d'actualités locales et les informations vérifiées.",
+    "content_language_explanation": "Choisissez la langue dans laquelle vous souhaitez lire les actualités et le contenu. Cela vous permet de consommer des informations dans votre langue préférée.",
+    "terms_of_service": "Conditions d'utilisation",
+    "privacy_policy": "Politique de confidentialité"
+  },
+  "regions": {
+    "georgia": "Géorgie",
+    "united_states": "États-Unis",
+    "france": "France"
+  },
+  "languages": {
+    "english": "Anglais",
+    "french": "Français",
+    "georgian": "Géorgien"
+  },
+  "common": {
+    "select": "Sélectionner",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite"
+  }
+}

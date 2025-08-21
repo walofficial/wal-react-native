@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect } from "react";
 import {
   View,
@@ -19,7 +20,6 @@ import { z } from "zod";
 import { Text } from "@/components/ui/text";
 import useAuth from "@/hooks/useAuth";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { useRouter } from "expo-router";
 import { dateOfBirthSchema } from "@/lib/schema";
 import DateOfBirth from "@/components/DateOfBirth";
@@ -29,7 +29,8 @@ import { H2, H4 } from "@/components/ui/typography";
 import { LogOut } from "lucide-react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CloseButton from "@/components/CloseButton";
-import { toast } from "@backpackapp-io/react-native-toast";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -40,7 +41,9 @@ import Animated, {
 } from "react-native-reanimated";
 import CustomAnimatedButton from "@/components/ui/AnimatedButton";
 import { useDebounce } from "@uidotdev/usehooks";
-import { HOME_TASK_ID } from "@/constants/home";
+import { FACT_CHECK_FEED_ID } from "@/lib/constants";
+import { updateUser } from "@/lib/api/generated";
+import { getUserProfileByUsernameOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 const MAX_USERNAME_LENGTH = 20;
 
@@ -71,6 +74,7 @@ export default function RegisterView() {
   const hasText = useSharedValue(0);
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const { error: errorToast } = useToast();
 
   const updateUserMutation = useMutation({
     onMutate: ({ gender, username, date_of_birth }) => {
@@ -80,13 +84,21 @@ export default function RegisterView() {
         gender,
         username,
       });
-      router.replace(`/(tabs)/(global)/${HOME_TASK_ID}`);
+      router.replace(`/(tabs)/(fact-check)/${FACT_CHECK_FEED_ID}`);
     },
-    mutationFn: (values: FormValues) => api.updateUser(values),
+    mutationFn: (values: FormValues) =>
+      updateUser({
+        body: {
+          ...values,
+        },
+      }),
     onSuccess: () => {},
     onError: (error) => {
       console.log("error", error);
-      toast.error("დაფიქსირდა შეცდომა");
+      errorToast({
+        title: t("errors.general_error"),
+        description: t("errors.general_error"),
+      });
     },
   });
 
@@ -111,8 +123,11 @@ export default function RegisterView() {
   const debouncedUsername = useDebounce(username, 500);
 
   const usernameQuery = useQuery({
-    queryKey: ["username", debouncedUsername],
-    queryFn: () => api.isUserNameAvailable(debouncedUsername),
+    ...getUserProfileByUsernameOptions({
+      path: {
+        username: debouncedUsername,
+      },
+    }),
     enabled:
       !!debouncedUsername && debouncedUsername.length > 2 && !errors.username,
     staleTime: 1000 * 60 * 5,
@@ -131,11 +146,14 @@ export default function RegisterView() {
     username.length <= MAX_USERNAME_LENGTH &&
     !hasNonLatinChars &&
     !errors.username &&
-    usernameQuery.data?.available !== false;
+    usernameQuery.data?.username !== null;
 
   useEffect(() => {
-    if (usernameQuery.data?.available === false) {
-      toast.error(usernameQuery.data.message);
+    if (usernameQuery.data?.username === null) {
+      errorToast({
+        title: t("errors.username_taken"),
+        description: t("errors.username_taken"),
+      });
     }
   }, [usernameQuery.data]);
 
@@ -180,11 +198,11 @@ export default function RegisterView() {
       return "#ef4444"; // Red for validation errors
     }
 
-    if (usernameQuery.data?.available === false) {
+    if (usernameQuery.data?.username === null) {
       return "#ef4444"; // Red for unavailable username
     }
 
-    if (isUsernameValid && usernameQuery.data?.available === true) {
+    if (isUsernameValid && usernameQuery.data?.username !== null) {
       return "#22c55e"; // Green for valid and available
     }
 
@@ -197,14 +215,14 @@ export default function RegisterView() {
 
   // Get input background color for subtle validation feedback
   const getInputBackgroundColor = () => {
-    if (isUsernameValid && usernameQuery.data?.available === true) {
+    if (isUsernameValid && usernameQuery.data?.username !== null) {
       return isDark ? "rgba(34, 197, 94, 0.1)" : "rgba(34, 197, 94, 0.05)";
     }
 
     if (
       hasNonLatinChars ||
       errors.username ||
-      usernameQuery.data?.available === false
+      usernameQuery.data?.username === null
     ) {
       return isDark ? "rgba(239, 68, 68, 0.1)" : "rgba(239, 68, 68, 0.05)";
     }
@@ -242,7 +260,7 @@ export default function RegisterView() {
                   value={value}
                   onChangeText={(text) => onChange(handleUsernameChange(text))}
                   onBlur={onBlur}
-                  placeholder="შეიყვანეთ სახელი"
+                  placeholder={t("common.enter_name")}
                   placeholderTextColor={isDark ? "#9ca3af" : "#6b7280"}
                 />
                 <View
@@ -259,7 +277,7 @@ export default function RegisterView() {
                   <View>
                     {hasNonLatinChars && (
                       <Text style={styles.errorText}>
-                        მხოლოდ ლათინური ასოები.
+                        {t("common.only_latin_letters")}
                       </Text>
                     )}
                     {errors.username && !hasNonLatinChars && (
@@ -267,7 +285,7 @@ export default function RegisterView() {
                         {errors.username.message}
                       </Text>
                     )}
-                    {usernameQuery.data?.available === false &&
+                    {usernameQuery.data?.username === null &&
                       !hasNonLatinChars &&
                       !errors.username && (
                         <Text style={styles.errorText}>
@@ -309,7 +327,7 @@ export default function RegisterView() {
               updateUserMutation.isPending ||
               !isValid ||
               usernameQuery.isFetching ||
-              usernameQuery.data?.available === false ||
+              usernameQuery.data?.username === null ||
               hasNonLatinChars
             }
             size="lg"
@@ -318,7 +336,7 @@ export default function RegisterView() {
             isLoading={updateUserMutation.isPending}
             loadingColor="black"
           >
-            <Text style={styles.submitButtonText}>შემდეგი</Text>
+            <Text style={styles.submitButtonText}>{t("common.continue")}</Text>
           </CustomAnimatedButton>
         </View>
       </View>

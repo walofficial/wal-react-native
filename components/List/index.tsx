@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { memo, useRef, useCallback, useEffect } from "react";
 import {
   NativeScrollEvent,

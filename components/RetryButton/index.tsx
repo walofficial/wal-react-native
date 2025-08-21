@@ -5,28 +5,29 @@ import Button from "@/components/Button";
 import { useNavigation, useLocalSearchParams } from "expo-router";
 import { Alert, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { t } from "@/lib/i18n";
 
 export default function RetryButton() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
-  const { taskId } = useLocalSearchParams<{ taskId: string }>();
+  const { feedId } = useLocalSearchParams<{ feedId: string }>();
 
-  // Note: Using taskId from params
+  // Note: Using feedId from params
   const handleRetry = async () => {
     Alert.alert(
       "თავიდან გადაღება",
       "გუსრთ თავიდან ცდა? ეს წაშლის თავდაპირველ ჩანაწერს",
       [
         {
-          text: "გაუქმება",
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
           style: "destructive",
-          text: "თავიდან",
+          text: t("common.retry"),
           onPress: async () => {
-            if (taskId) {
-              await AsyncStorage.removeItem(`lastRecordedVideoPath_${taskId}`);
+            if (feedId) {
+              await AsyncStorage.removeItem(`lastRecordedVideoPath_${feedId}`);
             } else {
               await AsyncStorage.removeItem("lastRecordedVideoPath");
             }

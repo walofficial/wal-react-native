@@ -9,7 +9,7 @@ import { useColorScheme } from "@/lib/useColorScheme";
 
 export default function TakeVideo({ disabled }: { disabled: boolean }) {
   const router = useRouter();
-  const { taskId } = useLocalSearchParams();
+  const { feedId } = useLocalSearchParams();
   const theme = useTheme();
   const { isDarkColorScheme } = useColorScheme();
 
@@ -19,13 +19,13 @@ export default function TakeVideo({ disabled }: { disabled: boolean }) {
 
     try {
       const cachedVideoPath = await AsyncStorage.getItem(
-        `lastRecordedVideoPath_${taskId}`
+        `lastRecordedVideoPath_${feedId}`
       );
       if (cachedVideoPath) {
         router.navigate({
           pathname: `/(camera)/mediapage`,
           params: {
-            taskId: taskId as string,
+            feedId: feedId as string,
             path: cachedVideoPath,
             type: "video",
           },
@@ -34,7 +34,7 @@ export default function TakeVideo({ disabled }: { disabled: boolean }) {
         router.navigate({
           pathname: `/(camera)/record`,
           params: {
-            taskId: taskId as string,
+            feedId: feedId as string,
           },
         });
       }

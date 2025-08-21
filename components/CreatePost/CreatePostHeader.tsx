@@ -9,6 +9,7 @@ import {
 import { Link, useRouter } from "expo-router";
 import { isIOS } from "@/lib/platform";
 import { FontSizes, useTheme } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 interface CreatePostHeaderProps {
   onPublish: () => void;
@@ -44,7 +45,7 @@ export default function CreatePostHeader({
       <Link href={`../`} asChild>
         <TouchableOpacity style={styles.cancelButton}>
           <Text style={[styles.cancelText, { color: theme.colors.text }]}>
-            გაუქმება
+            {t("common.cancel")}
           </Text>
         </TouchableOpacity>
       </Link>
@@ -63,10 +64,10 @@ export default function CreatePostHeader({
         )}
         <Text style={[styles.publishText, { color: getTextColor() }]}>
           {isPending
-            ? "იტვირთება..."
+            ? t("common.loading")
             : isFactCheckEnabled
-            ? "გადამოწმება"
-            : "გადამოწმება"}
+            ? t("common.check_fact")
+            : t("common.check_fact")}
         </Text>
       </TouchableOpacity>
     </View>

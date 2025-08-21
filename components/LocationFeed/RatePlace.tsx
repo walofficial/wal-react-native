@@ -11,14 +11,18 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import {
+  getImpressionsCountOptions,
+  trackImpressionsMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
 import { FontSizes } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 interface RatePlaceProps {
-  taskId: string;
+  feedId: string;
 }
 
-function RatePlace({ taskId }: RatePlaceProps) {
+function RatePlace({ feedId }: RatePlaceProps) {
   const queryClient = useQueryClient();
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
@@ -26,17 +30,18 @@ function RatePlace({ taskId }: RatePlaceProps) {
 
   // Query to check if user has already rated
   const { data: ratingData, isLoading } = useQuery({
-    queryKey: ["taskRating", taskId],
-    queryFn: () => api.getRatingForTask(taskId),
+    ...getImpressionsCountOptions({ path: { verification_id: feedId } }),
   });
 
   // Mutation for rating the task
   const { mutate: rateTaskMutation } = useMutation({
-    mutationFn: ({ type }: { type: "like" | "dislike" | "close" }) =>
-      api.rateTask(taskId, type),
+    ...trackImpressionsMutation(),
     onSuccess: () => {
-      // Invalidate the rating query to refetch
-      queryClient.invalidateQueries({ queryKey: ["taskRating", taskId] });
+      queryClient.invalidateQueries({
+        queryKey: getImpressionsCountOptions({
+          path: { verification_id: feedId },
+        }).queryKey,
+      });
     },
   });
 
@@ -56,9 +61,7 @@ function RatePlace({ taskId }: RatePlaceProps) {
       duration: 300,
     });
 
-    const rateType =
-      type === "heart" ? "like" : type === "thumbsDown" ? "dislike" : "close";
-    rateTaskMutation({ type: rateType });
+    rateTaskMutation({ path: { verification_id: feedId } } as any);
     if (type !== "close") {
     }
   };
@@ -76,7 +79,7 @@ function RatePlace({ taskId }: RatePlaceProps) {
       >
         <X size={20} color="white" />
       </TouchableOpacity>
-      <Text style={styles.text}>შეაფასეთ ლოკაცია</Text>
+      <Text style={styles.text}>{t("common.rate_location")}</Text>
       <View style={styles.ratingContainer}>
         <TouchableOpacity
           onPress={() => handlePress("thumbsDown")}

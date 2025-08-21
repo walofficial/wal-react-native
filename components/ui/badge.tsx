@@ -62,7 +62,7 @@ function Badge({ style, variant = "default", asChild, ...props }: BadgeProps) {
   const textVariantStyle = textStyles[variant];
 
   return (
-    <TextClassContext.Provider value={textVariantStyle}>
+    <TextClassContext.Provider value={{ style: textVariantStyle }}>
       <Component style={[styles.base, variantStyle, style]} {...props} />
     </TextClassContext.Provider>
   );

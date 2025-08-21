@@ -18,28 +18,23 @@ import {
   useReactionsOverlayControls,
 } from "@/lib/reactionsOverlay/reactionsOverlay";
 import { Portal } from "@/components/primitives/portal";
-import { ReactionType } from "@/lib/interfaces";
+import { ReactionType } from "@/lib/api/generated";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 const getReactionEmoji = (reactionType: ReactionType): string => {
-  const emojiMap = {
-    [ReactionType.LIKE]: "👍",
-    [ReactionType.LOVE]: "❤️",
-    [ReactionType.LAUGH]: "😂",
-    [ReactionType.ANGRY]: "😠",
-    [ReactionType.SAD]: "😢",
-    [ReactionType.WOW]: "😮",
-    [ReactionType.DISLIKE]: "👎",
+  const emojiMap: Record<ReactionType, string> = {
+    like: "👍",
+    love: "❤️",
+    laugh: "😂",
+    angry: "😠",
+    sad: "😢",
+    wow: "😮",
+    dislike: "👎",
   };
   return emojiMap[reactionType];
 };
 
-const TOP_REACTIONS = [
-  ReactionType.LOVE,
-  ReactionType.SAD,
-  ReactionType.WOW,
-  ReactionType.DISLIKE,
-];
+const TOP_REACTIONS: ReactionType[] = ["love", "sad", "wow", "dislike"];
 
 export function ReactionsOverlay() {
   const { activeOverlay } = useReactionsOverlay();

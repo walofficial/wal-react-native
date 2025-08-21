@@ -1,11 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
+import { getVerificationCommentsCountOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export function useCommentCount(verificationId: string) {
   const { data, isLoading } = useQuery({
-    queryKey: ["comments-count", verificationId],
+    ...getVerificationCommentsCountOptions({
+      path: {
+        verification_id: verificationId,
+      }
+    }),
     staleTime: 1000 * 60 * 5,
-    queryFn: () => api.getVerificationCommentsCount(verificationId),
     refetchOnWindowFocus: false,
     refetchOnMount: false,
   });

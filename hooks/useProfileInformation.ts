@@ -1,11 +1,13 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { ProfileInformationResponse } from "@/lib/interfaces";
+import { useQuery } from "@tanstack/react-query";
+import { getUserProfileUserProfileUserIdGetOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export function useProfileInformation(userId: string) {
-  return useQuery<ProfileInformationResponse>({
-    queryKey: ["profile", userId],
-    queryFn: () => api.getProfileInformation(userId),
+  return useQuery({
+    ...getUserProfileUserProfileUserIdGetOptions({
+      path: {
+        user_id: userId,
+      },
+    }),
     staleTime: 1000 * 60 * 5,
   });
 }

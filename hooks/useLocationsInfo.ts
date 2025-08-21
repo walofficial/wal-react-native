@@ -1,7 +1,7 @@
-import api from "@/lib/api";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import useLocationSession from "./useLocationSession";
 import { useIsFocused } from "@react-navigation/native";
+import { getLocationFeedsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export default function useLocationsInfo(
   categoryId: string,
@@ -9,6 +9,7 @@ export default function useLocationsInfo(
 ) {
   const isFocused = useIsFocused();
   const { location, errorMsg, isGettingLocation } = useLocationSession();
+
   const {
     data: locations,
     isFetching: locationsIsFetching,
@@ -16,16 +17,15 @@ export default function useLocationsInfo(
     isRefetching: locationsIsRefetching,
     refetch: locationsRefetch,
   } = useQuery({
-    queryKey: [
-      "locations-feed",
-      categoryId,
-      location?.coords.latitude,
-      location?.coords.longitude,
-      errorMsg,
-    ],
-    queryFn: () => {
-      return api.fetchLocations(categoryId, location?.coords, errorMsg);
-    },
+    ...getLocationFeedsOptions({
+      query: {
+        category_id: categoryId,
+      },
+      headers: {
+        "x-user-location-latitude": location?.coords?.latitude || 0,
+        "x-user-location-longitude": location?.coords?.longitude || 0,
+      }
+    }),
     enabled: !!categoryId && enabled && (!!location || !!errorMsg),
     placeholderData: keepPreviousData,
     subscribed: isFocused,
@@ -33,8 +33,8 @@ export default function useLocationsInfo(
 
   return {
     data: locations || {
-      nearest_tasks: [],
-      tasks_at_location: [],
+      nearest_feeds: [],
+      feeds_at_location: [],
     },
     location,
     errorMsg,

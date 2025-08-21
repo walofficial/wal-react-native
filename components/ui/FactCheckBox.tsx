@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { FactCheckResponse } from "@/lib/interfaces";
+import { FactCheckingResult } from "@/lib/api/generated";
 import { useSetAtom } from "jotai";
 import {
   activeFactCheckData,
@@ -17,6 +17,7 @@ import { renderFormattedText } from "@/lib/utils/text";
 import { useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { SourceIcon } from "@/components/SourceIcon";
+import { t } from "@/lib/i18n";
 
 // Enum for fact check statuses
 export enum FactCheckStatus {
@@ -34,16 +35,8 @@ const STATUS_COLORS = {
   [FactCheckStatus.FALSE_HARMFUL]: "#FF0000", // Red
 };
 
-// Background colors for each status (lighter version of status colors)
-const BACKGROUND_COLORS = {
-  [FactCheckStatus.VERIFIED]: "rgba(34, 197, 94, 0.1)", // Light green with opacity
-  [FactCheckStatus.NEEDS_CONTEXT]: "rgba(24, 119, 242, 0.1)", // Blue with opacity
-  [FactCheckStatus.MISLEADING]: "rgba(255, 102, 102, 0.1)", // Light red with opacity
-  [FactCheckStatus.FALSE_HARMFUL]: "rgba(255, 0, 0, 0.1)", // Red with opacity
-};
-
 interface FactCheckBoxProps {
-  factCheckData: FactCheckResponse;
+  factCheckData: FactCheckingResult;
   style?: ViewStyle;
 }
 
@@ -52,7 +45,7 @@ const FactCheckSourcesDisplay = ({
   references,
   color,
 }: {
-  references?: FactCheckResponse["references"];
+  references?: FactCheckingResult["references"];
   color: string;
 }) => {
   const theme = useTheme();
@@ -124,7 +117,7 @@ const FactCheckSourcesDisplay = ({
         ]}
       >
         <Text style={[styles.sourcesLabelText, { color: theme.colors.text }]}>
-          {uniqueSources.length} წყაროს მიხედვით
+          {references.length} წყაროს მიხედვით
         </Text>
       </View>
     </View>
@@ -227,8 +220,8 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
       <View style={[styles.headerContainer, { backgroundColor }]}>
         <Text style={[styles.scoreText, { color }]}>
           {score >= 0.5
-            ? `${Math.round(score * 100)}% სიმართლეა`
-            : `${Math.round((1 - score) * 100)}% სიცრუეა`}
+            ? `${Math.round(score * 100)}% ${t("common.truth")}`
+            : `${Math.round((1 - score) * 100)}% ${t("common.falsehood")}`}
         </Text>
         <View style={styles.arrowContainer}>
           <Ionicons name="chevron-down" size={20} color={color} />

@@ -3,7 +3,7 @@ import { View } from "react-native";
 import { Text } from "@/components/ui/text";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import cn from "clsx";
-import { User } from "@/lib/interfaces";
+import { User } from "@/lib/api/generated";
 import { Skeleton } from "../ui/skeleton";
 import { Ionicons } from "@expo/vector-icons";
 import * as Progress from "react-native-progress";

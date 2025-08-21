@@ -1,10 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Text } from "@/components/ui/text";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import ContactListHeader from "./ContactListHeader";
-import { FriendRequestStatus } from "@/lib/interfaces";
 import FriendRequestItem from "./FriendRequestItem";
 import { useFriendRequestActions } from "@/hooks/useFriendRequestActions";
 import { useFriendRequests } from "@/hooks/useFriendRequests";
@@ -26,11 +22,13 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
     useFriendRequestActions();
 
   const handleAccept = (requestId: string) => {
-    acceptRequest(requestId);
+    acceptRequest({ path: { request_id: requestId } });
   };
 
   const handleReject = (requestId: string) => {
-    rejectRequest(requestId);
+    rejectRequest({
+      path: { request_id: requestId },
+    });
   };
 
   if (!friendRequests || friendRequests.length === 0) {

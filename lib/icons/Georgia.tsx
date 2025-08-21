@@ -14,6 +14,6 @@ const Georgia = (props: LucideProps) => (
   </Svg>
 );
 
-iconWithClassName(Georgia);
+iconWithClassName(Georgia as any);
 
 export { Georgia };

@@ -1,6 +1,6 @@
 import * as Clipboard from "expo-clipboard";
 import { Platform } from "react-native";
-import { toast } from "@backpackapp-io/react-native-toast";
+import { t } from "@/lib/i18n";
 import * as FileSystem from "expo-file-system";
 import { ImagePickerAsset } from "expo-image-picker";
 import { compressIfNeeded } from "@/lib/media/manip";
@@ -32,7 +32,7 @@ export async function hasClipboardImage(): Promise<boolean> {
 /**
  * Get image from clipboard with proper error handling and format conversion
  */
-export async function getClipboardImage(): Promise<ClipboardImageData | null> {
+export async function getClipboardImage(onError?: (message: string) => void): Promise<ClipboardImageData | null> {
     try {
         const hasImage = await Clipboard.hasImageAsync();
         if (!hasImage) {
@@ -99,7 +99,7 @@ export async function getClipboardImage(): Promise<ClipboardImageData | null> {
         };
     } catch (error) {
         console.error("Error getting clipboard image:", error);
-        toast.error("Failed to get image from clipboard");
+        onError?.(t("errors.failed_clipboard_image"));
         return null;
     }
 }
@@ -171,17 +171,15 @@ export async function copyImageToClipboard(imageUri: string): Promise<boolean> {
 /**
  * Paste image from clipboard and convert to ImagePickerAsset format
  */
-export async function pasteImageFromClipboard(): Promise<ImagePickerAsset | null> {
+export async function pasteImageFromClipboard(onError?: (message: string) => void): Promise<ImagePickerAsset | null> {
     try {
-        const clipboardImage = await getClipboardImage();
+        const clipboardImage = await getClipboardImage(onError);
         if (!clipboardImage) {
-            toast.error("No image found in clipboard");
             return null;
         }
 
         // Additional validation
         if (clipboardImage.width > 10000 || clipboardImage.height > 10000) {
-            toast.error("Image too large (max 10000x10000 pixels)");
             return null;
         }
 
@@ -222,7 +220,7 @@ export async function pasteImageFromClipboard(): Promise<ImagePickerAsset | null
         return asset;
     } catch (error) {
         console.error("Error pasting image from clipboard:", error);
-        toast.error("Failed to paste image from clipboard");
+        onError?.(t("errors.failed_paste_image"));
         return null;
     }
 }

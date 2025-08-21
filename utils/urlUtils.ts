@@ -27,5 +27,5 @@ export const getFaviconUrl = (uri: string) => {
     console.log("Error extracting domain:", error);
   }
 
-  return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=256`;
 };

@@ -15,6 +15,7 @@ export type ButtonVariant =
   | "primary"
   | "secondary"
   | "outline"
+  | "subtle"
   | "destructive"
   | "destructive-outline";
 
@@ -39,6 +40,8 @@ export interface ButtonProps {
   disabled?: boolean;
   /** Loading state replaces contents with ActivityIndicator. */
   loading?: boolean;
+  /** Creates a glassy, semi-transparent appearance. */
+  glassy?: boolean;
   /** Extra styles for the root container. */
   style?: StyleProp<ViewStyle>;
 }
@@ -53,52 +56,72 @@ export default function Button({
   iconPosition = "left",
   disabled = false,
   loading = false,
+  glassy = false,
   style,
 }: ButtonProps) {
   const theme = useTheme();
 
   /* Determine colours based on the chosen variant & theme */
   const variantColour = React.useMemo(() => {
-    switch (variant) {
-      case "default":
-        return {
-          background: theme.colors.text,
-          text: theme.colors.background,
-          border: "transparent",
-        } as const;
-      case "secondary":
-        return {
-          background: theme.colors.secondary,
-          text: "#FFFFFF",
-          border: "transparent",
-        } as const;
-      case "outline":
-        return {
-          background: "transparent",
-          text: theme.colors.text,
-          border: theme.colors.border,
-        } as const;
-      case "destructive":
-        return {
-          background: theme.colors.accent,
-          text: "#FFFFFF",
-          border: "transparent",
-        } as const;
-      case "destructive-outline":
-        return {
-          background: theme.colors.background,
-          text: theme.colors.accent,
-          border: theme.colors.border,
-        } as const;
-      case "primary":
-      default:
-        return {
-          background: theme.colors.primary,
-          text: "#FFFFFF",
-          border: "transparent",
-        } as const;
+    const baseColors = (() => {
+      switch (variant) {
+        case "default":
+          return {
+            background: theme.colors.text,
+            text: theme.colors.background,
+            border: "transparent",
+          } as const;
+        case "secondary":
+          return {
+            background: theme.colors.secondary,
+            text: "#FFFFFF",
+            border: "transparent",
+          } as const;
+        case "outline":
+          return {
+            background: "transparent",
+            text: theme.colors.text,
+            border: theme.colors.border,
+          } as const;
+        case "subtle":
+          return {
+            background: "transparent",
+            text: theme.colors.text,
+            border: "transparent",
+          } as const;
+        case "destructive":
+          return {
+            background: theme.colors.accent,
+            text: "#FFFFFF",
+            border: "transparent",
+          } as const;
+        case "destructive-outline":
+          return {
+            background: "transparent",
+            text: theme.colors.accent,
+            border: theme.colors.accent,
+          } as const;
+        case "primary":
+        default:
+          return {
+            background: theme.colors.primary,
+            text: "#FFFFFF",
+            border: "transparent",
+          } as const;
+      }
+    })();
+
+    // Apply glassy effect if enabled
+    if (glassy) {
+      return {
+        background: `${baseColors.background}80`, // Add 80 (50%) alpha for better transparency
+        text: baseColors.text,
+        border: `${theme.colors.text}30`, // Use theme text color for border with transparency
+      } as const;
     }
-  }, [variant, theme]);
+
+    return baseColors;
+  }, [variant, theme, glassy]);
 
   /* Size mapping */
   const sizeStyle = React.useMemo(() => {
@@ -135,7 +158,9 @@ export default function Button({
       backgroundColor: variantColour.background,
       borderColor: variantColour.border,
       borderWidth:
-        variant === "outline" || variant === "destructive-outline" ? 1 : 0,
+        variant === "outline" || variant === "destructive-outline" || glassy
+          ? 1
+          : 0,
       paddingVertical: isIconOnly ? 0 : sizeStyle.paddingVertical,
       paddingHorizontal: isIconOnly ? 0 : sizeStyle.paddingHorizontal,
       opacity: contentOpacity,
@@ -153,6 +178,11 @@ export default function Button({
       flexDirection: title ? "row" : "column",
       alignItems: "center",
       justifyContent: "center",
+      // Glassy effects
+      ...(glassy && {
+        boxShadow: `0 8px 32px rgba(0, 0, 0, 0.1)`,
+        backdropFilter: "blur(4px)",
+      }),
     },
     style,
   ];

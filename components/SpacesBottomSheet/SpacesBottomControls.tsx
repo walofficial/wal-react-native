@@ -10,6 +10,7 @@ import SpaceBottomControlsViewer from "./SpaceBottomControlsViewer";
 import { BottomSheetTextInput, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHaptics } from "@/lib/haptics";
+import { t } from "@/lib/i18n";
 function SpacesBottomControls({ isHost }: { isHost: boolean }) {
   const connectionState = useConnectionState();
   const livekitRoom = useAtomValue(activeLivekitRoomState);
@@ -27,11 +28,11 @@ function SpacesBottomControls({ isHost }: { isHost: boolean }) {
 
     Alert.alert("სტრიმის დასრულება", "ნამდვილად გსურთ სტრიმის დასრულება?", [
       {
-        text: "გაუქმება",
+        text: t("common.cancel"),
         style: "cancel",
       },
       {
-        text: "დასრულება",
+        text: t("common.stop_stream"),
         onPress: () => stopStream(livekitRoom.livekit_room_name),
         style: "destructive",
       },
@@ -110,7 +111,9 @@ function SpacesBottomControls({ isHost }: { isHost: boolean }) {
               }}
               style={styles.stopStreamButton}
             >
-              <Text style={styles.stopStreamText}>სტრიმის დასრულება</Text>
+              <Text style={styles.stopStreamText}>
+                {t("common.stop_stream")}
+              </Text>
             </TouchableOpacity>
           </View>
         )}

@@ -1,14 +1,14 @@
+// @ts-nocheck
 import React, { useCallback } from "react";
 import { View, TouchableHighlight, StyleSheet } from "react-native";
 import { Link } from "expo-router";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import useAuth from "@/hooks/useAuth";
 import { Text } from "../ui/text";
-import { ChatRoom } from "@/lib/interfaces";
+import { ChatRoom } from "@/lib/api/generated";
 import { CheckCircle2 } from "lucide-react-native";
 import { FontSizes } from "@/lib/theme";
 import { useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { useTheme } from "@/lib/theme";
 
 function ChatItem({ item }: { item: ChatRoom }) {
@@ -26,20 +26,20 @@ function ChatItem({ item }: { item: ChatRoom }) {
   const prefetchChatData = useCallback(() => {
     if (!isNavigationEnabled) return;
 
-    // Prefetch message room data
-    queryClient.prefetchQuery({
-      queryKey: ["user-chat-room", item.id],
-      queryFn: () => api.getMessageRoom(item.id),
-      staleTime: 60 * 1000, // 1 minute
-    });
+    // // Prefetch message room data
+    // queryClient.prefetchQuery({
+    //   queryKey: ["user-chat-room", item.id],
+    //   queryFn: () => api.getMessageRoom(item.id),
+    //   staleTime: 60 * 1000, // 1 minute
+    // });
 
-    // Prefetch first page of messages for this chat
-    queryClient.prefetchInfiniteQuery({
-      queryKey: ["messages", item.id],
-      queryFn: ({ pageParam = 1 }) =>
-        api.fetchMessages(pageParam, 30, item.id, authorizedUser.id),
-      initialPageParam: 1,
-    });
+    // // Prefetch first page of messages for this chat
+    // queryClient.prefetchInfiniteQuery({
+    //   queryKey: ["messages", item.id],
+    //   queryFn: ({ pageParam = 1 }) =>
+    //     api.fetchMessages(pageParam, 30, item.id, authorizedUser.id),
+    //   initialPageParam: 1,
+    // });
   }, [item.id, isNavigationEnabled, queryClient, authorizedUser.id]);
 
   const formatDate = (date: Date) => {

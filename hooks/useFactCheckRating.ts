@@ -1,23 +1,26 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { useHaptics } from "@/lib/haptics";
+import { getFactCheckOptions, getFactCheckQueryKey, rateFactCheckMutation, unrateFactCheckMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export function useFactCheckRating(verificationId: string) {
     const queryClient = useQueryClient();
 
     const { data, isLoading } = useQuery({
-        queryKey: ["fact-check", verificationId],
-        queryFn: () => api.getFactCheck(verificationId),
+        ...getFactCheckOptions({
+            path: {
+                verification_id: verificationId,
+            }
+        }),
     });
 
     const rateMutation = useMutation({
-        mutationFn: () => api.rateFactCheck(verificationId),
+        ...rateFactCheckMutation(),
         onMutate: async () => {
             // Optimistically update the rating state
-            await queryClient.cancelQueries({ queryKey: ["fact-check", verificationId] });
-            const previousData = queryClient.getQueryData(["fact-check", verificationId]);
+            await queryClient.cancelQueries({ queryKey: getFactCheckQueryKey({ path: { verification_id: verificationId } }) });
+            const previousData = queryClient.getQueryData(getFactCheckQueryKey({ path: { verification_id: verificationId } }));
 
-            queryClient.setQueryData(["fact-check", verificationId], (old: any) => ({
+            queryClient.setQueryData(getFactCheckQueryKey({ path: { verification_id: verificationId } }), (old: any) => ({
                 ...old,
                 has_rated: true,
                 ratings_count: (old?.ratings_count || 0) + 1,
@@ -28,23 +31,23 @@ export function useFactCheckRating(verificationId: string) {
         onError: (err, variables, context) => {
             if (context?.previousData) {
                 queryClient.setQueryData(
-                    ["fact-check", verificationId],
+                    getFactCheckQueryKey({ path: { verification_id: verificationId } }),
                     context.previousData
                 );
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["fact-check", verificationId] });
+            queryClient.invalidateQueries({ queryKey: getFactCheckQueryKey({ path: { verification_id: verificationId } }) });
         },
     });
 
     const unrateMutation = useMutation({
-        mutationFn: () => api.unrateFactCheck(verificationId),
+        ...unrateFactCheckMutation(),
         onMutate: async () => {
-            await queryClient.cancelQueries({ queryKey: ["fact-check", verificationId] });
-            const previousData = queryClient.getQueryData(["fact-check", verificationId]);
+            await queryClient.cancelQueries({ queryKey: getFactCheckQueryKey({ path: { verification_id: verificationId } }) });
+            const previousData = queryClient.getQueryData(getFactCheckQueryKey({ path: { verification_id: verificationId } }));
 
-            queryClient.setQueryData(["fact-check", verificationId], (old: any) => ({
+            queryClient.setQueryData(getFactCheckQueryKey({ path: { verification_id: verificationId } }), (old: any) => ({
                 ...old,
                 has_rated: false,
                 ratings_count: Math.max(0, (old?.ratings_count || 0) - 1),
@@ -55,13 +58,13 @@ export function useFactCheckRating(verificationId: string) {
         onError: (err, variables, context) => {
             if (context?.previousData) {
                 queryClient.setQueryData(
-                    ["fact-check", verificationId],
+                    getFactCheckQueryKey({ path: { verification_id: verificationId } }),
                     context.previousData
                 );
             }
         },
         onSettled: () => {
-            queryClient.invalidateQueries({ queryKey: ["fact-check", verificationId] });
+            queryClient.invalidateQueries({ queryKey: getFactCheckQueryKey({ path: { verification_id: verificationId } }) });
         },
     });
 
@@ -72,14 +75,19 @@ export function useFactCheckRating(verificationId: string) {
         haptic("Medium");
 
         if (data?.has_rated) {
-            unrateMutation.mutate();
+            unrateMutation.mutate({
+                path: { verification_id: verificationId },
+            });
         } else {
-            rateMutation.mutate();
+            rateMutation.mutate({
+                path: {
+                    verification_id: verificationId,
+                }
+            });
         }
     };
 
     return {
-        ratingsCount: data?.ratings_count ?? 0,
         hasRated: data?.has_rated ?? false,
         isLoading,
         handleRating,

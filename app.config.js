@@ -7,7 +7,7 @@ export default {
     platforms: ["ios", "android", "web"],
     name: app_name,
     slug: "mnt-app",
-    version: "1.0.15",
+    version: "1.0.18",
     orientation: "portrait",
     icon: "./assets/images/logo-big.png",
     scheme: app_name_slug,
@@ -99,6 +99,7 @@ export default {
           android: {
             //LiveKit sdk requires min 24
             minSdkVersion: 24,
+            targetSdkVersion: 35,
           },
         },
       ],

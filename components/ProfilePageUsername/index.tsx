@@ -1,6 +1,6 @@
 import { useGlobalSearchParams } from "expo-router";
 import { useProfileInformation } from "@/hooks/useProfileInformation";
-import { CustomTitleWithText } from "../CustomTitle";
+import { CustomTitle } from "../CustomTitle";
 import ProfileHeader from "../ProfileHeader";
 
 function ProfilePageUsername() {
@@ -9,9 +9,7 @@ function ProfilePageUsername() {
 
   return (
     <ProfileHeader
-      customTitleComponent={
-        <CustomTitleWithText text={profile?.username || "..."} />
-      }
+      customTitleComponent={<CustomTitle text={profile?.username || "..."} />}
       customButtons={<></>}
     />
   );

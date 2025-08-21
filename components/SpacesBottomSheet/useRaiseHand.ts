@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import api from "@/lib/api";
+import { raiseHandSpaceRaiseHandPostMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { useState, useEffect, useRef } from "react";
 import { useLocalParticipant, useParticipantInfo } from "@livekit/react-native";
 
@@ -30,17 +30,17 @@ export default function useRaiseHand() {
   }, []);
 
   const { mutate: raiseHand, isPending } = useMutation({
-    mutationFn: (livekit_room_name: string) => api.raiseHand(livekit_room_name),
+    ...raiseHandSpaceRaiseHandPostMutation(),
     onMutate: async () => {
       setIsHandRaised(true);
     },
-    onError: async () => {},
+    onError: async () => { },
   });
 
   return {
     setIsHandRaised,
     isPending,
-    raiseHand,
+    raiseHand: (roomName: string) => (raiseHand as any)({ body: { livekit_room_name: roomName } }),
     isHandRaised,
   };
 }

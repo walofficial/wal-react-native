@@ -1,16 +1,20 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { toast } from "@backpackapp-io/react-native-toast";
+import { subscribeSpaceSpaceSubscribeSpacePostMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useToast } from "@/components/ToastUsage";
 
 export function useSubscribeToSpace() {
+  const { success } = useToast()
+
   const { mutate: subscribeToSpace } = useMutation({
-    mutationFn: (roomName: string) => api.subscribeToSpace(roomName),
+    ...subscribeSpaceSpaceSubscribeSpacePostMutation(),
     onSuccess: () => {
-      toast.success("თქვენ მოგივათ შეტყობინება სტრიმის დაწყებისას");
+      success({ title: "გამოწერილია", description: "თქვენ მოგივათ შეტყობინება სტრიმის დაწყებისას" });
     },
   });
 
   return {
-    subscribeToSpace,
+    subscribeToSpace: (roomName: string) =>
+      (subscribeToSpace as any)({ body: { livekit_room_name: roomName } }),
   };
 }

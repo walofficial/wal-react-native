@@ -17,6 +17,7 @@ import { RoomControls } from "./RoomControls";
 import { mediaDevices } from "@livekit/react-native-webrtc";
 import useAuth from "@/hooks/useAuth";
 import { BlurView } from "expo-blur";
+import { t } from "@/lib/i18n";
 
 registerGlobals();
 
@@ -133,9 +134,9 @@ function RoomView({ onDisconnect }: RoomViewProps) {
       <BlurView intensity={15} tint="dark" style={styles.blurBackground}>
         {/* {user && <ProfileView userId={user.id} />} */}
         <View style={styles.messageContainer}>
-          <Text style={styles.disabledMessage}>ვიდეო გამორთულია</Text>
+          <Text style={styles.disabledMessage}>{t("common.video_disabled")}</Text>
           <Text style={styles.disabledSubMessage}>
-            ჩართეთ ვიდეო რომ გხედავდნენ მაყურებლები
+            {t("common.enable_video_to_be_seen")}
           </Text>
         </View>
       </BlurView>

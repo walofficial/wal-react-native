@@ -10,8 +10,8 @@ function LocationFeedScreen() {
   const [scrollToTop] = useAtom(scrollToTopState);
 
   // Extract navigation params at screen level, outside scroll context
-  const { taskId, content_type } = useLocalSearchParams<{
-    taskId: string;
+  const { feedId, content_type } = useLocalSearchParams<{
+    feedId: string;
     content_type: "last24h" | "youtube_only" | "social_media_only";
   }>();
 
@@ -27,7 +27,7 @@ function LocationFeedScreen() {
     <Suspense fallback={<ActivityIndicator />}>
       <GestureHandlerRootView style={styles.container}>
         <LocationFeed
-          taskId={taskId as string}
+          feedId={feedId as string}
           content_type={
             (content_type as
               | "last24h"

@@ -16,7 +16,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Text } from "@/components/ui/text";
 import { useMutation } from "@tanstack/react-query";
-import api from "@/lib/api";
+import {
+  deleteUserMutation,
+  updateUserMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
 import { useRouter } from "expo-router";
 import { dateOfBirthSchema } from "@/lib/schema";
 import DateOfBirth from "@/components/DateOfBirth";
@@ -29,6 +32,7 @@ import { useSession } from "@/components/AuthLayer";
 import { FontSizes, useTheme } from "@/lib/theme";
 import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { t } from "@/lib/i18n";
 
 const formSchema = z
   .object({
@@ -81,26 +85,16 @@ export default function Component() {
     }
   }, [user]);
 
-  const updateUserMutation = useMutation({
-    onMutate: ({
-      gender,
-      username,
-      date_of_birth,
-    }: {
-      date_of_birth: string;
-      gender: string;
-      username: string;
-    }) => {
+  const updateUserMutationHook = useMutation({
+    ...updateUserMutation(),
+    onMutate: (variables) => {
       if (user) {
         setAuthUser({
           ...user,
-          date_of_birth,
-          gender,
-          username,
+          ...variables.body,
         });
       }
     },
-    mutationFn: (values: z.infer<typeof formSchema>) => api.updateUser(values),
     onSuccess: () => {},
     onError: (error) => {
       Alert.alert("პროფილი ვერ განახლდა");
@@ -123,11 +117,13 @@ export default function Component() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    updateUserMutation.mutate(values);
+    updateUserMutationHook.mutate({
+      body: values,
+    });
   }
 
   const deleteAccountMutation = useMutation({
-    mutationFn: () => api.deleteUser(),
+    ...deleteUserMutation(),
     onSuccess: async () => {
       await supabase.auth.signOut();
       router.replace("/(auth)/sign-in");
@@ -143,13 +139,13 @@ export default function Component() {
       "დარწმუნებული ხართ, რომ გსურთ ანგარიშის წაშლა?",
       [
         {
-          text: "გაუქმება",
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
-          text: "წაშლა",
+          text: t("common.delete"),
           style: "destructive",
-          onPress: () => deleteAccountMutation.mutate(),
+          onPress: () => deleteAccountMutation.mutate({}),
         },
       ]
     );
@@ -171,7 +167,9 @@ export default function Component() {
   const acceptButton = (
     <AcceptButton
       isDirty={isDirty}
-      isPending={updateUserMutation.isPending}
+      isPending={
+        updateUserMutationHook.isPending || updateUserMutationHook.isPending
+      }
       onPress={handleSubmit(onSubmit)}
     />
   );
@@ -183,7 +181,7 @@ export default function Component() {
         <View style={styles.content}>
           <View style={styles.formContainer}>
             <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              ზედმეტსახელი
+              {t("common.username")}
             </H4>
             <Controller
               control={control}
@@ -208,13 +206,13 @@ export default function Component() {
               <Text style={styles.errorText}>{errors.username.message}</Text>
             )}
             <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              დაბადების თარიღი
+              {t("common.date_of_birth")}
             </H4>
             <DateOfBirth control={control} />
 
             <View style={styles.notificationSection}>
               <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                ნოტიფიკაციები
+                {t("common.notifications")}
               </H4>
               <EnableNotifications />
             </View>
@@ -223,20 +221,22 @@ export default function Component() {
       </ScrollView>
       <View style={styles.footer}>
         <Button
+          glassy={true}
           size="large"
           variant="destructive-outline"
           onPress={handleDeleteAccount}
           disabled={deleteAccountMutation.isPending}
           loading={deleteAccountMutation.isPending}
-          title="ანგარიშის წაშლა"
+          title={t("common.delete_account")}
         />
         {__DEV__ && (
           <Button
+            glassy={true}
             size="large"
             variant="outline"
             onPress={handleClearCache}
             style={styles.clearCacheButton}
-            title="Clear Cache"
+            title={t("common.clear_cache")}
           />
         )}
       </View>

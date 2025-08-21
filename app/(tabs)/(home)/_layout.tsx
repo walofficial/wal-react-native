@@ -1,6 +1,6 @@
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import ProfileHeader from "@/components/ProfileHeader";
-import { CustomTitle, CustomTitleWithText } from "@/components/CustomTitle";
+import { TaskTitle } from "@/components/CustomTitle";
 import { ScrollReanimatedValueProvider } from "@/components/context/ScrollReanimatedValue";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -30,11 +30,7 @@ export default function Layout() {
               options={{
                 headerTransparent: !isWeb,
                 header: () => (
-                  <ProfileHeader
-                    customTitleComponent={
-                      <CustomTitleWithText text={isWeb ? "ფაქტ-ჩეკი" : "WAL"} />
-                    }
-                  />
+                  <ProfileHeader customTitleComponent={<TaskTitle />} />
                 ),
               }}
             />
@@ -66,15 +62,6 @@ export default function Layout() {
                 header: () => <SimpleGoBackHeader title="ფოტო" />,
               }}
             />
-            <Stack.Screen
-              name="notifications"
-              options={{
-                title: "შეტყობინებები",
-                headerStyle: {
-                  backgroundColor: "black",
-                },
-              }}
-            />
 
             <Stack.Screen
               name="verification/[verificationId]"
@@ -93,28 +80,29 @@ export default function Layout() {
               }}
             />
             <Stack.Screen
-              name="[taskId]/index"
+              name="[feedId]/index"
               options={{
                 headerTransparent: !isWeb,
                 animation: "fade",
                 header: () => (
                   <ProfileHeader
-                    customTitleComponent={<CustomTitle />}
+                    customTitleComponent={<TaskTitle />}
                     showLocationTabs={true}
+                    showTabs={true}
                   />
                 ),
               }}
             />
 
             <Stack.Screen
-              name="[taskId]/livestream"
+              name="[feedId]/livestream"
               options={{
                 header: () => null,
               }}
             />
 
             <Stack.Screen
-              name="[taskId]/create-post"
+              name="[feedId]/create-post"
               options={{
                 presentation: isIOS ? "modal" : "card",
                 animation: isIOS ? "slide_from_bottom" : "fade_from_bottom",
@@ -124,7 +112,7 @@ export default function Layout() {
               }}
             />
             <Stack.Screen
-              name="[taskId]/create-space/index"
+              name="[feedId]/create-space/index"
               options={{
                 title: "ოთახის შექმნა",
                 headerStyle: {
@@ -133,7 +121,7 @@ export default function Layout() {
               }}
             />
             <Stack.Screen
-              name="[taskId]/create-space/schedule-space"
+              name="[feedId]/create-space/schedule-space"
               options={{
                 title: "ოთახის დაწყების დრო",
                 headerStyle: {

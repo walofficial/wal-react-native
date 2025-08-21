@@ -6,6 +6,7 @@ import useAuth from "@/hooks/useAuth";
 import AnimatedPressable from "../AnimatedPressable";
 import ProtocolService from "@/lib/services/ProtocolService";
 import { useTheme } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 export default function LogoutButton() {
   const auth = useAuth();
@@ -18,15 +19,15 @@ export default function LogoutButton() {
 
   const confirmLogout = () => {
     Alert.alert(
-      "ნამდვილად გსურთ გამოსვლა?",
-      "გაითვალისწინეთ რომ გამოსვლის შემდეგ ყველა თქვენი საუბარი წაიშლება",
+      t("common.confirm_logout_title"),
+      t("common.confirm_logout_description"),
       [
         {
-          text: "გაუქმება",
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
-          text: "გამოსვლა",
+          text: t("common.logout"),
           style: "destructive",
           onPress: handleLogout,
         },
@@ -38,7 +39,7 @@ export default function LogoutButton() {
     <AnimatedPressable onClick={confirmLogout}>
       <LogOut color={theme.colors.accent} />
       <Text style={[styles.text, { color: theme.colors.text }]}>
-        {"გამოსვლა"}
+        {t("common.logout")}
       </Text>
     </AnimatedPressable>
   );

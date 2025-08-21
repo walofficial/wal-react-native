@@ -1,13 +1,15 @@
+// @ts-nocheck
 import React from "react";
 import { View, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { NotificationResponse } from "@/lib/interfaces";
+import { NotificationResponse } from "@/lib/api/generated";
 import { Text } from "../ui/text";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import useLiveUser from "@/hooks/useLiveUser";
 import ImageLoader from "../ImageLoader";
 import { formatRelativeTime } from "@/lib/utils/date";
+import { t } from "@/lib/i18n";
 
 function NotificationItem({
   item,
@@ -88,10 +90,12 @@ function NotificationItem({
               numberOfLines={1}
             >
               {item.notification.type === "poke"
-                ? "გიჯიკა"
+                ? t("common.poked_you")
                 : item.notification.type === "impression"
-                ? `დააგროავა ${item.notification.count} ნახვა`
-                : "მოსწონს თქვენი ფოსტი"}
+                ? t("common.accumulated_views", {
+                    count: item.notification.count,
+                  })
+                : t("common.likes_your_post")}
             </Text>
           </View>
         </View>

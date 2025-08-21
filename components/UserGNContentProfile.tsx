@@ -9,19 +9,15 @@ import {
   useColorScheme,
 } from "react-native";
 import { useUserVerificationsPaginated } from "@/hooks/useUserVerificationsPaginated";
-import { LocationFeedPost } from "@/lib/interfaces";
-import { useAtomValue } from "jotai";
-import { HEADER_HEIGHT } from "@/lib/constants";
-import { itemHeightCoeff } from "@/lib/utils";
-import useAuth from "@/hooks/useAuth";
-import { isWeb } from "@/lib/platform";
+import { FeedPost } from "@/lib/api/generated";
 import PostsFeed from "./PostsFeed";
 import FeedItem from "./FeedItem";
 import { getVideoSrc } from "@/lib/utils";
 import ScrollableFeedProvider from "./ScrollableFeedProvider";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { styles } from "./CameraPage/StatusBarBlurBackground";
 import { useQueryClient } from "@tanstack/react-query";
+import useFeeds from "@/hooks/useFeeds";
+import { t } from "@/lib/i18n";
 
 interface UserGNContentProfileProps {
   topHeader: React.ReactNode;
@@ -33,7 +29,7 @@ export default memo(function UserGNContentProfile({
   userId,
 }: UserGNContentProfileProps) {
   const colorSchema = useColorScheme();
-  const headerHeight = useAtomValue(HEADER_HEIGHT);
+  const { headerHeight } = useFeeds();
   const queryClient = useQueryClient();
   const {
     items: userVerifications,
@@ -46,6 +42,7 @@ export default memo(function UserGNContentProfile({
   } = useUserVerificationsPaginated({ targetUserId: userId });
   const [currentViewableItemIndex, setCurrentViewableItemIndex] = useState(0);
   const [preloadedIndex, setPreloadedIndex] = useState(1);
+  const flashListRef = useRef<any>(null);
 
   const viewabilityConfig = { viewAreaCoveragePercentThreshold: 50 };
 
@@ -87,39 +84,28 @@ export default memo(function UserGNContentProfile({
   }, [refetch, queryClient, userId]);
 
   const renderItem = useCallback(
-    ({
-      item: verification,
-      index,
-    }: {
-      item: LocationFeedPost;
-      index: number;
-    }) => (
+    ({ item, index }: { item: FeedPost; index: number }) => (
       <FeedItem
-        key={verification.id}
-        name={verification.assignee_user?.username || ""}
-        time={verification.last_modified_date}
-        friendId={verification.assignee_user?.id || ""}
-        isLive={verification.is_live}
-        avatarUrl={verification.assignee_user?.photos[0]?.image_url[0] || ""}
-        isPinned={false}
-        affiliatedIcon={verification.assignee_user?.affiliated?.icon_url || ""}
-        hasRecording={verification.has_recording}
-        verificationId={verification.id}
-        taskId={verification.task_id}
-        isPublic={verification.is_public}
-        canPin={false}
-        text={verification.text_content || ""}
+        key={item.id}
+        name={item.assignee_user?.username || ""}
+        time={item.last_modified_date}
+        posterId={item.assignee_user?.id || ""}
+        isLive={item.is_live}
+        avatarUrl={item.assignee_user?.photos[0]?.image_url[0] || ""}
+        hasRecording={item.has_recording}
+        verificationId={item.id}
+        feedId={item.feed_id}
+        isPublic={item.is_public}
+        text={item.text_content || ""}
         isSpace={false}
-        videoUrl={getVideoSrc(verification) || ""}
-        imageUrl={verification.verified_image || ""}
-        livekitRoomName={verification.livekit_room_name || ""}
+        videoUrl={getVideoSrc(item) || ""}
+        livekitRoomName={item.livekit_room_name || ""}
+        imageGalleryWithDims={item.image_gallery_with_dims}
         isVisible={currentViewableItemIndex === index}
-        isFactChecked={verification.is_factchecked}
-        title={verification.title}
-        sources={verification.sources}
-        fact_check_data={verification.fact_check_data}
-        previewData={verification.preview_data}
-        thumbnail={verification.verified_media_playback?.thumbnail}
+        title={item.title}
+        fact_check_data={item.fact_check_data}
+        previewData={item.preview_data}
+        thumbnail={item.verified_media_playback?.thumbnail || ""}
       />
     ),
     [currentViewableItemIndex]
@@ -133,6 +119,7 @@ export default memo(function UserGNContentProfile({
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ScrollableFeedProvider>
         <PostsFeed
+          ref={flashListRef}
           data={userVerifications || []}
           renderItem={renderItem}
           headerOffset={headerHeight}
@@ -148,7 +135,7 @@ export default memo(function UserGNContentProfile({
               }}
             >
               <Text style={{ color: colorSchema === "dark" ? "#fff" : "#000" }}>
-                პოსტები ვერ მოიძებნა
+                {t("common.no_posts_found")}
               </Text>
             </View>
           }

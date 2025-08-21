@@ -10,9 +10,10 @@ import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
 import { Image } from "expo-image";
 import { Text } from "@/components/ui/text";
 import { Country, getFlagUrl } from "@/lib/countries";
-import { toast } from "@backpackapp-io/react-native-toast";
 import { FontSizes } from "@/lib/theme";
 import { ChevronDown } from "lucide-react-native";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 interface PhoneInputProps {
   value: string;
@@ -34,7 +35,7 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
       onBlur,
       country,
       onCountryPress,
-      placeholder = "შეიყვანეთ ნომერი",
+      placeholder = t("common.enter_number"),
       maxLength,
       editable = true,
       isCountryLoading = false,
@@ -43,6 +44,7 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
   ) => {
     const colorScheme = useColorScheme();
     const isDark = colorScheme === "dark";
+    const { error: errorToast } = useToast();
 
     const handleTextChange = (text: string) => {
       // First remove all spaces and whitespace characters explicitly
@@ -56,8 +58,13 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
         const withoutCountryCode = cleanedText.substring(
           country.callingCode.length
         );
-        toast.error(`შეიყვანეთ ${country.callingCode} ს გარეშე`, {
-          id: "country-code-removal",
+        errorToast({
+          title: t("common.enter_without_country_code", {
+            countryCode: country.callingCode,
+          }),
+          description: t("common.enter_without_country_code", {
+            countryCode: country.callingCode,
+          }),
         });
         onChangeText(withoutCountryCode);
         return;

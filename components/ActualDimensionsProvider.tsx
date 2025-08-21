@@ -1,8 +1,6 @@
 import { atom, useAtom } from "jotai";
-import React, { useContext, useState } from "react";
-import { Dimensions, LayoutRectangle, ScaledSize, View } from "react-native";
-
-type LayoutSize = Pick<LayoutRectangle, "width" | "height">;
+import React from "react";
+import { Dimensions, ScaledSize, View } from "react-native";
 
 export const dimensionsState = atom<ScaledSize | null>(
   Dimensions.get("window")
@@ -24,7 +22,7 @@ export function ActualDimensionsProvider({
       onLayout={(e) => {
         if (useNativeDimensions) {
         } else {
-          setDimensions(e.nativeEvent.layout);
+          setDimensions(e.nativeEvent.layout as unknown as ScaledSize);
         }
       }}
     >

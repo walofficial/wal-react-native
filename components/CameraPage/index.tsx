@@ -8,7 +8,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
-  Alert,
   TextInput,
   KeyboardAvoidingView,
 } from "react-native";
@@ -50,8 +49,7 @@ import Reanimated, {
 import { useEffect } from "react";
 import { useIsForeground } from "../../hooks/useIsForeground";
 import { StatusBarBlurBackground } from "./StatusBarBlurBackground";
-import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import IonIcon from "react-native-vector-icons/Ionicons";
+import IonIcon from "@expo/vector-icons/Ionicons";
 import { useIsFocused } from "@react-navigation/core";
 import { usePreferredCameraDevice } from "../../hooks/usePreferredCameraDevice";
 import { CaptureButton } from "./CaptureButton";
@@ -59,6 +57,7 @@ import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { CaptureButtonPhoto } from "./CaptureButtonPhoto";
 import { toast } from "@backpackapp-io/react-native-toast";
 import { LiveButton } from "./LiveButton";
+import { t } from "@/lib/i18n";
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
@@ -89,7 +88,7 @@ const CameraOverlay = Reanimated.createAnimatedComponent(View);
 
 export default function CameraPage(): React.ReactElement {
   const navigation = useNavigation();
-  const { taskId } = useLocalSearchParams();
+  const { feedId } = useLocalSearchParams();
 
   const [liveDescription, setLiveDescription] = useState("");
 
@@ -188,7 +187,7 @@ export default function CameraPage(): React.ReactElement {
         params: {
           path: media.path,
           type: type,
-          taskId: taskId as string,
+          feedId: feedId as string,
           recordingTime: lastSavedRecordingTime.current,
         },
       });
@@ -391,7 +390,7 @@ export default function CameraPage(): React.ReactElement {
         >
           <TextInput
             style={styles.liveTextInput}
-            placeholder="რა ხდება?"
+            placeholder={"Sup?"}
             placeholderTextColor="rgba(255, 255, 255, 0.6)"
             value={liveDescription}
             onChangeText={setLiveDescription}
@@ -419,7 +418,7 @@ export default function CameraPage(): React.ReactElement {
                 ]}
                 onPress={() => setSelectedMode("video")}
               >
-                <Text style={styles.switchButtonText}>ვიდეო</Text>
+                <Text style={styles.switchButtonText}>{t("common.video")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -428,7 +427,7 @@ export default function CameraPage(): React.ReactElement {
                 ]}
                 onPress={() => setSelectedMode("photo")}
               >
-                <Text style={styles.switchButtonText}>ფოტო</Text>
+                <Text style={styles.switchButtonText}>{t("common.photo")}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -457,15 +456,15 @@ export default function CameraPage(): React.ReactElement {
                 room_name: string;
               }) => {
                 router.replace({
-                  pathname: "/(tabs)/(home)/[taskId]/livestream",
+                  pathname: "/(tabs)/(home)/[feedId]/livestream",
                   params: {
-                    taskId: taskId as string,
+                    feedId: feedId as string,
                     livekit_token: livekit_token,
                     room_name: room_name,
                   },
                 });
               }}
-              taskId={taskId as string}
+              feedId={feedId as string}
               textContent={liveDescription}
             />
           ) : selectedMode === "photo" ? (
@@ -480,9 +479,7 @@ export default function CameraPage(): React.ReactElement {
             <CaptureButton
               camera={camera}
               onMediaCaptured={onMediaCaptured}
-              cameraZoom={zoom}
-              minZoom={minZoom}
-              maxZoom={maxZoom}
+              feedId={feedId as string}
               flash={supportsFlash ? flash : "off"}
               enabled={isCameraInitialized && isActive}
               setRecordingTimeView={setIsRecording}
@@ -506,9 +503,9 @@ export default function CameraPage(): React.ReactElement {
           onPress={() => {
             toast.remove();
             router.navigate({
-              pathname: "/(tabs)/(home)/[taskId]",
+              pathname: "/(tabs)/(home)/[feedId]",
               params: {
-                taskId: taskId as string,
+                feedId: feedId as string,
               },
             });
           }}
@@ -533,18 +530,6 @@ export default function CameraPage(): React.ReactElement {
             onPress={() => setTargetFps((t) => (t === 30 ? 60 : 30))}
           >
             <Text style={styles.text}>{`${targetFps}\nFPS`}</Text>
-          </TouchableOpacity>
-        )}
-        {supportsHdr && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setEnableHdr((h) => !h)}
-          >
-            <MaterialIcon
-              name={enableHdr ? "hdr" : "hdr-off"}
-              color="white"
-              size={24}
-            />
           </TouchableOpacity>
         )}
         {canToggleNightMode && (

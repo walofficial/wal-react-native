@@ -10,113 +10,83 @@ import MenuView from "./MenuView";
 import { formatRelativeTime } from "@/lib/utils/date";
 import ExpandableText from "./ExpandableText";
 import { useTheme } from "@/lib/theme";
-import { ExternalVideo, LinkPreviewData } from "@/lib/interfaces";
 import { useLinkPreview } from "@/hooks/useLinkPreview";
 import LinkPreview from "../LinkPreview";
-import { FactCheckResponse } from "@/lib/interfaces";
 import useVerificationById from "@/hooks/useVerificationById";
 import { useLightboxControls } from "@/lib/lightbox/lightbox";
 import useAuth from "@/hooks/useAuth";
-import { useQueryClient } from "@tanstack/react-query";
-
-// Simplified props interface - only including what's actually used
-interface FeedItemProps {
-  name: string;
-  isLive: boolean;
-  avatarUrl: string;
-  time: string;
-  isPinned: boolean;
-  affiliatedIcon: string;
-  hasRecording: boolean;
-  verificationId: string;
-  taskId: string;
-  isPublic: boolean;
-  friendId: string;
-  canPin: boolean;
-  text: string;
-  text_summary?: string;
-  isSpace: boolean;
-  videoUrl: string;
-  imageUrl: string;
-  livekitRoomName: string;
-  isVisible: boolean;
-  isFactChecked?: boolean;
-  imageGallery?: string[];
-  title?: string;
-  sources?: {
-    title: string;
-    uri: string;
-  }[];
-  externalVideo?: ExternalVideo;
-  ai_video_summary_status?: "PENDING" | "COMPLETED" | "FAILED";
-  fact_check_status?: "PENDING" | "COMPLETED" | "FAILED";
-  fact_check_data?: FactCheckResponse;
-  previewData?: LinkPreviewData;
-  thumbnail?: string;
-  isPreviewFeedItem?: boolean;
-}
+import { FeedPost, LinkPreviewData } from "@/lib/api/generated";
+import { t } from "@/lib/i18n";
 
 // Comparison function for memo - now includes all props since we simplified the interface
-function arePropsEqual(prevProps: FeedItemProps, nextProps: FeedItemProps) {
+function arePropsEqual(prevProps: any, nextProps: any) {
   return (
-    prevProps.friendId === nextProps.friendId &&
+    prevProps.posterId === nextProps.posterId &&
     prevProps.time === nextProps.time &&
     prevProps.name === nextProps.name &&
     prevProps.isLive === nextProps.isLive &&
     prevProps.avatarUrl === nextProps.avatarUrl &&
-    prevProps.isPinned === nextProps.isPinned &&
-    prevProps.affiliatedIcon === nextProps.affiliatedIcon &&
     prevProps.hasRecording === nextProps.hasRecording &&
     prevProps.verificationId === nextProps.verificationId &&
-    prevProps.taskId === nextProps.taskId &&
+    prevProps.feedId === nextProps.feedId &&
     prevProps.isPublic === nextProps.isPublic &&
-    prevProps.canPin === nextProps.canPin &&
     prevProps.text === nextProps.text &&
-    prevProps.text_summary === nextProps.text_summary &&
     prevProps.isSpace === nextProps.isSpace &&
     prevProps.videoUrl === nextProps.videoUrl &&
-    prevProps.imageUrl === nextProps.imageUrl &&
     prevProps.livekitRoomName === nextProps.livekitRoomName &&
     prevProps.isVisible === nextProps.isVisible &&
-    prevProps.isFactChecked === nextProps.isFactChecked &&
     prevProps.title === nextProps.title &&
-    prevProps.sources === nextProps.sources &&
-    prevProps.imageGallery === nextProps.imageGallery &&
-    prevProps.externalVideo === nextProps.externalVideo &&
+    prevProps.imageGalleryWithDims === nextProps.imageGalleryWithDims &&
     prevProps.ai_video_summary_status === nextProps.ai_video_summary_status &&
     prevProps.fact_check_status === nextProps.fact_check_status &&
     prevProps.fact_check_data === nextProps.fact_check_data &&
-    prevProps.thumbnail === nextProps.thumbnail &&
-    prevProps.isPreviewFeedItem === nextProps.isPreviewFeedItem
+    prevProps.thumbnail === nextProps.thumbnail
   );
 }
 
 function FeedItem({
   name,
   time,
-  friendId,
+  posterId,
   isLive,
   avatarUrl,
-  isPinned,
   previewData,
-  affiliatedIcon,
   hasRecording,
   verificationId,
-  taskId,
+  feedId,
   isPublic,
-  canPin,
   text,
-  text_summary,
   isSpace,
   videoUrl,
-  imageUrl,
+  externalVideo,
   livekitRoomName,
   isVisible,
   title,
-  imageGallery,
+  imageGalleryWithDims,
   thumbnail,
-  isPreviewFeedItem,
-}: FeedItemProps) {
+  fact_check_data,
+}: {
+  name: string;
+  time: string;
+  posterId: string;
+  isLive: FeedPost["is_live"];
+  avatarUrl: string;
+  hasRecording: FeedPost["has_recording"];
+  verificationId: FeedPost["id"];
+  feedId: FeedPost["feed_id"];
+  isPublic: FeedPost["is_public"];
+  text: FeedPost["text_content"];
+  isSpace: FeedPost["is_space"];
+  videoUrl: string;
+  externalVideo: FeedPost["external_video"];
+  livekitRoomName: FeedPost["livekit_room_name"];
+  isVisible: boolean;
+  title: FeedPost["title"];
+  imageGalleryWithDims: FeedPost["image_gallery_with_dims"];
+  fact_check_data: FeedPost["fact_check_data"];
+  previewData: FeedPost["preview_data"];
+  thumbnail: string;
+}) {
   const { user } = useAuth();
   const router = useRouter();
   const theme = useTheme();
@@ -124,49 +94,63 @@ function FeedItem({
   const { closeLightbox } = useLightboxControls();
 
   // This can be used for real time information as this is actually polling the data from the server
-  const { data: verification } = useVerificationById(verificationId, true, {
-    refetchInterval: 5000,
-  });
-
+  const { data: verification } = useVerificationById(
+    verificationId,
+    user.id === posterId,
+    {
+      refetchInterval: 5000,
+    }
+  );
   const handleProfilePress = () => {
-    if (user?.id === friendId) {
+    if (user?.id === posterId) {
       return;
     }
     router.navigate({
       pathname: `/profile`,
       params: {
-        userId: friendId,
+        userId: posterId,
       },
     });
   };
 
-  const localLinkPreview = useLinkPreview(text, false);
+  // This is a link link generated without calling an APIs using link-preview-js.
+  // It is used as a fallback for the link preview from our services.
+  const localLinkPreview = useLinkPreview(text || "", false);
   // We check if the current fetched item has a preview, if doesn't we fallback to real time source, it might get populated later.
   // If not fallback to the local link preview.
-  const hasPreview =
-    !!previewData ||
-    !!verification?.preview_data ||
-    !!localLinkPreview.previewData;
+  // ORDER OF SOURCES IS IMPORTANT HERE.
+  // 1. Paginated data
+  // 2. Real time data
+  // 3. Local link preview
 
   const previewDataToUse =
     verification?.preview_data || previewData || localLinkPreview.previewData;
-  const realTimeImageUrl = verification?.image_gallery?.[0] || imageUrl;
 
+  const hasPreview = !!previewDataToUse;
+
+  // IMAGE GALLERY IS DEPRECATED we should use image_gallery_with_dims instead.
+  const realTimeImageUrl =
+    verification?.image_gallery_with_dims?.[0]?.url ||
+    imageGalleryWithDims?.[0]?.url;
+
+  const isJustText = !videoUrl && !realTimeImageUrl && !externalVideo;
+  // We fallback to the
+  const titleToUse = verification?.title || title;
   const MemoizedMediaContent = useMemo(() => {
     // Sometimes image gallery might be populated after the scraping of the post finishes. But item is already rendered.
     return (
       <MediaContent
         videoUrl={videoUrl}
-        imageUrl={realTimeImageUrl}
         isLive={isLive}
         isVisible={isVisible}
-        itemHeight={400}
         verificationId={verificationId}
-        taskId={taskId}
-        imageGallery={imageGallery}
+        feedId={feedId}
+        imageGalleryWithDims={
+          verification?.image_gallery_with_dims || imageGalleryWithDims
+        }
         name={name}
-        text={text}
-        livekitRoomName={livekitRoomName}
+        text={text || ""}
+        livekitRoomName={livekitRoomName || ""}
         time={time}
         avatarUrl={avatarUrl}
         thumbnail={thumbnail}
@@ -174,17 +158,21 @@ function FeedItem({
           hasPreview && previewDataToUse ? previewDataToUse : undefined
         }
         hasAISummary={verification?.ai_video_summary_status === "COMPLETED"}
-        factuality={verification?.fact_check_data?.factuality}
+        factuality={
+          fact_check_data?.factuality ||
+          verification?.fact_check_data?.factuality
+        }
       />
     );
   }, [
     isVisible,
-    verification?.image_gallery?.length,
-    imageUrl,
     hasPreview,
     previewDataToUse,
     verification?.ai_video_summary_status,
+    imageGalleryWithDims,
+    verification?.image_gallery_with_dims,
   ]);
+
   // Create themed styles
   const themedStyles = {
     ...styles,
@@ -209,6 +197,7 @@ function FeedItem({
       color: theme.colors.text,
     },
   };
+
   return (
     <View style={themedStyles.container}>
       <Pressable
@@ -220,83 +209,66 @@ function FeedItem({
           });
         }}
       >
-        {!isPreviewFeedItem && (
-          <View style={themedStyles.avatarContainer}>
-            <Pressable
-              onPress={(event) => {
-                event.stopPropagation();
-                handleProfilePress();
+        <View style={themedStyles.avatarContainer}>
+          <Pressable
+            onPress={(event) => {
+              event.stopPropagation();
+              handleProfilePress();
+            }}
+          >
+            <Avatar
+              alt="Avatar"
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: 35,
+                borderWidth: isLive ? 1 : 0,
+                borderColor: "transparent",
               }}
             >
-              <Avatar
-                alt="Avatar"
-                style={{
-                  width: 50,
-                  height: 50,
-                  borderRadius: 35,
-                  borderWidth: isLive ? 1 : 0,
-                  borderColor: "transparent",
-                }}
-              >
-                <AvatarImage
-                  source={{ uri: avatarUrl }}
-                  style={themedStyles.avatarImage}
-                />
-              </Avatar>
-              {isLive && (
-                <View style={themedStyles.liveIndicator}>
-                  <Text style={themedStyles.liveText}>LIVE</Text>
-                </View>
-              )}
-            </Pressable>
-          </View>
-        )}
+              <AvatarImage
+                source={{ uri: avatarUrl }}
+                style={themedStyles.avatarImage}
+              />
+            </Avatar>
+            {isLive && (
+              <View style={themedStyles.liveIndicator}>
+                <Text style={themedStyles.liveText}>LIVE</Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
 
         <View style={themedStyles.contentContainer}>
           <View style={themedStyles.headerContainer}>
             <View style={themedStyles.headerLeft}>
               <View style={themedStyles.nameContainer}>
-                {isPinned && (
-                  <View style={themedStyles.pinnedContainer}>
-                    <Pin color={"#FFD700"} fill="#FFD700" size={14} />
-                  </View>
-                )}
-                <Text
-                  style={[
-                    themedStyles.nameText,
-                    isPinned && themedStyles.pinnedText,
-                  ]}
-                >
-                  {name}
-                </Text>
-                {affiliatedIcon && (
+                <Text style={[themedStyles.nameText]}>{name}</Text>
+                {/* {affiliatedIcon && (
                   <Image
                     source={{ uri: affiliatedIcon }}
                     style={themedStyles.affiliatedIcon}
                   />
-                )}
+                )} */}
 
                 <Text style={themedStyles.timeText}>· {formattedTime}</Text>
                 {hasRecording && (
-                  <Text style={themedStyles.recordingText}>· იყო ლაივში</Text>
+                  <Text style={themedStyles.recordingText}>
+                    · {t("common.was_live")}
+                  </Text>
                 )}
               </View>
-              {/* {locationName && (
-                <Text style={themedStyles.locationText}>{locationName}</Text>
-              )} */}
             </View>
             {!isWeb && (
               <MenuView
                 verificationId={verificationId}
-                friendId={friendId}
+                posterId={posterId}
                 isPublic={isPublic}
-                canPin={canPin}
-                isPinned={isPinned}
-                taskId={taskId}
+                feedId={feedId}
               />
             )}
           </View>
-          {title && (
+          {titleToUse && realTimeImageUrl && (
             <Pressable
               onPress={() => {
                 if (!verificationId) return;
@@ -323,19 +295,18 @@ function FeedItem({
               style={({ pressed }) => [pressed && { opacity: 0.7 }]}
             >
               <Text style={themedStyles.titleText} numberOfLines={10}>
-                {title}
+                {titleToUse}
               </Text>
             </Pressable>
           )}
           <ExpandableText
-            text={text_summary || text}
+            text={text || previewDataToUse?.description || ""}
             hideForSpace={isSpace}
             noVideoMargin={!!videoUrl}
             verificationId={verificationId}
             enableNavigation
             hasPreview={hasPreview}
           />
-
           {MemoizedMediaContent}
 
           {hasPreview && previewDataToUse && !realTimeImageUrl && (
@@ -351,6 +322,8 @@ function FeedItem({
             />
           )}
           <FeedActions
+            isOwner={user?.id === posterId}
+            showFactualityBadge={isJustText}
             // hideUserRects={isPreviewFeedItem || false}
             verificationId={verificationId}
           />
@@ -403,9 +376,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     fontSize: 15,
     // color: "#E7E9EA",
-  },
-  pinnedText: {
-    color: "#FFD700",
   },
   pinnedContainer: {
     marginRight: 6,

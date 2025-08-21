@@ -9,6 +9,7 @@ import {
 import LocationLabel from "../LocationLabel";
 import { isWeb } from "@/lib/platform";
 import { useTheme, Theme } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 export function ListEmptyComponent({
   isFetching,
@@ -16,14 +17,12 @@ export function ListEmptyComponent({
   isUserInSelectedLocation,
   selectedLocation,
   handleOpenMap,
-  isCountryFeed,
 }: {
   isFetching: boolean;
   isGettingLocation: boolean;
   isUserInSelectedLocation: boolean;
   selectedLocation: any;
   handleOpenMap: () => void;
-  isCountryFeed: boolean;
 }) {
   const theme = useTheme();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
@@ -49,7 +48,7 @@ export function ListEmptyComponent({
   ) : (
     <View style={styles.mainContainer}>
       <Text style={styles.instructionText}>
-        გამოსაქვეყნებლად საჭიროა ლოკაციაზე მისვლა
+        {t("common.go_to_location_to_post")}
       </Text>
       {selectedLocation &&
         selectedLocation.task &&

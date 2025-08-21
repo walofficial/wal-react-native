@@ -1,4 +1,4 @@
-import { View, Image } from "react-native";
+import { View } from "react-native";
 
 import HomePage from "@/components/HomePage";
 import { isUserRegistered, useSession } from "@/components/AuthLayer";
