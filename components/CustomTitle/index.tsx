@@ -1,16 +1,20 @@
-import useTask from "@/hooks/useTask";
+import useFeed from "@/hooks/useFeed";
 import { useGlobalSearchParams } from "expo-router";
-import { H1 } from "../ui/typography";
 import Animated, {
-  withTiming,
   useAnimatedStyle,
   withSpring,
-  FadeIn,
 } from "react-native-reanimated";
+import { isWeb } from "@/lib/platform";
+import { StyleSheet } from "react-native";
+import { FontSizes, useTheme } from "@/lib/theme";
+import { useColorScheme } from "@/lib/useColorScheme";
+import { Text } from "react-native";
+import { H1, H2 } from "../ui/typography";
 
-function CustomTitle() {
-  const { taskId } = useGlobalSearchParams<{ taskId: string }>();
-  const { task } = useTask(taskId);
+function TaskTitle() {
+  const { feedId } = useGlobalSearchParams<{ feedId: string }>();
+  const { task } = useFeed(feedId);
+  const { isDarkColorScheme } = useColorScheme();
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -23,11 +27,59 @@ function CustomTitle() {
     };
   });
 
-  return (
-    <Animated.View style={animatedStyle}>
-      <H1 className="p-4 pl-3">{task?.display_name || "MNT"}</H1>
-    </Animated.View>
+  const headingStyle = {
+    ...styles.heading,
+    color: isDarkColorScheme ? "#FFFFFF" : "#000000",
+  };
+
+  const heading = isWeb ? (
+    <Text style={headingStyle}>{task?.display_name || "WAL"}</Text>
+  ) : (
+    <H1 style={headingStyle}>{task?.display_name || "WAL"}</H1>
   );
+
+  return <Animated.View style={animatedStyle}>{heading}</Animated.View>;
 }
 
-export default CustomTitle;
+type CustomTitleWithTextProps = {
+  text: string;
+};
+
+function CustomTitle({ text }: CustomTitleWithTextProps) {
+  const { isDarkColorScheme } = useColorScheme();
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: withSpring(1),
+      transform: [
+        {
+          translateY: withSpring(0),
+        },
+      ],
+    };
+  });
+
+  const headingStyle = {
+    ...styles.heading,
+    color: isDarkColorScheme ? "#FFFFFF" : "#000000",
+  };
+
+  const heading = isWeb ? (
+    <Text style={headingStyle}>{text}</Text>
+  ) : (
+    <Text style={headingStyle}>{text}</Text>
+  );
+
+  return <Animated.View style={animatedStyle}>{heading}</Animated.View>;
+}
+
+const styles = StyleSheet.create({
+  heading: {
+    padding: 16,
+    paddingLeft: 12,
+    fontSize: FontSizes.xxlarge,
+    fontWeight: "bold",
+  },
+});
+
+export { TaskTitle, CustomTitle };

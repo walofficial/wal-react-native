@@ -1,21 +1,43 @@
+import { getLocationFeedPaginatedInfiniteOptions, updateVerificationVisibilityMutation, getVerificationsInfiniteOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
-import { SheetManager } from "react-native-actions-sheet";
+import { useLocalSearchParams } from "expo-router";
+import useAuth from "./useAuth";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
-export function useMakePublicMutation(verificationId: string) {
+export function useMakePublicMutation() {
+  const { feedId } = useLocalSearchParams<{ feedId: string }>();
   const queryClient = useQueryClient();
+  const { user } = useAuth()
+  const { success } = useToast();
 
   return useMutation({
-    mutationFn: (isPublic: boolean) =>
-      api.updateUserVerificationVisibility(verificationId, isPublic),
-    onSuccess: () => {
-      SheetManager.hide("user-make-it-public-sheet");
+    ...updateVerificationVisibilityMutation(),
+    onSuccess: (data, variables) => {
+      if (variables.body.is_public) {
+        success({ title: t("common.published") })
+      } else {
+        success({ title: t("common.hidden") })
+
+      }
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["location-feed-paginated"] });
+    onSettled: (variables) => {
+      const queryOptions = getLocationFeedPaginatedInfiniteOptions({
+        path: {
+          feed_id: feedId,
+        },
+      })
+      queryClient.invalidateQueries({ queryKey: queryOptions.queryKey, exact: false });
       queryClient.invalidateQueries({
-        queryKey: ["user-verifications-paginated"],
-      });
-    },
-  });
+        queryKey: getVerificationsInfiniteOptions({
+          query: {
+            target_user_id: user.external_user_id,
+            page_size: 10,
+          },
+        }).queryKey,
+        exact: false
+      })
+
+    }
+  })
 }

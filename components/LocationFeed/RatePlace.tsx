@@ -1,7 +1,7 @@
 import { toast } from "@backpackapp-io/react-native-toast";
 import { ThumbsDown, X } from "lucide-react-native";
 import { Heart } from "lucide-react-native";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
 import { View, Text } from "react-native";
 import Animated, {
   withTiming,
@@ -11,13 +11,18 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import {
+  getImpressionsCountOptions,
+  trackImpressionsMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
+import { FontSizes } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 interface RatePlaceProps {
-  taskId: string;
+  feedId: string;
 }
 
-function RatePlace({ taskId }: RatePlaceProps) {
+function RatePlace({ feedId }: RatePlaceProps) {
   const queryClient = useQueryClient();
   const opacity = useSharedValue(1);
   const scale = useSharedValue(1);
@@ -25,17 +30,18 @@ function RatePlace({ taskId }: RatePlaceProps) {
 
   // Query to check if user has already rated
   const { data: ratingData, isLoading } = useQuery({
-    queryKey: ["taskRating", taskId],
-    queryFn: () => api.getRatingForTask(taskId),
+    ...getImpressionsCountOptions({ path: { verification_id: feedId } }),
   });
 
   // Mutation for rating the task
   const { mutate: rateTaskMutation } = useMutation({
-    mutationFn: ({ type }: { type: "like" | "dislike" | "close" }) =>
-      api.rateTask(taskId, type),
+    ...trackImpressionsMutation(),
     onSuccess: () => {
-      // Invalidate the rating query to refetch
-      queryClient.invalidateQueries({ queryKey: ["taskRating", taskId] });
+      queryClient.invalidateQueries({
+        queryKey: getImpressionsCountOptions({
+          path: { verification_id: feedId },
+        }).queryKey,
+      });
     },
   });
 
@@ -55,9 +61,7 @@ function RatePlace({ taskId }: RatePlaceProps) {
       duration: 300,
     });
 
-    const rateType =
-      type === "heart" ? "like" : type === "thumbsDown" ? "dislike" : "close";
-    rateTaskMutation({ type: rateType });
+    rateTaskMutation({ path: { verification_id: feedId } } as any);
     if (type !== "close") {
     }
   };
@@ -68,27 +72,24 @@ function RatePlace({ taskId }: RatePlaceProps) {
   }
 
   return (
-    <Animated.View
-      style={[animatedStyle]}
-      className="pt-0 px-5 mb-5 flex-row items-center justify-between"
-    >
+    <Animated.View style={[animatedStyle, styles.container]}>
       <TouchableOpacity
         onPress={() => handlePress("close")}
-        className="items-center justify-center bg-white/10 rounded-full p-3"
+        style={styles.iconButton}
       >
         <X size={20} color="white" />
       </TouchableOpacity>
-      <Text className="text-white text-lg">შეაფასეთ ლოკაცია</Text>
-      <View className="flex-row justify-center ml-5">
+      <Text style={styles.text}>{t("common.rate_location")}</Text>
+      <View style={styles.ratingContainer}>
         <TouchableOpacity
           onPress={() => handlePress("thumbsDown")}
-          className="items-center justify-center bg-white/10 rounded-full p-3"
+          style={styles.iconButton}
         >
           <ThumbsDown color="white" />
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => handlePress("heart")}
-          className="ml-3 items-center justify-center bg-white/10 rounded-full p-3"
+          style={[styles.iconButton, styles.heartButton]}
         >
           <Heart color="red" />
         </TouchableOpacity>
@@ -96,5 +97,35 @@ function RatePlace({ taskId }: RatePlaceProps) {
     </Animated.View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingTop: 0,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  iconButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderRadius: 9999,
+    padding: 12,
+  },
+  text: {
+    color: "white",
+    fontSize: FontSizes.medium,
+  },
+  ratingContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginLeft: 20,
+  },
+  heartButton: {
+    marginLeft: 12,
+  },
+});
 
 export default RatePlace;

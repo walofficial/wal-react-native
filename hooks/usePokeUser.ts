@@ -1,13 +1,15 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
 import { toast } from "@backpackapp-io/react-native-toast";
+import { pokeUserLiveActionsPokeTargetUserIdPostMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useToast } from "@/components/ToastUsage";
 
 function usePokeLiveUser() {
+  const { success } = useToast()
+
   const pokeLiveUser = useMutation({
-    mutationFn: (variables: { userId: string; taskId: string }) =>
-      api.pokeLiveUser(variables.userId, variables.taskId),
+    ...pokeUserLiveActionsPokeTargetUserIdPostMutation(),
     onSuccess: (data, variables) => {
-      toast.success("შეზანზარდა");
+      success({ title: "შეზანზარდა" });
     },
   });
   return { pokeLiveUser };

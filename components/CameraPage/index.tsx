@@ -3,7 +3,14 @@ import { useRef, useState, useCallback, useMemo } from "react";
 import type { GestureResponderEvent } from "react-native";
 import { Text } from "../ui/text";
 
-import { Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Platform,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+  TextInput,
+  KeyboardAvoidingView,
+} from "react-native";
 import type { PinchGestureHandlerGestureEvent } from "react-native-gesture-handler";
 import {
   PinchGestureHandler,
@@ -42,14 +49,15 @@ import Reanimated, {
 import { useEffect } from "react";
 import { useIsForeground } from "../../hooks/useIsForeground";
 import { StatusBarBlurBackground } from "./StatusBarBlurBackground";
-import MaterialIcon from "react-native-vector-icons/MaterialCommunityIcons";
-import IonIcon from "react-native-vector-icons/Ionicons";
+import IonIcon from "@expo/vector-icons/Ionicons";
 import { useIsFocused } from "@react-navigation/core";
 import { usePreferredCameraDevice } from "../../hooks/usePreferredCameraDevice";
 import { CaptureButton } from "./CaptureButton";
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { CaptureButtonPhoto } from "./CaptureButtonPhoto";
 import { toast } from "@backpackapp-io/react-native-toast";
+import { LiveButton } from "./LiveButton";
+import { t } from "@/lib/i18n";
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
@@ -76,15 +84,13 @@ const getAspectRatio = (width: number, height: number) => {
   return closest[0];
 };
 
-export default function CameraPage({
-  showCamera,
-}: {
-  showCamera: boolean;
-}): React.ReactElement {
-  const navigation = useNavigation();
-  const { taskId } = useLocalSearchParams();
+const CameraOverlay = Reanimated.createAnimatedComponent(View);
 
-  const [shouldShowPhotoCapture, setShouldShowPhotoCapture] = useState(false);
+export default function CameraPage(): React.ReactElement {
+  const navigation = useNavigation();
+  const { feedId } = useLocalSearchParams();
+
+  const [liveDescription, setLiveDescription] = useState("");
 
   const shouldShowMediaTypeSwitch = true;
 
@@ -177,11 +183,11 @@ export default function CameraPage({
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: "photo" | "video") => {
       router.replace({
-        pathname: `/(tabs)/liveusers/feed/[taskId]/mediapage`,
+        pathname: `/(camera)/mediapage`,
         params: {
           path: media.path,
           type: type,
-          taskId: taskId as string,
+          feedId: feedId as string,
           recordingTime: lastSavedRecordingTime.current,
         },
       });
@@ -301,8 +307,21 @@ export default function CameraPage({
     }
   }, [format]);
 
+  const [selectedMode, setSelectedMode] = useState<"video" | "photo" | "live">(
+    "video"
+  );
+
+  // Add this new animated style for the overlay
+  const overlayStyle = useAnimatedStyle(() => {
+    return {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: "black",
+      opacity: withTiming(selectedMode === "live" ? 0.5 : 0),
+    };
+  }, [selectedMode]);
+
   return (
-    <View style={[styles.container]} className="bg-black">
+    <View style={[styles.container]}>
       {device != null ? (
         <PinchGestureHandler onGestureEvent={onPinchGesture} enabled={isActive}>
           <Reanimated.View
@@ -347,6 +366,9 @@ export default function CameraPage({
                 enableLocation={location.hasPermission}
               />
             </TapGestureHandler>
+
+            {/* Add this new overlay component */}
+            <CameraOverlay style={overlayStyle} pointerEvents="none" />
           </Reanimated.View>
         </PinchGestureHandler>
       ) : (
@@ -360,71 +382,119 @@ export default function CameraPage({
           {formatTime(recordingTime)}
         </Text>
       </Reanimated.View>
-      <View
-        className="flex flex-col items-center justify-center "
-        style={styles.captureButton}
-      >
-        {shouldShowMediaTypeSwitch && (
-          <View
-            className="flex flex-row items-center justify-center mb-4"
-            style={{
-              opacity: isRecording || !showCamera ? 0 : 1,
-            }}
-          >
-            <TouchableOpacity
-              style={[
-                styles.switchButton,
-                !shouldShowPhotoCapture && styles.switchButtonActive,
-              ]}
-              onPress={() => setShouldShowPhotoCapture(false)}
-            >
-              <Text style={styles.switchButtonText}>ვიდეო</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.switchButton,
-                shouldShowPhotoCapture && styles.switchButtonActive,
-              ]}
-              onPress={() => setShouldShowPhotoCapture(true)}
-            >
-              <Text style={styles.switchButtonText}>ფოტო</Text>
-            </TouchableOpacity>
-          </View>
-        )}
 
-        {shouldShowPhotoCapture && showCamera ? (
-          <CaptureButtonPhoto
-            camera={camera}
-            onMediaCaptured={onMediaCaptured}
-            flash={supportsFlash ? flash : "off"}
-            enabled={isCameraInitialized && isActive}
-            setIsPressingButton={setIsPressingButton}
+      {selectedMode === "live" && (
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={[styles.liveInputContainer, { width: "80%", paddingTop: 30 }]}
+        >
+          <TextInput
+            style={styles.liveTextInput}
+            placeholder={"Sup?"}
+            placeholderTextColor="rgba(255, 255, 255, 0.6)"
+            value={liveDescription}
+            onChangeText={setLiveDescription}
+            multiline={false}
+            maxLength={150}
           />
-        ) : showCamera ? (
-          <CaptureButton
-            camera={camera}
-            onMediaCaptured={onMediaCaptured}
-            cameraZoom={zoom}
-            minZoom={minZoom}
-            maxZoom={maxZoom}
-            flash={supportsFlash ? flash : "off"}
-            enabled={isCameraInitialized && isActive}
-            setRecordingTimeView={(value) => {
-              setIsRecording(value);
-            }}
-            setIsPressingButton={(value) => {
-              setIsPressingButton(value);
-            }}
-          />
-        ) : null}
-      </View>
+        </KeyboardAvoidingView>
+      )}
+
+      <KeyboardAvoidingView behavior="padding" style={styles.captureButton}>
+        <View style={styles.captureButtonContainer}>
+          {shouldShowMediaTypeSwitch && (
+            <View
+              style={[
+                styles.switchContainer,
+                {
+                  opacity: isRecording ? 0 : 1,
+                },
+              ]}
+            >
+              <TouchableOpacity
+                style={[
+                  styles.switchButton,
+                  selectedMode === "video" && styles.switchButtonActive,
+                ]}
+                onPress={() => setSelectedMode("video")}
+              >
+                <Text style={styles.switchButtonText}>{t("common.video")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.switchButton,
+                  selectedMode === "photo" && styles.switchButtonActive,
+                ]}
+                onPress={() => setSelectedMode("photo")}
+              >
+                <Text style={styles.switchButtonText}>{t("common.photo")}</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.switchButton,
+                  selectedMode === "live" && styles.switchButtonActive,
+                ]}
+                onPress={() => {
+                  setSelectedMode("live");
+                }}
+              >
+                <Text style={[styles.switchButtonText, styles.liveText]}>
+                  LIVE
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {selectedMode === "live" ? (
+            <LiveButton
+              isLive={false}
+              onShowRoom={({
+                livekit_token,
+                room_name,
+              }: {
+                livekit_token: string;
+                room_name: string;
+              }) => {
+                router.replace({
+                  pathname: "/(tabs)/(home)/[feedId]/livestream",
+                  params: {
+                    feedId: feedId as string,
+                    livekit_token: livekit_token,
+                    room_name: room_name,
+                  },
+                });
+              }}
+              feedId={feedId as string}
+              textContent={liveDescription}
+            />
+          ) : selectedMode === "photo" ? (
+            <CaptureButtonPhoto
+              camera={camera}
+              onMediaCaptured={onMediaCaptured}
+              flash={supportsFlash ? flash : "off"}
+              enabled={isCameraInitialized && isActive}
+              setIsPressingButton={setIsPressingButton}
+            />
+          ) : (
+            <CaptureButton
+              camera={camera}
+              onMediaCaptured={onMediaCaptured}
+              feedId={feedId as string}
+              flash={supportsFlash ? flash : "off"}
+              enabled={isCameraInitialized && isActive}
+              setRecordingTimeView={setIsRecording}
+              setIsPressingButton={setIsPressingButton}
+            />
+          )}
+        </View>
+      </KeyboardAvoidingView>
 
       <StatusBarBlurBackground />
       <View
         style={[
           styles.rightButtonRow,
           {
-            opacity: showCamera ? 1 : 0,
+            opacity: 1,
           },
         ]}
       >
@@ -432,7 +502,12 @@ export default function CameraPage({
           style={styles.button}
           onPress={() => {
             toast.remove();
-            router.back();
+            router.navigate({
+              pathname: "/(tabs)/(home)/[feedId]",
+              params: {
+                feedId: feedId as string,
+              },
+            });
           }}
         >
           <IonIcon name="arrow-back" color="white" size={24} />
@@ -455,18 +530,6 @@ export default function CameraPage({
             onPress={() => setTargetFps((t) => (t === 30 ? 60 : 30))}
           >
             <Text style={styles.text}>{`${targetFps}\nFPS`}</Text>
-          </TouchableOpacity>
-        )}
-        {supportsHdr && (
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setEnableHdr((h) => !h)}
-          >
-            <MaterialIcon
-              name={enableHdr ? "hdr" : "hdr-off"}
-              color="white"
-              size={24}
-            />
           </TouchableOpacity>
         )}
         {canToggleNightMode && (
@@ -495,6 +558,17 @@ const styles = StyleSheet.create({
     position: "absolute",
     alignSelf: "center",
     bottom: SAFE_AREA_PADDING.paddingBottom,
+  },
+  captureButtonContainer: {
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 16,
   },
   button: {
     marginBottom: CONTENT_SPACING,
@@ -545,5 +619,27 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 14,
     fontWeight: "bold",
+  },
+  liveText: {
+    color: "#FF1493",
+  },
+  liveInputContainer: {
+    position: "absolute",
+    top: SAFE_AREA_PADDING.paddingTop + 20,
+    left: SAFE_AREA_PADDING.paddingLeft,
+    right: SAFE_AREA_PADDING.paddingRight,
+    zIndex: 1,
+  },
+  liveTextInput: {
+    width: "90%",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    color: "white",
+    fontSize: 16,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
 });

@@ -1,5 +1,15 @@
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import React from "react";
+import {
+  View,
+  Text,
+  ActivityIndicator,
+  TouchableOpacity,
+  StyleSheet,
+} from "react-native";
 import LocationLabel from "../LocationLabel";
+import { isWeb } from "@/lib/platform";
+import { useTheme, Theme } from "@/lib/theme";
+import { t } from "@/lib/i18n";
 
 export function ListEmptyComponent({
   isFetching,
@@ -11,45 +21,42 @@ export function ListEmptyComponent({
   isFetching: boolean;
   isGettingLocation: boolean;
   isUserInSelectedLocation: boolean;
-  selectedLocation: Location;
+  selectedLocation: any;
   handleOpenMap: () => void;
 }) {
+  const theme = useTheme();
+  const styles = React.useMemo(() => createStyles(theme), [theme]);
+
   if (isFetching || isGettingLocation) {
     return (
-      <View className="flex-1 h-[400px] flex items-center justify-center px-4">
-        <ActivityIndicator color="white" />
+      <View style={styles.container}>
+        <ActivityIndicator color={theme.colors.text} />
       </View>
     );
   }
-  // if (!isUserInSelectedLocation && selectedLocation) {
-  //   return (
-  //     <View className="flex-1 h-[400px] flex items-center justify-center px-4">
-  //       <Text className="text-white text-center text-lg mb-10">
-  //         ფოსტების სანახავად საჭიროა ლოკაციაზე მისვლა
-  //       </Text>
-  //       <TouchableOpacity className="w-full" onPress={handleOpenMap}>
-  //         <LocationLabel
-  //           locationName={selectedLocation?.task.display_name}
-  //           address={selectedLocation?.nearest_location.address}
-  //         />
-  //       </TouchableOpacity>
-  //     </View>
-  //   );
+
+  if (isWeb) {
+    return null;
+  }
+
   if (isGettingLocation) {
     return null;
   }
 
   const mainView = isUserInSelectedLocation ? (
-    <Text className="text-gray-400 text-center mb-6">{"არ არის ფოსტები"}</Text>
+    <Text style={styles.emptyText}>{"..."}</Text>
   ) : (
-    <View className="flex-1 h-[400px] flex items-center justify-center px-4">
-      <Text className="text-white text-center text-lg mb-10">
-        გამოსაქვეყნებლად საჭიროა ლოკაციაზე მისვლა
+    <View style={styles.mainContainer}>
+      <Text style={styles.instructionText}>
+        {t("common.go_to_location_to_post")}
       </Text>
       {selectedLocation &&
         selectedLocation.task &&
         selectedLocation.nearest_location && (
-          <TouchableOpacity className="w-full" onPress={handleOpenMap}>
+          <TouchableOpacity
+            style={styles.locationButton}
+            onPress={handleOpenMap}
+          >
             <LocationLabel
               locationName={selectedLocation?.task.display_name}
               address={selectedLocation?.nearest_location.address}
@@ -59,11 +66,39 @@ export function ListEmptyComponent({
     </View>
   );
 
-  return (
-    !isFetching && (
-      <View className="flex-1 h-[400px] flex items-center justify-center px-4">
-        {mainView}
-      </View>
-    )
-  );
+  return !isFetching && <View style={styles.container}>{mainView}</View>;
 }
+
+const createStyles = (theme: Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      height: 400,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: theme.spacing.md,
+      backgroundColor: theme.colors.background,
+    },
+    mainContainer: {
+      flex: 1,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: theme.spacing.md,
+      backgroundColor: theme.colors.background,
+    },
+    emptyText: {
+      color: theme.colors.feedItem.secondaryText,
+      height: 400,
+      textAlign: "center",
+      marginBottom: theme.spacing.md * 1.5, // 24px
+    },
+    instructionText: {
+      color: theme.colors.text,
+      textAlign: "center",
+      fontSize: theme.fontSizes.md,
+      marginBottom: theme.spacing.xl + theme.spacing.sm, // 40px
+    },
+    locationButton: {
+      width: "100%",
+    },
+  });

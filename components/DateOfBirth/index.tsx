@@ -1,73 +1,140 @@
 import React, { useState } from "react";
-import { View, TouchableOpacity } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  useColorScheme,
+} from "react-native";
 import { Controller } from "react-hook-form";
 import { Text } from "@/components/ui/text";
 import DatePicker from "react-native-date-picker";
-import { Button } from "../ui/button";
+import { parse, format } from "date-fns";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  interpolateColor,
+  Easing,
+} from "react-native-reanimated";
+import { FontSizes, useTheme } from "@/lib/theme";
+import { Calendar } from "lucide-react-native";
+import { getCurrentLocale, t } from "@/lib/i18n";
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function DateOfBirth({ control }: { control: any }) {
   const [open, setOpen] = useState(false);
+  const pressed = useSharedValue(0);
+  const colorScheme = useColorScheme();
+  const theme = useTheme();
+  const locale = getCurrentLocale();
 
   const formatDate = (dateString: string) => {
-    const [day, month, year] = dateString.split("/");
-    return new Date(`${year}-${month}-${day}`);
+    return parse(dateString, "dd/MM/yyyy", new Date());
   };
 
   const formatDateToString = (date: Date) => {
-    return `${date.getDate().toString().padStart(2, "0")}/${(
-      date.getMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}/${date.getFullYear()}`;
-  };
-
-  const getAge = (dateString: string) => {
-    const today = new Date();
-    const birthDate = formatDate(dateString);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age;
+    return format(date, "dd/MM/yyyy");
   };
 
   const currentDate = new Date();
-
-  // Subtract 10 years from the current year
   const pastDate = new Date(
     currentDate.setFullYear(currentDate.getFullYear() - 12)
   );
 
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        { scale: withTiming(1 - pressed.value * 0.05, { duration: 100 }) },
+      ],
+      backgroundColor: interpolateColor(
+        pressed.value,
+        [0, 1],
+        [
+          colorScheme === "dark" ? "#1e1e1e" : theme.colors.card.background,
+          colorScheme === "dark" ? "#2a2a2a" : theme.colors.border,
+        ]
+      ),
+    };
+  });
+
   return (
-    <View className="flex-row">
+    <View style={styles.container}>
       <Controller
         control={control}
         name="date_of_birth"
         render={({ field: { onChange, value } }) => (
           <>
-            <TouchableOpacity
-              className="w-full h-14 flex-row items-center justify-between px-4 border border-gray-700 rounded-lg"
+            <AnimatedTouchable
+              style={[
+                styles.button,
+                animatedStyle,
+                {
+                  backgroundColor:
+                    colorScheme === "dark"
+                      ? "#1e1e1e"
+                      : theme.colors.card.background,
+                  shadowColor:
+                    colorScheme === "dark" ? "#000" : "rgba(0,0,0,0.2)",
+                },
+              ]}
               onPress={() => setOpen(true)}
+              onPressIn={() => {
+                pressed.value = withTiming(1, {
+                  duration: 150,
+                  easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+                });
+              }}
+              onPressOut={() => {
+                pressed.value = withTiming(0, {
+                  duration: 200,
+                  easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+                });
+              }}
             >
-              <Text className="text-lg text-gray-300">
-                {value
-                  ? `${formatDate(value).toLocaleDateString("en-US")}`
-                  : "დაბადების თარიღი"}
+              <View style={styles.innerContainer}>
+                <Calendar
+                  size={20}
+                  color={colorScheme === "dark" ? "#d1d5db" : theme.colors.text}
+                  style={styles.icon}
+                />
+                <Text
+                  style={[
+                    styles.dateText,
+                    {
+                      color:
+                        colorScheme === "dark" ? "#d1d5db" : theme.colors.text,
+                    },
+                  ]}
+                >
+                  {value
+                    ? `${formatDateToString(formatDate(value))}`
+                    : t("common.date_of_birth")}
+                </Text>
+              </View>
+              <Text
+                style={[
+                  styles.actionText,
+                  {
+                    color:
+                      colorScheme === "dark" ? "#a1a1aa" : theme.colors.primary,
+                  },
+                ]}
+              >
+                {value ? t("common.change") : t("common.select")}
               </Text>
-              <Text className="text-lg text-blue-500">
-                {value ? "შეცვლა" : "არჩევა"}
-              </Text>
-            </TouchableOpacity>
+            </AnimatedTouchable>
             <DatePicker
               modal
-              title="დაბადების თარიღი"
-              buttonColor="white"
+              title={t("common.date_of_birth")}
+              buttonColor={
+                colorScheme === "dark" ? "white" : theme.colors.primary
+              }
               mode="date"
-              locale="ka"
-              theme="dark"
-              confirmText="დადასტურება"
-              cancelText="გაუქმება"
+              locale={locale}
+              theme={colorScheme === "dark" ? "dark" : "light"}
+              confirmText={t("common.confirm")}
+              cancelText={t("common.cancel")}
               open={open}
               minimumDate={new Date(1940, 1, 1)}
               maximumDate={pastDate}
@@ -86,3 +153,35 @@ export default function DateOfBirth({ control }: { control: any }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    marginTop: 4,
+  },
+  button: {
+    width: "100%",
+    height: 58,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.5)",
+  },
+  innerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icon: {
+    marginRight: 10,
+  },
+  dateText: {
+    fontSize: FontSizes.medium,
+    fontWeight: "500",
+  },
+  actionText: {
+    fontSize: FontSizes.medium,
+    fontWeight: "600",
+  },
+});

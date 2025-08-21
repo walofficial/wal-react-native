@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TouchableOpacity, Linking } from "react-native";
+import { View, TouchableOpacity, Linking, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Text } from "@/components/ui/text";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -8,6 +8,8 @@ import * as SMS from "expo-sms";
 import { ActivityIndicator } from "react-native";
 import UserAvatarLayout from "../UserAvatar";
 import useAuth from "@/hooks/useAuth";
+import { FontSizes, useTheme } from "@/lib/theme";
+import { app_name_slug } from "@/app.config";
 
 interface ContactItemProps {
   id: string;
@@ -33,12 +35,13 @@ const ContactItem: React.FC<ContactItemProps> = ({
   isLoading = false,
 }) => {
   const auth = useAuth();
+  const theme = useTheme();
 
   const handlePress = async () => {
     if (alreadyOnApp) {
       onAddPress();
     } else {
-      const message = "https://ment.ge/links/" + auth.user?.username;
+      const message = `https://${app_name_slug}.ge/links/${auth.user?.username}`;
 
       const isAvailable = await SMS.isAvailableAsync();
       if (isAvailable) {
@@ -55,56 +58,63 @@ const ContactItem: React.FC<ContactItemProps> = ({
   };
 
   return (
-    <View className="flex-row items-center justify-between py-3 w-full">
-      <View className="flex-row items-center">
+    <View style={styles.container}>
+      <View style={styles.leftContainer}>
         <UserAvatarLayout size="md" borderColor="gray">
           <View
-            style={{
-              backgroundColor: !image ? "#36454F" : "transparent",
-            }}
-            className={cn("flex items-center justify-center w-full h-full", {
-              "rounded-full": !image,
-            })}
+            style={[
+              styles.avatarContainer,
+              !image && { backgroundColor: theme.colors.card.background },
+              !image && styles.roundedFull,
+            ]}
           >
             {image ? (
-              <AvatarImage className="rounded-full" source={{ uri: image }} />
+              <AvatarImage style={styles.avatarImage} source={{ uri: image }} />
             ) : (
-              <Text className="text-white text-2xl">
+              <Text style={[styles.avatarText, { color: theme.colors.text }]}>
                 {name.charAt(0).toUpperCase()}
               </Text>
             )}
           </View>
         </UserAvatarLayout>
-        <View className="ml-3">
-          <Text className="text-lg font-semibold text-white">{name}</Text>
+        <View style={styles.textContainer}>
+          <Text style={[styles.nameText, { color: theme.colors.text }]}>
+            {name}
+          </Text>
           {alreadyOnApp && (
-            <Text className="text-sm text-blue-400">იყენებს MNT ის</Text>
+            <Text style={[styles.appUserText, { color: theme.colors.primary }]}>
+              იყენებს WAL ის
+            </Text>
           )}
         </View>
       </View>
       <TouchableOpacity
-        className={cn(
-          "px-4 py-2 rounded-full flex flex-row items-center justify-center",
-          {
-            "bg-blue-500": !friendRequestSent,
-            "bg-gray-500": friendRequestSent,
-          }
-        )}
+        style={[
+          styles.button,
+          friendRequestSent
+            ? [
+                styles.buttonDisabled,
+                { backgroundColor: theme.colors.feedItem.secondaryText },
+              ]
+            : [styles.buttonEnabled, { backgroundColor: theme.colors.primary }],
+        ]}
         onPress={handlePress}
         disabled={isLoading || friendRequestSent}
       >
         {isLoading ? (
-          <ActivityIndicator size="small" color="white" />
+          <ActivityIndicator size="small" color={theme.colors.button.text} />
         ) : (
           <>
             <Ionicons
-              className="mr-2"
+              style={styles.buttonIcon}
               name={friendRequestSent ? "checkmark" : "add"}
               size={24}
-              color="white"
+              color={theme.colors.button.text}
             />
-            <Text className="text-white font-semibold">
-              {friendRequestSent ? "Sent" : buttonText}
+            <Text
+              style={[styles.buttonText, { color: theme.colors.button.text }]}
+            >
+              {friendRequestSent ? "გაიგზავნა" : buttonText}
             </Text>
           </>
         )}
@@ -112,5 +122,66 @@ const ContactItem: React.FC<ContactItemProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    width: "100%",
+  },
+  leftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    marginRight: 12,
+  },
+  avatarContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
+  },
+  roundedFull: {
+    borderRadius: 9999,
+  },
+  avatarImage: {
+    borderRadius: 9999,
+  },
+  avatarText: {
+    fontSize: 24,
+  },
+  textContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  nameText: {
+    fontSize: FontSizes.medium,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  appUserText: {
+    fontSize: 14,
+  },
+  button: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonEnabled: {},
+  buttonDisabled: {},
+  buttonIcon: {
+    marginRight: 8,
+  },
+  buttonText: {
+    fontWeight: "600",
+  },
+});
 
 export default ContactItem;

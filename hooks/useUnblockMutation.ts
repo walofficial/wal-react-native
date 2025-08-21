@@ -1,21 +1,32 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "@backpackapp-io/react-native-toast";
-import api from "@/lib/api";
+import {
+  getBlockedFriendsQueryKey,
+  getFriendsListQueryKey,
+  getLocationFeedPaginatedInfiniteQueryKey,
+  getLocationFeedsQueryKey,
+  unblockUserUnblockTargetIdPostMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
 
 function useUnblockMutation() {
   const queryClient = useQueryClient();
+  const { success, error: errorToast } = useToast();
 
   return useMutation({
-    mutationFn: (userId: string) => api.unblockUser(userId),
+    ...unblockUserUnblockTargetIdPostMutation(),
     onSuccess: (_, variables) => {
-      toast.success("მომხმარებელი განბლოკილია");
-      queryClient.invalidateQueries({ queryKey: ["blockedUsers"] });
-      queryClient.invalidateQueries({ queryKey: ["friendsFeed"] });
-      queryClient.invalidateQueries({ queryKey: ["location-feed-paginated"] });
+      success({ title: "განიბლოკა" });
+      queryClient.invalidateQueries({ queryKey: getBlockedFriendsQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getFriendsListQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getLocationFeedPaginatedInfiniteQueryKey({}), exact: false });
     },
     onError: (error) => {
       console.log("error", error);
-      toast.error("დაფიქსირდა შეცდომა. გთხოვთ სცადოთ თავიდან");
+      errorToast({
+        title: t("errors.general_error"),
+        description: t("errors.general_error")
+      });
     },
   });
 }

@@ -1,35 +1,50 @@
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useTheme } from "@/lib/theme";
 
 interface CreatePostProps {
   disabled: boolean;
-  taskId: string;
+  feedId: string;
 }
 
-export default function CreatePost({ disabled, taskId }: CreatePostProps) {
+export default function CreatePost({ disabled, feedId }: CreatePostProps) {
   const router = useRouter();
+  const theme = useTheme();
 
   return (
     <TouchableOpacity
       disabled={disabled}
-      className={`flex flex-row absolute bottom-4 right-5 items-center mx-4 ${
-        disabled ? "opacity-50" : ""
-      }`}
-      style={{
-        width: 70,
-        height: 70,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
+      style={[
+        styles.container,
+        {
+          opacity: disabled ? 0.5 : 1,
+        },
+      ]}
       onPress={() => {
         router.push({
-          pathname: `/(tabs)/liveusers/feed/[taskId]/create-post`,
-          params: { taskId },
+          pathname: `/(tabs)/(home)/[feedId]/create-post`,
+          params: {
+            feedId,
+            disableImagePicker: "true",
+          },
         });
       }}
     >
-      <Ionicons name="create" color="#efefef" size={30} />
+      <Ionicons name="create" color={theme.colors.text} size={30} />
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    bottom: 16,
+    right: 20,
+    width: 70,
+    height: 70,
+    justifyContent: "center",
+    alignItems: "center",
+    flexDirection: "row",
+  },
+});

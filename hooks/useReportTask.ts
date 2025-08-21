@@ -1,12 +1,10 @@
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "@backpackapp-io/react-native-toast";
-
-import api from "@/lib/api";
 import { Alert } from "react-native";
+import { reportUserReportTargetIdPostMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 function useReportTask() {
   return useMutation({
-    mutationFn: (taskId: string) => api.reportTask(taskId),
+    ...reportUserReportTargetIdPostMutation(),
     onSuccess: () => {
       Alert.alert("რეპორტი გამოიგზავნა", "მოდერაცია გადახედავს 24 საათში");
     },

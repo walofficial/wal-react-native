@@ -1,5 +1,18 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { View, TouchableOpacity, Platform } from "react-native";
+// @ts-nocheck
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  RefObject,
+} from "react";
+import {
+  View,
+  TouchableOpacity,
+  Platform,
+  Linking,
+  StyleSheet,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Contacts from "expo-contacts";
 import { Text } from "@/components/ui/text";
@@ -14,22 +27,62 @@ import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetTextInput,
   BottomSheetBackdrop,
+  BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { forwardRef } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getBottomSheetBackgroundStyle } from "@/lib/styles";
+import { FontSizes } from "@/lib/theme";
+import useSheetCloseOnNavigation from "@/hooks/sheetCloseOnNavigation";
+import { useQuery } from "@tanstack/react-query";
+import { User } from "@/lib/api/generated";
+import { useFriendRequest } from "@/lib/hooks/useFriendRequest";
+import { useTheme } from "@/lib/theme";
+import { useAtom } from "jotai";
+import { contactSyncSheetState } from "@/lib/atoms/contactSync";
+import { Portal } from "@gorhom/portal";
+import { useOnboarding } from "../../hooks/useOnboardingContext";
+import { getUserProfileByUsernameOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { t } from "@/lib/i18n";
 
-const ContactSyncSheet = forwardRef<BottomSheet>((props, ref) => {
+interface ContactSyncSheetProps {
+  bottomSheetRef: RefObject<BottomSheet>;
+}
+
+const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [pageOffset, setPageOffset] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
+  const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
+    contactSyncSheetState
+  );
   const pageSize = 30;
-  const [isContactSyncSheetOpen, setIsContactSyncSheetOpen] = useState(false);
   const insets = useSafeAreaInsets();
   const snapPoints = useMemo(() => ["85%"], []);
+  const [contactsPermissionGranted, setContactsPermissionGranted] =
+    useState(false);
+  const { handleSheetPositionChange } = useSheetCloseOnNavigation(
+    bottomSheetRef as React.RefObject<BottomSheetModal>
+  );
+  const { mutate: sendFriendRequest, isPending: isSendingRequest } =
+    useFriendRequest();
+  const theme = useTheme();
+  const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
+  const { onboardingState, markTutorialAsSeen } = useOnboarding();
 
+  // Add user search query
+  const { data: searchedUsers, isLoading: isSearching } = useQuery({
+    ...getUserProfileByUsernameOptions({
+      path: {
+        username: searchQuery,
+      },
+    }),
+    enabled: searchQuery.length > 0,
+    staleTime: 1000 * 60, // Cache for 1 minute
+  });
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -43,13 +96,34 @@ const ContactSyncSheet = forwardRef<BottomSheet>((props, ref) => {
   );
 
   useEffect(() => {
-    if (isContactSyncSheetOpen) {
+    try {
       fetchContacts();
+    } catch (e) {
+      // Let's silent this error because we already show message for the user to enable permission for contacts
+      // If we don't silence this Sentry might get overloaded
+      console.error("Couldn't get access to contacts");
     }
-  }, [pageOffset, isContactSyncSheetOpen]);
+  }, [pageOffset]);
+
+  useEffect(() => {
+    if (isBottomSheetOpen) {
+      bottomSheetRef.current?.expand();
+    } else {
+      bottomSheetRef.current?.close();
+    }
+  }, [isBottomSheetOpen, bottomSheetRef]);
+
+  useEffect(() => {
+    // On first mount, if onboarding for contact sync not seen, open sheet and mark as seen
+    if (!onboardingState.hasSeenContactSync) {
+      setIsBottomSheetOpen(true);
+      markTutorialAsSeen("hasSeenContactSync");
+    }
+  }, []);
 
   const fetchContacts = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
+    setContactsPermissionGranted(status === "granted");
     if (status === "granted") {
       const { data, hasNextPage } = await Contacts.getContactsAsync({
         fields: [
@@ -87,6 +161,10 @@ const ContactSyncSheet = forwardRef<BottomSheet>((props, ref) => {
 
   const handleSearch = async (query: string) => {
     setSearchQuery(query);
+    if (!contactsPermissionGranted) {
+      // Let's not try to search for contacts if permissions aren't granted
+      return;
+    }
     if (query) {
       const { data } = await Contacts.getContactsAsync({
         fields: [
@@ -117,69 +195,99 @@ const ContactSyncSheet = forwardRef<BottomSheet>((props, ref) => {
     console.log("Adding friend:", contact.name);
   };
 
+  const handleAddSearchedUser = async (userId: string) => {
+    try {
+      sendFriendRequest({
+        body: {
+          target_user_id: userId,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to send friend request:", error);
+    }
+  };
+
+  const openAppSettings = () => {
+    if (Platform.OS === "ios") {
+      Linking.openURL("app-settings:");
+    } else if (Platform.OS === "android") {
+      Linking.openSettings();
+    }
+  };
+
   return (
-    <BottomSheet
-      ref={ref}
-      index={-1}
-      snapPoints={snapPoints}
-      topInset={insets.top + (Platform.OS === "android" ? 50 : 0)}
-      bottomInset={0}
-      enableDynamicSizing={false}
-      enablePanDownToClose={true}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={{
-        backgroundColor: "black",
-      }}
-      onChange={(index) => {
-        if (index === -1) {
-          setIsContactSyncSheetOpen(false);
-        } else {
-          setIsContactSyncSheetOpen(true);
-        }
-      }}
-      keyboardBehavior={Platform.OS === "ios" ? "interactive" : "none"}
-      animateOnMount={false}
-      handleIndicatorStyle={{ backgroundColor: "white" }}
-    >
-      <Text className="text-2xl font-bold mb-4 text-center">
-        დაიმატე მეგობრები
-      </Text>
-      <View className="flex-row items-center border-2 border-gray-600 rounded-full px-4 py-2 mb-4">
-        <Ionicons name="search" size={25} color="white" />
-        <BottomSheetTextInput
-          autoComplete="off"
-          value={searchQuery}
-          onChangeText={handleSearch}
-          style={{
-            color: "white",
-          }}
-          placeholderTextColor="gray"
-          placeholder={"მოძებნე სახელით ან ნომრით"}
-          className="flex-1 ml-2 h-9 text-base text-white pl-4 border-transparent !border-none dark:text-white flex flex-row items-center px-3 bg-transparent"
-        />
-      </View>
-      <BottomSheetScrollView>
-        {!searchQuery && isContactSyncSheetOpen && <AddUserFromOtherApps />}
-        {!searchQuery && isContactSyncSheetOpen && <FriendRequests />}
-        {!searchQuery && isContactSyncSheetOpen && <FriendsList />}
-        {!searchQuery && isContactSyncSheetOpen && <RegisteredContactsList />}
-        {!searchQuery && (
-          <ContactListHeader
-            icon="people-outline"
-            title="დაიმატე კონტაქტებიდან"
+    <Portal name="bottom-sheet">
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        onChange={(index) => {
+          handleSheetPositionChange(index);
+          setIsBottomSheetOpen(index !== -1);
+        }}
+        snapPoints={snapPoints}
+        topInset={insets.top + (Platform.OS === "android" ? 50 : 50)}
+        enableDynamicSizing={false}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        style={styles.bottomSheet}
+        backgroundStyle={sheetBackgroundStyle}
+        animateOnMount={false}
+        handleIndicatorStyle={[
+          styles.handleIndicator,
+          { backgroundColor: theme.colors.icon },
+        ]}
+      >
+        <BottomSheetView
+          style={[
+            styles.searchContainer,
+            {
+              backgroundColor:
+                theme.colors.card.background === "#F2F2F7"
+                  ? "rgba(0, 0, 0, 0.05)"
+                  : theme.colors.card.background,
+            },
+          ]}
+        >
+          <Ionicons
+            name="search"
+            size={20}
+            color={theme.colors.feedItem.secondaryText}
           />
-        )}
-        {isContactSyncSheetOpen &&
-          filteredContacts.map((item, index) => (
+          <BottomSheetTextInput
+            autoComplete="off"
+            value={searchQuery}
+            onChangeText={handleSearch}
+            style={[styles.searchInput, { color: theme.colors.text }]}
+            placeholderTextColor={theme.colors.feedItem.secondaryText}
+            placeholder={t("common.search_by_name_or_number")}
+          />
+        </BottomSheetView>
+        <BottomSheetScrollView style={{ paddingHorizontal: 10 }}>
+          {contactsPermissionGranted && (
+            <Text style={[styles.headerText, { color: theme.colors.text }]}>
+              {t("common.add_friends")}
+            </Text>
+          )}
+          {!searchQuery && <AddUserFromOtherApps />}
+          {!searchQuery && <FriendRequests />}
+          {!searchQuery && <FriendsList />}
+          {!searchQuery && <RegisteredContactsList />}
+          {!searchQuery && (
+            <ContactListHeader
+              icon="people-outline"
+              title={t("common.add_friends_from_contacts")}
+            />
+          )}
+          {searchQuery && filteredContacts.length > 0 && (
+            <ContactListHeader
+              icon="people-outline"
+              title={t("common.from_searched_contacts")}
+            />
+          )}
+          {filteredContacts.map((item, index) => (
             <ContactItem
-              key={
-                item.phoneNumbers?.[0]?.number?.toString() +
-                item.firstName +
-                item.lastName +
-                item.id +
-                index
-              }
-              buttonText="დამატება"
+              key={`contact-${index}-${item.id || ""}`}
+              buttonText={t("common.add")}
               id={item.id || item.firstName || item.lastName || ""}
               alreadyOnApp={false}
               name={item.name || item.firstName || item.lastName || ""}
@@ -188,23 +296,131 @@ const ContactSyncSheet = forwardRef<BottomSheet>((props, ref) => {
               onAddPress={() => handleAddFriend(item)}
             />
           ))}
-        {filteredContacts.length === 0 && (
-          <Text className="text-center text-lg text-gray-500 mt-4">
-            {"კონტაქტები არ მოიძებნა, სცადეთ დართოთ ნებართვა კონტაქტებზე"}
-          </Text>
-        )}
-        {filteredContacts.length > 0 && !searchQuery && (
-          <TouchableOpacity
-            className="bg-gray-500 px-4 py-2 rounded-full mt-4 self-center"
-            onPress={loadMoreContacts}
-          >
-            <Text className="text-white font-semibold">ჩამოტვირთე</Text>
-          </TouchableOpacity>
-        )}
-        <View style={{ paddingBottom: 150 }} />
-      </BottomSheetScrollView>
-    </BottomSheet>
+          <View style={{ height: 20 }} />
+          {/* Display searched users */}
+          {searchQuery && searchedUsers && (
+            <>
+              <ContactListHeader
+                icon="search-outline"
+                title={t("common.searched_users")}
+              />
+              <ContactItem
+                key={searchedUsers.id}
+                buttonText={t("common.add")}
+                id={searchedUsers.id}
+                alreadyOnApp={true}
+                name={searchedUsers.username || ""}
+                phone_number=""
+                image={searchedUsers.photos?.[0]?.image_url?.[0] || ""}
+                onAddPress={() => handleAddSearchedUser(searchedUsers.id)}
+                friendRequestSent={sentRequests.has(searchedUsers.id)}
+                isLoading={isSendingRequest}
+              />
+            </>
+          )}
+
+          {filteredContacts.length === 0 && !searchedUsers && (
+            <>
+              <Text
+                style={[
+                  styles.noContactsText,
+                  { color: theme.colors.feedItem.secondaryText },
+                ]}
+              >
+                {t("common.no_contacts_found")}
+              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.permissionButton,
+                  { backgroundColor: theme.colors.primary },
+                ]}
+                onPress={openAppSettings}
+              >
+                <Text style={styles.permissionButtonText}>{t("common.enable_access")}</Text>
+              </TouchableOpacity>
+            </>
+          )}
+          {filteredContacts.length > 0 && !searchQuery && (
+            <TouchableOpacity
+              style={[
+                styles.loadMoreButton,
+                { backgroundColor: theme.colors.feedItem.secondaryText },
+              ]}
+              onPress={loadMoreContacts}
+            >
+              <Text style={styles.loadMoreButtonText}>{t("common.load_more")}</Text>
+            </TouchableOpacity>
+          )}
+          <View style={styles.bottomPadding} />
+        </BottomSheetScrollView>
+      </BottomSheet>
+    </Portal>
   );
+};
+
+const styles = StyleSheet.create({
+  bottomSheet: {
+    paddingHorizontal: 16,
+  },
+  handleIndicator: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+  },
+  searchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginTop: 12,
+    marginBottom: 20,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 8,
+    height: 36,
+    fontSize: 17,
+    padding: 0,
+    fontWeight: "400",
+  },
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 24,
+    textAlign: "center",
+  },
+  noContactsText: {
+    textAlign: "center",
+    fontSize: FontSizes.medium,
+    marginTop: 24,
+  },
+  permissionButton: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    alignSelf: "center",
+  },
+  permissionButtonText: {
+    color: "white",
+    fontWeight: "600",
+  },
+  loadMoreButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    marginTop: 24,
+    marginBottom: 16,
+    alignSelf: "center",
+  },
+  loadMoreButtonText: {
+    color: "white",
+    fontWeight: "600",
+  },
+  bottomPadding: {
+    paddingBottom: 40,
+  },
 });
 
 export default ContactSyncSheet;

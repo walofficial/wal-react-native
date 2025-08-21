@@ -1,28 +1,46 @@
-import * as React from 'react';
-import { TextInput } from 'react-native';
-import { cn } from '~/lib/utils';
+import * as React from "react";
+import { TextInput, StyleSheet } from "react-native";
+
+const styles = StyleSheet.create({
+  textarea: {
+    minHeight: 80,
+    width: "100%",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#e5e5e5",
+    backgroundColor: "#fff",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    fontSize: 16,
+    lineHeight: 20,
+    color: "#000",
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+});
 
 const Textarea = React.forwardRef<
   React.ElementRef<typeof TextInput>,
   React.ComponentPropsWithoutRef<typeof TextInput>
->(({ className, multiline = true, numberOfLines = 4, placeholderClassName, ...props }, ref) => {
+>(({ style, multiline = true, numberOfLines = 4, ...props }, ref) => {
   return (
     <TextInput
       ref={ref}
-      className={cn(
-        'web:flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-base lg:text-sm native:text-lg native:leading-[1.25] text-foreground web:ring-offset-background placeholder:text-muted-foreground web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2',
-        props.editable === false && 'opacity-50 web:cursor-not-allowed',
-        className
-      )}
-      placeholderClassName={cn('text-muted-foreground', placeholderClassName)}
+      style={[
+        styles.textarea,
+        props.editable === false && styles.disabled,
+        style,
+      ]}
       multiline={multiline}
       numberOfLines={numberOfLines}
-      textAlignVertical='top'
+      textAlignVertical="top"
+      placeholderTextColor="#666"
       {...props}
     />
   );
 });
 
-Textarea.displayName = 'Textarea';
+Textarea.displayName = "Textarea";
 
 export { Textarea };

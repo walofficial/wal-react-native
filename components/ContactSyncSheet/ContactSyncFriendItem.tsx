@@ -1,13 +1,22 @@
+// @ts-nocheck
 import React, { useState } from "react";
-import { View, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+} from "react-native";
 import { Text } from "@/components/ui/text";
-import { User } from "@/lib/interfaces";
+import { User } from "@/lib/api/generated/types.gen";
 import { Ionicons } from "@expo/vector-icons";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import UserAvatarChallange from "../UserAvatarChallange";
+import UserAvatarChallange from "../UserAvatarAnimated";
 import { MenuView } from "@react-native-menu/menu";
 import useBlockUser from "@/hooks/useBlockUser";
+import { FontSizes, useTheme } from "@/lib/theme";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import UserAvatarLayout from "../UserAvatar";
+import { t } from "@/lib/i18n";
 
 interface FriendItemProps {
   user: User;
@@ -25,18 +34,19 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
   isBlocked,
 }) => {
   const blockUser = useBlockUser();
+  const theme = useTheme();
 
   const handleBlockUser = () => {
     Alert.alert(
-      "დაბლოკვის დადასტურება",
-      `ნამდვილად გსურთ ${user.username}-ის დაბლოკვა?`,
+      t("common.block_confirmation"),
+      t("common.confirm_block_user", { username: user.username }),
       [
         {
-          text: "გაუქმება",
+          text: t("common.cancel"),
           style: "cancel",
         },
         {
-          text: "დაბლოკვა",
+          text: t("common.block"),
           onPress: () => blockUser.mutate(user.id),
           style: "destructive",
         },
@@ -49,22 +59,43 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
   if (!isBlocked) {
     adds.push({
       id: "remove",
-      title: "მეგობრებიდან წაშლა",
+      title: t("common.remove_from_friends"),
     });
   }
 
   return (
-    <View className="flex-row items-center justify-between py-3 w-full">
-      <View className="flex-row items-center">
-        <UserAvatarChallange size="md" user={user} />
-        <View className="ml-3">
-          <Text className="text-lg font-semibold text-white">
+    <View style={styles.container}>
+      <View style={styles.leftContainer}>
+        <UserAvatarLayout size="md" borderColor="gray">
+          <View
+            style={[
+              styles.avatarContainer,
+              !user.profile_picture && {
+                backgroundColor: theme.colors.card.background,
+              },
+              !user.profile_picture && styles.roundedFull,
+            ]}
+          >
+            {user.profile_picture ? (
+              <AvatarImage
+                style={styles.avatarImage}
+                source={{ uri: user.profile_picture }}
+              />
+            ) : (
+              <Text style={[styles.avatarText, { color: theme.colors.text }]}>
+                {user.username.charAt(0).toUpperCase()}
+              </Text>
+            )}
+          </View>
+        </UserAvatarLayout>
+        <View style={styles.textContainer}>
+          <Text style={[styles.username, { color: theme.colors.text }]}>
             {user.username}
           </Text>
         </View>
       </View>
       <MenuView
-        title="რა გსურთ?"
+        title={t("common.what_do_you_want")}
         onPressAction={({ nativeEvent }) => {
           if (nativeEvent.event === "block") {
             handleBlockUser();
@@ -80,11 +111,11 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
           isBlocked
             ? {
                 id: "unblock",
-                title: "განბლოკვა",
+                title: t("common.unblock"),
               }
             : {
                 id: "block",
-                title: "დაბლოკვა",
+                title: t("common.block"),
                 attributes: {
                   destructive: true,
                 },
@@ -93,7 +124,7 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
       >
         <TouchableOpacity
           disabled={isDeleting || blockUser.isPending}
-          className="px-4 py-2 rounded-full flex-row items-center justify-center"
+          style={styles.menuButton}
         >
           <Ionicons name="close" size={24} color="gray" />
         </TouchableOpacity>
@@ -101,5 +132,54 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    width: "100%",
+  },
+  leftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    marginRight: 12,
+  },
+  avatarContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    height: "100%",
+  },
+  roundedFull: {
+    borderRadius: 9999,
+  },
+  avatarImage: {
+    borderRadius: 9999,
+  },
+  avatarText: {
+    fontSize: 24,
+  },
+  textContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  username: {
+    fontSize: FontSizes.medium,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  menuButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+});
 
 export default ContactSyncFriendItem;

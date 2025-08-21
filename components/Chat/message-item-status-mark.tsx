@@ -1,6 +1,6 @@
 import React from "react";
-import { convertMessageState } from "@/lib/utils";
-import { ChatMessage, User } from "@/interfaces";
+import { StyleSheet, Text, View } from "react-native";
+import { User, ChatMessage } from "@/lib/api/generated";
 
 interface MessageItemStatusMarkProps {
   item: ChatMessage;
@@ -13,19 +13,24 @@ const MessageItemStatusMark: React.FC<MessageItemStatusMarkProps> = ({
   isAuthor,
   shouldHide,
 }) => {
-  const statusText = convertMessageState(item.message_state, isAuthor);
+  const statusText = item.message_state;
 
   if (shouldHide || !statusText) {
     return null;
   }
 
   return (
-    <span className="dark:text-white text-gray-400 text-xs">
-      <span className="text-xs text-gray-500 dark:text-gray-400">
-        {statusText}
-      </span>
-    </span>
+    <View>
+      <Text style={styles.statusText}>{statusText}</Text>
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  statusText: {
+    fontSize: 12,
+    color: "#6B7280",
+  },
+});
 
 export default MessageItemStatusMark;

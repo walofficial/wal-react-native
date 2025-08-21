@@ -1,13 +1,10 @@
 import React from "react";
-import { View } from "react-native";
-import { Text } from "@/components/ui/text";
-import { useQuery } from "@tanstack/react-query";
-import api from "@/lib/api";
+import { View, StyleSheet } from "react-native";
 import ContactListHeader from "./ContactListHeader";
-import { FriendRequestStatus } from "@/lib/interfaces";
 import FriendRequestItem from "./FriendRequestItem";
 import { useFriendRequestActions } from "@/hooks/useFriendRequestActions";
 import { useFriendRequests } from "@/hooks/useFriendRequests";
+import { useTheme } from "@/lib/theme";
 
 interface FriendRequestsProps {
   hideMyRequests?: boolean;
@@ -18,17 +15,20 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
   hideMyRequests = false,
   limit = 999,
 }) => {
+  const theme = useTheme();
   const { friendRequests } = useFriendRequests();
 
   const { acceptRequest, rejectRequest, isAccepting, isRejecting } =
     useFriendRequestActions();
 
   const handleAccept = (requestId: string) => {
-    acceptRequest(requestId);
+    acceptRequest({ path: { request_id: requestId } });
   };
 
   const handleReject = (requestId: string) => {
-    rejectRequest(requestId);
+    rejectRequest({
+      path: { request_id: requestId },
+    });
   };
 
   if (!friendRequests || friendRequests.length === 0) {
@@ -46,7 +46,9 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
   }
 
   return (
-    <View className="mb-3">
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <ContactListHeader
         icon="person-add-outline"
         title="მეგობრობის მოთხოვნები"
@@ -65,5 +67,11 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 0,
+  },
+});
 
 export default FriendRequests;

@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  createContext,
-  useContext,
-} from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { getSocket } from "@/components/Chat/socket/socket";
 import { SocketContext } from "@/components/Chat/socket/context";
 import useAuth from "@/hooks/useAuth";
@@ -16,14 +10,24 @@ export function useSocket() {
   return useContext(SocketContext);
 }
 import { useQueryClient } from "@tanstack/react-query";
-import { LocationFeedPost } from "@/lib/interfaces";
+import { publicKeyState } from "@/lib/state/auth";
+import { useAtomValue } from "jotai";
 
-export default function FeedConnectionWrapper({ children }) {
+export default function FeedConnectionWrapper({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [isConnected, setIsConnected] = useState(false);
   const { user } = useAuth();
-  const { taskId } = useLocalSearchParams<{ taskId: string }>();
+  const { feedId, content_type } = useLocalSearchParams<{
+    feedId: string;
+    content_type: "last24h" | "youtube_only" | "social_media_only";
+  }>();
   const queryClient = useQueryClient();
-  const socketRef = useRef(getSocket(user.id));
+  const publicKey = useAtomValue(publicKeyState);
+
+  const socketRef = useRef(getSocket(user.id, publicKey));
 
   useEffect(() => {
     const socket = socketRef.current;
@@ -39,37 +43,6 @@ export default function FeedConnectionWrapper({ children }) {
     function onError(error) {
       console.log("error", JSON.stringify(error));
     }
-
-    socket.on("new_feed_item", (privateMessage: LocationFeedPost) => {
-      try {
-        queryClient.setQueryData(
-          ["location-feed-paginated", taskId],
-          (data: any) => {
-            return {
-              ...data,
-              pages: data.pages.map(
-                (
-                  page: {
-                    data: LocationFeedPost[];
-                    page: number;
-                  },
-                  index: number
-                ) => {
-                  return index === 0
-                    ? {
-                        ...page,
-                        data: [privateMessage, ...page.data],
-                      }
-                    : page;
-                }
-              ),
-            };
-          }
-        );
-      } catch (error) {
-        console.log("error", JSON.stringify(error));
-      }
-    });
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
