@@ -38,7 +38,7 @@ function LikeCount({ verificationId }: LikeCountProps) {
 
   if (likeCount === 0) return null;
   return (
-    <Animated.Text style={[animatedStyles]} className="text-white ml-2">
+    <Animated.Text style={[animatedStyles, { color: "#666" }]}>
       {likeCount}
     </Animated.Text>
   );

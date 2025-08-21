@@ -1,4 +1,15 @@
-import sodium from "libsodium-wrappers";
+import {
+  crypto_box_keypair,
+  crypto_box_easy,
+  crypto_box_open_easy,
+  randombytes_buf,
+  to_base64,
+  from_base64,
+  to_string,
+  crypto_box_PUBLICKEYBYTES,
+  crypto_box_SECRETKEYBYTES,
+  crypto_box_NONCEBYTES,
+} from "react-native-libsodium";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const KEYS_STORAGE = "user_keys";
@@ -9,20 +20,17 @@ interface KeyPair {
 }
 
 class SignalProtocolService {
-  constructor() {
-    this.initSodium();
-  }
+  constructor() {}
 
-  private async initSodium(): Promise<void> {
-    await sodium.ready;
+  public async clearKeys(): Promise<void> {
+    await AsyncStorage.removeItem(KEYS_STORAGE);
   }
 
   public async generateIdentityKeyPair(): Promise<{
     identityKeyPair: { publicKey: string; privateKey: string };
     registrationId: number;
+    isCached: boolean;
   }> {
-    await this.initSodium();
-
     // Check if keys already exist
     const existingKeys = await AsyncStorage.getItem(KEYS_STORAGE);
     if (existingKeys) {
@@ -33,29 +41,31 @@ class SignalProtocolService {
           privateKey: keys.privateKey,
         },
         registrationId: keys.registrationId,
+        isCached: true,
       };
     }
 
     // Generate new keys only if they don't exist
-    const keyPair = sodium.crypto_box_keypair();
+    const keyPair = crypto_box_keypair();
     const registrationId = Math.floor(Math.random() * 16383) + 1;
 
     // Store keys locally
     await AsyncStorage.setItem(
       KEYS_STORAGE,
       JSON.stringify({
-        publicKey: sodium.to_base64(keyPair.publicKey),
-        privateKey: sodium.to_base64(keyPair.privateKey),
+        publicKey: to_base64(keyPair.publicKey),
+        privateKey: to_base64(keyPair.privateKey),
         registrationId,
       })
     );
 
     return {
       identityKeyPair: {
-        publicKey: sodium.to_base64(keyPair.publicKey),
-        privateKey: sodium.to_base64(keyPair.privateKey),
+        publicKey: to_base64(keyPair.publicKey),
+        privateKey: to_base64(keyPair.privateKey),
       },
       registrationId,
+      isCached: false,
     };
   }
 
@@ -66,7 +76,7 @@ class SignalProtocolService {
     }
 
     return {
-      publicKey: sodium.to_base64(keyPair.publicKey),
+      publicKey: to_base64(keyPair.publicKey),
     };
   }
 
@@ -74,8 +84,7 @@ class SignalProtocolService {
     userId: string,
     message: string
   ): Promise<{ encrypted_content: string; nonce: string }> {
-    await this.initSodium();
-    const nonce = sodium.randombytes_buf(sodium.crypto_box_NONCEBYTES);
+    const nonce = randombytes_buf(crypto_box_NONCEBYTES);
     const keyPair = await this.getKeyPair();
 
     if (!keyPair) {
@@ -89,16 +98,16 @@ class SignalProtocolService {
 
     const recipientPublicKey = JSON.parse(remoteKeyBundle).publicKey;
 
-    const encryptedMessage = sodium.crypto_box_easy(
-      sodium.from_string(message),
+    const encryptedMessage = crypto_box_easy(
+      message,
       nonce,
-      sodium.from_base64(recipientPublicKey),
+      from_base64(recipientPublicKey),
       keyPair.privateKey
     );
 
     return {
-      encrypted_content: sodium.to_base64(encryptedMessage),
-      nonce: sodium.to_base64(nonce),
+      encrypted_content: to_base64(encryptedMessage),
+      nonce: to_base64(nonce),
     };
   }
 
@@ -106,7 +115,6 @@ class SignalProtocolService {
     senderId: string,
     encryptedData: { encryptedMessage: string; nonce: string }
   ): Promise<string> {
-    await this.initSodium();
     const keyPair = await this.getKeyPair();
 
     if (!keyPair) {
@@ -121,15 +129,14 @@ class SignalProtocolService {
     }
 
     const senderPublicKey = JSON.parse(remoteKeyBundle).publicKey;
-
-    const decryptedMessage = sodium.crypto_box_open_easy(
-      sodium.from_base64(encryptedData.encryptedMessage),
-      sodium.from_base64(encryptedData.nonce),
-      sodium.from_base64(senderPublicKey),
+    const decryptedMessage = crypto_box_open_easy(
+      from_base64(encryptedData.encryptedMessage),
+      from_base64(encryptedData.nonce),
+      from_base64(senderPublicKey),
       keyPair.privateKey
     );
 
-    return sodium.to_string(decryptedMessage);
+    return to_string(decryptedMessage);
   }
 
   private async getKeyPair(): Promise<KeyPair | null> {
@@ -137,8 +144,8 @@ class SignalProtocolService {
     if (keys) {
       const { publicKey, privateKey } = JSON.parse(keys);
       return {
-        publicKey: sodium.from_base64(publicKey),
-        privateKey: sodium.from_base64(privateKey),
+        publicKey: from_base64(publicKey),
+        privateKey: from_base64(privateKey),
       };
     }
     return null;

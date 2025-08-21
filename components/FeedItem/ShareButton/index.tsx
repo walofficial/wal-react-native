@@ -1,6 +1,5 @@
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Share from "react-native-share";
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -8,13 +7,20 @@ import Animated, {
   withTiming,
   useSharedValue,
 } from "react-native-reanimated";
+import { shareUrl } from "@/lib/share";
+import { app_name_slug } from "@/app.config";
+import { useTheme } from "@/lib/theme";
+import { useColorScheme } from "@/lib/useColorScheme";
 
 interface ShareButtonProps {
   verificationId: string;
+  bright?: boolean;
 }
 
-function ShareButton({ verificationId }: ShareButtonProps) {
+function ShareButton({ verificationId, bright }: ShareButtonProps) {
   const scale = useSharedValue(1);
+  const theme = useTheme();
+  const { isDarkColorScheme } = useColorScheme();
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -29,25 +35,30 @@ function ShareButton({ verificationId }: ShareButtonProps) {
       withTiming(1, { duration: 200 })
     );
 
-    const shareUrl = `https://ment.ge/status/${verificationId}`;
+    shareUrl(`https://${app_name_slug}.ge/status/${verificationId}`);
+  };
 
-    try {
-      await Share.open({
-        message: shareUrl,
-        title: "Share this story",
-      });
-    } catch (error) {
-      console.error("Error sharing:", error);
+  // Get icon color based on theme and bright prop
+  const getIconColor = () => {
+    if (bright) {
+      return isDarkColorScheme ? "#ffffff" : theme.colors.text;
     }
+    return theme.colors.feedItem.secondaryText;
   };
 
   return (
-    <TouchableOpacity onPress={handleShare} className="ml-4">
+    <TouchableOpacity onPress={handleShare} style={styles.container}>
       <Animated.View style={animatedStyle}>
-        <Ionicons name="share-outline" size={23} color="#dcdcdc" />
+        <Ionicons name="arrow-redo-outline" size={26} color={getIconColor()} />
       </Animated.View>
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    marginLeft: 16,
+  },
+});
 
 export default ShareButton;

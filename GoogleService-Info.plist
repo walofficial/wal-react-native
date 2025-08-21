@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyBEW4MaxdOJ6j19ahY3JigPL5xHKjAcLGU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>754510532845</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.greetai.mentdev</string>
+	<key>PROJECT_ID</key>
+	<string>mnt-86e3d</string>
+	<key>STORAGE_BUCKET</key>
+	<string>mnt-86e3d.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:754510532845:ios:9c3e68d9b83b5bc9d2bce4</string>
+</dict>
+</plist>

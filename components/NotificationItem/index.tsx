@@ -1,17 +1,23 @@
+// @ts-nocheck
 import React from "react";
-import { View, Pressable } from "react-native";
+import { View, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import { cn } from "@/lib/utils";
-import { NotificationResponse } from "@/lib/interfaces";
+import { NotificationResponse } from "@/lib/api/generated";
 import { Text } from "../ui/text";
-import { formatDistanceToNow } from "date-fns";
-import { ka } from "date-fns/locale";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import useLiveUser from "@/hooks/useLiveUser";
 import ImageLoader from "../ImageLoader";
+import { formatRelativeTime } from "@/lib/utils/date";
+import { t } from "@/lib/i18n";
 
-function NotificationItem({ item }: { item: NotificationResponse }) {
+function NotificationItem({
+  item,
+  notificationTitle,
+}: {
+  item: NotificationResponse;
+  notificationTitle: string;
+}) {
   const router = useRouter();
   const { joinChatFromNotification } = useLiveUser();
 
@@ -23,7 +29,7 @@ function NotificationItem({ item }: { item: NotificationResponse }) {
           item.notification.type === "impression"
         ) {
           router.navigate({
-            pathname: `/(tabs)/notifications/post/[verificationId]`,
+            pathname: `/verification/[verificationId]`,
             params: {
               verificationId: item.notification.verification_id,
             },
@@ -34,20 +40,18 @@ function NotificationItem({ item }: { item: NotificationResponse }) {
           });
         }
       }}
-      className={cn(
-        "flex flex-row transition-all cursor-pointer justify-between items-center w-full py-4 px-2 rounded-lg"
-      )}
+      style={styles.touchable}
     >
-      <View className="flex border-b border-gray-900 px-2 py-5 flex-row w-[100%] justify-between items-center">
+      <View style={styles.container}>
         {item.notification.type !== "impression" && (
-          <View className="flex flex-row items-center">
-            <View className="relative">
+          <View style={styles.imageContainer}>
+            <View style={styles.imageWrapper}>
               <Pressable
                 onPress={(e) => {
                   e.stopPropagation();
                   if (item.notification.type === "verification_like") {
                     router.navigate({
-                      pathname: `/(tabs)/notifications/profile-picture`,
+                      pathname: `/profile-picture`,
                       params: {
                         imageUrl: item.from_user?.photos[0].image_url[0],
                         userId: item.from_user?.id,
@@ -56,46 +60,42 @@ function NotificationItem({ item }: { item: NotificationResponse }) {
                   }
                 }}
               >
-                <View className="w-12 h-12 rounded-full overflow-hidden">
+                <View style={styles.avatarContainer}>
                   <ImageLoader
                     aspectRatio={1 / 1}
                     source={{ uri: item.from_user?.photos[0].image_url[0] }}
-                    className="w-12 h-12 rounded-full"
+                    style={styles.avatar}
                   />
                 </View>
               </Pressable>
             </View>
           </View>
         )}
-        <View className="ml-3 flex-1">
-          <View className="flex flex-row justify-between">
-            <Text className="text-white text-xl">
-              {item.from_user?.username || "[deleted]"}
-            </Text>
-
-            <Text className="text-gray-400 text-sm">
-              {formatDistanceToNow(item.notification.created_at, {
-                addSuffix: true,
-                locale: ka,
-              }).replace("დაახლოებით", "")}
+        <View style={styles.contentContainer}>
+          <View style={styles.headerContainer}>
+            <Text style={styles.title}>{notificationTitle}</Text>
+            <Text style={styles.timestamp}>
+              {formatRelativeTime(item.notification.created_at)}
             </Text>
           </View>
-          <View className="flex flex-row items-center mt-1">
+          <View style={styles.notificationContent}>
             {item.notification.type === "verification_like" && (
-              <View className="mr-1">
+              <View style={styles.iconContainer}>
                 <Ionicons name="heart" size={20} color="#ff3b30" />
               </View>
             )}
             <Text
-              className="text-gray-400"
+              style={styles.notificationText}
               ellipsizeMode="tail"
               numberOfLines={1}
             >
               {item.notification.type === "poke"
-                ? "გიჯიკა"
+                ? t("common.poked_you")
                 : item.notification.type === "impression"
-                ? `დააგროავა ${item.notification.count} ნახვა`
-                : "მოსწონს თქვენი ფოსტი"}
+                ? t("common.accumulated_views", {
+                    count: item.notification.count,
+                  })
+                : t("common.likes_your_post")}
             </Text>
           </View>
         </View>
@@ -103,4 +103,73 @@ function NotificationItem({ item }: { item: NotificationResponse }) {
     </TouchableOpacity>
   );
 }
+
+const styles = StyleSheet.create({
+  touchable: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingVertical: 16,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#111827",
+    paddingHorizontal: 8,
+    paddingVertical: 20,
+    width: "100%",
+  },
+  imageContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  imageWrapper: {
+    position: "relative",
+  },
+  avatarContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    overflow: "hidden",
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+  },
+  contentContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  title: {
+    color: "#FFFFFF",
+    fontSize: 20,
+  },
+  timestamp: {
+    color: "#9CA3AF",
+    fontSize: 14,
+  },
+  notificationContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  iconContainer: {
+    marginRight: 4,
+  },
+  notificationText: {
+    color: "#9CA3AF",
+  },
+});
+
 export default NotificationItem;

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import LocationContext from "@/hooks/context";
 
 export default function useLocationSession() {
-  const { location } = useContext(LocationContext);
+  const { location, errorMsg, isGettingLocation } = useContext(LocationContext);
 
-  return { location };
+  return { location, errorMsg, isGettingLocation };
 }

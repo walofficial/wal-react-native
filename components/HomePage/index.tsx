@@ -1,90 +1,126 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from "react-native";
 import Svg, { Circle, Path } from "react-native-svg";
 import UserLogin from "../UserLogin";
-import { useRef } from "react";
+import VideoPlayer from "../VideoPlayer";
+import { useRef, useEffect } from "react";
+import { useAtom } from "jotai";
 import BottomSheet, { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { FontSizes } from "@/lib/theme";
+import { isAndroid } from "@/lib/platform";
+import * as NavigationBar from "expo-navigation-bar";
+import { StatusBar } from "expo-status-bar";
+import { useTranslation } from "@/hooks/useTranslation";
+import LanguageSelectionOverlay from "@/components/LanguageOverlay";
+import { appLocaleAtom } from "@/hooks/useAppLocalization";
+
+const VIDEO_URI =
+  "https://cdn.wal.ge/video-verifications/transcoded/f2897541-6768-4ae2-ab28-1894d3e96e5f/manifest.mpd";
 
 export default function HomePage() {
   const userLoginRef = useRef<BottomSheet>(null);
+  const [appLocale] = useAtom(appLocaleAtom);
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    if (isAndroid) {
+      NavigationBar.setPositionAsync("absolute");
+      NavigationBar.setBackgroundColorAsync("transparent");
+    }
+  }, []);
 
   return (
     <BottomSheetModalProvider>
-      <View className="flex flex-row items-center justify-center bg-black flex-1 p-4">
-        <View className="py-6 px-2 space-y-6">
-          <Text className="text-4xl font-bold text-white">MNT</Text>
-          <View className="relative py-0 h-48 flex-1 flex-row">
-            <Svg className="w-full" viewBox="0 0 200 200">
-              {/* Outer circle */}
-              <Circle
-                cx="100"
-                cy="100"
-                r="80"
-                fill="none"
-                stroke="#3B82F6"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
+      <StatusBar translucent style="auto" />
+      <View style={styles.container}>
+        <View style={styles.videoContainer}>
+          <VideoPlayer videoUri={VIDEO_URI} style={styles.videoView} />
+        </View>
 
-              {/* Inner arc on the left */}
-              <Path
-                d="M75,135 A55,55 0 0,1 75,65"
-                fill="none"
-                stroke="#EC4899"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-
-              {/* Smaller arc inside the left arc */}
-              <Path
-                d="M85,125 A40,40 0 0,1 85,75"
-                fill="none"
-                stroke="#EC4899"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-
-              {/* Inner arc on the right */}
-              <Path
-                d="M125,65 A55,55 0 0,1 125,135"
-                fill="none"
-                stroke="#3B82F6"
-                strokeWidth="4"
-                strokeLinecap="round"
-              />
-
-              {/* Smaller arc inside the right arc */}
-              <Path
-                d="M115,75 A40,40 0 0,1 115,125"
-                fill="none"
-                stroke="#3B82F6"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-            </Svg>
+        <View style={styles.contentContainer}>
+          <View style={styles.bottomContent}>
+            <Text style={styles.logo}>WAL</Text>
+            <View style={styles.textContainer}>
+              <Text style={styles.title}>{t("common.what_happening")}</Text>
+              <Text style={styles.subtitle}>
+                {t("common.unfiltered_verified_info")}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                userLoginRef.current?.snapToIndex(0);
+              }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>{t("common.sign_in")}</Text>
+            </TouchableOpacity>
           </View>
-
-          <View className="space-y-2">
-            <Text className="text-3xl mb-3 font-bold text-white">
-              რა ხდება?
-            </Text>
-            <Text className="text-lg mb-3 text-gray-300">
-              შეურთდი ლოკაციაზე მყოფ ადამიანებს და გამოქვეყნეთ თქვენი საუკეთესო
-              მომენტები
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            onPress={() => {
-              userLoginRef.current?.snapToIndex(0);
-            }}
-            style={{ backgroundColor: "#efefef" }}
-            className="flex flex-row rounded-xl justify-center items-center shadow-pink-600 mt-3 w-full shadow-sm p-4"
-          >
-            <Text className="text-black text-xl font-semibold">შესვლა</Text>
-          </TouchableOpacity>
         </View>
       </View>
+      <LanguageSelectionOverlay />
       <UserLogin ref={userLoginRef} />
     </BottomSheetModalProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  videoContainer: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: -1,
+  },
+  videoView: {
+    ...StyleSheet.absoluteFillObject,
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    paddingVertical: 24,
+    paddingHorizontal: 16,
+    justifyContent: "flex-end",
+  },
+  bottomContent: {
+    gap: 16,
+    alignItems: "flex-start",
+    width: "100%",
+  },
+  logo: {
+    fontSize: 36,
+    fontWeight: "bold",
+    color: "white",
+  },
+  textContainer: {
+    gap: 8,
+    width: "100%",
+  },
+  title: {
+    fontSize: 30,
+    fontWeight: "bold",
+    color: "white",
+  },
+  subtitle: {
+    fontSize: FontSizes.medium,
+    color: "#D1D5DB",
+  },
+  button: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#efefef",
+    borderRadius: 12,
+    width: "100%",
+    padding: 16,
+  },
+  buttonText: {
+    color: "black",
+    fontSize: 20,
+    fontWeight: "600",
+  },
+});

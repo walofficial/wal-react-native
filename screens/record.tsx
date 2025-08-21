@@ -1,0 +1,62 @@
+import { useEffect, useState } from "react";
+import { Camera } from "react-native-vision-camera";
+import { useRouter } from "expo-router";
+import CameraPage from "@/components/CameraPage";
+import { Text, View, StyleSheet } from "react-native";
+import { toast } from "@backpackapp-io/react-native-toast";
+import { useToast } from "@/components/ToastUsage";
+import { t } from "@/lib/i18n";
+
+export default function RecordPage() {
+  const router = useRouter();
+  const [permissionsGranted, setPermissionsGranted] = useState(false);
+  const { error } = useToast();
+
+  useEffect(() => {
+    const requestPermissions = async () => {
+      const cameraPermission = await Camera.requestCameraPermission();
+      const microphonePermission = await Camera.requestMicrophonePermission();
+
+      if (
+        cameraPermission === "granted" &&
+        microphonePermission === "granted"
+      ) {
+        setPermissionsGranted(true);
+      } else {
+        // Redirect back if either permission is not granted
+        error({
+          title: t("common.permission_needed_for_photo_and_video"),
+        });
+        router.back();
+      }
+    };
+
+    requestPermissions();
+  }, []);
+
+  if (!permissionsGranted) {
+    return (
+      <View style={styles.centered}>
+        <Text>{t("common.permission_needed_for_photo_and_video")}</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <CameraPage />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  container: {
+    flex: 1,
+    position: "relative",
+  },
+});

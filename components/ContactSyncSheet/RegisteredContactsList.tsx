@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+  View,
+  TouchableOpacity,
+  ActivityIndicator,
+  StyleSheet,
+} from "react-native";
 import { Text } from "@/components/ui/text";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import {
+  checkRegisteredUsersOptions,
+  checkRegisteredUsersQueryKey,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
 import * as Contacts from "expo-contacts";
 import ContactItem from "./ContactItem";
-import { User } from "@/lib/interfaces";
+import { User } from "@/lib/api/generated/types.gen";
 import ContactListHeader from "./ContactListHeader";
 import { useFriendRequest } from "@/lib/hooks/useFriendRequest";
 import { useAtom } from "jotai";
 import { checkedCountAtom, displayedContactsAtom } from "./atom";
+import { t } from "@/lib/i18n";
 
 const RegisteredContactsList: React.FC = () => {
-  const queryClient = useQueryClient();
-
   const [contacts, setContacts] = useState<Contacts.Contact[]>([]);
   const [displayedContacts, setDisplayedContacts] = useAtom(
     displayedContactsAtom
@@ -51,44 +58,56 @@ const RegisteredContactsList: React.FC = () => {
     fetchContacts();
   }, [checkedCount]);
 
+  const currentBatch = contacts.slice(checkedCount, checkedCount + batchSize);
+  const phoneNumbers = Array.from(
+    new Set(
+      currentBatch.flatMap((c) =>
+        (c.phoneNumbers ?? [])
+          .map((p) => (p.number ?? "").replace(/\D/g, ""))
+          .filter((n) => n.length > 0)
+      )
+    )
+  );
+
   const {
     data: registeredContacts = [],
     isLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ["registeredContacts", checkedCount],
-    queryFn: () =>
-      api.checkRegisteredUsers(
-        contacts.slice(checkedCount, checkedCount + batchSize)
-      ),
+    ...checkRegisteredUsersOptions({
+      body: { phone_numbers: phoneNumbers },
+    }),
+    enabled: phoneNumbers.length > 0,
   });
 
-  useEffect(() => {
-    if (registeredContacts.length > 0) {
-      setDisplayedContacts((prev) => [
-        ...prev,
-        ...registeredContacts.slice(0, 5),
-      ]);
-      setCheckedCount((prev) => prev + batchSize);
-    }
-  }, [registeredContacts.length]);
+  // useEffect(() => {
+  //   if (registeredContacts.length > 0) {
+  //     setDisplayedContacts((prev) => [
+  //       ...prev,
+  //       ...registeredContacts.slice(0, 5),
+  //     ]);
+  //     setCheckedCount((prev) => prev + batchSize);
+  //   }
+  // }, [registeredContacts.length]);
 
   const loadMore = () => {
     const newDisplayedContacts = registeredContacts.slice(
       0,
       displayedContacts.length + 10
     );
-    setDisplayedContacts(newDisplayedContacts);
+    // setDisplayedContacts(newDisplayedContacts);
 
-    if (checkedCount < contacts.length) {
-      queryClient.invalidateQueries({ queryKey: ["registeredContacts"] });
-    }
+    // Next batch will auto-fetch because query key changes when `checkedCount` updates
   };
 
   const friendRequestMutation = useFriendRequest();
 
   const handleAddFriend = (contact: User) => {
-    friendRequestMutation.mutate(contact.id);
+    friendRequestMutation.mutate({
+      body: {
+        target_user_id: contact.id,
+      },
+    });
   };
 
   const uniqueContacts = displayedContacts.filter(
@@ -101,7 +120,7 @@ const RegisteredContactsList: React.FC = () => {
   }
 
   return (
-    <View className="mb-3">
+    <View style={styles.container}>
       {uniqueContacts.length > 0 && (
         <ContactListHeader icon="sparkles-outline" title="იყენებენ" />
       )}
@@ -113,33 +132,51 @@ const RegisteredContactsList: React.FC = () => {
               alreadyOnApp={true}
               name={item.username || ""}
               phone_number={item.phone_number || ""}
-              image={item.photos.length ? item.photos[0].image_url[0] : ""}
+              image={item.photos?.length ? item.photos[0].image_url[0] : ""}
               onAddPress={() => handleAddFriend(item)}
               buttonText="დამატება"
               isLoading={
-                friendRequestMutation.variables === item.id &&
-                friendRequestMutation.isPending
+                friendRequestMutation.variables?.body?.target_user_id ===
+                  item.id && friendRequestMutation.isPending
               }
               friendRequestSent={
-                friendRequestMutation.variables === item.id &&
-                friendRequestMutation.isSuccess
+                friendRequestMutation.variables?.body?.target_user_id ===
+                  item.id && friendRequestMutation.isSuccess
               }
             />
           ))
         : null}
       {registeredContacts.length > uniqueContacts.length && (
         <TouchableOpacity
-          className="bg-gray-500 px-4 py-2 rounded-full mt-4 self-center"
+          style={styles.loadMoreButton}
           onPress={loadMore}
           disabled={isLoading}
         >
-          <Text className="text-white font-semibold">
-            {isLoading ? "იტვირთება..." : "ჩამოტვირთე"}
+          <Text style={styles.loadMoreText}>
+            {isLoading ? t("common.loading") : t("common.load_more")}
           </Text>
         </TouchableOpacity>
       )}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 12,
+  },
+  loadMoreButton: {
+    backgroundColor: "#6B7280",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 9999,
+    marginTop: 16,
+    alignSelf: "center",
+  },
+  loadMoreText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+});
 
 export default RegisteredContactsList;

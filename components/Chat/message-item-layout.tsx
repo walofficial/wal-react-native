@@ -1,38 +1,95 @@
-import { cn } from "@/lib/utils";
-import { View } from "react-native";
-import { Large } from "../ui/typography";
-import { colors } from "@/lib/colors";
+import React, { forwardRef, ForwardedRef } from "react";
+import { StyleSheet, View, useColorScheme } from "react-native";
 
-function MessageItemLayout({
-  isAuthor,
-  children,
-}: {
-  isAuthor: boolean;
-  children: React.ReactNode;
-}) {
+const MessageItemLayout = forwardRef(function MessageItemLayout(
+  {
+    isAuthor,
+    children,
+  }: {
+    isAuthor: boolean;
+    children: React.ReactNode;
+  },
+  ref: ForwardedRef<View>
+) {
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
+
   return (
     <View
-      className={cn(
-        "flex flex-col px-3 py-1 max-w-[80%]",
-        isAuthor ? "items-end self-end" : "items-start self-start"
-      )}
+      ref={ref}
+      style={[
+        styles.container,
+        isAuthor ? styles.authorContainer : styles.nonAuthorContainer,
+      ]}
     >
       <View
-        style={{
-          borderRadius: 10,
-          borderTopRightRadius: isAuthor ? 0 : 10,
-          borderTopLeftRadius: isAuthor ? 10 : 0,
-          borderBottomRightRadius: isAuthor ? 0 : 10,
-          borderBottomLeftRadius: isAuthor ? 10 : 0,
-          borderWidth: 1,
-          backgroundColor: isAuthor ? "#1F8AFF" : "#333",
-        }}
-        className={cn("rounded-2xl px-3 py-2 text-white")}
+        style={[
+          styles.messageBox,
+          isAuthor
+            ? isDark
+              ? styles.authorMessageDark
+              : styles.authorMessageLight
+            : isDark
+            ? styles.nonAuthorMessageDark
+            : styles.nonAuthorMessageLight,
+        ]}
       >
         {children}
       </View>
     </View>
   );
-}
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "column",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    maxWidth: "80%",
+  },
+  authorContainer: {
+    alignItems: "flex-end",
+    alignSelf: "flex-end",
+  },
+  nonAuthorContainer: {
+    alignItems: "flex-start",
+    alignSelf: "flex-start",
+  },
+  messageBox: {
+    padding: 8,
+    paddingHorizontal: 12,
+    borderWidth: 0,
+  },
+  // Dark mode styles
+  authorMessageDark: {
+    backgroundColor: "#107896", // Signal-like blue for dark mode
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 10,
+  },
+  nonAuthorMessageDark: {
+    backgroundColor: "#333333", // Dark gray for dark mode
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 0,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 0,
+  },
+  // Light mode styles
+  authorMessageLight: {
+    backgroundColor: "#3A76F0", // Signal's blue for light mode
+    borderTopRightRadius: 0,
+    borderTopLeftRadius: 10,
+    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 10,
+  },
+  nonAuthorMessageLight: {
+    backgroundColor: "#E9E9EB", // Light gray for light mode (Messenger/Signal style)
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 0,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 0,
+  },
+});
 
 export default MessageItemLayout;

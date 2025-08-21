@@ -1,100 +1,86 @@
 "use client";
 
 import React from "react";
-import { Text, ActivityIndicator } from "react-native";
-import { Video } from "react-native-compressor";
-import { useAtomValue, useSetAtom } from "jotai";
-import { verificationStatusState } from "../VerificationStatusView/atom";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import { useUploadVideo } from "@/hooks/useUploadVideo";
 import { useLocalSearchParams } from "expo-router";
-import { Check } from "lucide-react-native";
-import { Button } from "../ui/button";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import Button from "@/components/Button";
+import { compressVideo } from "@/lib/media/video/compress";
+import { compressIfNeeded } from "@/lib/media/manip";
+import { useTheme } from "@/lib/theme";
 
 export default function SubmitButton({
   mediaBlob,
   isPhoto,
   onSubmit,
   caption,
+  videoDuration,
 }: {
   mediaBlob: any;
   isPhoto: boolean;
   onSubmit: () => void;
   caption?: string;
+  videoDuration?: string;
 }) {
-  const { taskId, recordingTime } = useLocalSearchParams<{
-    taskId: string;
-    recordingTime: string;
+  const { feedId } = useLocalSearchParams<{
+    feedId: string;
   }>();
-  const setVerificationStatus = useSetAtom(verificationStatusState);
+  const theme = useTheme();
   const [isProcessing, setIsProcessing] = React.useState(false);
   const { uploadBlob } = useUploadVideo({
-    taskId: taskId as string,
+    feedId: feedId as string,
     isPhoto,
     isLocationUpload: true,
   });
-  const insets = useSafeAreaInsets();
   const handleSubmit = async () => {
     setIsProcessing(true);
     onSubmit(); // This will navigate back to the chat screen
 
     try {
-      console.log("Before path", mediaBlob.uri);
       let compressedPath = mediaBlob.uri;
-      if (!isPhoto) {
-        setVerificationStatus({
-          status: "verification-pending",
-          text: "იტვირთება...",
-        });
+      let compressedVideo = undefined;
+
+      if (isPhoto) {
+        // Compress photo if needed
+        const compressedImage = await compressIfNeeded(
+          {
+            path: mediaBlob.uri,
+            width: mediaBlob.width,
+            height: mediaBlob.height,
+            size: mediaBlob.size,
+          },
+          1000000
+        ); // 1MB max size
+        compressedPath = compressedImage.path;
+      } else {
+        // Video compression logic remains the same
         try {
-          compressedPath = await Video.compress(
-            mediaBlob.uri,
-            { compressionMethod: "auto" },
-            (progress) => {
-              // setVerificationStatus({
-              //   status: "verification-pending",
-              //   text: `იტვირთება...`,
-              // });
-            }
-          );
-          console.log("Compressed path:", compressedPath);
+          compressedVideo = await compressVideo(mediaBlob, {
+            onProgress: (progress) => {},
+          });
+          compressedPath = compressedVideo.uri;
         } catch (error) {
           console.error("Error during compression:", error);
-          // setVerificationStatus({
-          //   status: "verification-failed",
-          //   text: "შეცდომა დაფიქსირდა",
-          // });
         }
       }
 
-      setVerificationStatus({
-        status: "verification-pending",
-        text: "იტვირთება...",
-      });
-
-      // Use the existing mutation to upload the media
-      const formData = new FormData();
-      formData.append(isPhoto ? "photo_file" : "video_file", {
+      const file = {
         uri: "file://" + compressedPath,
         type: isPhoto ? "image/jpeg" : "video/mp4",
         name: compressedPath.split("/").pop(),
-      });
-      formData.append("task_id", taskId);
-      formData.append("uri", "file://" + compressedPath);
-      if (recordingTime) {
-        formData.append("recording_time", recordingTime.toString());
-      }
-      formData.append("text_content", caption || "");
+      };
+
       await uploadBlob.mutateAsync({
-        formData,
-        uriPath: "file://" + compressedPath,
+        photo: file,
+        video: compressedVideo,
+        params: {
+          feed_id: feedId,
+          recording_time: videoDuration ? parseInt(videoDuration) : 0,
+          text_content: caption || "",
+        },
       });
     } catch (error) {
       console.error("Error during submission:", error);
-      setVerificationStatus({
-        status: "verification-failed",
-        text: "შეცდომა დაფიქსირდა",
-      });
     } finally {
       setIsProcessing(false);
     }
@@ -102,17 +88,22 @@ export default function SubmitButton({
 
   return (
     <Button
-      variant={"secondary"}
-      size={"lg"}
+      variant="primary"
+      size="medium"
       onPress={handleSubmit}
       disabled={isProcessing || uploadBlob.isPending}
-      className=" bg-pink-700 ml-1 text-lg flex flex-row"
-    >
-      {isProcessing || uploadBlob.isPending ? (
-        <ActivityIndicator color="white" />
-      ) : (
-        <Check color="white" />
-      )}
-    </Button>
+      loading={isProcessing || uploadBlob.isPending}
+      icon="checkmark"
+      style={styles.button}
+      glassy
+    />
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+  },
+});

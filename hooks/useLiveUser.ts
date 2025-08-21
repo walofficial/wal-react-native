@@ -1,50 +1,44 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "@/lib/api";
+import { useMutation } from "@tanstack/react-query";
 
-import { toast } from "@backpackapp-io/react-native-toast";
-import {
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  useRouter,
-} from "expo-router";
-import { SheetManager } from "react-native-actions-sheet";
+import { useRouter } from "expo-router";
 import ProtocolService from "@/lib/services/ProtocolService";
+import { createChatRoom } from "@/lib/api/generated";
 
 function useLiveUser() {
   const router = useRouter();
-  const { taskId } = useGlobalSearchParams<{ taskId: string }>();
 
   const joinChat = useMutation({
-    onMutate: () => {
-      SheetManager.hide("location-user-list");
-    },
     mutationFn: async ({ targetUserId }: { targetUserId: string }) => {
       // Send keys to server along with room creation
+
+      // This actuallys gets the key and doesn't generate it
       const { identityKeyPair, registrationId } =
         await ProtocolService.generateIdentityKeyPair();
 
-      const response = await api.createRoom(targetUserId, {
-        registrationId,
-        publicKey: identityKeyPair.publicKey,
+      const response = await createChatRoom({
+        body: {
+          target_user_id: targetUserId,
+          user_public_key: identityKeyPair.publicKey,
+        },
+        throwOnError: true,
       });
 
       // Build session with remote user's pre-key bundle
-      if (response.target_public_key) {
+      if (response.data.target_public_key) {
         await ProtocolService.storeRemotePublicKey(
           targetUserId,
-          response.target_public_key
+          response.data.target_public_key
         );
       }
 
       return response;
     },
     onSuccess: (data, variables) => {
-      if (data.chat_room_id) {
+      if (data.data.chat_room_id) {
         router.navigate({
-          pathname: "/(tabs)/liveusers/feed/[taskId]/chat/[roomId]",
+          pathname: "/(tabs)/(home)/chatrooms/[roomId]",
           params: {
-            taskId: taskId,
-            roomId: data.chat_room_id,
+            roomId: data.data.chat_room_id,
           },
         });
       }
@@ -53,26 +47,30 @@ function useLiveUser() {
 
   const joinChatFromNotification = useMutation({
     mutationFn: async ({ targetUserId }: { targetUserId: string }) => {
+      // This actuallys gets the key and doesn't generate it
       const { identityKeyPair, registrationId } =
         await ProtocolService.generateIdentityKeyPair();
-      const response = await api.createRoom(targetUserId, {
-        registrationId,
-        publicKey: identityKeyPair.publicKey,
+      const response = await createChatRoom({
+        body: {
+          target_user_id: targetUserId,
+          user_public_key: identityKeyPair.publicKey,
+        },
+        throwOnError: true,
       });
-      if (response.target_public_key) {
+      if (response.data.target_public_key) {
         await ProtocolService.storeRemotePublicKey(
           targetUserId,
-          response.target_public_key
+          response.data.target_public_key
         );
       }
       return response;
     },
     onSuccess: (data, variables) => {
-      if (data.chat_room_id) {
+      if (data.data.chat_room_id) {
         router.navigate({
-          pathname: "/(tabs)/notifications/chat/[roomId]",
+          pathname: "/chatrooms/[roomId]",
           params: {
-            roomId: data.chat_room_id,
+            roomId: data.data.chat_room_id,
           },
         });
       }

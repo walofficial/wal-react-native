@@ -1,16 +1,31 @@
 import { Link } from "expo-router";
-import React, { useEffect, useRef, useState, useTransition } from "react";
-import { View, TouchableOpacity, TextInput, Text } from "react-native";
-import { Input } from "../ui/input";
-import { cn } from "@/lib/utils";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  View,
+  TouchableOpacity,
+  TextInput,
+  Text,
+  useWindowDimensions,
+  StyleSheet,
+  Platform,
+  useColorScheme,
+} from "react-native";
 import { FileImage, Paperclip, Mic, ArrowUp } from "@/lib/icons";
 import { Audio } from "expo-av";
 import { useAtomValue, useSetAtom } from "jotai";
 import { hasMessageAtom, messageAtom } from "@/lib/state/chat";
-import { toast } from "@backpackapp-io/react-native-toast";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { isIOS } from "@/lib/platform";
+import { useTheme } from "@/lib/theme";
+
+const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 interface ChatBottombarProps {
-  sendMessage: (newMessage: any) => void;
+  sendMessage: (newMessage: string) => void;
   isMobile: boolean;
   onFocus: () => void;
   onBlur: () => void;
@@ -27,6 +42,17 @@ export default function ChatBottombar({
 }: ChatBottombarProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const setMessage = useSetAtom(messageAtom);
+  const message = useAtomValue(messageAtom);
+  const setHasMessage = useSetAtom(hasMessageAtom);
+  const [isFocused, setIsFocused] = useState(false);
+  const [staticHeight, setStaticHeight] = useState(40);
+  const theme = useTheme();
+
+  // Signal/Messenger-like colors
+  const isLightMode = useColorScheme() === "light";
+  const inputBackground = isLightMode ? "#e0e0e0" : "#1E1E1E"; // Slightly darker gray for light mode
+  const placeholderColor = isLightMode ? "#8E8E93" : "#8A8A8E"; // Subtle placeholder color
+  const inputTextColor = theme.colors.text;
 
   useEffect(() => {
     return sound
@@ -36,59 +62,65 @@ export default function ChatBottombar({
       : undefined;
   }, [sound]);
 
-  const handleInputChange = (text: string) => {
-    setMessage(text);
-  };
-
-  const inputRef = useRef<TextInput>(null);
-  const message = useAtomValue(messageAtom);
-  const setHasMessage = useSetAtom(hasMessageAtom);
-
   useEffect(() => {
     setHasMessage(message.trim().length > 0);
   }, [message]);
 
-  const handleKeyPress = ({
-    nativeEvent,
-  }: {
-    nativeEvent: { key: string };
-  }) => {
-    if (nativeEvent.key === "Enter") {
-      sendMessage(inputRef.current?.props.value);
-    }
+  const handleInputChange = (text: string) => {
+    setMessage(text);
   };
+
+  const inputHeight = useSharedValue(40);
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      height: isIOS
+        ? withTiming(inputHeight.value, { duration: 200 })
+        : staticHeight,
+    };
+  });
 
   return (
     <View
-      className={cn(
-        "flex flex-row p-3 mt-5 justify-between w-full items-center",
-        {
-          "opacity-50": !canText,
-        }
-      )}
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <View
-        className={cn("flex flex-row justify-between flex-1 mt-4 items-center")}
-      >
-        <TextInput
-          style={{
-            height: 40,
-            borderColor: "#333",
-            borderWidth: 1,
-            borderRadius: 20,
-            paddingHorizontal: 15,
-            color: "#ffffff",
-            backgroundColor: "transparent",
-            width: "85%",
-          }}
+      <View style={styles.inputContainer}>
+        <AnimatedTextInput
+          multiline
           value={message}
-          ref={inputRef}
-          onKeyPress={handleKeyPress}
           onChangeText={handleInputChange}
+          style={[
+            styles.textInput,
+            animatedStyle,
+            {
+              color: inputTextColor,
+              backgroundColor: inputBackground,
+            },
+          ]}
           placeholder="მესიჯი"
-          placeholderTextColor="#999999"
+          placeholderTextColor={placeholderColor}
+          onFocus={() => {
+            setIsFocused(true);
+            onFocus();
+          }}
+          onBlur={() => {
+            setIsFocused(false);
+            onBlur();
+          }}
+          onContentSizeChange={(event) => {
+            const newHeight =
+              event.nativeEvent.contentSize.height + (isIOS ? 20 : 0);
+            // Limit maximum height to 120px
+            if (isIOS) {
+              inputHeight.value = Math.min(newHeight, 120);
+            } else {
+              // For Android, just update the state without animation
+              setStaticHeight(Math.min(newHeight, 120));
+            }
+          }}
         />
-        <SendButton canText={!!canText} sendMessage={sendMessage} />
+        <View style={styles.sendButtonContainer}>
+          <SendButton canText={!!canText} sendMessage={sendMessage} />
+        </View>
       </View>
     </View>
   );
@@ -103,6 +135,13 @@ export function SendButton({
 }) {
   const message = useAtomValue(messageAtom);
   const hasText = useAtomValue(hasMessageAtom);
+  const theme = useTheme();
+
+  // Signal-like send button - blue for light mode, green for dark mode
+  const sendButtonColor =
+    theme.colors.background === "#FFFFFF"
+      ? "#3478F6" // Signal blue for light mode
+      : "#22c55e"; // Keep green for dark mode
 
   const handleSend = () => {
     if (message.trim()) {
@@ -113,11 +152,12 @@ export function SendButton({
   return (
     <TouchableOpacity
       disabled={!canText || !hasText}
-      className={cn(
-        hasText ? "opacity-100" : "opacity-55",
-        "h-12 w-12 rounded-full ml-2 flex items-center justify-center",
-        "dark:bg-green-500 dark:hover:bg-green-500 dark:hover:text-white"
-      )}
+      style={[
+        styles.sendButton,
+        { backgroundColor: sendButtonColor },
+        !hasText && styles.sendButtonDisabled,
+        !canText && styles.disabledContainer,
+      ]}
       onPress={handleSend}
     >
       <ArrowUp color="white" size={20} />
@@ -125,78 +165,16 @@ export function SendButton({
   );
 }
 
-function ChatInput({
-  canText,
-  onFocus,
-  onBlur,
-  handleInputChange,
-  handleEnterMessage,
-  isPending,
-}: {
-  canText: boolean;
-  onFocus: () => void;
-  onBlur: () => void;
-  handleEnterMessage: (message: string) => void;
-  handleInputChange: (text: string) => void;
-  isPending: boolean;
-}) {
-  const inputRef = useRef<TextInput>(null);
-  const message = useAtomValue(messageAtom);
-  const setHasMessage = useSetAtom(hasMessageAtom);
-
-  useEffect(() => {
-    setHasMessage(message.trim().length > 0);
-  }, [message]);
-
-  const handleKeyPress = ({
-    nativeEvent,
-  }: {
-    nativeEvent: { key: string };
-  }) => {
-    if (nativeEvent.key === "Enter") {
-      handleEnterMessage(message);
-    }
-  };
-
-  if (!canText) {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          toast.error("დავალებები შესასრულებელია");
-        }}
-      >
-        <View className="text-black min-h-12 pl-4 border-transparent !border-none dark:text-white flex flex-row items-center px-3 bg-transparent">
-          <Text className="text-white">დავალებები შესასრულებელია</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
-
-  return (
-    <Input
-      autoComplete="off"
-      value={message}
-      ref={inputRef}
-      editable={canText && !isPending}
-      onKeyPress={handleKeyPress}
-      onChangeText={handleInputChange}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      placeholder={canText ? "მესიჯი" : "დავალებები შესასრულებელია"}
-      className="text-black pl-4 border-transparent !border-none dark:text-white flex flex-row items-center px-3 bg-transparent"
-    />
-  );
-}
-
 const ChatInputAnimatedWrapper = React.memo(
   ({ children }: { children: React.ReactNode }) => {
+    const theme = useTheme();
+    const wrapperBorderColor =
+      theme.colors.background === "#FFFFFF"
+        ? "#D1D1D6" // Light gray for light mode
+        : "#4B5563"; // Dark gray for dark mode
+
     return (
-      <View
-        style={{
-          flex: 1,
-        }}
-        className={"border-gray-600 dark:border-gray-700 border-2 rounded-full"}
-      >
+      <View style={[styles.wrapper, { borderColor: wrapperBorderColor }]}>
         {children}
       </View>
     );
@@ -207,3 +185,63 @@ const ChatInputAnimatedWrapper = React.memo(
 );
 
 ChatInputAnimatedWrapper.displayName = "ChatInputAnimatedWrapper";
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    padding: 8,
+    justifyContent: "space-between",
+    width: "100%",
+  },
+  disabledContainer: {
+    opacity: 0.5,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    width: "100%",
+    paddingTop: 6,
+  },
+  textInput: {
+    paddingHorizontal: 12,
+    paddingLeft: 14,
+    paddingTop: 10,
+    paddingBottom: 10,
+    flex: 1,
+    borderRadius: 20,
+    borderWidth: 0,
+  },
+  sendButtonContainer: {
+    justifyContent: "flex-end",
+    alignSelf: "flex-end",
+  },
+  sendButton: {
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    marginLeft: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  sendButtonDisabled: {
+    opacity: 0.55,
+  },
+  disabledInputContainer: {
+    minHeight: 48,
+    paddingLeft: 16,
+    borderColor: "transparent",
+    borderWidth: 0,
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    backgroundColor: "transparent",
+  },
+  disabledText: {
+    color: "#ffffff",
+  },
+  wrapper: {
+    flex: 1,
+    borderWidth: 0,
+    paddingVertical: 15,
+    borderRadius: 9999,
+  },
+});

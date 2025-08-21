@@ -1,21 +1,35 @@
+import {
+  configureReanimatedLogger,
+  ReanimatedLogLevel,
+} from "react-native-reanimated";
+
+// This is the default configuration
+configureReanimatedLogger({
+  level: ReanimatedLogLevel.error,
+  strict: false, // Reanimated runs in strict mode by default
+});
 import { useSession } from "@/components/AuthLayer";
-import { H1 } from "@/components/ui/typography";
 import { Redirect } from "expo-router";
-import { ActivityIndicator, View } from "react-native";
+import { useEffect } from "react";
+import { appIsReadyState } from "@/lib/state/app";
+import { useAtom } from "jotai";
 
 export default function Index() {
-  const { session, isLoading } = useSession();
+  const { session, isLoading, userIsLoading, user } = useSession();
+  const [appIsReady, setAppIsReady] = useAtom(appIsReadyState);
+  useEffect(() => {
+    if (session) {
+      setAppIsReady(true);
+    }
+  }, [session]);
 
-  if (session) {
-    return <Redirect href="/(tabs)/liveusers" />;
+  if (session && !userIsLoading && user && user.preferred_content_language) {
+    return <Redirect href={`/(tabs)/(news)/${user.preferred_news_feed_id}`} />;
   }
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={"white"} />
-      </View>
-    );
+  if (isLoading || userIsLoading) {
+    // Splash screen is anyway shown here with above useEffect
+    return null;
   }
 
-  return <Redirect href="/sign-in" />;
+  return <Redirect href="/(auth)/sign-in" />;
 }

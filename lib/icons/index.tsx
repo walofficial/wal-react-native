@@ -8,6 +8,7 @@ export * from "./Paperclip";
 export * from "./FileImage";
 export * from "./ArrowUp";
 import { Camera } from "./Camera";
+import { StyleSheet } from "react-native";
 export * from "./EllipsisVertical";
 export * from "./CheckIcon";
 export * from "./PlusIcon";
@@ -22,5 +23,9 @@ export * from "./Play";
 export * from "./Check";
 
 export const renderTaskIcons = (task_verifications: any) => {
-  return <Camera className="" />;
+  return <Camera style={styles.camera} />;
 };
+
+const styles = StyleSheet.create({
+  camera: {},
+});

@@ -1,16 +1,14 @@
-import api from "@/lib/api";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import useLocation from "./useLocation";
-import { useEffect } from "react";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { LocationsResponse } from "@/lib/interfaces";
 import useLocationSession from "./useLocationSession";
+import { useIsFocused } from "@react-navigation/native";
+import { getLocationFeedsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 export default function useLocationsInfo(
   categoryId: string,
   enabled: boolean = true
 ) {
-  const { location } = useLocationSession();
+  const isFocused = useIsFocused();
+  const { location, errorMsg, isGettingLocation } = useLocationSession();
 
   const {
     data: locations,
@@ -19,25 +17,28 @@ export default function useLocationsInfo(
     isRefetching: locationsIsRefetching,
     refetch: locationsRefetch,
   } = useQuery({
-    queryKey: [
-      "locations-feed",
-      categoryId,
-      location?.coords.latitude,
-      location?.coords.longitude,
-    ],
-    queryFn: () => {
-      return api.fetchLocations(categoryId, location?.coords);
-    },
-    enabled: !!categoryId && enabled && !!location,
+    ...getLocationFeedsOptions({
+      query: {
+        category_id: categoryId,
+      },
+      headers: {
+        "x-user-location-latitude": location?.coords?.latitude || 0,
+        "x-user-location-longitude": location?.coords?.longitude || 0,
+      }
+    }),
+    enabled: !!categoryId && enabled && (!!location || !!errorMsg),
     placeholderData: keepPreviousData,
+    subscribed: isFocused,
   });
 
   return {
     data: locations || {
-      nearest_tasks: [],
-      tasks_at_location: [],
+      nearest_feeds: [],
+      feeds_at_location: [],
     },
-    isFetching: locationsIsFetching,
+    location,
+    errorMsg,
+    isFetching: locationsIsFetching || isGettingLocation,
     error: locationsError,
     isRefetching: locationsIsRefetching,
     refetch: locationsRefetch,

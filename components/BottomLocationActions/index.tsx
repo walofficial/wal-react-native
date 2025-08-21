@@ -1,91 +1,114 @@
-import { TouchableOpacity, View, Platform, Alert } from "react-native";
-import TakeVideo from "../ChatInitialActions/TakeVideo";
+// @ts-nocheck
+import React from "react";
+import { TouchableOpacity, View, Platform, StyleSheet } from "react-native";
+import TakeVideo from "../TakeVideo";
 import LiveUserCountIndicator from "../LiveUserCountIndicator";
-import { SheetManager } from "react-native-actions-sheet";
 import useCountAnonList from "../LiveUserCountIndicator/useCountAnonList";
-import { BlurView } from "expo-blur";
-import useIsUserInSelectedLocation from "@/hooks/useIsUserInSelectedLocation";
-import CreatePost from "../CreatePost";
-import { toast } from "@backpackapp-io/react-native-toast";
-import LocationUserListSheet from "../LocationUserListSheet";
-import { useRef } from "react";
-import BottomSheet from "@gorhom/bottom-sheet";
+import CreatePostGlobal from "../CreatePostGlobal";
+import { useColorScheme } from "@/lib/useColorScheme";
+import { useSetAtom } from "jotai";
+import {
+  locationUserListSheetState,
+  locationUserListfeedIdState,
+} from "@/lib/atoms/location";
+import { isIOS } from "@/lib/platform";
 
 export default function BottomLocationActions({
-  taskId,
-  onExpandLiveUsers,
+  feedId,
+  isUserInSelectedLocation,
+  isFactCheckFeed,
 }: {
-  taskId: string;
-  onExpandLiveUsers: () => void;
+  feedId: string;
+  onExpandLiveUsers?: () => void; // Make this optional
+  isUserInSelectedLocation: boolean;
+  isFactCheckFeed: boolean;
 }) {
-  const { data, isFetching, isSuccess, isError } = useCountAnonList(taskId);
-  const { isUserInSelectedLocation, isGettingLocation } =
-    useIsUserInSelectedLocation();
-  const Container = Platform.OS === "android" ? View : BlurView;
-  const containerProps =
-    Platform.OS === "android"
-      ? {
-          style: {
-            backgroundColor: "rgba(0,0,0,0.8)",
-            shadowColor: "black",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            height: 100,
-            maxHeight: 100,
-            paddingVertical: 10,
-          },
-          className:
-            "flex absolute border-t border-white/10 bottom-0 flex-1 w-full flex-row justify-center items-center",
-        }
-      : {
-          intensity: 20,
-          tint: "dark",
-          className:
-            "flex absolute border-t border-white/10 bottom-0 flex-1 w-full flex-row justify-center items-center",
-          style: {
-            shadowColor: "black",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            height: 100,
-            maxHeight: 100,
-            paddingVertical: 10,
-          },
-        };
+  const { data } = useCountAnonList(feedId);
+  const { isDarkColorScheme } = useColorScheme();
+  const setIsBottomSheetOpen = useSetAtom(locationUserListSheetState);
+  const setfeedId = useSetAtom(locationUserListfeedIdState);
 
   const handlePress = () => {
-    // if (!isUserInSelectedLocation && !isGettingLocation) {
-    //   toast.error("ლოკაციაზე არ ხართ", {
-    //     id: "location-error",
-    //   });
-    //   return;
-    // }
-    if (data && data > 0) {
-      onExpandLiveUsers();
+    console.log("handlePress called with feedId:", feedId, data);
+    setIsBottomSheetOpen(false);
+    if (data && data.count > 0) {
+      setfeedId(feedId);
+      setIsBottomSheetOpen(true);
     }
   };
 
+  const bottomPosition = 20;
   return (
     <>
-      <Container {...containerProps}>
-        <TouchableOpacity
-          onPress={handlePress}
-          className={`z-20 border border-white/10 rounded-xl absolute flex items-center justify-center left-5 bottom-7 ${
-            !isUserInSelectedLocation ? "opacity-50" : ""
-          }`}
-          style={{
-            padding: 10,
-            height: 50,
-            width: 110,
-            backgroundColor: "rgba(0,0,0,0.7)",
-          }}
+      {isFactCheckFeed ? (
+        <View
+          style={[
+            styles.floatingButtonContainer,
+            { bottom: isIOS ? bottomPosition : 20 },
+          ]}
         >
-          <LiveUserCountIndicator taskId={taskId} />
-        </TouchableOpacity>
-        <TakeVideo disabled={!isUserInSelectedLocation} />
-        <CreatePost disabled={!isUserInSelectedLocation} taskId={taskId} />
-      </Container>
+          <CreatePostGlobal disabled={false} feedId={feedId} />
+        </View>
+      ) : (
+        <View style={[styles.container, { bottom: bottomPosition }]}>
+          <TouchableOpacity
+            onPress={handlePress}
+            style={[
+              styles.liveUsersButton,
+              {
+                opacity: !isUserInSelectedLocation ? 0.5 : 1,
+                backgroundColor: isDarkColorScheme
+                  ? "rgba(0,0,0,0.7)"
+                  : "rgba(240,240,240,0.9)",
+                borderColor: isDarkColorScheme
+                  ? "rgba(255,255,255,0.1)"
+                  : "rgba(0,0,0,0.1)",
+              },
+            ]}
+          >
+            <LiveUserCountIndicator feedId={feedId} />
+          </TouchableOpacity>
+
+          <TakeVideo disabled={!isUserInSelectedLocation} />
+        </View>
+      )}
     </>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    backgroundColor: "transparent",
+    zIndex: 20,
+    pointerEvents: "box-none",
+  },
+  liveUsersButton: {
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 50,
+    width: 110,
+    zIndex: 20,
+  },
+  countryFeedContainer: {
+    flexDirection: "row",
+    flex: 1,
+    alignItems: "center",
+    width: "100%",
+    justifyContent: "flex-end",
+  },
+  floatingButtonContainer: {
+    position: "absolute",
+    bottom: 30,
+    right: 20,
+    zIndex: 20,
+  },
+});

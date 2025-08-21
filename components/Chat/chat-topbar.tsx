@@ -1,23 +1,15 @@
 import React, { useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Info, Phone } from "@/lib/icons";
-import { Video } from "expo-av";
+import { Image } from "expo-image";
 
 import { isChatUserOnlineState } from "@/lib/state/chat";
 import { useAtom } from "jotai";
-import {
-  Appearance,
-  AppRegistry,
-  Pressable,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Pressable, TouchableOpacity, View, StyleSheet } from "react-native";
 import { Skeleton } from "../ui/skeleton";
 import { Text } from "../ui/text";
-import useUserChat from "@/hooks/useUserChat";
-import { Link, router, useGlobalSearchParams, usePathname } from "expo-router";
+import { router, useGlobalSearchParams } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "@/lib/theme";
 
 import Animated, {
   useSharedValue,
@@ -28,29 +20,24 @@ import Animated, {
 } from "react-native-reanimated";
 import { MenuView } from "@react-native-menu/menu";
 import { useFriendRequest } from "@/lib/hooks/useFriendRequest";
-import { useUnmatch } from "@/hooks/useUnmatch";
 import { Platform } from "react-native";
-import useGetUserVerification from "@/hooks/useGetUserVerification";
-import { convertToCDNUrl, getVideoSrc } from "@/lib/utils";
-import { ResizeMode } from "expo-av";
 import useMessageRoom from "@/hooks/useMessageRoom";
 import useAuth from "@/hooks/useAuth";
 import usePokeLiveUser from "@/hooks/usePokeUser";
-import useBlockUser from "@/hooks/useBlockUser";
 import { User } from "lucide-react-native";
 
-export default function ChatTopbar({ pictureUrl }: { pictureUrl?: string }) {
-  const { roomId, taskId } = useGlobalSearchParams<{
+export default function ChatTopbar() {
+  const { roomId, feedId } = useGlobalSearchParams<{
     roomId: string;
-    taskId: string;
+    feedId: string;
   }>();
   const { room, isFetching } = useMessageRoom(roomId);
   const { user } = useAuth();
+  const theme = useTheme();
 
   const [isChatUserOnline, setIsChatUserOnline] = useAtom(
     isChatUserOnlineState
   );
-  const insets = useSafeAreaInsets();
 
   const selectedUser = room?.participants.find((p) => p.id !== user.id);
 
@@ -84,16 +71,23 @@ export default function ChatTopbar({ pictureUrl }: { pictureUrl?: string }) {
 
   const handleAddFriend = () => {
     if (selectedUser) {
-      sendFriendRequest(selectedUser.id);
+      sendFriendRequest({
+        body: {
+          target_user_id: selectedUser.id,
+        },
+      });
     }
   };
 
   const { pokeLiveUser } = usePokeLiveUser();
-  const blockUser = useBlockUser();
 
   const handlePoke = () => {
     if (selectedUser) {
-      pokeLiveUser.mutate({ userId: selectedUser.id, taskId: taskId });
+      pokeLiveUser.mutate({
+        path: {
+          target_user_id: selectedUser.id,
+        },
+      });
     }
   };
 
@@ -101,7 +95,7 @@ export default function ChatTopbar({ pictureUrl }: { pictureUrl?: string }) {
     {
       id: "poke",
       title: "უჯიკე",
-      imageColor: "#2367A2",
+      imageColor: theme.colors.primary,
     },
     {
       id: "addFriend",
@@ -110,35 +104,43 @@ export default function ChatTopbar({ pictureUrl }: { pictureUrl?: string }) {
         ios: "person.badge.plus",
         android: "ic_menu_add_gray",
       }),
-      imageColor: "#2367A2",
+      imageColor: theme.colors.primary,
     },
   ];
 
   return (
     <View
-      style={{
-        paddingTop: insets.top + 10,
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-      }}
-      className="relative flex-1 flex flex-row items-center w-full bg-transparent"
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
       <TouchableOpacity
-        className="mr-5 pr-4 mb-3 items-center justify-center"
+        style={styles.backButton}
         onPress={() => {
-          router.back();
+          try {
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.navigate({
+                pathname: "/(tabs)/(home)",
+              });
+            }
+          } catch (error) {
+            router.navigate({
+              pathname: "/(tabs)/(home)",
+            });
+          }
         }}
       >
-        <Ionicons name="chevron-back" size={30} color="#efefef" />
+        <Ionicons name="chevron-back" size={30} color={theme.colors.text} />
       </TouchableOpacity>
-      <View className="flex flex-row items-center justify-between w-full flex-1 pb-4">
-        <View className="flex flex-row items-center">
+      <View style={styles.contentContainer}>
+        <View style={styles.userInfoContainer}>
           <Pressable
             onPress={() => {
               if (userPhoto) {
                 router.navigate({
-                  pathname: pictureUrl,
+                  pathname: "/(tabs)/(home)/profile-picture",
                   params: {
-                    taskId: taskId,
+                    feedId: feedId,
                     roomId: roomId,
                     imageUrl: userPhoto,
                   },
@@ -146,48 +148,63 @@ export default function ChatTopbar({ pictureUrl }: { pictureUrl?: string }) {
               }
             }}
           >
-            <View className="relative flex-1">
+            <View style={styles.avatarContainer}>
               <Avatar
-                alt="User photo"
-                className="flex flex-1 bg-gray-800 rounded-fullflex-row w-16 h-16 justify-center items-center"
+                style={styles.avatar}
+                alt={selectedUser?.username || "User avatar"}
               >
                 {userPhoto ? (
-                  <AvatarImage
+                  <Image
                     source={{ uri: userPhoto }}
-                    className="w-16 h-16"
+                    style={styles.avatarImage}
+                    transition={300}
                   />
                 ) : (
                   <AvatarFallback>
-                    <User size={30} color="#9ca3af" />
+                    <User
+                      size={30}
+                      color={
+                        theme.colors.text === "#000000" ? "#9ca3af" : "#9ca3af"
+                      }
+                    />
                   </AvatarFallback>
                 )}
               </Avatar>
               <Animated.View
-                className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500"
                 style={[
+                  styles.onlineIndicator,
                   animatedStyle,
                   {
-                    borderWidth: 2,
-                    borderColor: "white",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.25,
-                    shadowRadius: 3.84,
-                    elevation: 5,
+                    borderColor:
+                      theme.colors.text === "#000000" ? "#FFFFFF" : "#000000",
                   },
                 ]}
               />
             </View>
           </Pressable>
-          <View className="flex flex-col ml-5">
+          <View style={styles.usernameContainer}>
             {selectedUser?.username ? (
-              <Text className="text-2xl">{selectedUser?.username}</Text>
+              <Text
+                style={[styles.username, { color: theme.colors.text }]}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {selectedUser?.username}
+              </Text>
             ) : (
-              <Skeleton className="w-32 h-4" />
+              <Skeleton
+                style={[
+                  styles.skeletonLoader,
+                  {
+                    backgroundColor:
+                      theme.colors.text === "#000000" ? "#e5e7eb" : "#1f2937",
+                  },
+                ]}
+              />
             )}
           </View>
         </View>
-        <View className="flex flex-row items-center">
+        <View style={styles.menuContainer}>
           <MenuView
             title="რა გსურთ?"
             onPressAction={({ nativeEvent }) => {
@@ -200,11 +217,15 @@ export default function ChatTopbar({ pictureUrl }: { pictureUrl?: string }) {
                 }
               });
             }}
-            themeVariant="dark"
+            themeVariant={theme.colors.text === "#000000" ? "light" : "dark"}
             actions={menuItems}
           >
-            <TouchableOpacity className="p-4">
-              <Ionicons name="ellipsis-vertical" size={24} color="#ffffff" />
+            <TouchableOpacity style={styles.menuButton}>
+              <Ionicons
+                name="ellipsis-vertical"
+                size={24}
+                color={theme.colors.text}
+              />
             </TouchableOpacity>
           </MenuView>
         </View>
@@ -213,56 +234,83 @@ export default function ChatTopbar({ pictureUrl }: { pictureUrl?: string }) {
   );
 }
 
-// function OpenVerificationButton({
-//   matchId,
-//   userId,
-//   type,
-// }: {
-//   matchId: string;
-//   userId: string;
-//   type: "video" | "image";
-// }) {
-//   const {
-//     data: verification,
-//     isFetching,
-//     isSuccess,
-//   } = useGetUserVerification(matchId as string, userId as string, true);
-
-//   if (!verification) {
-//     return null;
-//   }
-
-//   return (
-//     <TouchableOpacity
-//       onPress={() => {
-//         router.navigate({
-//           pathname: `/(tabs)/(matches)/chat/[matchId]/verification/[userId]`,
-//           params: {
-//             matchId: matchId,
-//             userId: userId,
-//           },
-//         });
-//       }}
-//     >
-//       <View
-//         style={{ width: 50, height: 50 }}
-//         className="rounded-xl overflow-hidden relative bg-gray-800"
-//       >
-//         <Video
-//           source={{ uri: getVideoSrc(verification) }}
-//           style={{ width: "100%", height: "100%" }}
-//           resizeMode={ResizeMode.COVER}
-//           shouldPlay={false}
-//           isMuted={true}
-//           isLooping={false}
-//         />
-//         <View
-//           className="absolute inset-0 flex flex-row h-full w-full items-center justify-center bg-opacity-50"
-//           style={{ backgroundColor: "rgba(0, 0, 0, 0.3)" }}
-//         >
-//           <Ionicons name={"play"} size={20} color="white" />
-//         </View>
-//       </View>
-//     </TouchableOpacity>
-//   );
-// }
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    width: "100%",
+  },
+  backButton: {
+    marginRight: 20,
+    paddingRight: 16,
+    marginBottom: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  contentContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    paddingBottom: 16,
+  },
+  userInfoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  avatarContainer: {
+    position: "relative",
+  },
+  avatar: {
+    backgroundColor: "#1f2937",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    overflow: "hidden",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  avatarImage: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 20,
+  },
+  onlineIndicator: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: "#22c55e",
+    borderWidth: 2,
+    borderColor: "white",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  usernameContainer: {
+    flexDirection: "column",
+    marginLeft: 20,
+  },
+  username: {
+    fontSize: 24,
+    fontWeight: "600",
+  },
+  skeletonLoader: {
+    width: 128,
+    height: 16,
+    backgroundColor: "#1f2937",
+  },
+  menuContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  menuButton: {
+    padding: 16,
+  },
+});

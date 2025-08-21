@@ -8,11 +8,46 @@ const ScrollReanimatedValueContext = createContext<{
   headerTranslateY: SharedValue<number>;
   headerOpacity: SharedValue<number>;
 }>({
-  scrollY: { value: 0 },
-  hasMomentum: { value: false },
-  lastScrollY: { value: 0 },
-  headerTranslateY: { value: 0 },
-  headerOpacity: { value: 1 },
+  scrollY: {
+    value: 0,
+    get: () => 0,
+    set: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    modify: () => {},
+  },
+  hasMomentum: {
+    value: false,
+    get: () => false,
+    set: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    modify: () => {},
+  },
+  lastScrollY: {
+    value: 0,
+    get: () => 0,
+    set: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    modify: () => {},
+  },
+  headerTranslateY: {
+    value: 0,
+    get: () => 0,
+    set: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    modify: () => {},
+  },
+  headerOpacity: {
+    value: 1,
+    get: () => 1,
+    set: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    modify: () => {},
+  },
 });
 
 export const ScrollReanimatedValueProvider = ({

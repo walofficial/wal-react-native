@@ -1,73 +1,28 @@
-# React Native client for MNT GE
+## Environment Variables
 
-Location based social network for the free Georgian people. 🇬🇪
-Contributions welcome!
+This project uses Expo's environment variable system in two different contexts:
 
-## Key Features
+1. **Building the app**: Environment variables for building are specified in the `eas.json` file.
 
-- End-to-end encrypted messaging for secure communication, like Signal
+Example: to build a preview build, use: eas build --profile preview
 
+2. **EAS Updates**: When updating the app (not building), environment variables are pulled from the Expo EAS service. These are public environment variables configured on the EAS service.
 
-## [Server repository](https://github.com/mntorg/mnt-server)
+Example: To deploy an update to a preview environment, use: eas update --channel preview --message "MESSAGE" --environment preview
 
-## Download the App
+## Local Development
 
-Get MNT GE on your mobile device:
+For local backend development, it is recommended to use `pnpm start` to run the app without tunneling. This provides a direct connection to your local backend services.
 
-[![Download on the App Store](https://img.shields.io/badge/Download_on_the-App_Store-black.svg?style=for-the-badge&logo=apple&logoColor=white)](https://apps.apple.com/ge/app/mnt-ge/id6670372539)
-[![Get it on Google Play](https://img.shields.io/badge/Get_it_on-Google_Play-green.svg?style=for-the-badge&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.greetai.mnt)
+## Push Notifications
 
-Visit our website: [ment.ge](https://ment.ge)
+This project uses push notifications for both Android and iOS platforms. The required configuration files are:
 
-## Get started
+- `google-services.json`: Required for Android push notifications (development and production)
+- `GoogleService-Info.plist`: Required for iOS push notifications (development and production)
 
-1. Copy environment variables
+These files should be properly configured for each environment (development and production).
 
-   ```bash
-   cp .env.template .env.local
-   ```
+## Web Support
 
-2. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-3. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+There is experimental support for web using the `npx expo start --web` flag. However, this is not ready for production as we are waiting for server-side rendering support. Currently, Expo only supports static file generation during build time, with SSR support being blocked by Expo's current limitations.

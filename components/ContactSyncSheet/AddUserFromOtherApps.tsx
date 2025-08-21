@@ -1,22 +1,29 @@
+// @ts-nocheck
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import Share from "react-native-share";
+import Share, { ShareSingleOptions, Social } from "react-native-share";
 import ContactListHeader from "./ContactListHeader";
 import { Text } from "@/components/ui/text";
 import { Telegram } from "@/lib/icons/Telegram";
 import { LinearGradient } from "expo-linear-gradient";
 import useAuth from "@/hooks/useAuth";
+import { useTheme } from "@/lib/theme";
+import { app_name_slug } from "@/app.config";
+import { t } from "@/lib/i18n";
 
 const AddUserFromOtherApps: React.FC = () => {
   const { user } = useAuth();
+  const theme = useTheme();
 
-  const shareMessage = "https://ment.ge/links/" + user?.username;
+  const shareMessage = `https://${app_name_slug}.ge/links/${user?.username}`;
 
   const shareToApp = async (app: keyof typeof Share.Social) => {
-    const shareOptions = {
-      message: shareMessage,
-      social: Share.Social[app.toUpperCase()],
+    const shareOptions: ShareSingleOptions = {
+      title: "Share via",
+      message: "წამო WAL ზე",
+      url: shareMessage,
+      social: Share.Social[app] as Social,
     };
 
     try {
@@ -29,7 +36,7 @@ const AddUserFromOtherApps: React.FC = () => {
   const shareToOthers = async () => {
     const shareOptions = {
       message: "მოდი",
-      url: "https://ment.ge/links/" + user?.username,
+      url: `https://${app_name_slug}.ge/links/${user?.username}`,
     };
 
     try {
@@ -40,24 +47,17 @@ const AddUserFromOtherApps: React.FC = () => {
   };
 
   return (
-    <View className="mb-10">
+    <View style={styles.container}>
       <ContactListHeader
         icon="share-social-outline"
-        title="დაამატე სხვა აპლიკაციიდან"
+        title={t("common.add_from_other_apps")}
       />
-      <View className="flex-row justify-start space-x-8 mt-2">
+      <View style={styles.buttonContainer}>
         <TouchableOpacity
           onPress={() => shareToApp("INSTAGRAM")}
-          className="items-center mr-5"
+          style={styles.buttonWrapper}
         >
-          <View
-            style={{
-              borderWidth: 2,
-              borderColor: "#E1306C",
-              borderRadius: 32,
-              padding: 2,
-            }}
-          >
+          <View style={[styles.iconBorder, { borderColor: "#E1306C" }]}>
             <LinearGradient
               colors={[
                 "#FFDC80",
@@ -73,94 +73,104 @@ const AddUserFromOtherApps: React.FC = () => {
               ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              style={styles.iconGradient}
             >
               <Ionicons name="logo-instagram" size={32} color="white" />
             </LinearGradient>
           </View>
-          <Text className="mt-1 text-sm">Instagram</Text>
+          <Text style={[styles.buttonText, { color: theme.colors.text }]}>
+            Instagram
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => shareToApp("WHATSAPP")}
-          className="items-center mr-5"
+          style={styles.buttonWrapper}
         >
-          <View
-            style={{
-              borderWidth: 2,
-              borderColor: "#25D366",
-              borderRadius: 32,
-              padding: 2,
-            }}
-          >
+          <View style={[styles.iconBorder, { borderColor: "#25D366" }]}>
             <View
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-              }}
-              className="items-center justify-center bg-green-500"
+              style={[styles.iconBackground, { backgroundColor: "#25D366" }]}
             >
               <Ionicons name="logo-whatsapp" size={32} color="white" />
             </View>
           </View>
-          <Text className="mt-1 text-sm">WhatsApp</Text>
+          <Text style={[styles.buttonText, { color: theme.colors.text }]}>
+            WhatsApp
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => shareToApp("TELEGRAM")}
-          className="items-center"
+          style={styles.buttonWrapper}
         >
-          <View
-            style={{
-              borderWidth: 2,
-              borderColor: "#0088cc",
-              borderRadius: 32,
-              padding: 2,
-            }}
-          >
+          <View style={[styles.iconBorder, { borderColor: "#0088cc" }]}>
             <View
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-              }}
-              className="items-center justify-center bg-blue-500"
+              style={[styles.iconBackground, { backgroundColor: "#3B82F6" }]}
             >
               <Telegram />
             </View>
           </View>
-          <Text className="mt-1 text-sm">Telegram</Text>
+          <Text style={[styles.buttonText, { color: theme.colors.text }]}>
+            Telegram
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={shareToOthers} className="items-center ml-5">
+        <TouchableOpacity onPress={shareToOthers} style={styles.buttonWrapper}>
           <View
-            style={{
-              borderWidth: 2,
-              borderColor: "#808080",
-              borderRadius: 32,
-              padding: 2,
-            }}
+            style={[styles.iconBorder, { borderColor: theme.colors.border }]}
           >
             <View
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 30,
-              }}
-              className="items-center justify-center bg-gray-500"
+              style={[
+                styles.iconBackground,
+                { backgroundColor: theme.colors.secondary },
+              ]}
             >
               <Ionicons name="share-outline" size={32} color="white" />
             </View>
           </View>
-          <Text className="mt-1 text-sm">ლინკი</Text>
+          <Text style={[styles.buttonText, { color: theme.colors.text }]}>
+            ლინკი
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 20,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    marginTop: 16,
+    paddingHorizontal: 4,
+  },
+  buttonWrapper: {
+    alignItems: "center",
+    marginRight: 24,
+  },
+  iconBorder: {
+    borderWidth: 2,
+    borderRadius: 32,
+    padding: 2,
+  },
+  iconGradient: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconBackground: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  buttonText: {
+    marginTop: 4,
+    fontSize: 14,
+  },
+});
 
 export default AddUserFromOtherApps;
