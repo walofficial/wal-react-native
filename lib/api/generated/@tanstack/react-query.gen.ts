@@ -820,12 +820,12 @@ export const getVerificationsInfiniteOptions = (options?: Options<GetVerificatio
     });
 };
 
-export const getUserVerificationQueryKey = (options?: Options<GetUserVerificationData>) => createQueryKey('getUserVerification', options);
+export const getUserVerificationQueryKey = (options: Options<GetUserVerificationData>) => createQueryKey('getUserVerification', options);
 
 /**
  * Get User Verification
  */
-export const getUserVerificationOptions = (options?: Options<GetUserVerificationData>) => {
+export const getUserVerificationOptions = (options: Options<GetUserVerificationData>) => {
     return queryOptions({
         queryFn: async ({ queryKey, signal }) => {
             const { data } = await getUserVerification({

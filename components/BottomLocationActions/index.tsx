@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from "react";
 import { TouchableOpacity, View, Platform, StyleSheet } from "react-native";
 import TakeVideo from "../TakeVideo";
@@ -12,6 +11,7 @@ import {
   locationUserListfeedIdState,
 } from "@/lib/atoms/location";
 import { isIOS } from "@/lib/platform";
+import { trackEvent } from "@/lib/analytics";
 
 export default function BottomLocationActions({
   feedId,
@@ -29,6 +29,8 @@ export default function BottomLocationActions({
   const setfeedId = useSetAtom(locationUserListfeedIdState);
 
   const handlePress = () => {
+    trackEvent("location_feed_live_users_button_pressed", {});
+
     console.log("handlePress called with feedId:", feedId, data);
     setIsBottomSheetOpen(false);
     if (data && data.count > 0) {

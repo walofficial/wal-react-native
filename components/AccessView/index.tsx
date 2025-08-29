@@ -40,7 +40,7 @@ import {
   showCountrySelectorState,
   selectedCountryState,
 } from "./atom";
-import { FontSizes } from "@/lib/theme";
+import { FontSizes, useTheme } from "@/lib/theme";
 import { BlurView } from "expo-blur";
 import CountrySelector from "@/components/CountrySelector";
 import { Country } from "@/lib/countries";
@@ -48,8 +48,10 @@ import { validatePhoneNumber } from "@/lib/phoneValidation";
 import PhoneInputField from "./PhoneInputField";
 import { useDefaultCountry } from "@/hooks/useDefaultCountry";
 import { useToast } from "../ToastUsage";
-import { t } from "@/lib/i18n";
+import { getCurrentLocale, t } from "@/lib/i18n";
 import { isDev } from "@/lib/api/config";
+import { ThemedText } from "../ThemedText";
+import { router } from "expo-router";
 
 LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
@@ -75,13 +77,13 @@ export const CustomBottomSheetBackground = ({ style }: any) => {
     return (
       <BlurView
         intensity={isDark ? 60 : 40}
-        tint={isDark ? "dark" : "dark"} // Keep dark tint for both modes
+        tint={isDark ? "dark" : "light"} // Keep dark tint for both modes
         style={[
           style,
           {
             backgroundColor: isDark
               ? "rgba(0, 0, 0, 0.5)"
-              : "rgba(30, 30, 30, 0.65)", // Darker background even in light mode
+              : "rgba(255, 255, 255, 0.65)", // Darker background even in light mode
           },
         ]}
       />
@@ -93,7 +95,7 @@ export const CustomBottomSheetBackground = ({ style }: any) => {
       style={[
         style,
         {
-          backgroundColor: isDark ? "black" : "black", // Dark background for both modes
+          backgroundColor: isDark ? "black" : "#efefef", // Dark background for both modes
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
         },
@@ -208,6 +210,8 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   const [showCountrySelector, setShowCountrySelector] = useAtom(
     showCountrySelectorState
   );
+  const locale = getCurrentLocale();
+  const theme = useTheme();
   const {
     country: selectedCountry,
     isLoading,
@@ -358,7 +362,6 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   useEffect(() => {
     if (access && access.data.user) {
       setShowPhoneInput(true);
-      // router.replace(`/(tabs)/(news)/${NEWS_FEED_ID}`);
     }
   }, [access]);
 
@@ -476,21 +479,23 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   ]);
 
   // Memoize the terms section to prevent re-renders
-  const termsSection = (
-    <View style={{ marginTop: 24 }}>
-      <Text style={[styles.termsText, { color: "gray" }]}>
+  let termsSection = (
+    <View style={{ marginTop: 24, opacity: 0.5 }}>
+      <Text style={[styles.termsText, { color: theme.colors.text }]}>
         By continuing, you agree to our{" "}
         <Text
-          style={[styles.termsLink, { color: "#a0a0a0" }]}
+          style={[styles.termsLink, { color: theme.colors.text }]}
           onPress={openTermsOfService}
         >
           {t("common.terms_of_service")}
         </Text>
       </Text>
-      <Text style={[styles.termsText, { marginTop: 4, color: "gray" }]}>
+      <Text
+        style={[styles.termsText, { marginTop: 4, color: theme.colors.text }]}
+      >
         and{" "}
         <Text
-          style={[styles.termsLink, { color: "#a0a0a0" }]}
+          style={[styles.termsLink, { color: theme.colors.text }]}
           onPress={openPrivacyPolicy}
         >
           {t("common.privacy_policy")}
@@ -499,6 +504,22 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
       </Text>
     </View>
   );
+
+  if (locale === "ka") {
+    termsSection = (
+      <View style={{ marginTop: 24, opacity: 0.7 }}>
+        <Text style={[styles.termsText, { color: theme.colors.text }]}>
+          გაგრძელებით თქვენ ეთანხმებით
+        </Text>
+        <Text
+          style={[styles.termsText, { marginTop: 4, color: "#007AFF" }]}
+          onPress={openPrivacyPolicy}
+        >
+          მომსახურების პირობებსა და კონფიდენციალურობის პოლიტიკას
+        </Text>
+      </View>
+    );
+  }
 
   // Show country selector screen
   if (showCountrySelector) {
@@ -531,9 +552,9 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
       )}
 
       {!showPhoneInput && (
-        <Text style={[styles.instructionText, { color: "white" }]}>
+        <ThemedText style={[styles.instructionText]}>
           {t("common.enter_sms_code")}
-        </Text>
+        </ThemedText>
       )}
 
       {signupMutation.data && !showPhoneInput && (
@@ -557,7 +578,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
                 pinCodeTextStyle: {
                   fontSize: 20,
                   fontWeight: "bold",
-                  color: "white",
+                  color: theme.colors.text,
                 },
                 focusedPinCodeContainerStyle: {
                   borderColor: "#007AFF",
@@ -567,8 +588,8 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
                   borderColor: "#ddd",
                 },
                 pinCodeContainerStyle: {
-                  backgroundColor: "#333",
-                  borderColor: "#333",
+                  backgroundColor: theme.colors.background,
+                  borderColor: theme.colors.border,
                 },
               }}
             />

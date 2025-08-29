@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useCallback, useEffect, useRef } from "react";
 import {
   View,
@@ -31,12 +30,11 @@ import { FactCheckRating } from "./FactCheckRating";
 import { User } from "@/lib/api/generated";
 import { NativeEventSubscription } from "react-native";
 import { useTheme } from "@/lib/theme";
-import { Portal } from "@gorhom/portal";
+import { Portal } from "@/components/primitives/portal";
 import RenderMdx from "./RenderMdx";
 import { t } from "@/lib/i18n";
 interface FactCheckBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal>;
-  verificationData?: LocationFeedPost;
 }
 
 const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({ style }) => {
@@ -283,7 +281,7 @@ export default function FactCheckBottomSheet({
                                     { color: "#22c55e" },
                                   ]}
                                 >
-                                  {counts.supportive} ადასტურებს
+                                  {counts.supportive} {t("common.supports")}
                                 </Text>
                               </View>
                               <View
@@ -322,8 +320,10 @@ export default function FactCheckBottomSheet({
                                   ]}
                                 >
                                   {counts.contradictory > 0
-                                    ? `${counts.contradictory} უარყოფს`
-                                    : "არავინ უარყოფს"}
+                                    ? `${counts.contradictory} ${t(
+                                        "common.contradicts"
+                                      )}`
+                                    : `${t("common.no_contradicts")}`}
                                 </Text>
                               </View>
                             </>
@@ -369,7 +369,9 @@ export default function FactCheckBottomSheet({
                                 },
                               ]}
                             >
-                              {ref.is_supportive ? "ადასტურებს" : "უარყოფს"}
+                              {ref.is_supportive
+                                ? t("common.supports")
+                                : t("common.contradicts")}
                             </Text>
                           </View>
                           <Ionicons
@@ -385,9 +387,6 @@ export default function FactCheckBottomSheet({
             </>
           )}
         </BottomSheetScrollView>
-        {factCheckData && verificationId && (
-          <FactCheckRating verificationId={verificationId} />
-        )}
       </BottomSheet>
     </Portal>
   );

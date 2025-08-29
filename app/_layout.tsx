@@ -5,7 +5,7 @@ import * as React from "react";
 import { AppState, AppStateStatus, Platform } from "react-native";
 import { NAV_THEME } from "~/lib/constants";
 import { useColorScheme } from "~/lib/useColorScheme";
-import { PortalHost } from "~/components/primitives/portal";
+import { PortalHost } from "@/components/primitives/portal";
 import AuthLayer, { useSession } from "@/components/AuthLayer";
 import * as Notifications from "expo-notifications";
 import * as Sentry from "@sentry/react-native";
@@ -237,9 +237,8 @@ export default function RootLayout() {
                             />
                           )}
                           <Lightbox />
+                          <PortalHost />
                         </GestureHandlerRootView>
-
-                        <PortalHost />
                       </AuthLayer>
                     </AppLocaleGate>
                   </Provider>

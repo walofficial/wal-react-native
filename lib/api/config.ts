@@ -1,5 +1,5 @@
 import * as Updates from "expo-updates";
-import { isWeb } from "../platform";
+import { isWeb, isAndroid } from "../platform";
 import { client } from './generated/client.gen';
 import { supabase } from "../supabase";
 
@@ -44,7 +44,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
   applySupabaseAuthHeader(session?.access_token);
 });
 
-// Add request interceptor to always attach the latest token
+// Add request interceptor to always attach the latest token and handle multipart
 client.instance.interceptors.request.use((config) => {
   if (supabaseUserToken) {
     config.headers = {
@@ -52,6 +52,16 @@ client.instance.interceptors.request.use((config) => {
       Authorization: `Bearer ${supabaseUserToken}`,
     } as any;
   }
+
+  // Handle multipart/form-data requests on Android
+  if (config.data instanceof FormData) {
+    // Remove Content-Type to let Axios set the proper boundary
+    if (config.headers) {
+      delete config.headers['Content-Type'];
+      config.headers['Content-Type'] = null;
+    }
+  }
+
   return config;
 });
 

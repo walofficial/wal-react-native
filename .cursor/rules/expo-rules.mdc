@@ -1,43 +1,43 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
+
 // React Native Expo .cursorrules
 
 // React Native Expo best practices
 const reactNativeExpoBestPractices = [
-  "Use functional components with hooks",
-  "Utilize Expo SDK features and APIs",
-  "Implement proper navigation using React Navigation",
-  "Use Expo's asset system for images and fonts",
-  "Implement proper error handling and crash reporting",
-  "Utilize Expo's push notification system",
-  "Make sure to seperate the components into reusable ones",
-  "Make sure to handle the refactoring whenever is appropriate",
+"Use functional components with hooks",
+"Utilize Expo SDK features and APIs",
+"Implement proper navigation using React Navigation",
+"Use Expo's asset system for images and fonts",
+"Implement proper error handling and crash reporting",
+"Utilize Expo's push notification system",
+"Make sure to seperate the components into reusable ones",
+"Make sure to handle the refactoring whenever is appropriate",
 ];
 
 // Folder structure
-const folderStructure = `
-assets/
+const folderStructure = `assets/
 app/
   (tabs)/
 hooks/
 lib/
-utils/
-`;
+utils/`;
 
 // Additional instructions
 const additionalInstructions = `
+
 1. Use TypeScript for type safety
-3. Utilize Expo's vector icons
-4. Use Expo's secure store for sensitive data
-6. Follow React Native best practices for performance
-7. Use Expo's OTA updates for quick deployments
-8. Make sure to use industry standars when asked or you are have to do some UI or UX change
-9. Adjust the image size appropriately when asked about adjusting or something and use correct design guidelines, I like Apple human interface guidelines, on Android try to use Material
-10. When asked about some chat components UX or chat functionality use inspiration from Signal or Facebook Messenger UI
-11. You should make sure to follow Rules of Hooks e.g do not use it inside the functions call inside react component
-12. When you design stuff and apply colors text, use everything from main theme to support light mode and dark mode
-13. Use CSS native boxShadow instead of shadow properties
-`;
+2. Utilize Expo's vector icons
+3. Use Expo's secure store for sensitive data
+4. Follow React Native best practices for performance
+5. Use Expo's OTA updates for quick deployments
+6. Make sure to use industry standars when asked or you are have to do some UI or UX change
+7. Adjust the image size appropriately when asked about adjusting or something and use correct design guidelines, I like Apple human interface guidelines, on Android try to use Material
+8. When asked about some chat components UX or chat functionality use inspiration from Signal or Facebook Messenger UI
+9. You should make sure to follow Rules of Hooks e.g do not use it inside the functions call inside react component
+10. When you design stuff and apply colors text, use everything from main theme to support light mode and dark mode
+11. Use CSS native boxShadow instead of shadow properties
+    `;
