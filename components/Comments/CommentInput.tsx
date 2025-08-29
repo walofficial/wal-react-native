@@ -193,14 +193,6 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
             backgroundColor: isDarkColorScheme
               ? "#222222"
               : "rgba(248, 248, 248, 0.95)",
-            shadowColor: isDarkColorScheme ? "#000000" : "#000000",
-            shadowOffset: {
-              width: 0,
-              height: 2,
-            },
-            shadowOpacity: isDarkColorScheme ? 0.3 : 0.1,
-            shadowRadius: 8,
-            elevation: 4,
           },
         ]}
       >

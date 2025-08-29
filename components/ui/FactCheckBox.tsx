@@ -18,6 +18,7 @@ import { useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { SourceIcon } from "@/components/SourceIcon";
 import { t } from "@/lib/i18n";
+import { trackEvent } from "@/lib/analytics";
 
 // Enum for fact check statuses
 export enum FactCheckStatus {
@@ -117,7 +118,7 @@ const FactCheckSourcesDisplay = ({
         ]}
       >
         <Text style={[styles.sourcesLabelText, { color: theme.colors.text }]}>
-          {references.length} წყაროს მიხედვით
+          {references.length} {t("common.based_on_sources")}
         </Text>
       </View>
     </View>
@@ -135,6 +136,7 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
   const { isDarkColorScheme } = useColorScheme();
 
   const handlePress = () => {
+    trackEvent("fact_check_opened", {});
     setFactCheckData(factCheckData);
     setIsBottomSheetOpen(true);
   };

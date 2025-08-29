@@ -38,7 +38,6 @@ const SimpleGoBackHeader = ({
   const router = useRouter();
   const theme = useTheme();
 
-  const finalRightSection = verificationId ? null : rightSection;
   const Header = () =>
     !isWeb && (
       <View
@@ -71,7 +70,7 @@ const SimpleGoBackHeader = ({
               {timestamp || title}
             </Text>
           ))}
-        {finalRightSection}
+        {rightSection}
       </View>
     );
 

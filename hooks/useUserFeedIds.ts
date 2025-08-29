@@ -11,8 +11,8 @@ export const useUserFeedIds = () => {
 
   return {
     // Individual feed IDs
-    newsFeedId: user?.preferred_news_feed_id,
-    factCheckFeedId: user?.preferred_fact_check_feed_id,
+    newsFeedId: user?.preferred_news_feed_id || "",
+    factCheckFeedId: user?.preferred_fact_check_feed_id || "",
     categoryId: CATEGORY_ID
   };
 };

@@ -21,7 +21,7 @@ const RenderMdx: React.FC<RenderMdxProps> = ({ content }) => {
       colors: {
         text: theme.colors.text,
         background: "transparent",
-        border: theme.colors.border,
+        border: "transparent",
         link: theme.colors.primary || "#007AFF",
         code: isDarkColorScheme ? "#374151" : "#f3f4f6",
       },

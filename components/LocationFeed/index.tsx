@@ -29,6 +29,7 @@ import useFeeds from "@/hooks/useFeeds";
 import { getUserVerificationOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { ThemedText } from "../ThemedText";
 import { getCurrentLocale } from "@/lib/i18n";
+import { trackEvent } from "@/lib/analytics";
 
 type Location = {
   nearest_location: {
@@ -81,7 +82,6 @@ export default function LocationFeed({
   const { headerHeight } = useFeeds();
 
   const flashListRef = useRef<any>(null);
-  const populatedItemIdsRef = useRef<Set<string>>(new Set());
 
   const defaultStoryIndex = 0;
 
@@ -100,6 +100,15 @@ export default function LocationFeed({
   }) => {
     // Viewable config here only applies for video autoplays and impressions trackerr
     if (viewableItems.length > 0 && viewableItems[0].index !== undefined) {
+      // Track first visible item as an impression
+      const first = viewableItems[0];
+      if (first?.item?.id) {
+        trackEvent("view_item", {
+          content_type: isNewsFeed ? "news" : "post",
+          item_id: String(first.item.id),
+          feed_id: String(first.item.feed_id || feedId),
+        });
+      }
       // Sometimes there is case where video and small text type post might be visible in viewport together.
       // We assume that user is watching video in that case and autoplay it.
       // To reproduce this try to have first post as 3 row text content and second post as video content.
@@ -250,26 +259,6 @@ export default function LocationFeed({
     [handleNavigateToVerification, currentViewableItemIndex, convertToNewsItem]
   );
 
-  useEffect(() => {
-    if (!items || items.length === 0) return;
-
-    items.forEach((item) => {
-      if (populatedItemIdsRef.current.has(item.id)) return;
-
-      const queryOptions = getUserVerificationOptions({
-        query: {
-          verification_id: item.id,
-        },
-      });
-
-      queryClient.setQueryData(queryOptions.queryKey, {
-        ...item,
-      });
-
-      populatedItemIdsRef.current.add(item.id);
-    });
-  }, [items, queryClient]);
-
   const [scrollToTop] = useAtom(scrollToTopState);
 
   // Add effect to handle scrolling to top
@@ -287,6 +276,15 @@ export default function LocationFeed({
 
     // Also invalidate news feed queries
     queryClient.invalidateQueries({ queryKey: ["news-feed", feedId] });
+    // Track list view refresh as view_item_list
+    trackEvent("view_item_list", {
+      item_list_id: String(feedId),
+      item_list_name: isNewsFeed
+        ? "news"
+        : isFactCheckFeed
+        ? "fact_check"
+        : "location",
+    });
   }, [refetch, queryClient, feedId]);
 
   return (

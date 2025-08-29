@@ -57,8 +57,6 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
     onPress(item.id);
   }, [onPress, item.id]);
 
-  // Timestamp removed per design
-
   // Memoize the fact check badge info calculation
   const badgeInfo = useMemo((): {
     text: string;
@@ -99,11 +97,11 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
   const uniqueSourceIcons = useMemo(() => {
     return getUniqueSourceIcons(item.sources);
   }, [item.sources]);
+
   // Determine image source and aspect ratio
   const firstImage = item.image_gallery_with_dims?.[0];
-  const imageUrl =
-    firstImage?.url ||
-    "https://storage.googleapis.com/ment-verification/video-verifications/raw/Georgia_International_Criticism_PACE_US_NGOs_bc1fa75a21bc4f869800a65216a2cec6.jpg";
+  const hasImage = Boolean(firstImage?.url);
+  const imageUrl = firstImage?.url;
   const aspectRatio =
     firstImage?.width && firstImage?.height
       ? firstImage.width / firstImage.height
@@ -121,7 +119,6 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
         style={[
           styles.newsItem,
           {
-            backgroundColor: isDark ? "#1a1a1a" : "#F2F2F7",
             borderColor: isDark
               ? "rgba(255, 255, 255, 0.1)"
               : "rgba(0, 0, 0, 0.08)",
@@ -132,22 +129,22 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                 shadowOpacity: isDark ? 0.3 : 0.1,
                 shadowRadius: 8,
               },
-              android: {
-                elevation: isDark ? 4 : 2,
-              },
+              android: {},
             }),
           },
         ]}
       >
         <View style={styles.newsContent}>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={{ uri: imageUrl }}
-              transition={300}
-              contentFit="cover"
-              style={{ width: "100%", aspectRatio }}
-            />
-          </View>
+          {hasImage && (
+            <View style={styles.imageWrapper}>
+              <Image
+                source={{ uri: imageUrl }}
+                transition={300}
+                contentFit="cover"
+                style={{ width: "100%", aspectRatio }}
+              />
+            </View>
+          )}
           <View style={styles.textSection}>
             <ThemedText numberOfLines={6} style={styles.titleBelowText}>
               {item.title}
@@ -161,6 +158,9 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                     style={[
                       styles.newsCardBadgeStyles,
                       Platform.OS === "ios" && styles.iosBadgeShadow,
+                      {
+                        backgroundColor: theme.colors.card.background,
+                      },
                     ]}
                   />
                 </View>
@@ -173,11 +173,22 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                       style={[
                         styles.sourceIcon,
                         {
-                          marginLeft: 3,
+                          marginLeft: idx > 0 ? -8 : 0, // Overlap icons
+                          zIndex: uniqueSourceIcons.length - idx, // Higher z-index for later icons
                         },
                       ]}
                     >
-                      <SourceIcon sourceUrl={source.uri} size={20} />
+                      <View
+                        style={[
+                          styles.sourceIconBorder,
+                          {
+                            borderColor: theme.colors.card.background,
+                            backgroundColor: theme.colors.card.background,
+                          },
+                        ]}
+                      >
+                        <SourceIcon sourceUrl={source.uri} size={18} />
+                      </View>
                     </View>
                   ))}
                 {item.sources && uniqueSourceIcons.length > MAX_SOURCES && (
@@ -187,6 +198,11 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                       {
                         backgroundColor: isDark ? "#e0e0e0" : "#808080",
                         borderColor: theme.colors.card.background,
+                        marginLeft:
+                          uniqueSourceIcons.slice(0, MAX_SOURCES).length > 0
+                            ? -8
+                            : 0,
+                        zIndex: 0,
                       },
                     ]}
                   >
@@ -196,7 +212,7 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                         { color: isDark ? "#333333" : "#ffffff" },
                       ]}
                     >
-                      +{uniqueSourceIcons.length - 3}
+                      +{uniqueSourceIcons.length - MAX_SOURCES}
                     </Text>
                   </View>
                 )}
@@ -254,7 +270,6 @@ const styles = StyleSheet.create({
     position: "relative",
     width: "100%",
     overflow: "hidden",
-    borderRadius: 10,
   },
   textSection: {
     marginTop: 0,
@@ -303,17 +318,17 @@ const styles = StyleSheet.create({
     marginLeft: 0,
   },
   moreSourcesIndicator: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
     marginLeft: 3,
-    borderWidth: 1.5,
+    borderWidth: 2,
     zIndex: 4,
   },
   moreSourcesText: {
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "600",
   },
   descriptionText: {
@@ -326,7 +341,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
-    marginTop: 10,
+    marginTop: 12,
+  },
+  sourceIconBorder: {
+    borderRadius: 12,
+    borderWidth: 2,
+    padding: 1,
   },
 });
 

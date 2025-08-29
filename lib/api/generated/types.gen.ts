@@ -562,6 +562,10 @@ export type CreateUserRequest = {
      * Phone Number
      */
     phone_number: string;
+    /**
+     * Preferred Content Language
+     */
+    preferred_content_language?: string | null;
 };
 
 /**
@@ -678,22 +682,22 @@ export type FactCheckingResult = {
      * Factuality
      * Factuality score from 0-1, where 0 is completely false and 1 is completely true
      */
-    factuality: number;
+    factuality?: number;
     /**
      * Reason
      * Structured Georgian explanation with sections სიმართლე/ტყუილი/გადაუმოწმებელი using bullet points and evidence paragraphs
      */
-    reason: string;
+    reason?: string;
     /**
      * Score Justification
      * Comprehensive English analysis explaining the detailed reasoning behind the factuality score generation
      */
-    score_justification: string;
+    score_justification?: string;
     /**
      * Reason Summary
      * 1-2 sentence summary of the fact check result which can be read easily
      */
-    reason_summary: string | null;
+    reason_summary?: string | null;
     /**
      * Fact Status
      * 1 or 2 word fact status
@@ -819,10 +823,6 @@ export type FeedPost = {
      */
     text_content?: string | null;
     /**
-     * Sources
-     */
-    sources?: Array<Source> | null;
-    /**
      * Visited Urls
      */
     visited_urls?: Array<string> | null;
@@ -877,6 +877,18 @@ export type FeedPost = {
      */
     title?: string | null;
     /**
+     * Text Content In English
+     */
+    text_content_in_english?: string | null;
+    /**
+     * News Date
+     */
+    news_date?: string | null;
+    /**
+     * Sources
+     */
+    sources?: Array<Source>;
+    /**
      * Fact Check Id
      */
     fact_check_id?: string | null;
@@ -913,14 +925,6 @@ export type FeedPost = {
      * Neutral Summary
      */
     neutral_summary?: string | null;
-    /**
-     * News Date
-     */
-    news_date?: string | null;
-    /**
-     * Text Content In English
-     */
-    text_content_in_english?: string | null;
 };
 
 /**
@@ -1349,10 +1353,6 @@ export type LocationFeedPost = {
      */
     text_content?: string | null;
     /**
-     * Sources
-     */
-    sources?: Array<Source> | null;
-    /**
      * Visited Urls
      */
     visited_urls?: Array<string> | null;
@@ -1407,6 +1407,18 @@ export type LocationFeedPost = {
      */
     title?: string | null;
     /**
+     * Text Content In English
+     */
+    text_content_in_english?: string | null;
+    /**
+     * News Date
+     */
+    news_date?: string | null;
+    /**
+     * Sources
+     */
+    sources?: Array<Source>;
+    /**
      * Fact Check Id
      */
     fact_check_id?: string | null;
@@ -1443,14 +1455,6 @@ export type LocationFeedPost = {
      * Neutral Summary
      */
     neutral_summary?: string | null;
-    /**
-     * News Date
-     */
-    news_date?: string | null;
-    /**
-     * Text Content In English
-     */
-    text_content_in_english?: string | null;
 };
 
 /**
@@ -2886,6 +2890,12 @@ export type UpdateVerificationVisibilityResponse = UpdateVerificationVisibilityR
 
 export type GetVerificationsData = {
     body?: never;
+    headers?: {
+        /**
+         * Accept-Language
+         */
+        'accept-language'?: string;
+    };
     path?: never;
     query?: {
         /**
@@ -2933,12 +2943,18 @@ export type GetVerificationsResponse = GetVerificationsResponses[keyof GetVerifi
 
 export type GetUserVerificationData = {
     body?: never;
+    headers?: {
+        /**
+         * Accept-Language
+         */
+        'accept-language'?: string;
+    };
     path?: never;
-    query?: {
+    query: {
         /**
          * Verification Id
          */
-        verification_id?: string;
+        verification_id: string;
     };
     url: '/user/get-verification';
 };
@@ -3391,6 +3407,12 @@ export type GetUserProfileByUsernameResponse = GetUserProfileByUsernameResponses
 
 export type GetLocationFeedPaginatedData = {
     body?: never;
+    headers?: {
+        /**
+         * Accept-Language
+         */
+        'accept-language'?: string;
+    };
     path: {
         /**
          * Feed Id

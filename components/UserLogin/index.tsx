@@ -99,10 +99,11 @@ const UserLogin = forwardRef<BottomSheet>(function UserLogin(_, ref) {
       enableDynamicSizing={false}
       enablePanDownToClose={true}
       onChange={handleSheetChange}
+      keyboardBehavior={keyboardBehavior}
       keyboardBlurBehavior={keyboardBlurBehavior}
       backdropComponent={renderBackdrop}
       backgroundComponent={CustomBottomSheetBackground}
-      handleIndicatorStyle={{ backgroundColor: "white" }}
+      handleIndicatorStyle={{ backgroundColor: isDark ? "white" : "black" }}
     >
       <AccessView inputRef={inputRef} />
     </BottomSheet>

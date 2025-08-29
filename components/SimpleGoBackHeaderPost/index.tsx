@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useRef, useMemo } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useAtom } from "jotai";
@@ -8,12 +7,13 @@ import { formatRelativeTime } from "@/lib/utils/date";
 import SimpleGoBackHeader from "../SimpleGoBackHeader";
 import { activeSourcesState, newsBottomSheetState } from "@/lib/atoms/news";
 import { useUniqueSources } from "@/utils/sourceUtils";
-import { SourceIcon } from "@/components/SourceIcon";
 import { useTheme } from "@/lib/theme";
 import { useColorScheme } from "@/lib/useColorScheme";
 import { getFaviconUrl } from "@/utils/urlUtils";
 import NewsSourcesBottomSheet from "../FeedItem/NewsSourcesBottomSheet";
 import BottomSheet from "@gorhom/bottom-sheet";
+import PostLanguageSwitcher from "./PostLanguageSwitcher";
+import { trackEvent } from "@/lib/analytics";
 
 function SimpleGoBackHeaderPost({
   verificationId,
@@ -42,6 +42,8 @@ function SimpleGoBackHeaderPost({
 
     const handleSourcePress = () => {
       if (data?.sources && data.sources.length > 0) {
+        trackEvent("news_sources_bottom_sheet_opened", {});
+
         setActiveSources(data.sources);
         setIsBottomSheetOpen(true);
       }
@@ -52,9 +54,6 @@ function SimpleGoBackHeaderPost({
         style={[
           styles.sourcesContainer,
           {
-            backgroundColor: isDarkColorScheme
-              ? "rgba(255, 255, 255, 0.04)"
-              : "rgba(0, 0, 0, 0.02)",
             borderColor: isDarkColorScheme
               ? "rgba(255, 255, 255, 0.08)"
               : "rgba(0, 0, 0, 0.06)",
@@ -144,9 +143,24 @@ function SimpleGoBackHeaderPost({
       <SimpleGoBackHeader
         justInstantGoBack={true}
         verificationId={verificationId}
-        rightSection={<></>}
         timestamp={!isGeneratedNews ? timestamp : undefined}
-        middleSection={sourcesComponent}
+        rightSection={
+          isGeneratedNews ? (
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "flex-end",
+              }}
+            >
+              {sourcesComponent}
+              <PostLanguageSwitcher />
+            </View>
+          ) : (
+            <PostLanguageSwitcher />
+          )
+        }
       />
       <NewsSourcesBottomSheet bottomSheetRef={bottomSheetRef} />
     </>

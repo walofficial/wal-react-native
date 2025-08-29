@@ -1,38 +1,17 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom } from "jotai";
 import { Text } from "@/components/ui/text";
 import { useTheme } from "@/lib/theme";
 import { appLocaleAtom } from "@/hooks/useAppLocalization";
 import { getCurrentLocale, setLocale } from "@/lib/i18n";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Animated, {
-  useAnimatedStyle,
-  withSpring,
-  useSharedValue,
-} from "react-native-reanimated";
 
 const LanguageSelectionOverlay: React.FC = () => {
   const theme = useTheme();
   const [appLocale, setAppLocaleState] = useAtom(appLocaleAtom);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-
-  const overlayScale = useSharedValue(0);
-  const overlayOpacity = useSharedValue(0);
-
-  useEffect(() => {
-    if (showLanguageSelector) {
-      overlayScale.value = withSpring(1, {
-        damping: 15,
-        stiffness: 90,
-      });
-      overlayOpacity.value = withSpring(1);
-    } else {
-      overlayScale.value = withSpring(0);
-      overlayOpacity.value = withSpring(0);
-    }
-  }, [showLanguageSelector]);
 
   useEffect(() => {
     const initialize = async () => {
@@ -41,12 +20,9 @@ const LanguageSelectionOverlay: React.FC = () => {
         if (!storedLocale) {
           setShowLanguageSelector(true);
         }
-        console.log("storedLocale", storedLocale);
         const localeToUse = storedLocale || getCurrentLocale();
         setAppLocaleState(localeToUse);
-        console.log("localeToUse", localeToUse);
         setLocale(localeToUse);
-        console.log("getCurrentLocale", getCurrentLocale());
       } catch {
         const fallback = getCurrentLocale();
         setAppLocaleState(fallback);
@@ -65,24 +41,13 @@ const LanguageSelectionOverlay: React.FC = () => {
     });
   };
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: overlayScale.value }],
-      opacity: overlayOpacity.value,
-    };
-  });
-
-  if (!isInitialized) {
+  if (!isInitialized || !showLanguageSelector) {
     return null;
   }
 
   return (
-    <Animated.View
-      style={[
-        styles.overlay,
-        { backgroundColor: theme.colors.background },
-        animatedStyle,
-      ]}
+    <View
+      style={[styles.overlay, { backgroundColor: theme.colors.background }]}
     >
       <Text style={[styles.title, { color: theme.colors.text }]}>
         Choose app language
@@ -93,7 +58,7 @@ const LanguageSelectionOverlay: React.FC = () => {
           style={[
             styles.option,
             {
-              backgroundColor: theme.colors.card,
+              backgroundColor: theme.colors.background,
               borderColor: theme.colors.border,
             },
           ]}
@@ -109,7 +74,7 @@ const LanguageSelectionOverlay: React.FC = () => {
           style={[
             styles.option,
             {
-              backgroundColor: theme.colors.card,
+              backgroundColor: theme.colors.background,
               borderColor: theme.colors.border,
             },
           ]}
@@ -121,7 +86,7 @@ const LanguageSelectionOverlay: React.FC = () => {
           </Text>
         </Pressable>
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -154,7 +119,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
   },
   flag: {
     fontSize: 56,

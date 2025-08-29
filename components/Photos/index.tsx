@@ -17,6 +17,8 @@ import { getBottomSheetBackgroundStyle } from "@/lib/styles";
 import useAuth from "@/hooks/useAuth";
 import { FontSizes, useTheme } from "@/lib/theme";
 import {
+  getUserProfileUserProfileUserIdGetQueryKey,
+  getVerificationsInfiniteQueryKey,
   updateUserMutation,
   uploadUserPhotosMutation,
 } from "@/lib/api/generated/@tanstack/react-query.gen";
@@ -76,9 +78,13 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
     },
     ...updateUserMutation(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
       queryClient.invalidateQueries({
-        queryKey: ["user-verifications-paginated"],
+        queryKey: getVerificationsInfiniteQueryKey({
+          query: {
+            target_user_id: user?.id || "",
+            page_size: 10,
+          },
+        }),
       });
 
       if (redirectURL) {
@@ -93,6 +99,13 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       } else {
         router.back();
       }
+      queryClient.invalidateQueries({
+        queryKey: getUserProfileUserProfileUserIdGetQueryKey({
+          path: {
+            user_id: user?.id || "",
+          },
+        }),
+      });
     },
     onError: (error) => {
       Alert.alert(t("common.error_title"), t("common.user_update_failed"));

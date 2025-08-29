@@ -130,7 +130,7 @@ export default function RegisterView() {
     }),
     enabled:
       !!debouncedUsername && debouncedUsername.length > 2 && !errors.username,
-    staleTime: 1000 * 60 * 5,
+    // staleTime: 1000 * 60 * 5,
     retry: false,
   });
 
@@ -146,7 +146,9 @@ export default function RegisterView() {
     username.length <= MAX_USERNAME_LENGTH &&
     !hasNonLatinChars &&
     !errors.username &&
-    usernameQuery.data?.username !== null;
+    !usernameQuery.error &&
+    !usernameQuery.isFetching &&
+    !!usernameQuery.data;
 
   useEffect(() => {
     if (usernameQuery.data?.username === null) {
@@ -204,6 +206,9 @@ export default function RegisterView() {
 
     if (isUsernameValid && usernameQuery.data?.username !== null) {
       return "#22c55e"; // Green for valid and available
+    }
+    if (!isUsernameValid) {
+      return "#ef4444"; // Red for invalid username
     }
 
     if (username.length >= 3 && !hasNonLatinChars && !errors.username) {
@@ -326,8 +331,7 @@ export default function RegisterView() {
             disabled={
               updateUserMutation.isPending ||
               !isValid ||
-              usernameQuery.isFetching ||
-              usernameQuery.data?.username === null ||
+              !isUsernameValid ||
               hasNonLatinChars
             }
             size="lg"

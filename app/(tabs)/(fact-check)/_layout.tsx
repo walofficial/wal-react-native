@@ -10,6 +10,7 @@ import { isIOS, isWeb } from "@/lib/platform";
 import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
 import SimpleGoBackHeaderPost from "@/components/SimpleGoBackHeaderPost";
 import { ProfilePageUsername } from "@/components/ProfilePageUsername";
+import { t } from "@/lib/i18n";
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
@@ -109,7 +110,9 @@ export default function Layout() {
             name="fact-checks"
             options={{
               headerTransparent: true,
-              header: () => <SimpleGoBackHeader title="როგორ მუშაობს?" />,
+              header: () => (
+                <SimpleGoBackHeader title={t("common.how_it_works")} />
+              ),
             }}
           />
         </Stack>

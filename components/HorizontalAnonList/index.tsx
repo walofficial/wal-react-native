@@ -11,6 +11,7 @@ import { locationUserListSheetState } from "@/lib/atoms/location";
 import { useAtom } from "jotai";
 import { useIsFocused } from "@react-navigation/native";
 import { getLiveUsersOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { trackEvent } from "@/lib/analytics";
 
 const MAX_ITEMS = 30;
 const COLUMNS = 4;
@@ -62,6 +63,8 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
                 ]}
                 onPress={() => {
                   if (item.user.id === user.id) return;
+                  trackEvent("location_feed_live_users_button_pressed", {});
+
                   setIsBottomSheetOpen(false);
                   requestAnimationFrame(() => {
                     joinChat.mutate({

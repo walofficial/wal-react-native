@@ -10,7 +10,7 @@ import useSendPublicKey from "@/hooks/useSendPublicKey";
 import { toast } from "@backpackapp-io/react-native-toast";
 import { isWeb } from "@/lib/platform";
 import { useToast } from "./ToastUsage";
-import { getLanguageFromLocale, t } from "@/lib/i18n";
+import { getCurrentLocale, getLanguageFromLocale, t } from "@/lib/i18n";
 import { updateAcceptLanguageHeader } from "@/lib/api/client";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -50,6 +50,8 @@ export const isUserRegistered = (user: User) => {
 };
 
 async function handleUserNotFound(supabaseUser: any) {
+  const currentLocale = getCurrentLocale();
+  const language = getLanguageFromLocale(currentLocale);
   return await createUser({
     body: {
       external_user_id: supabaseUser.id,
@@ -61,6 +63,7 @@ async function handleUserNotFound(supabaseUser: any) {
       photos: [],
       interests: [],
       city: null,
+      preferred_content_language: language,
     },
     throwOnError: true,
   });
@@ -75,14 +78,14 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>();
   const router = useRouter();
   const { sendPublicKey } = useSendPublicKey();
-  const { error: errorToast } = useToast();
+  const { error: errorToast, success: successToast, dismissAll } = useToast();
 
   useEffect(() => {
     // Update the API client configuration whenever the Accept-Language header changes
     updateAcceptLanguageHeader(user?.preferred_content_language);
-    queryClient.invalidateQueries();
-    queryClient.clear();
-    queryClient.resetQueries();
+    // queryClient.invalidateQueries();
+    // queryClient.clear();
+    // queryClient.resetQueries();
   }, [user?.preferred_content_language]);
 
   // Handle user registration status
@@ -100,7 +103,6 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     async function fetchUser() {
       if (!session) return;
-
       try {
         setUserIsLoading(true);
         const dbUser = await getUser({
@@ -110,38 +112,31 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
         setUser(dbUser.data);
         // Get region so that application knows which feed ids to load
       } catch (e: any) {
-        console.log("error", e.response);
         if (e.response?.status === 404) {
-          // toast("აი ცოტაც...", {
-          //   id: "create-user",
-          // });
-          errorToast;
-
           const supabaseUser = await supabase.auth.getUser();
           if (supabaseUser.data.user?.id) {
             sendPublicKey({ userId: supabaseUser.data.user.id });
           }
 
           try {
+            successToast({ title: t("common.finalize_user_details") });
             const newUser = await handleUserNotFound(supabaseUser.data.user);
             setUser(newUser.data);
-            toast.dismiss("create-user");
+            dismissAll();
             setUserIsLoading(false);
-            // errorToast({ title: t("common.system_error") });
-
-            console.error("Error creating new user:", error);
           } catch (innerError) {
-            toast.dismiss("create-user");
+            dismissAll();
             setUserIsLoading(false);
             errorToast({ title: t("common.system_error") });
             console.error("Error creating new user (inner):", innerError);
           }
         } else if (e.response?.status === 401) {
+          dismissAll();
           errorToast({ title: t("common.session_expired") });
           await supabase.auth.signOut();
         } else {
           setUserIsLoading(false);
-
+          dismissAll();
           errorToast({ title: t("common.session_expired") });
 
           console.error("Error fetching user:", e);

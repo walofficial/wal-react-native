@@ -109,7 +109,7 @@ const FactualityLoader = ({ style }: { style?: any }) => {
       >
         <LoadingCircle color="#34C759" size={16} />
         <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          {t("common.loading")}
+          {t("common.fact_check_loading")}
         </Text>
       </Animated.View>
     </Pressable>

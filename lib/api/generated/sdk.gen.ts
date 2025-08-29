@@ -357,8 +357,8 @@ export const getVerifications = <ThrowOnError extends boolean = false>(options?:
 /**
  * Get User Verification
  */
-export const getUserVerification = <ThrowOnError extends boolean = false>(options?: Options<GetUserVerificationData, ThrowOnError>) => {
-    return (options?.client ?? _heyApiClient).get<GetUserVerificationResponses, GetUserVerificationErrors, ThrowOnError>({
+export const getUserVerification = <ThrowOnError extends boolean = false>(options: Options<GetUserVerificationData, ThrowOnError>) => {
+    return (options.client ?? _heyApiClient).get<GetUserVerificationResponses, GetUserVerificationErrors, ThrowOnError>({
         responseType: 'json',
         url: '/user/get-verification',
         ...options
