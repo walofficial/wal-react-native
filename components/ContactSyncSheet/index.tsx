@@ -40,7 +40,7 @@ import { useFriendRequest } from "@/lib/hooks/useFriendRequest";
 import { useTheme } from "@/lib/theme";
 import { useAtom } from "jotai";
 import { contactSyncSheetState } from "@/lib/atoms/contactSync";
-import { Portal } from "@gorhom/portal";
+import { Portal } from "@/components/primitives/portal";
 import { useOnboarding } from "../../hooks/useOnboardingContext";
 import { getUserProfileByUsernameOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { t } from "@/lib/i18n";
@@ -263,11 +263,11 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
           />
         </BottomSheetView>
         <BottomSheetScrollView style={{ paddingHorizontal: 10 }}>
-          {contactsPermissionGranted && (
+          {/* {contactsPermissionGranted && (
             <Text style={[styles.headerText, { color: theme.colors.text }]}>
               {t("common.add_friends")}
             </Text>
-          )}
+          )} */}
           {!searchQuery && <AddUserFromOtherApps />}
           {!searchQuery && <FriendRequests />}
           {!searchQuery && <FriendsList />}
@@ -336,7 +336,9 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
                 ]}
                 onPress={openAppSettings}
               >
-                <Text style={styles.permissionButtonText}>{t("common.enable_access")}</Text>
+                <Text style={styles.permissionButtonText}>
+                  {t("common.enable_access")}
+                </Text>
               </TouchableOpacity>
             </>
           )}
@@ -348,7 +350,9 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
               ]}
               onPress={loadMoreContacts}
             >
-              <Text style={styles.loadMoreButtonText}>{t("common.load_more")}</Text>
+              <Text style={styles.loadMoreButtonText}>
+                {t("common.load_more")}
+              </Text>
             </TouchableOpacity>
           )}
           <View style={styles.bottomPadding} />

@@ -23,7 +23,7 @@ export default function Index() {
     }
   }, [session]);
 
-  if (session && !userIsLoading && user && user.preferred_content_language) {
+  if (session && !userIsLoading && user && user.preferred_news_feed_id) {
     return <Redirect href={`/(tabs)/(news)/${user.preferred_news_feed_id}`} />;
   }
   if (isLoading || userIsLoading) {

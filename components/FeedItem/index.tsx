@@ -94,13 +94,9 @@ function FeedItem({
   const { closeLightbox } = useLightboxControls();
 
   // This can be used for real time information as this is actually polling the data from the server
-  const { data: verification } = useVerificationById(
-    verificationId,
-    user.id === posterId,
-    {
-      refetchInterval: 5000,
-    }
-  );
+  const { data: verification } = useVerificationById(verificationId, false, {
+    refetchInterval: 5000,
+  });
   const handleProfilePress = () => {
     if (user?.id === posterId) {
       return;

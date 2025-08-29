@@ -25,6 +25,8 @@ import { useShareIntentContext } from "expo-share-intent";
 import ErrorMessageCard from "@/components/ErrorMessageCard";
 import FullScreenLoader from "@/components/FullScreenLoader";
 import { useTheme } from "@/lib/theme";
+import { trackScreen, setUserProperties } from "@/lib/analytics";
+import { getCurrentLocale } from "@/lib/i18n";
 import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
 import { Provider as HeaderTransformProvider } from "@/lib/context/header-transform";
 import { Provider as ReactionsOverlayProvider } from "@/lib/reactionsOverlay/reactionsOverlay";
@@ -38,8 +40,17 @@ export default function TabLayout() {
   const pathname = usePathname();
   const isRecord = pathname.includes("record");
   const { factCheckFeedId, newsFeedId } = useFeeds();
-  const theme = useTheme();
   const { isDarkColorScheme } = useColorScheme();
+
+  // Track screen changes and update user properties
+  useEffect(() => {
+    const screenName = pathname.replace("/", "").split("?")[0] || "root";
+    trackScreen(screenName, "TabsLayout");
+    setUserProperties({
+      app_language: getCurrentLocale?.() || "en",
+    });
+  }, [pathname]);
+  const theme = useTheme();
   // Theme-aware tab colors
   const TAB_COLORS = {
     active: isDarkColorScheme ? "#FFFFFF" : "#121212", // White in dark mode, near black in light mode
@@ -142,6 +153,28 @@ export default function TabLayout() {
     }
   }, [pathname]);
 
+  // Navigate to news feed on sign in basically.
+  useEffect(() => {
+    if (
+      user?.preferred_news_feed_id &&
+      newsFeedId &&
+      !userIsLoading &&
+      !isLoading
+    ) {
+      // Only navigate if we're not already on the news feed
+      const isOnNewsFeed =
+        pathname.includes("(news)") && pathname.includes(newsFeedId);
+      if (!isOnNewsFeed) {
+        router.navigate({
+          pathname: "/(tabs)/(news)/[feedId]",
+          params: {
+            feedId: user.preferred_news_feed_id,
+          },
+        });
+      }
+    }
+  }, [user?.preferred_news_feed_id, newsFeedId, userIsLoading, isLoading]);
+
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
     return null;
@@ -210,6 +243,7 @@ export default function TabLayout() {
         <HeaderTransformProvider>
           <BottomSheetModalProvider>
             <Tabs
+              initialRouteName={`(news)`}
               backBehavior="initialRoute"
               screenOptions={{
                 lazy: true,
@@ -248,12 +282,14 @@ export default function TabLayout() {
               <Tabs.Screen
                 name="(news)"
                 options={{
-                  href: {
-                    pathname: "/(tabs)/(news)/[feedId]",
-                    params: {
-                      feedId: newsFeedId,
-                    },
-                  },
+                  href: newsFeedId
+                    ? {
+                        pathname: "/(tabs)/(news)/[feedId]",
+                        params: {
+                          feedId: newsFeedId,
+                        },
+                      }
+                    : null,
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
                       size={24}
@@ -269,12 +305,14 @@ export default function TabLayout() {
               <Tabs.Screen
                 name="(fact-check)"
                 options={{
-                  href: {
-                    pathname: "/(tabs)/(fact-check)/[feedId]",
-                    params: {
-                      feedId: factCheckFeedId,
-                    },
-                  },
+                  href: factCheckFeedId
+                    ? {
+                        pathname: "/(tabs)/(fact-check)/[feedId]",
+                        params: {
+                          feedId: factCheckFeedId,
+                        },
+                      }
+                    : null,
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
                       size={24}
@@ -316,7 +354,6 @@ export default function TabLayout() {
               />
             </Tabs>
             <ReactionsOverlay />
-            <PortalHost />
           </BottomSheetModalProvider>
         </HeaderTransformProvider>
       </ReactionsOverlayProvider>

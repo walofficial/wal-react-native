@@ -254,6 +254,7 @@ export default function CreatePost() {
           content: trimmedText,
           files: files as any,
         },
+        throwOnError: true,
       });
     },
     onSuccess: (publishedDoc) => {
@@ -388,6 +389,7 @@ export default function CreatePost() {
       setMode(false);
     },
     onError: (error) => {
+      console.error(JSON.stringify(error, null, 2));
       errorToast({
         title: t("errors.post_publish_failed"),
         description:

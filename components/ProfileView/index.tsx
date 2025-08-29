@@ -19,10 +19,6 @@ export default function ProfileView({ userId }: ProfileViewProps) {
   } = useProfileInformation(userId);
   const isLoadingData = isLoading || isFetching;
 
-  if (!profile && !isLoadingData) {
-    return null;
-  }
-
   return (
     <>
       <UserCircleProfile

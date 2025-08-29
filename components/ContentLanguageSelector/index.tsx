@@ -11,10 +11,14 @@ import { t } from "@/lib/i18n";
 import { useTheme } from "@/lib/theme";
 import { Text } from "@/components/ui/text";
 import AnimatedPressable from "@/components/AnimatedPressable";
-import { updateUserMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useMutation } from "@tanstack/react-query";
+import {
+  getUserVerificationQueryKey,
+  updateUserMutation,
+} from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "../AuthLayer";
 import useAuth from "@/hooks/useAuth";
+import { getLocationFeedPaginatedInfiniteOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
 
 interface ContentLanguageSelectorProps {
   onLanguageChange?: (language: ContentLanguage) => void;
@@ -26,6 +30,7 @@ const ContentLanguageSelector: React.FC<ContentLanguageSelectorProps> = ({
   const menuRef = useRef<MenuComponentRef>(null);
   const { user, setAuthUser } = useAuth();
   const theme = useTheme();
+  const queryClient = useQueryClient();
   const updateUserMutationHook = useMutation({
     ...updateUserMutation(),
     onMutate: (variables) => {
@@ -36,14 +41,15 @@ const ContentLanguageSelector: React.FC<ContentLanguageSelectorProps> = ({
         });
       }
     },
-    onSuccess: () => {},
+    onSuccess: () => {
+      queryClient.resetQueries();
+    },
     onError: (error) => {
       Alert.alert(t("common.profile_update_failed"));
     },
   });
 
   const handleLanguageSelect = (language: ContentLanguage) => {
-    console.log("language", language);
     onLanguageChange?.(language);
     updateUserMutationHook.mutate({
       body: {

@@ -3,33 +3,29 @@ import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../../lib/theme";
+import { t } from "../../../lib/i18n";
 
-export default function FactChecksExplanationGeorgian() {
+export default function FactChecksExplanation() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
 
-  // Georgian Translations
   const translations = {
-    title: "როგორ მუშაობს ფაქტების შემოწმება",
-    overviewTitle: "მიმოხილვა",
-    overviewText:
-      "როდესაც ხედავთ ფაქტების შემოწმებას ან შეჯამებას, ჩვენ ვაანალიზებთ ვებ გვერდების, სოციალური მედიის პოსტებისა და სხვა წყაროების შინაარსს ფაქტობრივი სიზუსტის დასადასტურებლად. ჩვენი სისტემა ეძებს შესაბამის მითითებებს მრავალ ვებსაიტზე, რათა შეაფასოს განცხადებები და მოგაწოდოთ სრულყოფილი შეფასება.",
-    scoresTitle: "როგორ ვითვლით ქულებს",
-    scoresText1:
-      "ჩვენი ფაქტობრივი სიზუსტის ქულა მერყეობს 0-დან 1-მდე, რაც წარმოადგენს რამდენად ზუსტია განცხადება ინტერნეტში ნაპოვნი მტკიცებულებების საფუძველზე. რაც უფრო მაღალია ქულა, მით უფრო ფაქტობრივად ზუსტია განცხადება.",
-    scoresText2:
-      'თითოეული მითითება კლასიფიცირდება როგორც "მხარდამჭერი" ან "არამხარდამჭერი" შესამოწმებელი განცხადებისთვის. ეს მითითებები პირდაპირ გავლენას ახდენს საბოლოო ფაქტობრივი სიზუსტის შეფასებაზე.',
-    processTitle: "ჩვენი პროცესი",
+    title: t("common.how_fact_checking_works"),
+    overviewTitle: t("common.overview"),
+    overviewText: t("common.overview_description"),
+    scoresTitle: t("common.how_we_score"),
+    scoresText1: t("common.how_we_score_description_1"),
+    scoresText2: t("common.how_we_score_description_2"),
+    processTitle: t("common.our_process"),
     processSteps: [
-      "ჩვენ ვაანალიზებთ მასალის სრულ ტექსტურ შინაარსს",
-      "ჩვენი სისტემა ახორციელებს ღრმა ძიებას ყველა ნახსენები განცხადებისთვის",
-      "ჩვენ ვპოულობთ შესაბამის მითითებებს მრავალი ვებსაიტიდან",
-      "წყაროები ფასდება როგორც მხარდამჭერი ან არამხარდამჭერი",
-      "ჩვენ გთავაზობთ შეჯამებას, ფაქტობრივი სიზუსტის ქულას და ორიგინალ წყაროებს",
+      t("common.process_step_1"),
+      t("common.process_step_2"),
+      t("common.process_step_3"),
+      t("common.process_step_4"),
+      t("common.process_step_5"),
     ],
-    limitationsTitle: "შეზღუდვები",
-    limitationsText:
-      "მიუხედავად იმისა, რომ ჩვენი ფაქტების შემოწმების სისტემა ყოვლისმომცველია, მას აქვს შეზღუდვები. შედეგები დამოკიდებულია ხელმისაწვდომ ონლაინ ინფორმაციაზე, და ზოგიერთ თემას შეიძლება ჰქონდეს შეზღუდული ან ურთიერთგამომრიცხავი წყაროები. გირჩევთ, გადახედოთ მოწოდებულ წყაროებს საკუთარი შეფასების გასაკეთებლად.",
+    limitationsTitle: t("common.limitations"),
+    limitationsText: t("common.limitations_description"),
   };
 
   // Define icon names
@@ -50,19 +46,11 @@ export default function FactChecksExplanationGeorgian() {
     title: string;
     children: React.ReactNode;
   }) => (
-    <View
-      style={[
-        styles.section,
-        {
-          backgroundColor: theme.colors.card.background,
-          borderColor: theme.colors.border,
-        },
-      ]}
-    >
+    <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <Ionicons
           name={icon}
-          size={24}
+          size={20}
           color={theme.colors.icon}
           style={styles.headerIcon}
         />
@@ -79,7 +67,7 @@ export default function FactChecksExplanationGeorgian() {
       style={[
         styles.container,
         {
-          backgroundColor: theme.colors.card.background,
+          backgroundColor: theme.colors.background,
           paddingTop: insets.top,
         },
       ]}
@@ -88,9 +76,6 @@ export default function FactChecksExplanationGeorgian() {
         contentContainerStyle={styles.scrollContentContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={[styles.title, { color: theme.colors.text }]}>
-          {translations.title}
-        </Text>
         <Section icon={icons.overview} title={translations.overviewTitle}>
           <Text
             style={[
@@ -152,40 +137,40 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContentContainer: {
-    paddingBottom: 32,
-    paddingHorizontal: 20,
-    paddingTop: 24,
+    paddingBottom: 24,
+    paddingHorizontal: 16,
+    paddingTop: 50,
   },
   title: {
-    fontSize: 28,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 28,
+    marginBottom: 16,
     textAlign: "center",
     letterSpacing: 0.1,
   },
   section: {
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 18,
-    marginBottom: 20,
+    borderWidth: 0,
+    borderRadius: 0,
+    padding: 0,
+    marginBottom: 16,
   },
   sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 10,
+    marginBottom: 6,
   },
   headerIcon: {
-    marginRight: 10,
+    marginRight: 8,
   },
   sectionTitle: {
-    fontSize: 20,
-    fontWeight: "700",
+    fontSize: 16,
+    fontWeight: "600",
     letterSpacing: 0.05,
   },
   paragraph: {
-    fontSize: 17,
-    lineHeight: 26,
-    marginBottom: 10,
+    fontSize: 16,
+    lineHeight: 24,
+    marginBottom: 8,
   },
   processStep: {
     fontSize: 16,

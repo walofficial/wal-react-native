@@ -22,6 +22,7 @@ import { convertToCDNUrl } from "@/lib/utils";
 import FactualityBadge from "./ui/FactualityBadge";
 import { getFactCheckBadgeInfo } from "@/utils/factualityUtils";
 import { LinkPreviewData } from "@/lib/api/generated";
+import { t } from "@/lib/i18n";
 
 interface LinkPreviewProps {
   previewData: LinkPreviewData;
@@ -357,7 +358,7 @@ export default function LinkPreview({
                               { color: "rgba(255, 255, 255, 0.95)" },
                             ]}
                           >
-                            ანალიზი
+                            {t("common.analysis")}
                           </Text>
                         </View>
                       )}
@@ -393,7 +394,7 @@ export default function LinkPreview({
                         { fontSize: 12, color: textColor },
                       ]}
                     >
-                      ანალიზი
+                      {t("common.analysis")}
                     </Text>
                   </View>
                 )}

@@ -131,9 +131,7 @@ export default function ProfileMain() {
         <View style={styles.footerLinks}>
           <TouchableOpacity
             onPress={() => {
-              Linking.openURL(
-                "https://app.termly.io/policy-viewer/policy.html?policyUUID=a118a575-bf92-4a88-a954-1589ae572d09"
-              );
+              Linking.openURL("https://greetai.co/terms");
             }}
             style={styles.footerLink}
           >
@@ -143,9 +141,7 @@ export default function ProfileMain() {
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              Linking.openURL(
-                "https://app.termly.io/policy-viewer/policy.html?policyUUID=c16d10b8-1b65-43ea-9568-30e7ce727a60"
-              );
+              Linking.openURL("https://greetai.co/policy");
             }}
             style={styles.footerLink}
           >

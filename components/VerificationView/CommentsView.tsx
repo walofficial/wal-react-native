@@ -276,14 +276,7 @@ const PostContent = memo(
     const title = verification.title;
     const isLive = verification.is_live;
     const isSpace = verification.is_space;
-    const [, setActiveSources] = useAtom(activeSourcesState);
-    const [, setIsBottomSheetOpen] = useAtom(newsBottomSheetState);
-    const handleSourcePress = useCallback(() => {
-      if (verification.sources && verification.sources.length > 0) {
-        setActiveSources(verification.sources);
-        setIsBottomSheetOpen(true);
-      }
-    }, [verification.sources, setActiveSources, setIsBottomSheetOpen]);
+
     // IMAGE GALLERY IS DEPRECATED we should use image_gallery_with_dims instead.
     const realTimeImageUrl =
       verification?.image_gallery_with_dims?.[0]?.url || imageUrl;
@@ -437,27 +430,23 @@ const PostContent = memo(
               verification.ai_video_summary_status === "PENDING"
             }
           />
-          {hasPreview &&
-            !imageUrl &&
-            !realTimeImageUrl &&
-            verification.preview_data &&
-            localLinkPreview.previewData && (
-              <LinkPreview
-                previewData={
-                  verification.preview_data
-                    ? verification.preview_data
-                    : localLinkPreview.previewData
-                }
-                isLoading={false}
-                hasAISummary={
-                  verification.ai_video_summary_status === "COMPLETED" ||
-                  verification.ai_video_summary_status === "PENDING"
-                }
-                verificationId={verificationId}
-                inFeedView={false}
-                factuality={verification.fact_check_data?.factuality}
-              />
-            )}
+          {hasPreview && !imageUrl && !realTimeImageUrl && (
+            <LinkPreview
+              previewData={
+                verification.preview_data
+                  ? verification.preview_data
+                  : localLinkPreview.previewData
+              }
+              isLoading={false}
+              hasAISummary={
+                verification.ai_video_summary_status === "COMPLETED" ||
+                verification.ai_video_summary_status === "PENDING"
+              }
+              verificationId={verificationId}
+              inFeedView={false}
+              factuality={verification.fact_check_data?.factuality}
+            />
+          )}
 
           {verification.external_video &&
             verification.ai_video_summary_status === "COMPLETED" && (

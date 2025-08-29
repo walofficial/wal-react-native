@@ -5,7 +5,9 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useAtomValue } from "jotai";
 import { debouncedSearchValueAtom } from "@/lib/state/search";
-import { getLocationFeedPaginatedInfiniteOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { getLocationFeedPaginatedInfiniteOptions, getUserVerificationOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { getLocationFeedPaginated } from "@/lib/api/generated/sdk.gen";
+import { queryClient } from "@/lib/queryClient";
 
 export function useLocationFeedPaginated({
   enabled = true,
@@ -71,6 +73,7 @@ export function useLocationFeedPaginated({
     hasPreviousPage,
     isPending,
   } = useInfiniteQuery({
+
     ...getLocationFeedPaginatedInfiniteOptions({
       query: {
         page_size: pageSize,
@@ -81,6 +84,34 @@ export function useLocationFeedPaginated({
         feed_id: feedId,
       },
     }),
+    queryFn: async ({ pageParam, queryKey, signal }) => {
+      const { data } = await getLocationFeedPaginated({
+        ...queryKey,
+        query: {
+          page: pageParam as number,
+          page_size: pageSize,
+          search_term: finalSearchTerm,
+          content_type_filter: content_type,
+        },
+        path: {
+          feed_id: feedId,
+        },
+        signal,
+        throwOnError: true
+      });
+      data.forEach((item) => {
+        const queryOptions = getUserVerificationOptions({
+          query: {
+            verification_id: item.id,
+          },
+        });
+
+        queryClient.setQueryData(queryOptions.queryKey, {
+          ...item,
+        });
+      });
+      return data;
+    },
     getNextPageParam: (lastPage, allPages) => {
       // If we received fewer items than pageSize, there is no next page
       if (lastPage.length < pageSize) {
@@ -101,7 +132,6 @@ export function useLocationFeedPaginated({
       const hasLiveStream = data?.state.data?.pages?.[0]?.some(
         (item) => item.is_live
       );
-
       return hasLiveStream ? 3000 : false;
     },
     // subscribed: isFocused,

@@ -9,8 +9,8 @@ export type ContentLanguage = 'english' | 'french' | 'georgian';
 // Feed IDs for different regions
 export const NEWS_FEED_TO_REGION: Record<string, Region> = {
   "687960db5051460a7afd6e63": "georgia",
-  "687960db5051460a7afd6e64": "united_states",
-  "687960db5051460a7afd6e65": "france"
+  "68a62605b6cf9523bde06f0e": "united_states",
+  "68a62555b6cf9523bde06f07": "france"
 };
 
 export const REGION_FEED_IDS = {

@@ -21,8 +21,7 @@ import { getBottomSheetBackgroundStyle } from "@/lib/styles";
 import { useTheme } from "@/lib/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { isAndroid } from "@/lib/platform";
-import { Portal } from "@gorhom/portal";
-
+import { Portal } from "@/components/primitives/portal";
 interface NewsSourcesBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheet>;
 }

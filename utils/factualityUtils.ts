@@ -1,3 +1,5 @@
+import { t } from "@/lib/i18n";
+
 /**
  * Utility functions for factuality calculations and badge info
  */
@@ -25,13 +27,13 @@ export const getFactCheckBadgeInfo = (
     let badgeType: "truth" | "misleading" | "needs-context";
 
     if (score >= 0.75) {
-        badgeText = `${Math.round(score * 100)}% სიმართლე`;
+        badgeText = `${Math.round(score * 100)}% ${t("common.truth")}`;
         badgeType = "truth";
     } else if (score >= 0.5) {
-        badgeText = `${Math.round(score * 100)}% სიმართლე`;
+        badgeText = `${Math.round(score * 100)}% ${t("common.truth")}`;
         badgeType = "needs-context";
     } else {
-        badgeText = `${Math.round((1 - score) * 100)}% სიცრუე`;
+        badgeText = `${Math.round((1 - score) * 100)}% ${t("common.falsehood")}`;
         badgeType = "misleading";
     }
 

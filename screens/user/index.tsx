@@ -20,32 +20,31 @@ export default function ProfileMain() {
   const contactSyncSheetRef = useRef<BottomSheet>(null);
   return (
     <>
-      <ContactSyncSheet bottomSheetRef={contactSyncSheetRef} />
+      {/* <ContactSyncSheet bottomSheetRef={contactSyncSheetRef} /> */}
       <UserGNContentProfile
         userId={user?.id}
         topHeader={
           <>
             <ProfileView userId={user?.id} />
             <View style={styles.container}>
-              <View style={styles.sectionContainer}>
+              {/* <View style={styles.sectionContainer}>
                 <SectionHeader
                   icon={<Search size={26} color={theme.colors.icon} />}
                   text={t("common.friends")}
                 />
                 <Button
                   style={styles.friendButton}
-                  variant="secondary"
+                  variant="outline"
                   size="large"
                   onPress={() => {
                     contactSyncSheetRef.current?.expand();
                   }}
-                  glassy={true}
                   icon="people-outline"
                   iconPosition="left"
                   title={t("common.add_friends_action")}
                 />
                 <FriendRequests hideMyRequests limit={3} />
-              </View>
+              </View> */}
               <View style={styles.sectionContainer}>
                 <SectionHeader
                   icon={

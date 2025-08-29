@@ -67,7 +67,7 @@ export const SourceIcon = forwardRef<any, SourceIconProps>(
             width: size,
             height: size,
             backgroundColor: noBackground ? "transparent" : "black",
-            borderRadius: size / 6,
+            borderRadius: size / 2,
             justifyContent: "center",
             alignItems: "center",
           },
@@ -77,7 +77,7 @@ export const SourceIcon = forwardRef<any, SourceIconProps>(
       >
         <Image
           source={{ uri: getFaviconUrl(sourceUrl) }}
-          style={{ width: size, height: size, borderRadius: size / 6 }}
+          style={{ width: size, height: size, borderRadius: size / 2 }}
           transition={300}
         />
       </View>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   fallbackContainer: {
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 12,
+    borderRadius: 50,
   },
   fallbackText: {
     color: "#374151",

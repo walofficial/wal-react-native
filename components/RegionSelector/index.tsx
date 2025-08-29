@@ -91,16 +91,16 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
           title: `🇬🇪 ${getRegionDisplayName("georgia")}`,
           state: preferredRegion === "georgia" ? "on" : "off",
         },
-        {
-          id: "united_states",
-          title: `🇺🇸 ${getRegionDisplayName("united_states")}`,
-          state: preferredRegion === "united_states" ? "on" : "off",
-        },
-        {
-          id: "france",
-          title: `🇫🇷 ${getRegionDisplayName("france")}`,
-          state: preferredRegion === "france" ? "on" : "off",
-        },
+        // {
+        //   id: "united_states",
+        //   title: `🇺🇸 ${getRegionDisplayName("united_states")}`,
+        //   state: preferredRegion === "united_states" ? "on" : "off",
+        // },
+        // {
+        //   id: "france",
+        //   title: `🇫🇷 ${getRegionDisplayName("france")}`,
+        //   state: preferredRegion === "france" ? "on" : "off",
+        // },
       ]}
     >
       <AnimatedPressable

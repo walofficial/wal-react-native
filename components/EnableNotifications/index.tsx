@@ -20,6 +20,7 @@ import {
   upsertFcmMutation,
 } from "@/lib/api/generated/@tanstack/react-query.gen";
 import { t } from "@/lib/i18n";
+import { trackEvent, setUserProperties } from "@/lib/analytics";
 
 export const openNotificationSettings = () => {
   return Linking.openSettings();
@@ -72,6 +73,11 @@ export default function EnableNotifications({
       await Notifications.unregisterForNotificationsAsync();
       deleteFCM.mutate({});
       setUserDismissed(true);
+      trackEvent("push_opt_in", {
+        status: "disabled",
+        from_screen: "settings",
+      });
+      setUserProperties({ has_push_opt_in: false });
     } else {
       // Subscribe logic
       try {
@@ -93,6 +99,7 @@ export default function EnableNotifications({
               },
             ]
           );
+          trackEvent("push_opt_in", { status: "prompt_denied" });
           return;
         }
         if (token) {
@@ -103,9 +110,15 @@ export default function EnableNotifications({
             } as any,
           });
           setUserDismissed(false);
+          trackEvent("push_opt_in", { status: "enabled" });
+          setUserProperties({ has_push_opt_in: true });
         }
       } catch (error) {
         console.error(error);
+        trackEvent("error_event", {
+          scope: "push_subscription",
+          message: (error as Error)?.message || "unknown",
+        });
       }
     }
   };
@@ -122,10 +135,15 @@ export default function EnableNotifications({
       Notifications.addNotificationResponseReceivedListener((response) => {
         // Navigate to the chat route when notification is tapped
         if (response.notification.request.content.data?.chatId) {
+          trackEvent("push_open_details", {
+            source: "tap",
+            has_chat_id: true,
+          });
           router.navigate(
             `/chat/${response.notification.request.content.data.chatId}`
           );
         }
+        trackEvent("push_open_details", { source: "tap", has_chat_id: false });
       });
 
     return () => {
