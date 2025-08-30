@@ -126,7 +126,7 @@ export function useLocationFeedPaginated({
     retry: 2,
     refetchOnMount: false,
     refetchOnReconnect: false,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
     refetchInterval: (data) => {
       const hasLiveStream = data?.state.data?.pages?.[0]?.some(
