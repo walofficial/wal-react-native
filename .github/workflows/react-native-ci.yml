@@ -58,31 +58,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "yarn"
-
-      - name: 📦 Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - name: 📦 Setup yarn cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: "npm"
 
       - name: 📦 Install dependencies
-        run: yarn install
+        run: npm ci
 
       - name: 🧪 Run TypeScript check
-        run: yarn tsc --noEmit
+        run: npm run typecheck
 
       - name: 🧹 Run ESLint
-        run: yarn lint
+        run: npm run lint
 
       - name: 🎨 Run Prettier check
-        run: yarn format:check
+        run: npm run format:check
 
   build-and-release:
     needs: test
@@ -102,24 +90,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "yarn"
-
-      - name: 📦 Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
-
-      - name: 📦 Setup yarn cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          cache: "npm"
 
       - name: 📦 Install dependencies
         run: |
-          yarn install
-          yarn global add eas-cli@latest
+          npm ci
+          npm i -g eas-cli@latest
 
       - name: 📱 Setup EAS build cache
         uses: actions/cache@v3
@@ -291,5 +267,3 @@ jobs:
             ./app-ios-dev.app
             ./app-ios-prod.ipa
           retention-days: 7
-
-
