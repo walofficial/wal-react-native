@@ -1,5 +1,4 @@
-name: PR Labeler
-
+name: "Pull Request Labeler"
 on:
   pull_request_target:
     types: [opened, synchronize]
@@ -11,6 +10,7 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/labeler@v5
+      - uses: actions/labeler@v4
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          configuration-path: .github/labeler.yml
