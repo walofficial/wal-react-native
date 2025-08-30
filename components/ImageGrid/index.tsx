@@ -1,18 +1,18 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   StyleSheet,
   useWindowDimensions,
   InteractionManager,
-} from "react-native";
-import { HandleRef, useHandleRef } from "@/lib/hooks/useHandleRef";
-import { runOnJS, runOnUI, MeasuredDimensions } from "react-native-reanimated";
-import { useLightboxControls } from "@/lib/lightbox/lightbox";
-import { measureHandle } from "@/lib/hooks/useHandleRef";
-import { convertToCDNUrl } from "@/lib/utils";
-import { Dimensions } from "@/components/Lightbox/ImageViewing/@types";
-import { Image } from "expo-image";
-import { GalleryItem } from "../GalleryItem";
+} from 'react-native';
+import { HandleRef, useHandleRef } from '@/lib/hooks/useHandleRef';
+import { runOnJS, runOnUI, MeasuredDimensions } from 'react-native-reanimated';
+import { useLightboxControls } from '@/lib/lightbox/lightbox';
+import { measureHandle } from '@/lib/hooks/useHandleRef';
+import { convertToCDNUrl } from '@/lib/utils';
+import { Dimensions } from '@/components/Lightbox/ImageViewing/@types';
+import { Image } from 'expo-image';
+import { GalleryItem } from '../GalleryItem';
 
 interface ImageGridProps {
   images: string[];
@@ -41,18 +41,18 @@ const ImageGrid = ({
 
   const galleryImages = images.map((img) => ({
     thumb: convertToCDNUrl(img),
-    alt: "",
+    alt: '',
   }));
 
   const _openLightbox = (
     index: number,
     thumbRects: (MeasuredDimensions | null)[],
-    fetchedDims: (Dimensions | null)[]
+    fetchedDims: (Dimensions | null)[],
   ) => {
     const items = images.map((img) => ({
       uri: convertToCDNUrl(img),
       thumbUri: convertToCDNUrl(img),
-      alt: "",
+      alt: '',
       verificationId: verificationId,
       dimensions: { width: 1, height: 1 },
     }));
@@ -62,7 +62,7 @@ const ImageGrid = ({
         ...item,
         thumbRect: thumbRects[i] ?? null,
         thumbDimensions: fetchedDims[i] ?? null,
-        type: "image",
+        type: 'image',
       })),
       index,
     });
@@ -71,11 +71,11 @@ const ImageGrid = ({
   const handlePress = (
     index: number,
     containerRefs: HandleRef[],
-    fetchedDims: (Dimensions | null)[]
+    fetchedDims: (Dimensions | null)[],
   ) => {
     const handles = containerRefs.map((r) => r.current);
     runOnUI(() => {
-      "worklet";
+      'worklet';
       const rects = handles.map(measureHandle);
       runOnJS(_openLightbox)(index, rects, fetchedDims);
     })();
@@ -228,16 +228,16 @@ const ImageGrid = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: '100%',
     marginVertical: 4,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderRadius: 8,
   },
   flex1: {
     flex: 1,
   },
   flexRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
 });
 

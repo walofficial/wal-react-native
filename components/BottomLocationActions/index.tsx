@@ -1,17 +1,17 @@
-import React from "react";
-import { TouchableOpacity, View, Platform, StyleSheet } from "react-native";
-import TakeVideo from "../TakeVideo";
-import LiveUserCountIndicator from "../LiveUserCountIndicator";
-import useCountAnonList from "../LiveUserCountIndicator/useCountAnonList";
-import CreatePostGlobal from "../CreatePostGlobal";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { useSetAtom } from "jotai";
+import React from 'react';
+import { TouchableOpacity, View, Platform, StyleSheet } from 'react-native';
+import TakeVideo from '../TakeVideo';
+import LiveUserCountIndicator from '../LiveUserCountIndicator';
+import useCountAnonList from '../LiveUserCountIndicator/useCountAnonList';
+import CreatePostGlobal from '../CreatePostGlobal';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { useSetAtom } from 'jotai';
 import {
   locationUserListSheetState,
   locationUserListfeedIdState,
-} from "@/lib/atoms/location";
-import { isIOS } from "@/lib/platform";
-import { trackEvent } from "@/lib/analytics";
+} from '@/lib/atoms/location';
+import { isIOS } from '@/lib/platform';
+import { trackEvent } from '@/lib/analytics';
 
 export default function BottomLocationActions({
   feedId,
@@ -29,9 +29,9 @@ export default function BottomLocationActions({
   const setfeedId = useSetAtom(locationUserListfeedIdState);
 
   const handlePress = () => {
-    trackEvent("location_feed_live_users_button_pressed", {});
+    trackEvent('location_feed_live_users_button_pressed', {});
 
-    console.log("handlePress called with feedId:", feedId, data);
+    console.log('handlePress called with feedId:', feedId, data);
     setIsBottomSheetOpen(false);
     if (data && data.count > 0) {
       setfeedId(feedId);
@@ -60,11 +60,11 @@ export default function BottomLocationActions({
               {
                 opacity: !isUserInSelectedLocation ? 0.5 : 1,
                 backgroundColor: isDarkColorScheme
-                  ? "rgba(0,0,0,0.7)"
-                  : "rgba(240,240,240,0.9)",
+                  ? 'rgba(0,0,0,0.7)'
+                  : 'rgba(240,240,240,0.9)',
                 borderColor: isDarkColorScheme
-                  ? "rgba(255,255,255,0.1)"
-                  : "rgba(0,0,0,0.1)",
+                  ? 'rgba(255,255,255,0.1)'
+                  : 'rgba(0,0,0,0.1)',
               },
             ]}
           >
@@ -80,35 +80,35 @@ export default function BottomLocationActions({
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    position: 'absolute',
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     zIndex: 20,
-    pointerEvents: "box-none",
+    pointerEvents: 'box-none',
   },
   liveUsersButton: {
     padding: 10,
     borderWidth: 1,
     borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     height: 50,
     width: 110,
     zIndex: 20,
   },
   countryFeedContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     flex: 1,
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "flex-end",
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'flex-end',
   },
   floatingButtonContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 30,
     right: 20,
     zIndex: 20,

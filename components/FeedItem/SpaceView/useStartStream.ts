@@ -1,12 +1,12 @@
 // @ts-nocheck
-import { useMutation } from "@tanstack/react-query";
-import { useAtom, useSetAtom } from "jotai";
-import { activeLivekitRoomState } from "@/components/SpacesBottomSheet/atom";
-import { startLiveMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useMutation } from '@tanstack/react-query';
+import { useAtom, useSetAtom } from 'jotai';
+import { activeLivekitRoomState } from '@/components/SpacesBottomSheet/atom';
+import { startLiveMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export function useStartStream() {
   const [activeLivekitRoom, setActiveLivekitRoom] = useAtom(
-    activeLivekitRoomState
+    activeLivekitRoomState,
   );
   const { mutate: startStream, isPending } = useMutation({
     ...startLiveMutation(),

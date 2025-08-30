@@ -1,8 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation } from '@tanstack/react-query';
 
-import { useRouter } from "expo-router";
-import ProtocolService from "@/lib/services/ProtocolService";
-import { createChatRoom } from "@/lib/api/generated";
+import { useRouter } from 'expo-router';
+import ProtocolService from '@/lib/services/ProtocolService';
+import { createChatRoom } from '@/lib/api/generated';
 
 function useLiveUser() {
   const router = useRouter();
@@ -27,7 +27,7 @@ function useLiveUser() {
       if (response.data.target_public_key) {
         await ProtocolService.storeRemotePublicKey(
           targetUserId,
-          response.data.target_public_key
+          response.data.target_public_key,
         );
       }
 
@@ -36,7 +36,7 @@ function useLiveUser() {
     onSuccess: (data, variables) => {
       if (data.data.chat_room_id) {
         router.navigate({
-          pathname: "/(tabs)/(home)/chatrooms/[roomId]",
+          pathname: '/(tabs)/(home)/chatrooms/[roomId]',
           params: {
             roomId: data.data.chat_room_id,
           },
@@ -60,7 +60,7 @@ function useLiveUser() {
       if (response.data.target_public_key) {
         await ProtocolService.storeRemotePublicKey(
           targetUserId,
-          response.data.target_public_key
+          response.data.target_public_key,
         );
       }
       return response;
@@ -68,7 +68,7 @@ function useLiveUser() {
     onSuccess: (data, variables) => {
       if (data.data.chat_room_id) {
         router.navigate({
-          pathname: "/chatrooms/[roomId]",
+          pathname: '/chatrooms/[roomId]',
           params: {
             roomId: data.data.chat_room_id,
           },

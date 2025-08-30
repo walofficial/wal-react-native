@@ -1,13 +1,13 @@
-import React, { useCallback, useRef, memo } from "react";
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import { useKeyboardAnimation } from "react-native-keyboard-controller";
-import { useAtom } from "jotai";
-import { activeTabAtom } from "@/atoms/comments";
+import React, { useCallback, useRef, memo } from 'react';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { useKeyboardAnimation } from 'react-native-keyboard-controller';
+import { useAtom } from 'jotai';
+import { activeTabAtom } from '@/atoms/comments';
 import {
   useInfiniteQuery,
   useQueryClient,
   useMutation,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 import {
   deleteCommentMutation,
   getVerificationCommentsInfiniteOptions,
@@ -16,33 +16,33 @@ import {
   getVerificationsInfiniteQueryKey,
   likeCommentMutation,
   unlikeCommentMutation,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import useAuth from "@/hooks/useAuth";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import useAuth from '@/hooks/useAuth';
 import {
   CommentResponse,
   GetVerificationCommentsResponse,
-} from "@/lib/api/generated";
-import CommentItem from "./CommentItem";
+} from '@/lib/api/generated';
+import CommentItem from './CommentItem';
 import Animated, {
   LinearTransition,
   useAnimatedStyle,
   SharedValue,
-} from "react-native-reanimated";
-import { isNative, isWeb, isIOS } from "@/lib/platform";
-import { List, ListMethods } from "../List";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { t } from "@/lib/i18n";
+} from 'react-native-reanimated';
+import { isNative, isWeb, isIOS } from '@/lib/platform';
+import { List, ListMethods } from '../List';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { t } from '@/lib/i18n';
 
 function EmptyListComponent() {
   return (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t("common.no_comments_found")}</Text>
+      <Text style={styles.emptyText}>{t('common.no_comments_found')}</Text>
     </View>
   );
 }
 
 function LoadingComponent() {
-  const color = useThemeColor({}, "text");
+  const color = useThemeColor({}, 'text');
   return (
     <View style={styles.loadingContainer}>
       <ActivityIndicator color={color} size="large" />
@@ -61,7 +61,7 @@ const updateCommentsCache = (
   queryClient: any,
   postId: string,
   activeTab: string,
-  updateFn: (pages: CommentResponse[]) => CommentResponse[]
+  updateFn: (pages: CommentResponse[]) => CommentResponse[],
 ) => {
   const commentsQueryKey = getVerificationCommentsInfiniteQueryKey({
     path: { verification_id: postId },
@@ -118,12 +118,12 @@ const CommentsList = memo(
       if (!user) return;
 
       const previousComments = queryClient.getQueryData(
-        commnetsListOptions.queryKey
+        commnetsListOptions.queryKey,
       );
 
       // Remove the comment optimistically
       updateCommentsCache(queryClient, postId, activeTab, (page) =>
-        page.filter((comment) => comment.comment.id !== commentId)
+        page.filter((comment) => comment.comment.id !== commentId),
       );
 
       try {
@@ -134,9 +134,9 @@ const CommentsList = memo(
         // Revert optimistic update on error
         queryClient.setQueryData(
           commnetsListOptions.queryKey,
-          previousComments
+          previousComments,
         );
-        console.error("Failed to delete comment:", error);
+        console.error('Failed to delete comment:', error);
       }
     };
 
@@ -157,8 +157,8 @@ const CommentsList = memo(
                 },
                 is_liked_by_user: !isLiked,
               }
-            : comment
-        )
+            : comment,
+        ),
       );
 
       try {
@@ -178,7 +178,7 @@ const CommentsList = memo(
             path: { verification_id: postId },
           }),
         });
-        console.error("Failed to like/unlike comment:", error);
+        console.error('Failed to like/unlike comment:', error);
       }
     };
 
@@ -194,8 +194,8 @@ const CommentsList = memo(
             createdAt={new Date(item.comment.created_at || Date.now())}
             author={{
               id: author.id,
-              username: author.username || "",
-              profilePicture: author.photos?.[0]?.image_url?.[0] || "",
+              username: author.username || '',
+              profilePicture: author.photos?.[0]?.image_url?.[0] || '',
             }}
             isLiked={item.is_liked_by_user || false}
             likesCount={item.comment.likes_count || 0}
@@ -212,14 +212,14 @@ const CommentsList = memo(
           />
         );
       },
-      [handleLikeComment, handleDeleteComment, user?.id, postId]
+      [handleLikeComment, handleDeleteComment, user?.id, postId],
     );
 
     const allComments = data?.pages.flatMap((page) => page.comments) || [];
     if (error) {
       return (
         <View>
-          <Text>{t("common.error")}</Text>
+          <Text>{t('common.error')}</Text>
         </View>
       );
     }
@@ -250,7 +250,7 @@ const CommentsList = memo(
         />
       </View>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({
@@ -260,36 +260,36 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: 32,
   },
   emptyText: {
-    color: "#9ca3af",
-    textAlign: "center",
+    color: '#9ca3af',
+    textAlign: 'center',
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingVertical: 32,
   },
   headerContainer: {
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(31, 41, 55, 0.3)",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    borderBottomColor: 'rgba(31, 41, 55, 0.3)',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   headerText: {
-    color: "#e5e7eb",
-    fontWeight: "500",
+    color: '#e5e7eb',
+    fontWeight: '500',
     fontSize: 16,
   },
   keyboardAvoidingView: {
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
 });
 

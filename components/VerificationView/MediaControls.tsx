@@ -1,13 +1,13 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { LinearGradient } from "expo-linear-gradient";
-import LikeButton from "@/components/FeedItem/LikeButton";
-import CommentButton from "@/components/FeedItem/CommentButton";
-import ShareButton from "@/components/FeedItem/ShareButton";
-import { LocationFeedPost } from "@/lib/api/generated";
-import { useTheme } from "@/lib/theme";
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { LinearGradient } from 'expo-linear-gradient';
+import LikeButton from '@/components/FeedItem/LikeButton';
+import CommentButton from '@/components/FeedItem/CommentButton';
+import ShareButton from '@/components/FeedItem/ShareButton';
+import { LocationFeedPost } from '@/lib/api/generated';
+import { useTheme } from '@/lib/theme';
 
 interface MediaControlsProps {
   verification: LocationFeedPost;
@@ -30,25 +30,25 @@ const MediaControls = ({
       <TouchableOpacity
         onPress={() => {
           router.push({
-            pathname: "/(tabs)/(home)/profile",
-            params: { userId: verification.assignee_user?.id || "" },
+            pathname: '/(tabs)/(home)/profile',
+            params: { userId: verification.assignee_user?.id || '' },
           });
         }}
       >
         <Avatar
           style={styles.avatar}
-          alt={verification.assignee_user?.username || ""}
+          alt={verification.assignee_user?.username || ''}
         >
           <AvatarImage
             source={{
-              uri: verification.assignee_user?.photos[0].image_url[0] || "",
+              uri: verification.assignee_user?.photos[0].image_url[0] || '',
             }}
           />
         </Avatar>
       </TouchableOpacity>
       <View style={styles.userTextContainer}>
         <Text style={styles.username}>
-          {verification.assignee_user?.username || ""}
+          {verification.assignee_user?.username || ''}
         </Text>
         <Text style={styles.timestamp}>{formattedTime}</Text>
       </View>
@@ -79,17 +79,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   actionGroup: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   userInfoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 16,
   },
   avatar: {
@@ -100,15 +100,15 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   username: {
-    color: "white",
-    fontWeight: "600",
+    color: 'white',
+    fontWeight: '600',
   },
   timestamp: {
-    color: "#f1f5f9", // gray-100
+    color: '#f1f5f9', // gray-100
     fontSize: 14,
   },
   contentText: {
-    color: "white",
+    color: 'white',
     marginTop: 16,
   },
 });

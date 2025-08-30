@@ -1,5 +1,5 @@
-import useLocation from "@/hooks/useLocation";
-import LocationContext from "@/hooks/context";
+import useLocation from '@/hooks/useLocation';
+import LocationContext from '@/hooks/context';
 
 function LocationProvider({ children }: { children: React.ReactNode }) {
   const { location, errorMsg, isGettingLocation } = useLocation();

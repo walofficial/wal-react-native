@@ -1,29 +1,29 @@
-import React, { useRef, useState, useCallback, memo } from "react";
-import { View, TouchableOpacity, Alert, StyleSheet } from "react-native";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm, Controller } from "react-hook-form";
-import { z } from "zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import ImageLoader from "@/components/ImageLoader";
-import * as ImageManipulator from "expo-image-manipulator";
-import { ActivityIndicator } from "react-native";
-import { Text } from "@/components/ui/text";
-import * as ImagePicker from "expo-image-picker";
-import { useRouter } from "expo-router";
-import { convertToCDNUrl } from "@/lib/utils";
-import { Ionicons } from "@expo/vector-icons";
-import BottomSheet, { BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { getBottomSheetBackgroundStyle } from "@/lib/styles";
-import useAuth from "@/hooks/useAuth";
-import { FontSizes, useTheme } from "@/lib/theme";
+import React, { useRef, useState, useCallback, memo } from 'react';
+import { View, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import ImageLoader from '@/components/ImageLoader';
+import * as ImageManipulator from 'expo-image-manipulator';
+import { ActivityIndicator } from 'react-native';
+import { Text } from '@/components/ui/text';
+import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
+import { convertToCDNUrl } from '@/lib/utils';
+import { Ionicons } from '@expo/vector-icons';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { getBottomSheetBackgroundStyle } from '@/lib/styles';
+import useAuth from '@/hooks/useAuth';
+import { FontSizes, useTheme } from '@/lib/theme';
 import {
   getUserProfileUserProfileUserIdGetQueryKey,
   getVerificationsInfiniteQueryKey,
   updateUserMutation,
   uploadUserPhotosMutation,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import { formDataBodySerializer } from "@/lib/utils/form-data";
-import { t } from "@/lib/i18n";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { formDataBodySerializer } from '@/lib/utils/form-data';
+import { t } from '@/lib/i18n';
 
 const formSchema = z.object({
   photo: z
@@ -40,7 +40,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const bottomSheetRef = useRef<BottomSheet>(null);
-  const snapPoints = React.useMemo(() => ["25%"], []);
+  const snapPoints = React.useMemo(() => ['25%'], []);
   const theme = useTheme();
   const queryClient = useQueryClient();
 
@@ -64,10 +64,10 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
           }
         : undefined,
     },
-    reValidateMode: "onChange",
+    reValidateMode: 'onChange',
   });
 
-  const photo = watch("photo");
+  const photo = watch('photo');
 
   const updateUser = useMutation({
     onMutate: (variables) => {
@@ -81,14 +81,14 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       queryClient.invalidateQueries({
         queryKey: getVerificationsInfiniteQueryKey({
           query: {
-            target_user_id: user?.id || "",
+            target_user_id: user?.id || '',
             page_size: 10,
           },
         }),
       });
 
       if (redirectURL) {
-        const defaultCategoryId = "66e82cbf6cf36789fa525eaf";
+        const defaultCategoryId = '66e82cbf6cf36789fa525eaf';
 
         router.replace({
           pathname: redirectURL as any,
@@ -102,13 +102,13 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       queryClient.invalidateQueries({
         queryKey: getUserProfileUserProfileUserIdGetQueryKey({
           path: {
-            user_id: user?.id || "",
+            user_id: user?.id || '',
           },
         }),
       });
     },
     onError: (error) => {
-      Alert.alert(t("common.error_title"), t("common.user_update_failed"));
+      Alert.alert(t('common.error_title'), t('common.user_update_failed'));
     },
   });
 
@@ -121,7 +121,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
         pressBehavior="close"
       />
     ),
-    []
+    [],
   );
 
   const resizeImage = async (uri: string) => {
@@ -129,11 +129,11 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       const manipResult = await ImageManipulator.manipulateAsync(
         uri,
         [{ resize: { width: 400, height: 400 } }],
-        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG },
       );
       return manipResult.uri;
     } catch (error) {
-      console.error("Error resizing image", error);
+      console.error('Error resizing image', error);
       return null;
     }
   };
@@ -141,8 +141,8 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
   const uploadMutation = useMutation({
     ...uploadUserPhotosMutation(),
     onSuccess: (data) => {
-      setValue("photo", data[0]);
-      trigger("photo");
+      setValue('photo', data[0]);
+      trigger('photo');
       setIsLoading(false);
       bottomSheetRef.current?.close();
 
@@ -154,7 +154,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
     },
     onError: (error) => {
       console.log(JSON.stringify(error));
-      Alert.alert(t("common.error_title"), t("common.photo_upload_failed"));
+      Alert.alert(t('common.error_title'), t('common.photo_upload_failed'));
       setIsLoading(false);
     },
   });
@@ -162,10 +162,10 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
   const handleTakePhoto = async () => {
     bottomSheetRef.current?.close();
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    if (status !== "granted") {
+    if (status !== 'granted') {
       Alert.alert(
-        t("common.permission_needed"),
-        t("common.camera_permission_required")
+        t('common.permission_needed'),
+        t('common.camera_permission_required'),
       );
       return;
     }
@@ -183,8 +183,8 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       if (resizedUri) {
         const file = {
           uri: resizedUri,
-          name: "photo.jpg",
-          type: "image/jpeg",
+          name: 'photo.jpg',
+          type: 'image/jpeg',
         };
         uploadMutation.mutate({
           ...formDataBodySerializer,
@@ -212,8 +212,8 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       if (resizedUri) {
         const file = {
           uri: resizedUri,
-          name: "photo.jpg",
-          type: "image/jpeg",
+          name: 'photo.jpg',
+          type: 'image/jpeg',
         };
         uploadMutation.mutate({
           ...formDataBodySerializer,
@@ -232,7 +232,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       >
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText, { color: theme.colors.text }]}>
-            {t("common.profile_photo")}
+            {t('common.profile_photo')}
           </Text>
         </View>
         <View style={styles.photosContainer}>
@@ -307,7 +307,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
                 { color: theme.colors.text },
               ]}
             >
-              {t("common.camera")}
+              {t('common.camera')}
             </Text>
           </TouchableOpacity>
 
@@ -326,7 +326,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
                 { color: theme.colors.text },
               ]}
             >
-              {t("common.upload_from_gallery")}
+              {t('common.upload_from_gallery')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -339,11 +339,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 16,
-    width: "100%",
+    width: '100%',
   },
   headerContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   headerText: {
     fontSize: 20,
@@ -351,54 +351,54 @@ const styles = StyleSheet.create({
   },
   photosContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     minHeight: 200,
-    width: "100%",
+    width: '100%',
   },
   photoButton: {
     width: 200,
     height: 200,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderRadius: 100,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
   placeholderButton: {
     borderWidth: 2,
-    borderStyle: "dotted",
+    borderStyle: 'dotted',
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   placeholderContent: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   placeholderText: {
     marginTop: 8,
   },
   loadingOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     borderRadius: 100,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
     zIndex: 1,
   },
   buttonContainer: {
     marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   submitButton: {
-    width: "100%",
+    width: '100%',
     borderRadius: 12,
   },
   bottomSheetContent: {
@@ -407,8 +407,8 @@ const styles = StyleSheet.create({
   },
   bottomSheetButton: {
     paddingVertical: 16,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   bottomSheetButtonText: {
     marginLeft: 16,

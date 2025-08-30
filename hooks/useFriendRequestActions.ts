@@ -1,5 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { acceptFriendRequestMutation, getFriendRequestsQueryKey, rejectFriendRequestMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  acceptFriendRequestMutation,
+  getFriendRequestsQueryKey,
+  rejectFriendRequestMutation,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export const useFriendRequestActions = () => {
   const queryClient = useQueryClient();

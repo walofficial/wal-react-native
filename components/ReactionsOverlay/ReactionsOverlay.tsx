@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -6,40 +6,40 @@ import {
   Text,
   TouchableOpacity,
   useColorScheme,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withSpring,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import {
   useReactionsOverlay,
   useReactionsOverlayControls,
-} from "@/lib/reactionsOverlay/reactionsOverlay";
-import { Portal } from "@/components/primitives/portal";
-import { ReactionType } from "@/lib/api/generated";
-import { useThemeColor } from "@/hooks/useThemeColor";
+} from '@/lib/reactionsOverlay/reactionsOverlay';
+import { Portal } from '@/components/primitives/portal';
+import { ReactionType } from '@/lib/api/generated';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 const getReactionEmoji = (reactionType: ReactionType): string => {
   const emojiMap: Record<ReactionType, string> = {
-    like: "👍",
-    love: "❤️",
-    laugh: "😂",
-    angry: "😠",
-    sad: "😢",
-    wow: "😮",
-    dislike: "👎",
+    like: '👍',
+    love: '❤️',
+    laugh: '😂',
+    angry: '😠',
+    sad: '😢',
+    wow: '😮',
+    dislike: '👎',
   };
   return emojiMap[reactionType];
 };
 
-const TOP_REACTIONS: ReactionType[] = ["love", "sad", "wow", "dislike"];
+const TOP_REACTIONS: ReactionType[] = ['love', 'sad', 'wow', 'dislike'];
 
 export function ReactionsOverlay() {
   const { activeOverlay } = useReactionsOverlay();
   const { hideOverlay } = useReactionsOverlayControls();
-  const colorScheme = useColorScheme() ?? "light";
+  const colorScheme = useColorScheme() ?? 'light';
   const opacity = useSharedValue(0);
   const overlayScale = useSharedValue(0);
   const overlayOpacity = useSharedValue(0);
@@ -67,7 +67,7 @@ export function ReactionsOverlay() {
 
   const backgroundAnimatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
-    pointerEvents: activeOverlay?.isVisible ? "auto" : "none",
+    pointerEvents: activeOverlay?.isVisible ? 'auto' : 'none',
   }));
 
   const overlayAnimatedStyle = useAnimatedStyle(() => ({
@@ -98,11 +98,11 @@ export function ReactionsOverlay() {
   // Calculate popup position based on button position
   const popupStyle = buttonPosition
     ? {
-        position: "absolute" as const,
+        position: 'absolute' as const,
         left: buttonPosition.screenWidth
           ? Math.max(
               10,
-              Math.min(buttonPosition.screenWidth - 160, buttonPosition.x - 70)
+              Math.min(buttonPosition.screenWidth - 160, buttonPosition.x - 70),
             )
           : buttonPosition.x - 20,
         top: buttonPosition.y - 45,
@@ -125,9 +125,9 @@ export function ReactionsOverlay() {
             styles.reactionOverlay,
             {
               backgroundColor:
-                colorScheme === "dark"
-                  ? "rgba(40, 40, 40, 0.98)"
-                  : "rgba(255, 255, 255, 0.98)",
+                colorScheme === 'dark'
+                  ? 'rgba(40, 40, 40, 0.98)'
+                  : 'rgba(255, 255, 255, 0.98)',
             },
             popupStyle,
             overlayAnimatedStyle,
@@ -156,7 +156,7 @@ export function ReactionsOverlay() {
 
 const styles = StyleSheet.create({
   overlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -165,11 +165,11 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   reactionOverlay: {
-    position: "absolute",
-    flexDirection: "row",
+    position: 'absolute',
+    flexDirection: 'row',
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 28,
@@ -182,16 +182,16 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 4,
     borderWidth: 0.5,
-    borderColor: "rgba(0, 0, 0, 0.08)",
+    borderColor: 'rgba(0, 0, 0, 0.08)',
   },
   overlayReactionButton: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginHorizontal: 3,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   selectedReaction: {
     // Remove blue styling - keep empty or remove entirely

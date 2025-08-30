@@ -1,5 +1,5 @@
-import { getSingleFeedOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useQuery } from "@tanstack/react-query";
+import { getSingleFeedOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useQuery } from '@tanstack/react-query';
 
 export default function useFeed(feedId: string) {
   const {
@@ -9,8 +9,8 @@ export default function useFeed(feedId: string) {
   } = useQuery({
     ...getSingleFeedOptions({
       path: {
-        feed_id: feedId
-      }
+        feed_id: feedId,
+      },
     }),
     enabled: !!feedId,
     refetchOnReconnect: false,

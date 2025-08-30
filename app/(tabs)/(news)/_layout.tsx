@@ -1,15 +1,15 @@
-import React from "react";
-import { Stack } from "expo-router";
-import ProfileHeader from "@/components/ProfileHeader";
-import { TaskTitle } from "@/components/CustomTitle";
-import { ScrollReanimatedValueProvider } from "@/components/context/ScrollReanimatedValue";
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ChatTopbar from "@/components/Chat/chat-topbar";
-import { isIOS, isWeb } from "@/lib/platform";
-import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
-import SimpleGoBackHeaderPost from "@/components/SimpleGoBackHeaderPost";
-import { ProfilePageUsername } from "@/components/ProfilePageUsername";
+import React from 'react';
+import { Stack } from 'expo-router';
+import ProfileHeader from '@/components/ProfileHeader';
+import { TaskTitle } from '@/components/CustomTitle';
+import { ScrollReanimatedValueProvider } from '@/components/context/ScrollReanimatedValue';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ChatTopbar from '@/components/Chat/chat-topbar';
+import { isIOS, isWeb } from '@/lib/platform';
+import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
+import SimpleGoBackHeaderPost from '@/components/SimpleGoBackHeaderPost';
+import { ProfilePageUsername } from '@/components/ProfilePageUsername';
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
@@ -20,13 +20,13 @@ export default function Layout() {
         <Stack
           screenOptions={{
             headerBackVisible: true,
-            headerBackTitle: isWeb ? "უკან" : undefined,
+            headerBackTitle: isWeb ? 'უკან' : undefined,
           }}
         >
           <Stack.Screen
             name="[feedId]/index"
             options={{
-              title: "",
+              title: '',
               headerTransparent: !isWeb,
               header: () => (
                 <ProfileHeader
@@ -40,8 +40,8 @@ export default function Layout() {
           <Stack.Screen
             name="[feedId]/create-post"
             options={{
-              presentation: isIOS ? "modal" : "card",
-              animation: isIOS ? "slide_from_bottom" : "fade_from_bottom",
+              presentation: isIOS ? 'modal' : 'card',
+              animation: isIOS ? 'slide_from_bottom' : 'fade_from_bottom',
               animationDuration: 200,
               header: () => null,
               headerShown: false,
@@ -91,12 +91,12 @@ export default function Layout() {
               const params = route.params as { verificationId?: string };
               const verificationId = params?.verificationId;
               return {
-                title: "",
+                title: '',
                 headerTransparent: true,
                 header: () => {
                   return (
                     <SimpleGoBackHeaderPost
-                      verificationId={verificationId || ""}
+                      verificationId={verificationId || ''}
                     />
                   );
                 },

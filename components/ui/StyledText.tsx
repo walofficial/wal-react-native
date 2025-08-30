@@ -1,17 +1,17 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   Text as RNText,
   StyleSheet,
   TextStyle,
   TextProps as RNTextProps,
-} from "react-native";
-import { colors, fontSizes } from "@/utils/styleUtils";
+} from 'react-native';
+import { colors, fontSizes } from '@/utils/styleUtils';
 
 export interface TextProps extends RNTextProps {
-  variant?: "default" | "heading" | "subheading" | "caption" | "body" | "small";
-  weight?: "normal" | "medium" | "semibold" | "bold";
+  variant?: 'default' | 'heading' | 'subheading' | 'caption' | 'body' | 'small';
+  weight?: 'normal' | 'medium' | 'semibold' | 'bold';
   color?: string;
-  align?: "auto" | "left" | "right" | "center" | "justify";
+  align?: 'auto' | 'left' | 'right' | 'center' | 'justify';
 }
 
 // Type for our styles object
@@ -31,7 +31,7 @@ type TextStyles = {
 };
 
 export const Text = ({
-  variant = "default",
+  variant = 'default',
   weight,
   color,
   align,
@@ -43,13 +43,13 @@ export const Text = ({
   const getWeightStyle = () => {
     if (!weight) return null;
     switch (weight) {
-      case "normal":
+      case 'normal':
         return styles.weightNormal;
-      case "medium":
+      case 'medium':
         return styles.weightMedium;
-      case "semibold":
+      case 'semibold':
         return styles.weightSemibold;
-      case "bold":
+      case 'bold':
         return styles.weightBold;
       default:
         return null;
@@ -83,12 +83,12 @@ const styles = StyleSheet.create<TextStyles>({
     fontSize: fontSizes.base,
   },
   heading: {
-    fontSize: fontSizes["2xl"],
-    fontWeight: "700",
+    fontSize: fontSizes['2xl'],
+    fontWeight: '700',
   },
   subheading: {
     fontSize: fontSizes.xl,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   body: {
     fontSize: fontSizes.base,
@@ -101,16 +101,16 @@ const styles = StyleSheet.create<TextStyles>({
     fontSize: fontSizes.xs,
   },
   weightNormal: {
-    fontWeight: "400",
+    fontWeight: '400',
   },
   weightMedium: {
-    fontWeight: "500",
+    fontWeight: '500',
   },
   weightSemibold: {
-    fontWeight: "600",
+    fontWeight: '600',
   },
   weightBold: {
-    fontWeight: "700",
+    fontWeight: '700',
   },
 });
 

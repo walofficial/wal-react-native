@@ -1,19 +1,19 @@
-import React, { useRef } from "react";
-import { Pressable, StyleSheet, Platform } from "react-native";
+import React, { useRef } from 'react';
+import { Pressable, StyleSheet, Platform } from 'react-native';
 import {
   MenuView as RNMenuView,
   MenuComponentRef,
-} from "@react-native-menu/menu";
-import { Ionicons } from "@expo/vector-icons";
-import useAuth from "@/hooks/useAuth";
-import useReportTask from "@/hooks/useReportTask";
-import useBlockUser from "@/hooks/useBlockUser";
-import useDeleteFriendMutation from "@/hooks/useDeleteFriendMutation";
-import { useMakePublicMutation } from "@/hooks/useMakePublicMutation";
-import { shareUrl } from "@/lib/share";
-import { app_name_slug } from "@/app.config";
-import { useTheme } from "@/lib/theme";
-import { t } from "@/lib/i18n";
+} from '@react-native-menu/menu';
+import { Ionicons } from '@expo/vector-icons';
+import useAuth from '@/hooks/useAuth';
+import useReportTask from '@/hooks/useReportTask';
+import useBlockUser from '@/hooks/useBlockUser';
+import useDeleteFriendMutation from '@/hooks/useDeleteFriendMutation';
+import { useMakePublicMutation } from '@/hooks/useMakePublicMutation';
+import { shareUrl } from '@/lib/share';
+import { app_name_slug } from '@/app.config';
+import { useTheme } from '@/lib/theme';
+import { t } from '@/lib/i18n';
 
 interface MenuViewProps {
   verificationId: string;
@@ -76,26 +76,26 @@ function MenuView({
     try {
       await shareUrl(`https://${app_name_slug}.ge/status/${verificationId}`);
     } catch (error) {
-      console.error("Error sharing:", error);
+      console.error('Error sharing:', error);
     }
   };
 
   return (
     <RNMenuView
       ref={menuRef}
-      title={t("common.what_do_you_want")}
+      title={t('common.what_do_you_want')}
       onPressAction={({ nativeEvent }) => {
-        if (nativeEvent.event === "report") {
+        if (nativeEvent.event === 'report') {
           handleReport();
-        } else if (nativeEvent.event === "remove") {
+        } else if (nativeEvent.event === 'remove') {
           handleDeleteFriend();
-        } else if (nativeEvent.event === "block") {
+        } else if (nativeEvent.event === 'block') {
           handleBlockUser();
-        } else if (nativeEvent.event === "hide-post") {
+        } else if (nativeEvent.event === 'hide-post') {
           handleMakePublic(false);
-        } else if (nativeEvent.event === "show-post") {
+        } else if (nativeEvent.event === 'show-post') {
           handleMakePublic(true);
-        } else if (nativeEvent.event === "share") {
+        } else if (nativeEvent.event === 'share') {
           handleShare();
         }
       }}
@@ -104,40 +104,40 @@ function MenuView({
         isAuthor
           ? [
               {
-                id: "share",
-                title: t("common.share"),
-                imageColor: "#46F289",
+                id: 'share',
+                title: t('common.share'),
+                imageColor: '#46F289',
               },
               ...(isPublic
                 ? [
                     {
-                      id: "hide-post",
-                      title: t("common.hide"),
+                      id: 'hide-post',
+                      title: t('common.hide'),
                     },
                   ]
                 : [
                     {
-                      id: "show-post",
-                      title: t("common.show"),
+                      id: 'show-post',
+                      title: t('common.show'),
                     },
                   ]),
             ]
           : [
               {
-                id: "share",
-                title: t("common.share"),
-                imageColor: "#46F289",
+                id: 'share',
+                title: t('common.share'),
+                imageColor: '#46F289',
               },
               {
-                id: "block",
-                title: t("common.block"),
+                id: 'block',
+                title: t('common.block'),
                 attributes: {
                   destructive: true,
                 },
               },
               {
-                id: "report",
-                title: t("common.report"),
+                id: 'report',
+                title: t('common.report'),
                 attributes: {
                   destructive: true,
                 },
@@ -149,7 +149,7 @@ function MenuView({
         hitSlop={10}
         style={styles.pressable}
         onPress={() => {
-          if (Platform.OS === "android") {
+          if (Platform.OS === 'android') {
             menuRef.current?.show();
           }
         }}

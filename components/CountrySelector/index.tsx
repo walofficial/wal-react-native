@@ -1,17 +1,17 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
   StatusBar,
-} from "react-native";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { Image } from "expo-image";
-import { Text } from "@/components/ui/text";
-import { getSortedCountries, Country, getFlagUrl } from "@/lib/countries";
-import { ChevronLeft } from "lucide-react-native";
-import { FontSizes } from "@/lib/theme";
+} from 'react-native';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { Image } from 'expo-image';
+import { Text } from '@/components/ui/text';
+import { getSortedCountries, Country, getFlagUrl } from '@/lib/countries';
+import { ChevronLeft } from 'lucide-react-native';
+import { FontSizes } from '@/lib/theme';
 
 interface CountrySelectorProps {
   onSelectCountry: (country: Country) => void;
@@ -25,7 +25,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   selectedCountry,
 }) => {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
   const sortedCountries = getSortedCountries();
 
   const handleCountrySelect = (country: Country) => {
@@ -39,14 +39,14 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
       <View
         style={[
           styles.header,
-          { borderBottomColor: isDark ? "#333" : "#e0e0e0" },
+          { borderBottomColor: isDark ? '#333' : '#e0e0e0' },
         ]}
       >
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <ChevronLeft size={24} color={isDark ? "white" : "black"} />
+          <ChevronLeft size={24} color={isDark ? 'white' : 'black'} />
         </TouchableOpacity>
         <Text
-          style={[styles.headerTitle, { color: isDark ? "white" : "black" }]}
+          style={[styles.headerTitle, { color: isDark ? 'white' : 'black' }]}
         >
           აირჩიეთ ქვეყანა
         </Text>
@@ -64,9 +64,9 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
             key={country.code}
             style={[
               styles.countryItem,
-              { borderBottomColor: isDark ? "#333" : "#f0f0f0" },
+              { borderBottomColor: isDark ? '#333' : '#f0f0f0' },
               selectedCountry?.code === country.code && {
-                backgroundColor: isDark ? "#333" : "#f0f0f0",
+                backgroundColor: isDark ? '#333' : '#f0f0f0',
               },
             ]}
             onPress={() => handleCountrySelect(country)}
@@ -82,7 +82,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                 <Text
                   style={[
                     styles.countryName,
-                    { color: isDark ? "white" : "black" },
+                    { color: isDark ? 'white' : 'black' },
                   ]}
                 >
                   {country.nameGeo}
@@ -90,7 +90,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                 <Text
                   style={[
                     styles.countryEnglishName,
-                    { color: isDark ? "#ccc" : "#666" },
+                    { color: isDark ? '#ccc' : '#666' },
                   ]}
                 >
                   {country.name}
@@ -98,7 +98,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
               </View>
             </View>
             <Text
-              style={[styles.callingCode, { color: isDark ? "#ccc" : "#666" }]}
+              style={[styles.callingCode, { color: isDark ? '#ccc' : '#666' }]}
             >
               {country.callingCode}
             </Text>
@@ -115,9 +115,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: FontSizes.large,
-    fontWeight: "600",
+    fontWeight: '600',
     flex: 1,
-    textAlign: "center",
+    textAlign: 'center',
   },
   placeholder: {
     width: 40,
@@ -146,16 +146,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   countryItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderBottomWidth: 1,
   },
   countryInfo: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
   flag: {
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   },
   countryName: {
     fontSize: FontSizes.medium,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   countryEnglishName: {
     fontSize: FontSizes.small,
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
   },
   callingCode: {
     fontSize: FontSizes.medium,
-    fontWeight: "500",
+    fontWeight: '500',
     marginLeft: 12,
   },
 });

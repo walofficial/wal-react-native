@@ -1,18 +1,18 @@
-import { View, StyleSheet } from "react-native";
-import React, { useRef } from "react";
-import { useNavigation } from "expo-router";
-import Button from "@/components/Button";
-import { Search } from "@/lib/icons/Search";
-import { Ionicons } from "@expo/vector-icons";
-import FriendRequests from "@/components/ContactSyncSheet/FriendRequests";
-import UserGNContentProfile from "@/components/UserGNContentProfile";
-import { SectionHeader } from "@/components/SectionHeader";
-import useAuth from "@/hooks/useAuth";
-import ProfileView from "@/components/ProfileView";
-import { useTheme } from "@/lib/theme";
-import BottomSheet from "@gorhom/bottom-sheet";
-import ContactSyncSheet from "@/components/ContactSyncSheet";
-import { t } from "@/lib/i18n";
+import { View, StyleSheet } from 'react-native';
+import React, { useRef } from 'react';
+import { useNavigation } from 'expo-router';
+import Button from '@/components/Button';
+import { Search } from '@/lib/icons/Search';
+import { Ionicons } from '@expo/vector-icons';
+import FriendRequests from '@/components/ContactSyncSheet/FriendRequests';
+import UserGNContentProfile from '@/components/UserGNContentProfile';
+import { SectionHeader } from '@/components/SectionHeader';
+import useAuth from '@/hooks/useAuth';
+import ProfileView from '@/components/ProfileView';
+import { useTheme } from '@/lib/theme';
+import BottomSheet from '@gorhom/bottom-sheet';
+import ContactSyncSheet from '@/components/ContactSyncSheet';
+import { t } from '@/lib/i18n';
 
 export default function ProfileMain() {
   const { user } = useAuth();
@@ -54,7 +54,7 @@ export default function ProfileMain() {
                       color={theme.colors.icon}
                     />
                   }
-                  text={t("common.history")}
+                  text={t('common.history')}
                 />
               </View>
             </View>
@@ -67,7 +67,7 @@ export default function ProfileMain() {
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: '100%',
   },
   sectionContainer: {
     paddingHorizontal: 16,
@@ -80,9 +80,9 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   buttonContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
   },
 });

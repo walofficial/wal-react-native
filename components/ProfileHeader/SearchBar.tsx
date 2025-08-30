@@ -1,7 +1,7 @@
-import React from "react";
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { TabBarIcon } from "../navigation/TabBarIcon";
-import { useColorScheme } from "@/lib/useColorScheme";
+import React from 'react';
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TabBarIcon } from '../navigation/TabBarIcon';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 interface SearchBarProps {
   showSearch: boolean;
@@ -24,7 +24,7 @@ export function SearchBar({
       {showSearch && !isSearchActive && (
         <TouchableOpacity style={styles.buttonWrapper} onPress={onSearchPress}>
           <TabBarIcon
-            color={isDarkColorScheme ? "white" : "black"}
+            color={isDarkColorScheme ? 'white' : 'black'}
             name="search-outline"
           />
         </TouchableOpacity>
@@ -35,7 +35,7 @@ export function SearchBar({
 
 const styles = StyleSheet.create({
   buttonWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

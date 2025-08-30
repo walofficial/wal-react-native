@@ -1,13 +1,13 @@
-import { Text } from "react-native";
-import { useLikeButton } from "../LikeButton/useLikeButton";
+import { Text } from 'react-native';
+import { useLikeButton } from '../LikeButton/useLikeButton';
 import Animated, {
   useAnimatedStyle,
   withSpring,
   withTiming,
   useSharedValue,
   Easing,
-} from "react-native-reanimated";
-import React from "react";
+} from 'react-native-reanimated';
+import React from 'react';
 interface LikeCountProps {
   verificationId: string;
 }
@@ -38,7 +38,7 @@ function LikeCount({ verificationId }: LikeCountProps) {
 
   if (likeCount === 0) return null;
   return (
-    <Animated.Text style={[animatedStyles, { color: "#666" }]}>
+    <Animated.Text style={[animatedStyles, { color: '#666' }]}>
       {likeCount}
     </Animated.Text>
   );

@@ -1,7 +1,7 @@
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { Link } from "expo-router";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import useAuth from "@/hooks/useAuth";
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { Link } from 'expo-router';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import useAuth from '@/hooks/useAuth';
 
 function TabBarUserIcon() {
   const { user } = useAuth();
@@ -21,9 +21,9 @@ function TabBarUserIcon() {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   touchable: {
     padding: 8,
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   avatar: {
     width: 48,
     height: 48,
-    shadowColor: "#fff",
+    shadowColor: '#fff',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,

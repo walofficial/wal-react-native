@@ -1,10 +1,10 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import ContactListHeader from "./ContactListHeader";
-import FriendRequestItem from "./FriendRequestItem";
-import { useFriendRequestActions } from "@/hooks/useFriendRequestActions";
-import { useFriendRequests } from "@/hooks/useFriendRequests";
-import { useTheme } from "@/lib/theme";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import ContactListHeader from './ContactListHeader';
+import FriendRequestItem from './FriendRequestItem';
+import { useFriendRequestActions } from '@/hooks/useFriendRequestActions';
+import { useFriendRequests } from '@/hooks/useFriendRequests';
+import { useTheme } from '@/lib/theme';
 
 interface FriendRequestsProps {
   hideMyRequests?: boolean;
@@ -37,7 +37,7 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
 
   const filteredRequests = hideMyRequests
     ? friendRequests.filter(
-        ({ request, user }) => request.sender_id === user.id
+        ({ request, user }) => request.sender_id === user.id,
       )
     : friendRequests;
 

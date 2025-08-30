@@ -9,7 +9,7 @@
 // Original code copied and simplified from the link below as the codebase is currently not maintained:
 // https://github.com/jobtoday/react-native-image-viewing
 
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   LayoutAnimation,
   PixelRatio,
@@ -17,9 +17,9 @@ import {
   StyleSheet,
   View,
   Text,
-} from "react-native";
-import { Gesture } from "react-native-gesture-handler";
-import PagerView from "react-native-pager-view";
+} from 'react-native';
+import { Gesture } from 'react-native-gesture-handler';
+import PagerView from 'react-native-pager-view';
 import Animated, {
   AnimatedRef,
   cancelAnimation,
@@ -35,26 +35,26 @@ import Animated, {
   withDecay,
   withSpring,
   WithSpringConfig,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 import {
   Edge,
   SafeAreaView,
   useSafeAreaFrame,
   useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import * as ScreenOrientation from "expo-screen-orientation";
-import { StatusBar } from "expo-status-bar";
+} from 'react-native-safe-area-context';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import { StatusBar } from 'expo-status-bar';
 
-import { Dimensions } from "@/lib/media/types";
-import { ios, isIOS } from "@/lib/platform";
-import { Lightbox } from "@/lib/lightbox/lightbox";
-import { setNavigationBar } from "@/lib/navigationBar";
-import { ImageSource, Transform } from "./@types";
-import ImageDefaultHeader from "./components/ImageDefaultHeader";
-import ImageItem from "./components/ImageItem/ImageItem";
-import LikeButton from "@/components/FeedItem/LikeButton";
-import CommentButton from "@/components/FeedItem/CommentButton";
-import ShareButton from "@/components/FeedItem/ShareButton";
+import { Dimensions } from '@/lib/media/types';
+import { ios, isIOS } from '@/lib/platform';
+import { Lightbox } from '@/lib/lightbox/lightbox';
+import { setNavigationBar } from '@/lib/navigationBar';
+import { ImageSource, Transform } from './@types';
+import ImageDefaultHeader from './components/ImageDefaultHeader';
+import ImageItem from './components/ImageItem/ImageItem';
+import LikeButton from '@/components/FeedItem/LikeButton';
+import CommentButton from '@/components/FeedItem/CommentButton';
+import ShareButton from '@/components/FeedItem/ShareButton';
 
 type Rect = { x: number; y: number; width: number; height: number };
 export const ScrollView = Animated.ScrollView;
@@ -62,8 +62,8 @@ export type ScrollView = typeof Animated.ScrollView;
 const PORTRAIT_UP = ScreenOrientation.OrientationLock.PORTRAIT_UP;
 const PIXEL_RATIO = PixelRatio.get();
 const EDGES =
-  Platform.OS === "android" && Platform.Version < 35
-    ? (["top", "bottom", "left", "right"] satisfies Edge[])
+  Platform.OS === 'android' && Platform.Version < 35
+    ? (['top', 'bottom', 'left', 'right'] satisfies Edge[])
     : ([] satisfies Edge[]); // iOS or Android 15+ bleeds into safe area
 
 const FAST_SPRING: WithSpringConfig = {
@@ -81,7 +81,7 @@ const SLOW_SPRING: WithSpringConfig = {
 
 function canAnimate(lightbox: Lightbox): boolean {
   return lightbox.images.every(
-    (img) => img.thumbRect && (img.dimensions || img.thumbDimensions)
+    (img) => img.thumbRect && (img.dimensions || img.thumbDimensions),
   );
 }
 
@@ -96,11 +96,11 @@ export default function ImageViewRoot({
   onPressSave: (uri: string) => void;
   onPressShare: (uri: string) => void;
 }) {
-  "use no memo";
+  'use no memo';
   const ref = useAnimatedRef<View>();
   const [activeLightbox, setActiveLightbox] = useState(nextLightbox);
-  const [orientation, setOrientation] = useState<"portrait" | "landscape">(
-    "portrait"
+  const [orientation, setOrientation] = useState<'portrait' | 'landscape'>(
+    'portrait',
   );
   const openProgress = useSharedValue(0);
 
@@ -118,14 +118,14 @@ export default function ImageViewRoot({
     // https://github.com/software-mansion/react-native-reanimated/issues/6677
     rAF_FIXED(() => {
       openProgress.set(() =>
-        isAnimated ? withClampedSpring(1, SLOW_SPRING) : 1
+        isAnimated ? withClampedSpring(1, SLOW_SPRING) : 1,
       );
     });
     return () => {
       // https://github.com/software-mansion/react-native-reanimated/issues/6677
       rAF_FIXED(() => {
         openProgress.set(() =>
-          isAnimated ? withClampedSpring(0, SLOW_SPRING) : 0
+          isAnimated ? withClampedSpring(0, SLOW_SPRING) : 0,
         );
       });
     };
@@ -137,7 +137,7 @@ export default function ImageViewRoot({
       if (isGone && !wasGone) {
         runOnJS(setActiveLightbox)(null);
       }
-    }
+    },
   );
 
   // Delay the unlock until after we've finished the scale up animation.
@@ -151,11 +151,11 @@ export default function ImageViewRoot({
         // default is PORTRAIT_UP - set via config plugin in app.config.js -sfn
         runOnJS(ScreenOrientation.lockAsync)(PORTRAIT_UP);
       }
-    }
+    },
   );
 
   const onFlyAway = React.useCallback(() => {
-    "worklet";
+    'worklet';
     openProgress.set(0);
     runOnJS(onRequestClose)();
   }, [onRequestClose, openProgress]);
@@ -176,13 +176,13 @@ export default function ImageViewRoot({
         onLayout={(e) => {
           const layout = e.nativeEvent.layout;
           setOrientation(
-            layout.height > layout.width ? "portrait" : "landscape"
+            layout.height > layout.width ? 'portrait' : 'landscape',
           );
         }}
       >
         {activeLightbox && (
           <ImageView
-            key={activeLightbox.id + "-" + orientation}
+            key={activeLightbox.id + '-' + orientation}
             lightbox={activeLightbox}
             orientation={orientation}
             onRequestClose={onRequestClose}
@@ -209,7 +209,7 @@ function ImageView({
   openProgress,
 }: {
   lightbox: Lightbox;
-  orientation: "portrait" | "landscape";
+  orientation: 'portrait' | 'landscape';
   onRequestClose: () => void;
   onPressSave: (uri: string) => void;
   onPressShare: (uri: string) => void;
@@ -230,17 +230,17 @@ function ImageView({
   const containerStyle = useAnimatedStyle(() => {
     if (openProgress.get() < 1) {
       return {
-        pointerEvents: "none",
+        pointerEvents: 'none',
         opacity: isAnimated ? 1 : 0,
       };
     }
     if (isFlyingAway.get()) {
       return {
-        pointerEvents: "none",
+        pointerEvents: 'none',
         opacity: 1,
       };
     }
-    return { pointerEvents: "auto", opacity: 1 };
+    return { pointerEvents: 'auto', opacity: 1 };
   });
 
   const backdropStyle = useAnimatedStyle(() => {
@@ -249,10 +249,10 @@ function ImageView({
     const openProgressValue = openProgress.get();
     if (openProgressValue < 1) {
       opacity = Math.sqrt(openProgressValue);
-    } else if (screenSize && orientation === "portrait") {
+    } else if (screenSize && orientation === 'portrait') {
       const dragProgress = Math.min(
         Math.abs(dismissSwipeTranslateY.get()) / (screenSize.height / 2),
-        1
+        1,
       );
       opacity -= dragProgress;
     }
@@ -265,10 +265,10 @@ function ImageView({
   const animatedHeaderStyle = useAnimatedStyle(() => {
     const show = showControls && dismissSwipeTranslateY.get() === 0;
     return {
-      pointerEvents: show ? "box-none" : "none",
+      pointerEvents: show ? 'box-none' : 'none',
       opacity: withClampedSpring(
         show && openProgress.get() === 1 ? 1 : 0,
-        FAST_SPRING
+        FAST_SPRING,
       ),
       transform: [
         {
@@ -281,10 +281,10 @@ function ImageView({
     const show = showControls && dismissSwipeTranslateY.get() === 0;
     return {
       flexGrow: 1,
-      pointerEvents: show ? "box-none" : "none",
+      pointerEvents: show ? 'box-none' : 'none',
       opacity: withClampedSpring(
         show && openProgress.get() === 1 ? 1 : 0,
-        FAST_SPRING
+        FAST_SPRING,
       ),
       transform: [
         {
@@ -319,13 +319,13 @@ function ImageView({
         cancelAnimation(dismissSwipeTranslateY);
         onFlyAway();
       }
-    }
+    },
   );
 
   useEffect(() => {
-    setNavigationBar("lightbox");
+    setNavigationBar('lightbox');
     return () => {
-      setNavigationBar("theme");
+      setNavigationBar('theme');
     };
   }, []);
 
@@ -352,7 +352,7 @@ function ImageView({
           setIsScaled(false);
         }}
         onPageScrollStateChanged={(e) => {
-          setIsDragging(e.nativeEvent.pageScrollState !== "idle");
+          setIsDragging(e.nativeEvent.pageScrollState !== 'idle');
         }}
         overdrag={true}
         style={styles.pager}
@@ -440,11 +440,11 @@ function LightboxImage({
   const safeFrameDelayedForJSThreadOnly = useSafeAreaFrame();
   const safeInsetsDelayedForJSThreadOnly = useSafeAreaInsets();
   const measureSafeArea = React.useCallback(() => {
-    "worklet";
+    'worklet';
     let safeArea: Rect | null = measure(safeAreaRef);
     if (!safeArea) {
       if (_WORKLET) {
-        console.error("Expected to always be able to measure safe area.");
+        console.error('Expected to always be able to measure safe area.');
       }
       const frame = safeFrameDelayedForJSThreadOnly;
       const insets = safeInsetsDelayedForJSThreadOnly;
@@ -465,7 +465,7 @@ function LightboxImage({
   const { thumbRect } = imageSrc;
 
   const transforms = useDerivedValue(() => {
-    "worklet";
+    'worklet';
     const safeArea = measureSafeArea();
     const openProgressValue = openProgress.get();
     const dismissTranslateY =
@@ -486,7 +486,7 @@ function LightboxImage({
         openProgressValue,
         thumbRect,
         safeArea,
-        imageAspect
+        imageAspect,
       );
     }
     return {
@@ -504,14 +504,14 @@ function LightboxImage({
     .failOffsetX([-10, 10])
     .maxPointers(1)
     .onUpdate((e) => {
-      "worklet";
+      'worklet';
       if (openProgress.get() !== 1 || isFlyingAway.get()) {
         return;
       }
       dismissSwipeTranslateY.set(e.translationY);
     })
     .onEnd((e) => {
-      "worklet";
+      'worklet';
       if (openProgress.get() !== 1 || isFlyingAway.get()) {
         return;
       }
@@ -527,14 +527,14 @@ function LightboxImage({
             velocity: e.velocityY,
             velocityFactor: Math.max(3500 / Math.abs(e.velocityY), 1), // Speed up if it's too slow.
             deceleration: 1, // Danger! This relies on the reaction below stopping it.
-          })
+          }),
         );
       } else {
         dismissSwipeTranslateY.set(() =>
           withSpring(0, {
             stiffness: 700,
             damping: 50,
-          })
+          }),
         );
       }
     });
@@ -590,7 +590,7 @@ function LightboxFooter({
         paddingHorizontal: 24,
       }}
     >
-      <SafeAreaView edges={["bottom"]}>
+      <SafeAreaView edges={['bottom']}>
         <View style={styles.footerBtns}>
           <View style={styles.footerBtnGroup}>
             {/* <LikeButton verificationId={verificationId} large bright /> */}
@@ -605,7 +605,7 @@ function LightboxFooter({
 
 const styles = StyleSheet.create({
   screen: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     bottom: 0,
@@ -613,51 +613,51 @@ const styles = StyleSheet.create({
   },
   screenHidden: {
     opacity: 0,
-    pointerEvents: "none",
+    pointerEvents: 'none',
   },
   container: {
     flex: 1,
   },
   backdrop: {
-    backgroundColor: "#000",
-    position: "absolute",
+    backgroundColor: '#000',
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
   },
   controls: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
     gap: 20,
     zIndex: 1,
-    pointerEvents: "box-none",
+    pointerEvents: 'box-none',
   },
   pager: {
     flex: 1,
   },
   header: {
-    position: "absolute",
-    width: "100%",
+    position: 'absolute',
+    width: '100%',
     top: 0,
-    pointerEvents: "box-none",
+    pointerEvents: 'box-none',
   },
   footer: {
-    position: "absolute",
-    width: "100%",
-    maxHeight: "100%",
+    position: 'absolute',
+    width: '100%',
+    maxHeight: '100%',
     bottom: 0,
   },
   footerScrollView: {
-    backgroundColor: "#000d",
+    backgroundColor: '#000d',
     flex: 1,
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
-    width: "100%",
-    maxHeight: "100%",
+    width: '100%',
+    maxHeight: '100%',
   },
   footerText: {
     paddingBottom: isIOS ? 20 : 16,
@@ -666,9 +666,9 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   footerBtnGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     gap: 8,
   },
 });
@@ -676,9 +676,9 @@ const styles = StyleSheet.create({
 function interpolatePx(
   px: number,
   inputRange: readonly number[],
-  outputRange: readonly number[]
+  outputRange: readonly number[],
 ) {
-  "worklet";
+  'worklet';
   const value = interpolate(px, inputRange, outputRange);
   return Math.round(value * PIXEL_RATIO) / PIXEL_RATIO;
 }
@@ -692,7 +692,7 @@ function interpolateTransform(
     height: number;
   },
   safeArea: { width: number; height: number; x: number; y: number },
-  imageAspect: number
+  imageAspect: number,
 ): {
   scaleAndMoveTransform: Transform;
   cropFrameTransform: Transform;
@@ -700,7 +700,7 @@ function interpolateTransform(
   isResting: boolean;
   isHidden: boolean;
 } {
-  "worklet";
+  'worklet';
   const thumbAspect = thumbnailDims.width / thumbnailDims.height;
   let uncroppedInitialWidth;
   let uncroppedInitialHeight;
@@ -723,7 +723,7 @@ function interpolateTransform(
   }
   const initialScale = Math.min(
     uncroppedInitialWidth / finalWidth,
-    uncroppedInitialHeight / finalHeight
+    uncroppedInitialHeight / finalHeight,
   );
   const croppedFinalWidth = thumbnailDims.width / initialScale;
   const croppedFinalHeight = thumbnailDims.height / initialScale;
@@ -741,12 +741,12 @@ function interpolateTransform(
   const cropScaleX = interpolate(
     progress,
     [0, 1],
-    [croppedFinalWidth / finalWidth, 1]
+    [croppedFinalWidth / finalWidth, 1],
   );
   const cropScaleY = interpolate(
     progress,
     [0, 1],
-    [croppedFinalHeight / finalHeight, 1]
+    [croppedFinalHeight / finalHeight, 1],
   );
   return {
     isHidden: false,
@@ -761,7 +761,7 @@ function interpolateTransform(
 }
 
 function withClampedSpring(value: any, config: WithSpringConfig) {
-  "worklet";
+  'worklet';
   return withSpring(value, { ...config, overshootClamping: true });
 }
 

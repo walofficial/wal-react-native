@@ -8,4 +8,4 @@ export const IS_TESTFLIGHT = false;
 // Alternative detection methods you could implement:
 // 1. Check for sandbox receipt: FileSystem.documentDirectory + '../StoreKit/sandboxReceipt'
 // 2. Use a build-time environment variable
-// 3. Check the app's distribution method via native modules 
+// 3. Check the app's distribution method via native modules

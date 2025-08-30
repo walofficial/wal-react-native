@@ -90,8 +90,10 @@ function getSidePosition({
 }: GetSidePositionArgs) {
   const insetTop = insets?.top ?? 0;
   const insetBottom = insets?.bottom ?? 0;
-  const positionTop = triggerPosition?.pageY - sideOffset - contentLayout.height;
-  const positionBottom = triggerPosition.pageY + triggerPosition.height + sideOffset;
+  const positionTop =
+    triggerPosition?.pageY - sideOffset - contentLayout.height;
+  const positionBottom =
+    triggerPosition.pageY + triggerPosition.height + sideOffset;
 
   if (!avoidCollisions) {
     return {
@@ -106,7 +108,10 @@ function getSidePosition({
   }
 
   return {
-    top: Math.min(dimensions.height - insetBottom - contentLayout.height, positionBottom),
+    top: Math.min(
+      dimensions.height - insetBottom - contentLayout.height,
+      positionBottom,
+    ),
   };
 }
 
@@ -138,11 +143,12 @@ function getAlignPosition({
     alignOffset,
     insetLeft,
     insetRight,
-    dimensions
+    dimensions,
   );
 
   if (avoidCollisions) {
-    const doesCollide = left < insetLeft || left + contentWidth > dimensions.width - insetRight;
+    const doesCollide =
+      left < insetLeft || left + contentWidth > dimensions.width - insetRight;
     if (doesCollide) {
       const spaceLeft = left - insetLeft;
       const spaceRight = dimensions.width - insetRight - (left + contentWidth);
@@ -154,7 +160,7 @@ function getAlignPosition({
       } else {
         const centeredPosition = Math.max(
           insetLeft,
-          (dimensions.width - contentWidth - insetRight) / 2
+          (dimensions.width - contentWidth - insetRight) / 2,
         );
         left = centeredPosition;
       }
@@ -172,7 +178,7 @@ function getLeftPosition(
   alignOffset: number,
   insetLeft: number,
   insetRight: number,
-  dimensions: ScaledSize
+  dimensions: ScaledSize,
 ) {
   let left = 0;
   if (align === 'start') {
@@ -186,11 +192,13 @@ function getLeftPosition(
   }
   return Math.max(
     insetLeft,
-    Math.min(left + alignOffset, dimensions.width - contentWidth - insetRight)
+    Math.min(left + alignOffset, dimensions.width - contentWidth - insetRight),
   );
 }
 
-type GetContentStyleArgs = GetPositionArgs & GetSidePositionArgs & GetAlignPositionArgs;
+type GetContentStyleArgs = GetPositionArgs &
+  GetSidePositionArgs &
+  GetAlignPositionArgs;
 
 function getContentStyle({
   align,
@@ -222,6 +230,6 @@ function getContentStyle({
       alignOffset,
       insets,
       dimensions,
-    })
+    }),
   );
 }

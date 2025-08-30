@@ -1,10 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/lib/theme";
-import Button from "@/components/Button";
-import { t } from "@/lib/i18n";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@/lib/theme';
+import Button from '@/components/Button';
+import { t } from '@/lib/i18n';
 
 function ErrorMessageCard({
   title,
@@ -17,19 +17,19 @@ function ErrorMessageCard({
   const theme = useTheme();
 
   const handleSignInPress = () => {
-    router.push("/(auth)/sign-in");
+    router.push('/(auth)/sign-in');
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.cardContainer}>
         <Ionicons name="alert-circle-outline" size={40} color="#FF3B30" />
-        <Text style={[styles.title, { color: "#FF3B30" }]}>{title}</Text>
+        <Text style={[styles.title, { color: '#FF3B30' }]}>{title}</Text>
         <Text style={[styles.description, { color: theme.colors.text }]}>
           {description}
         </Text>
         <Button
-          title={t("common.go_back")}
+          title={t('common.go_back')}
           variant="primary"
           size="medium"
           onPress={handleSignInPress}
@@ -43,28 +43,28 @@ function ErrorMessageCard({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 16,
   },
   cardContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 12,
     padding: 20,
-    width: "100%",
+    width: '100%',
   },
   title: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     marginTop: 10,
-    textAlign: "center",
+    textAlign: 'center',
   },
   description: {
     fontSize: 14,
-    fontWeight: "400",
+    fontWeight: '400',
     marginTop: 4,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 16,
   },
   buttonStyle: {

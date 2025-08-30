@@ -17,5 +17,3 @@ Optional but helpful.
 ## Linked Issues
 
 Closes #
-
-

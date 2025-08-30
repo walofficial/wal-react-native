@@ -1,6 +1,6 @@
-import { toastStyles } from "@/lib/styles";
-import { Ionicons } from "@expo/vector-icons";
-import { View, Text } from "react-native";
+import { toastStyles } from '@/lib/styles';
+import { Ionicons } from '@expo/vector-icons';
+import { View, Text } from 'react-native';
 
 export const toastMainStyle = (config: {
   icon: string;
@@ -14,8 +14,8 @@ export const toastMainStyle = (config: {
       toastStyles.toastContent,
       {
         backgroundColor: config.dark
-          ? "rgba(28, 28, 30, 0.95)"
-          : "rgba(255, 255, 255, 0.95)",
+          ? 'rgba(28, 28, 30, 0.95)'
+          : 'rgba(255, 255, 255, 0.95)',
       },
     ]}
   >
@@ -31,7 +31,7 @@ export const toastMainStyle = (config: {
           config.description
             ? toastStyles.toastTitle
             : toastStyles.toastTitleLarge,
-          { color: config.dark ? "#FFFFFF" : "#1D1D1F" },
+          { color: config.dark ? '#FFFFFF' : '#1D1D1F' },
         ]}
       >
         {config.title}
@@ -40,7 +40,7 @@ export const toastMainStyle = (config: {
         <Text
           style={[
             toastStyles.toastDescription,
-            { color: config.dark ? "#A1A1A6" : "#6E6E73" },
+            { color: config.dark ? '#A1A1A6' : '#6E6E73' },
           ]}
         >
           {config.description}

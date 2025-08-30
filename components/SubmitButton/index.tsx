@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import React from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
-import { useUploadVideo } from "@/hooks/useUploadVideo";
-import { useLocalSearchParams } from "expo-router";
-import Button from "@/components/Button";
-import { compressVideo } from "@/lib/media/video/compress";
-import { compressIfNeeded } from "@/lib/media/manip";
-import { useTheme } from "@/lib/theme";
+import React from 'react';
+import { ActivityIndicator, StyleSheet } from 'react-native';
+import { useUploadVideo } from '@/hooks/useUploadVideo';
+import { useLocalSearchParams } from 'expo-router';
+import Button from '@/components/Button';
+import { compressVideo } from '@/lib/media/video/compress';
+import { compressIfNeeded } from '@/lib/media/manip';
+import { useTheme } from '@/lib/theme';
 
 export default function SubmitButton({
   mediaBlob,
@@ -49,7 +49,7 @@ export default function SubmitButton({
             height: mediaBlob.height,
             size: mediaBlob.size,
           },
-          1000000
+          1000000,
         ); // 1MB max size
         compressedPath = compressedImage.path;
       } else {
@@ -60,14 +60,14 @@ export default function SubmitButton({
           });
           compressedPath = compressedVideo.uri;
         } catch (error) {
-          console.error("Error during compression:", error);
+          console.error('Error during compression:', error);
         }
       }
 
       const file = {
-        uri: "file://" + compressedPath,
-        type: isPhoto ? "image/jpeg" : "video/mp4",
-        name: compressedPath.split("/").pop(),
+        uri: 'file://' + compressedPath,
+        type: isPhoto ? 'image/jpeg' : 'video/mp4',
+        name: compressedPath.split('/').pop(),
       };
 
       await uploadBlob.mutateAsync({
@@ -76,11 +76,11 @@ export default function SubmitButton({
         params: {
           feed_id: feedId,
           recording_time: videoDuration ? parseInt(videoDuration) : 0,
-          text_content: caption || "",
+          text_content: caption || '',
         },
       });
     } catch (error) {
-      console.error("Error during submission:", error);
+      console.error('Error during submission:', error);
     } finally {
       setIsProcessing(false);
     }

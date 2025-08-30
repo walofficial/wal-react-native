@@ -1,1 +1,1 @@
-export { default } from "@/screens/create-post";
+export { default } from '@/screens/create-post';

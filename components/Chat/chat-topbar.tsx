@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Image } from "expo-image";
+import React, { useEffect } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Image } from 'expo-image';
 
-import { isChatUserOnlineState } from "@/lib/state/chat";
-import { useAtom } from "jotai";
-import { Pressable, TouchableOpacity, View, StyleSheet } from "react-native";
-import { Skeleton } from "../ui/skeleton";
-import { Text } from "../ui/text";
-import { router, useGlobalSearchParams } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useTheme } from "@/lib/theme";
+import { isChatUserOnlineState } from '@/lib/state/chat';
+import { useAtom } from 'jotai';
+import { Pressable, TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Skeleton } from '../ui/skeleton';
+import { Text } from '../ui/text';
+import { router, useGlobalSearchParams } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTheme } from '@/lib/theme';
 
 import Animated, {
   useSharedValue,
@@ -17,14 +17,14 @@ import Animated, {
   withTiming,
   Easing,
   runOnUI,
-} from "react-native-reanimated";
-import { MenuView } from "@react-native-menu/menu";
-import { useFriendRequest } from "@/lib/hooks/useFriendRequest";
-import { Platform } from "react-native";
-import useMessageRoom from "@/hooks/useMessageRoom";
-import useAuth from "@/hooks/useAuth";
-import usePokeLiveUser from "@/hooks/usePokeUser";
-import { User } from "lucide-react-native";
+} from 'react-native-reanimated';
+import { MenuView } from '@react-native-menu/menu';
+import { useFriendRequest } from '@/lib/hooks/useFriendRequest';
+import { Platform } from 'react-native';
+import useMessageRoom from '@/hooks/useMessageRoom';
+import useAuth from '@/hooks/useAuth';
+import usePokeLiveUser from '@/hooks/usePokeUser';
+import { User } from 'lucide-react-native';
 
 export default function ChatTopbar() {
   const { roomId, feedId } = useGlobalSearchParams<{
@@ -36,7 +36,7 @@ export default function ChatTopbar() {
   const theme = useTheme();
 
   const [isChatUserOnline, setIsChatUserOnline] = useAtom(
-    isChatUserOnlineState
+    isChatUserOnlineState,
   );
 
   const selectedUser = room?.participants.find((p) => p.id !== user.id);
@@ -93,16 +93,16 @@ export default function ChatTopbar() {
 
   const menuItems = [
     {
-      id: "poke",
-      title: "უჯიკე",
+      id: 'poke',
+      title: 'უჯიკე',
       imageColor: theme.colors.primary,
     },
     {
-      id: "addFriend",
-      title: "მეგობრად დამატება",
+      id: 'addFriend',
+      title: 'მეგობრად დამატება',
       image: Platform.select({
-        ios: "person.badge.plus",
-        android: "ic_menu_add_gray",
+        ios: 'person.badge.plus',
+        android: 'ic_menu_add_gray',
       }),
       imageColor: theme.colors.primary,
     },
@@ -120,12 +120,12 @@ export default function ChatTopbar() {
               router.back();
             } else {
               router.navigate({
-                pathname: "/(tabs)/(home)",
+                pathname: '/(tabs)/(home)',
               });
             }
           } catch (error) {
             router.navigate({
-              pathname: "/(tabs)/(home)",
+              pathname: '/(tabs)/(home)',
             });
           }
         }}
@@ -138,7 +138,7 @@ export default function ChatTopbar() {
             onPress={() => {
               if (userPhoto) {
                 router.navigate({
-                  pathname: "/(tabs)/(home)/profile-picture",
+                  pathname: '/(tabs)/(home)/profile-picture',
                   params: {
                     feedId: feedId,
                     roomId: roomId,
@@ -151,7 +151,7 @@ export default function ChatTopbar() {
             <View style={styles.avatarContainer}>
               <Avatar
                 style={styles.avatar}
-                alt={selectedUser?.username || "User avatar"}
+                alt={selectedUser?.username || 'User avatar'}
               >
                 {userPhoto ? (
                   <Image
@@ -164,7 +164,7 @@ export default function ChatTopbar() {
                     <User
                       size={30}
                       color={
-                        theme.colors.text === "#000000" ? "#9ca3af" : "#9ca3af"
+                        theme.colors.text === '#000000' ? '#9ca3af' : '#9ca3af'
                       }
                     />
                   </AvatarFallback>
@@ -176,7 +176,7 @@ export default function ChatTopbar() {
                   animatedStyle,
                   {
                     borderColor:
-                      theme.colors.text === "#000000" ? "#FFFFFF" : "#000000",
+                      theme.colors.text === '#000000' ? '#FFFFFF' : '#000000',
                   },
                 ]}
               />
@@ -197,7 +197,7 @@ export default function ChatTopbar() {
                   styles.skeletonLoader,
                   {
                     backgroundColor:
-                      theme.colors.text === "#000000" ? "#e5e7eb" : "#1f2937",
+                      theme.colors.text === '#000000' ? '#e5e7eb' : '#1f2937',
                   },
                 ]}
               />
@@ -210,14 +210,14 @@ export default function ChatTopbar() {
             onPressAction={({ nativeEvent }) => {
               requestAnimationFrame(() => {
                 runOnUI(() => {});
-                if (nativeEvent.event === "addFriend") {
+                if (nativeEvent.event === 'addFriend') {
                   handleAddFriend();
-                } else if (nativeEvent.event === "poke") {
+                } else if (nativeEvent.event === 'poke') {
                   handlePoke();
                 }
               });
             }}
-            themeVariant={theme.colors.text === "#000000" ? "light" : "dark"}
+            themeVariant={theme.colors.text === '#000000' ? 'light' : 'dark'}
             actions={menuItems}
           >
             <TouchableOpacity style={styles.menuButton}>
@@ -237,78 +237,78 @@ export default function ChatTopbar() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
   backButton: {
     marginRight: 20,
     paddingRight: 16,
     marginBottom: 12,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   contentContainer: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
     paddingBottom: 16,
   },
   userInfoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   avatarContainer: {
-    position: "relative",
+    position: 'relative',
   },
   avatar: {
-    backgroundColor: "#1f2937",
+    backgroundColor: '#1f2937',
     width: 40,
     height: 40,
     borderRadius: 20,
-    overflow: "hidden",
-    justifyContent: "center",
-    alignItems: "center",
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   avatarImage: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 20,
   },
   onlineIndicator: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     right: 0,
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: "#22c55e",
+    backgroundColor: '#22c55e',
     borderWidth: 2,
-    borderColor: "white",
-    shadowColor: "#000",
+    borderColor: 'white',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
   usernameContainer: {
-    flexDirection: "column",
+    flexDirection: 'column',
     marginLeft: 20,
   },
   username: {
     fontSize: 24,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   skeletonLoader: {
     width: 128,
     height: 16,
-    backgroundColor: "#1f2937",
+    backgroundColor: '#1f2937',
   },
   menuContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   menuButton: {
     padding: 16,

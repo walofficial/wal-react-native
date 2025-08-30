@@ -1,26 +1,26 @@
-import React, { useRef } from "react";
-import { Pressable, StyleSheet, Platform, Alert, View } from "react-native";
+import React, { useRef } from 'react';
+import { Pressable, StyleSheet, Platform, Alert, View } from 'react-native';
 import {
   MenuView as RNMenuView,
   MenuComponentRef,
-} from "@react-native-menu/menu";
-import { Ionicons } from "@expo/vector-icons";
-import { useAtom } from "jotai";
+} from '@react-native-menu/menu';
+import { Ionicons } from '@expo/vector-icons';
+import { useAtom } from 'jotai';
 import {
   getRegionFromNewsFeedId,
   Region,
   REGION_FEED_IDS,
   REGION_TO_COUNTRY_CODE,
-} from "@/atoms/localization";
-import { t } from "@/lib/i18n";
-import { useTheme } from "@/lib/theme";
-import { Text } from "@/components/ui/text";
-import AnimatedPressable from "@/components/AnimatedPressable";
-import { updateUserMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useMutation } from "@tanstack/react-query";
-import { useSession } from "../AuthLayer";
-import { Image } from "expo-image";
-import { getFlagUrl } from "@/lib/countries";
+} from '@/atoms/localization';
+import { t } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
+import { Text } from '@/components/ui/text';
+import AnimatedPressable from '@/components/AnimatedPressable';
+import { updateUserMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useMutation } from '@tanstack/react-query';
+import { useSession } from '../AuthLayer';
+import { Image } from 'expo-image';
+import { getFlagUrl } from '@/lib/countries';
 
 interface RegionSelectorProps {
   onRegionChange?: (region: Region) => void;
@@ -30,7 +30,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
   const menuRef = useRef<MenuComponentRef>(null);
   const { user, setAuthUser } = useSession();
   const preferredRegion = getRegionFromNewsFeedId(
-    user?.preferred_news_feed_id || ""
+    user?.preferred_news_feed_id || '',
   );
   const theme = useTheme();
   const updateUserMutationHook = useMutation({
@@ -45,7 +45,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
     },
     onSuccess: () => {},
     onError: (error) => {
-      Alert.alert(t("common.profile_update_failed"));
+      Alert.alert(t('common.profile_update_failed'));
     },
   });
   const handleRegionSelect = (region: Region) => {
@@ -74,12 +74,12 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
   return (
     <RNMenuView
       ref={menuRef}
-      title={t("settings.preferred_region")}
+      title={t('settings.preferred_region')}
       onPressAction={({ nativeEvent }) => {
         const selectedRegion = nativeEvent.event as Region;
         if (
           selectedRegion &&
-          ["georgia", "united_states", "france"].includes(selectedRegion)
+          ['georgia', 'united_states', 'france'].includes(selectedRegion)
         ) {
           handleRegionSelect(selectedRegion);
         }
@@ -87,9 +87,9 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
       shouldOpenOnLongPress={false}
       actions={[
         {
-          id: "georgia",
-          title: `🇬🇪 ${getRegionDisplayName("georgia")}`,
-          state: preferredRegion === "georgia" ? "on" : "off",
+          id: 'georgia',
+          title: `🇬🇪 ${getRegionDisplayName('georgia')}`,
+          state: preferredRegion === 'georgia' ? 'on' : 'off',
         },
         // {
         //   id: "united_states",
@@ -105,14 +105,14 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
     >
       <AnimatedPressable
         onClick={() => {
-          if (Platform.OS === "android") {
+          if (Platform.OS === 'android') {
             menuRef.current?.show();
           }
         }}
       >
         <Ionicons size={28} name="globe-outline" color={theme.colors.icon} />
         <Text style={[styles.buttonText, { color: theme.colors.text }]}>
-          {t("settings.preferred_region")}
+          {t('settings.preferred_region')}
         </Text>
         <View style={styles.flagContainer}>
           <Image
@@ -133,7 +133,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
 const styles = StyleSheet.create({
   buttonText: {
     marginLeft: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   selectedText: {
     marginLeft: 16,
@@ -141,8 +141,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   flagContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginLeft: 16,
   },
   flag: {

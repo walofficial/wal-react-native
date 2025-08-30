@@ -1,23 +1,21 @@
-import React, { useRef, useState, useCallback, memo } from "react";
+import React, { useRef, useState, useCallback, memo } from 'react';
 import {
   View,
-  Dimensions,
-  StyleSheet,
   ViewToken,
   ViewabilityConfigCallbackPair,
   Text,
   useColorScheme,
-} from "react-native";
-import { useUserVerificationsPaginated } from "@/hooks/useUserVerificationsPaginated";
-import { FeedPost } from "@/lib/api/generated";
-import PostsFeed from "./PostsFeed";
-import FeedItem from "./FeedItem";
-import { getVideoSrc } from "@/lib/utils";
-import ScrollableFeedProvider from "./ScrollableFeedProvider";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useQueryClient } from "@tanstack/react-query";
-import useFeeds from "@/hooks/useFeeds";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { useUserVerificationsPaginated } from '@/hooks/useUserVerificationsPaginated';
+import { FeedPost } from '@/lib/api/generated';
+import PostsFeed from './PostsFeed';
+import FeedItem from './FeedItem';
+import { getVideoSrc } from '@/lib/utils';
+import ScrollableFeedProvider from './ScrollableFeedProvider';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useQueryClient } from '@tanstack/react-query';
+import useFeeds from '@/hooks/useFeeds';
+import { t } from '@/lib/i18n';
 
 interface UserGNContentProfileProps {
   topHeader: React.ReactNode;
@@ -80,35 +78,36 @@ export default memo(function UserGNContentProfile({
     refetch();
 
     // Also invalidate profile picture queries
-    queryClient.invalidateQueries({ queryKey: ["profile", userId] });
+    queryClient.invalidateQueries({ queryKey: ['profile', userId] });
   }, [refetch, queryClient, userId]);
 
   const renderItem = useCallback(
     ({ item, index }: { item: FeedPost; index: number }) => (
       <FeedItem
         key={item.id}
-        name={item.assignee_user?.username || ""}
+        name={item.assignee_user?.username || ''}
         time={item.last_modified_date}
-        posterId={item.assignee_user?.id || ""}
+        posterId={item.assignee_user?.id || ''}
         isLive={item.is_live}
-        avatarUrl={item.assignee_user?.photos[0]?.image_url[0] || ""}
+        avatarUrl={item.assignee_user?.photos[0]?.image_url[0] || ''}
         hasRecording={item.has_recording}
         verificationId={item.id}
         feedId={item.feed_id}
         isPublic={item.is_public}
-        text={item.text_content || ""}
+        text={item.text_content || ''}
         isSpace={false}
-        videoUrl={getVideoSrc(item) || ""}
-        livekitRoomName={item.livekit_room_name || ""}
+        videoUrl={getVideoSrc(item) || ''}
+        externalVideo={item.external_video}
+        livekitRoomName={item.livekit_room_name || ''}
         imageGalleryWithDims={item.image_gallery_with_dims}
         isVisible={currentViewableItemIndex === index}
         title={item.title}
         fact_check_data={item.fact_check_data}
         previewData={item.preview_data}
-        thumbnail={item.verified_media_playback?.thumbnail || ""}
+        thumbnail={item.verified_media_playback?.thumbnail || ''}
       />
     ),
-    [currentViewableItemIndex]
+    [currentViewableItemIndex],
   );
 
   if (isFetching && userVerifications.length === 0) {
@@ -130,12 +129,12 @@ export default memo(function UserGNContentProfile({
             <View
               style={{
                 flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
-              <Text style={{ color: colorSchema === "dark" ? "#fff" : "#000" }}>
-                {t("common.no_posts_found")}
+              <Text style={{ color: colorSchema === 'dark' ? '#fff' : '#000' }}>
+                {t('common.no_posts_found')}
               </Text>
             </View>
           }

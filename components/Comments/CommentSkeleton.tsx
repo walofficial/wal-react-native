@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withRepeat,
@@ -7,8 +7,8 @@ import Animated, {
   withTiming,
   useSharedValue,
   withDelay,
-} from "react-native-reanimated";
-import { useEffect } from "react";
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
 
 interface CommentSkeletonProps {
   delay?: number;
@@ -23,11 +23,11 @@ const CommentSkeleton = ({ delay = 0 }: CommentSkeletonProps) => {
       withRepeat(
         withSequence(
           withTiming(1, { duration: 1000 }),
-          withTiming(0.5, { duration: 1000 })
+          withTiming(0.5, { duration: 1000 }),
         ),
         -1,
-        true
-      )
+        true,
+      ),
     );
   }, []);
 
@@ -63,63 +63,63 @@ const CommentSkeleton = ({ delay = 0 }: CommentSkeletonProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(31, 41, 55, 0.5)",
+    borderBottomColor: 'rgba(31, 41, 55, 0.5)',
   },
   avatar: {
     height: 32,
     width: 32,
     borderRadius: 16,
-    backgroundColor: "rgba(55, 65, 81, 0.3)",
+    backgroundColor: 'rgba(55, 65, 81, 0.3)',
     marginRight: 12,
   },
   contentContainer: {
     flex: 1,
   },
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   userInfoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   username: {
     height: 16,
     width: 80,
     borderRadius: 6,
-    backgroundColor: "rgba(55, 65, 81, 0.3)",
+    backgroundColor: 'rgba(55, 65, 81, 0.3)',
   },
   date: {
     height: 12,
     width: 64,
     borderRadius: 6,
-    backgroundColor: "rgba(55, 65, 81, 0.3)",
+    backgroundColor: 'rgba(55, 65, 81, 0.3)',
     marginLeft: 8,
   },
   menuDots: {
     height: 16,
     width: 16,
     borderRadius: 6,
-    backgroundColor: "rgba(55, 65, 81, 0.3)",
+    backgroundColor: 'rgba(55, 65, 81, 0.3)',
   },
   commentContainer: {
     marginTop: 4,
   },
   commentLine1: {
     height: 16,
-    width: "100%",
+    width: '100%',
     borderRadius: 6,
-    backgroundColor: "rgba(55, 65, 81, 0.3)",
+    backgroundColor: 'rgba(55, 65, 81, 0.3)',
   },
   commentLine2: {
     height: 16,
-    width: "75%",
+    width: '75%',
     borderRadius: 6,
-    backgroundColor: "rgba(55, 65, 81, 0.3)",
+    backgroundColor: 'rgba(55, 65, 81, 0.3)',
     marginTop: 4,
   },
 });

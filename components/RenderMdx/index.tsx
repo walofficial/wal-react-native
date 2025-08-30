@@ -1,8 +1,8 @@
-import React, { Fragment } from "react";
-import { ScrollView } from "react-native";
-import { useMarkdown, type useMarkdownHookOptions } from "react-native-marked";
-import { useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
+import React, { Fragment } from 'react';
+import { ScrollView } from 'react-native';
+import { useMarkdown, type useMarkdownHookOptions } from 'react-native-marked';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 interface RenderMdxProps {
   content: string;
@@ -16,14 +16,14 @@ const RenderMdx: React.FC<RenderMdxProps> = ({ content }) => {
   const cleanContent = content;
 
   const options: useMarkdownHookOptions = {
-    colorScheme: isDarkColorScheme ? "dark" : "light",
+    colorScheme: isDarkColorScheme ? 'dark' : 'light',
     theme: {
       colors: {
         text: theme.colors.text,
-        background: "transparent",
-        border: "transparent",
-        link: theme.colors.primary || "#007AFF",
-        code: isDarkColorScheme ? "#374151" : "#f3f4f6",
+        background: 'transparent',
+        border: 'transparent',
+        link: theme.colors.primary || '#007AFF',
+        code: isDarkColorScheme ? '#374151' : '#f3f4f6',
       },
     },
   };

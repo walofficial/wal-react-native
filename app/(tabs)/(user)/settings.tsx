@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   ScrollView,
@@ -6,22 +6,22 @@ import {
   Touchable,
   TouchableOpacity,
   StyleSheet,
-} from "react-native";
-import { router, useRouter } from "expo-router";
-import { Image } from "@/lib/icons/Image";
-import { Text } from "@/components/ui/text";
-import LogoutButton from "@/components/LogoutButton";
-import { Ionicons } from "@expo/vector-icons";
-import AnimatedPressable from "@/components/AnimatedPressable";
-import { SectionHeader } from "@/components/SectionHeader";
-import { Telegram } from "@/lib/icons/Telegram";
-import useGetBlockedUsers from "@/hooks/useGetBlockedUsers";
-import { User } from "lucide-react-native";
-import { useTheme } from "@/lib/theme";
-import { useAtomValue } from "jotai";
-import { FontSizes } from "@/lib/theme";
-import useFeeds from "@/hooks/useFeeds";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { router, useRouter } from 'expo-router';
+import { Image } from '@/lib/icons/Image';
+import { Text } from '@/components/ui/text';
+import LogoutButton from '@/components/LogoutButton';
+import { Ionicons } from '@expo/vector-icons';
+import AnimatedPressable from '@/components/AnimatedPressable';
+import { SectionHeader } from '@/components/SectionHeader';
+import { Telegram } from '@/lib/icons/Telegram';
+import useGetBlockedUsers from '@/hooks/useGetBlockedUsers';
+import { User } from 'lucide-react-native';
+import { useTheme } from '@/lib/theme';
+import { useAtomValue } from 'jotai';
+import { FontSizes } from '@/lib/theme';
+import useFeeds from '@/hooks/useFeeds';
+import { t } from '@/lib/i18n';
 interface ProfileButtonProps {
   href: any;
   icon: React.ReactNode | ((props: { color?: string }) => React.ReactNode);
@@ -32,7 +32,7 @@ const ProfileButton = ({ href, icon: Icon, text }: ProfileButtonProps) => {
   const router = useRouter();
   const theme = useTheme();
   const IconComponent =
-    typeof Icon === "function" ? Icon({ color: theme.colors.icon }) : Icon;
+    typeof Icon === 'function' ? Icon({ color: theme.colors.icon }) : Icon;
 
   return (
     <AnimatedPressable
@@ -54,7 +54,7 @@ export default function ProfileMain() {
   const theme = useTheme();
   const { headerHeight } = useFeeds();
   const openTelegramChannel = () => {
-    Linking.openURL("https://t.me/waldiscuss");
+    Linking.openURL('https://t.me/waldiscuss');
   };
 
   return (
@@ -75,25 +75,25 @@ export default function ProfileMain() {
                 color={theme.colors.icon}
               />
             }
-            text={t("settings.general")}
+            text={t('settings.general')}
           />
 
           <ProfileButton
             href="(user)/change-photo"
             icon={({ color }) => <Image color={color} />}
-            text={t("settings.change_photo")}
+            text={t('settings.change_photo')}
           />
           <ProfileButton
             href="(user)/profile-settings"
             icon={({ color }) => <User color={color} />}
-            text={t("settings.account")}
+            text={t('settings.account')}
           />
           <ProfileButton
             href="(user)/language-region"
             icon={({ color }) => (
               <Ionicons size={28} name="globe-outline" color={color} />
             )}
-            text={t("settings.language_and_region")}
+            text={t('settings.language_and_region')}
           />
         </View>
       </ScrollView>
@@ -108,13 +108,13 @@ export default function ProfileMain() {
             <Telegram color={theme.colors.icon} />
           </View>
           <Text style={[styles.buttonText, { color: theme.colors.text }]}>
-            {t("settings.telegram_channel")}
+            {t('settings.telegram_channel')}
           </Text>
         </AnimatedPressable>
         {hasBlockedUsers && (
           <AnimatedPressable
             onClick={() => {
-              router.navigate("/(tabs)/(user)/blocked-users");
+              router.navigate('/(tabs)/(user)/blocked-users');
             }}
           >
             <Ionicons
@@ -123,7 +123,7 @@ export default function ProfileMain() {
               color={theme.colors.icon}
             />
             <Text style={[styles.buttonText, { color: theme.colors.text }]}>
-              {t("settings.blocked_users")}
+              {t('settings.blocked_users')}
             </Text>
           </AnimatedPressable>
         )}
@@ -131,22 +131,22 @@ export default function ProfileMain() {
         <View style={styles.footerLinks}>
           <TouchableOpacity
             onPress={() => {
-              Linking.openURL("https://greetai.co/terms");
+              Linking.openURL('https://greetai.co/terms');
             }}
             style={styles.footerLink}
           >
             <Text style={styles.footerLinkText}>
-              {t("settings.terms_of_service")}
+              {t('settings.terms_of_service')}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              Linking.openURL("https://greetai.co/policy");
+              Linking.openURL('https://greetai.co/policy');
             }}
             style={styles.footerLink}
           >
             <Text style={styles.footerLinkText}>
-              {t("settings.privacy_policy")}
+              {t('settings.privacy_policy')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -166,7 +166,7 @@ export default function ProfileMain() {
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
-    height: "100%",
+    height: '100%',
   },
   container: {
     flex: 1,
@@ -174,34 +174,34 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     marginLeft: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   bottomContainer: {
     flex: 1,
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     padding: 20,
-    width: "100%",
+    width: '100%',
   },
   telegramIcon: {
     width: 24,
     height: 24,
   },
   footerLinks: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   footerLink: {
     marginBottom: 12,
     borderRadius: 12,
     paddingVertical: 12,
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     fontSize: FontSizes.small,
   },
   footerLinkText: {
     marginRight: 16,
-    fontWeight: "600",
-    color: "#9CA3AF",
+    fontWeight: '600',
+    color: '#9CA3AF',
     fontSize: 12,
   },
 });

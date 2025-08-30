@@ -1,11 +1,11 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { useProfileInformation } from "@/hooks/useProfileInformation";
-import { convertToCDNUrl } from "@/lib/utils";
-import UserCircleProfile from "../UserCircleProfile";
-import { spacing } from "@/utils/styleUtils";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Text } from "@/components/ui/text";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useProfileInformation } from '@/hooks/useProfileInformation';
+import { convertToCDNUrl } from '@/lib/utils';
+import UserCircleProfile from '../UserCircleProfile';
+import { spacing } from '@/utils/styleUtils';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Text } from '@/components/ui/text';
 
 interface ProfileViewProps {
   userId: string;
@@ -25,7 +25,7 @@ export default function ProfileView({ userId }: ProfileViewProps) {
         photo={
           isLoadingData
             ? undefined
-            : convertToCDNUrl(profile?.photos[0].image_url[0] || "")
+            : convertToCDNUrl(profile?.photos[0].image_url[0] || '')
         }
         userId={userId}
       />
@@ -47,9 +47,9 @@ function StatCard({
   theme: any;
 }) {
   const backgroundColor =
-    theme.colors.background === "#000000"
-      ? "rgba(255,255,255,0.1)"
-      : "rgba(0,0,0,0.05)";
+    theme.colors.background === '#000000'
+      ? 'rgba(255,255,255,0.1)'
+      : 'rgba(0,0,0,0.05)';
 
   return (
     <View
@@ -78,19 +78,19 @@ function StatCard({
 
 const styles = StyleSheet.create({
   centeredContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[4],
   },
   statCard: {
     borderRadius: 12,
     padding: spacing[4],
-    alignItems: "center",
+    alignItems: 'center',
     flex: 1,
     marginHorizontal: spacing[2],
   },
@@ -99,8 +99,8 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   statTitle: {
     fontSize: 14,
@@ -108,6 +108,6 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 22,
-    fontWeight: "700",
+    fontWeight: '700',
   },
 });

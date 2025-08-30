@@ -1,18 +1,18 @@
 // @ts-nocheck
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Pressable, View, StyleSheet } from "react-native";
-import { MoonStar } from "~/lib/icons/MoonStar";
-import { Sun } from "~/lib/icons/Sun";
-import { useColorScheme } from "~/lib/useColorScheme";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Pressable, View, StyleSheet } from 'react-native';
+import { MoonStar } from '~/lib/icons/MoonStar';
+import { Sun } from '~/lib/icons/Sun';
+import { useColorScheme } from '~/lib/useColorScheme';
 
 export function ThemeToggle() {
   const { isDarkColorScheme, setColorScheme } = useColorScheme();
   return (
     <Pressable
       onPress={() => {
-        const newTheme = isDarkColorScheme ? "light" : "dark";
+        const newTheme = isDarkColorScheme ? 'light' : 'dark';
         setColorScheme(newTheme);
-        AsyncStorage.setItem("theme", newTheme);
+        AsyncStorage.setItem('theme', newTheme);
       }}
       style={styles.pressable}
     >
@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
     flex: 1,
     aspectRatio: 1,
     paddingTop: 2,
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   pressed: {
     opacity: 0.7,

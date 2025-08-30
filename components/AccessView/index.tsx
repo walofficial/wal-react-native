@@ -5,7 +5,7 @@ import React, {
   forwardRef,
   useCallback,
   useMemo,
-} from "react";
+} from 'react';
 import {
   View,
   Alert,
@@ -16,52 +16,52 @@ import {
   TextInput,
   StyleSheet,
   useColorScheme,
-} from "react-native";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Text } from "@/components/ui/text";
-import Button from "@/components/Button";
+} from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Text } from '@/components/ui/text';
+import Button from '@/components/Button';
 // import { Button } from "@/components/ui/button";
-import { OtpInput } from "react-native-otp-entry";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { authenticatingState } from "@/lib/state/auth";
-import { useAtom, useAtomValue } from "jotai";
-import { supabase } from "@/lib/supabase";
-import { colors } from "@/lib/colors";
-import { Redirect, useRouter } from "expo-router";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { AndroidAutoSMSRef } from "./AndroidAutoSMS";
-import { LogBox } from "react-native";
-import { BottomSheetTextInput, BottomSheetView } from "@gorhom/bottom-sheet";
-import { RefObject } from "react";
+import { OtpInput } from 'react-native-otp-entry';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { authenticatingState } from '@/lib/state/auth';
+import { useAtom, useAtomValue } from 'jotai';
+import { supabase } from '@/lib/supabase';
+import { colors } from '@/lib/colors';
+import { Redirect, useRouter } from 'expo-router';
+import { toast } from '@backpackapp-io/react-native-toast';
+import { AndroidAutoSMSRef } from './AndroidAutoSMS';
+import { LogBox } from 'react-native';
+import { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
+import { RefObject } from 'react';
 import {
   showPhoneInputState,
   showCountrySelectorState,
   selectedCountryState,
-} from "./atom";
-import { FontSizes, useTheme } from "@/lib/theme";
-import { BlurView } from "expo-blur";
-import CountrySelector from "@/components/CountrySelector";
-import { Country } from "@/lib/countries";
-import { validatePhoneNumber } from "@/lib/phoneValidation";
-import PhoneInputField from "./PhoneInputField";
-import { useDefaultCountry } from "@/hooks/useDefaultCountry";
-import { useToast } from "../ToastUsage";
-import { getCurrentLocale, t } from "@/lib/i18n";
-import { isDev } from "@/lib/api/config";
-import { ThemedText } from "../ThemedText";
-import { router } from "expo-router";
+} from './atom';
+import { FontSizes, useTheme } from '@/lib/theme';
+import { BlurView } from 'expo-blur';
+import CountrySelector from '@/components/CountrySelector';
+import { Country } from '@/lib/countries';
+import { validatePhoneNumber } from '@/lib/phoneValidation';
+import PhoneInputField from './PhoneInputField';
+import { useDefaultCountry } from '@/hooks/useDefaultCountry';
+import { useToast } from '../ToastUsage';
+import { getCurrentLocale, t } from '@/lib/i18n';
+import { isDev } from '@/lib/api/config';
+import { ThemedText } from '../ThemedText';
+import { router } from 'expo-router';
 
-LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
+LogBox.ignoreLogs(['new NativeEventEmitter']); // Ignore log notification by message
 LogBox.ignoreAllLogs(); //Ignore all log notifications
 
 const formSchema = z.object({
-  phoneNumber: z.string().min(1, t("common.please_enter_phone_number")),
+  phoneNumber: z.string().min(1, t('common.please_enter_phone_number')),
   pin: z
     .union([z.string().length(0), z.string().min(4)])
     .optional()
-    .transform((e) => (e === "" ? undefined : e)),
+    .transform((e) => (e === '' ? undefined : e)),
 });
 
 interface AccessViewProps {
@@ -71,19 +71,19 @@ interface AccessViewProps {
 // Custom background component for the BottomSheet
 export const CustomBottomSheetBackground = ({ style }: any) => {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
 
-  if (Platform.OS === "ios") {
+  if (Platform.OS === 'ios') {
     return (
       <BlurView
         intensity={isDark ? 60 : 40}
-        tint={isDark ? "dark" : "light"} // Keep dark tint for both modes
+        tint={isDark ? 'dark' : 'light'} // Keep dark tint for both modes
         style={[
           style,
           {
             backgroundColor: isDark
-              ? "rgba(0, 0, 0, 0.5)"
-              : "rgba(255, 255, 255, 0.65)", // Darker background even in light mode
+              ? 'rgba(0, 0, 0, 0.5)'
+              : 'rgba(255, 255, 255, 0.65)', // Darker background even in light mode
           },
         ]}
       />
@@ -95,7 +95,7 @@ export const CustomBottomSheetBackground = ({ style }: any) => {
       style={[
         style,
         {
-          backgroundColor: isDark ? "black" : "#efefef", // Dark background for both modes
+          backgroundColor: isDark ? 'black' : '#efefef', // Dark background for both modes
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
         },
@@ -194,21 +194,21 @@ const TimerButton = React.memo(
         glassy={true}
         loading={isPending}
         title={
-          timer > 0 ? t("common.wait_seconds", { timer }) : t("common.get_code")
+          timer > 0 ? t('common.wait_seconds', { timer }) : t('common.get_code')
         }
       />
     );
-  }
+  },
 );
 
 const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   { inputRef },
-  ref
+  ref,
 ) {
   const isAuthenticating = useAtomValue(authenticatingState);
   const [showPhoneInput, setShowPhoneInput] = useAtom(showPhoneInputState);
   const [showCountrySelector, setShowCountrySelector] = useAtom(
-    showCountrySelectorState
+    showCountrySelectorState,
   );
   const locale = getCurrentLocale();
   const theme = useTheme();
@@ -234,7 +234,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      phoneNumber: "",
+      phoneNumber: '',
       pin: undefined,
     },
   });
@@ -251,12 +251,12 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
       if (!isDev) {
         const validation = validatePhoneNumber(
           values.phoneNumber,
-          selectedCountry
+          selectedCountry,
         );
 
         if (!validation.isValid) {
           throw new Error(
-            validation.errorMessageGeo || t("common.please_enter_phone_number")
+            validation.errorMessageGeo || t('common.please_enter_phone_number'),
           );
         }
 
@@ -267,10 +267,10 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
           phone: fullPhoneNumber,
         });
 
-        if (error?.message === "User already registered") {
-          throw new Error(t("common.user_already_exists"));
+        if (error?.message === 'User already registered') {
+          throw new Error(t('common.user_already_exists'));
         } else if (!!error) {
-          throw new Error(t("common.system_error_short"));
+          throw new Error(t('common.system_error_short'));
         }
         return data;
       }
@@ -283,28 +283,28 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
     onSuccess: () => {
       setShouldStartTimer(10);
       setShowPhoneInput(false);
-      if (Platform.OS === "android") {
+      if (Platform.OS === 'android') {
         androidAutoSMSRef.current?.start();
       }
     },
     onError: (error: any) => {
-      console.log("error", error);
-      error({ title: error.message || t("common.system_error") });
+      console.log('error', error);
+      error({ title: error.message || t('common.system_error') });
       console.log(error);
     },
   });
 
-  const pin = watch("pin");
+  const pin = watch('pin');
 
   // Use getValues instead of watch for phoneNumber to avoid unnecessary re-renders
   // Only get the current value when we actually need it
   const getCurrentPhoneNumber = useCallback(() => {
-    return getValues("phoneNumber");
+    return getValues('phoneNumber');
   }, [getValues]);
 
   useEffect(() => {
-    resetField("pin");
-  }, [watch("phoneNumber"), resetField]);
+    resetField('pin');
+  }, [watch('phoneNumber'), resetField]);
 
   const {
     data: access,
@@ -312,7 +312,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
     error: accessError,
   } = useQuery({
     queryKey: [
-      "access-code",
+      'access-code',
       pin,
       getCurrentPhoneNumber(),
       selectedCountry.callingCode,
@@ -322,7 +322,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
       const fullPhoneNumber = selectedCountry.callingCode + phoneNumber;
       return await supabase.auth.verifyOtp({
         phone: fullPhoneNumber,
-        type: "sms",
+        type: 'sms',
         token: pin!,
       });
     },
@@ -331,25 +331,25 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
 
   useEffect(() => {
     if (access && access.error) {
-      if (access.error.message === "Token has expired or is invalid") {
+      if (access.error.message === 'Token has expired or is invalid') {
         error({
-          title: t("common.invalid_code_try_again"),
+          title: t('common.invalid_code_try_again'),
         });
       }
     }
   }, [access]);
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    resetField("pin");
+    resetField('pin');
     signupMutation.mutate({ phoneNumber: values.phoneNumber });
   };
 
   const onTryAgain = () => {
     setShowPhoneInput(true);
-    resetField("phoneNumber");
+    resetField('phoneNumber');
     setShouldResetTimer(true);
     setShouldStartTimer(0);
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       androidAutoSMSRef.current?.stop();
     }
 
@@ -377,13 +377,13 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
 
   const openTermsOfService = () => {
     Linking.openURL(
-      "https://app.termly.io/policy-viewer/policy.html?policyUUID=a118a575-bf92-4a88-a954-1589ae572d09"
+      'https://app.termly.io/policy-viewer/policy.html?policyUUID=a118a575-bf92-4a88-a954-1589ae572d09',
     );
   };
 
   const openPrivacyPolicy = () => {
     Linking.openURL(
-      "https://app.termly.io/policy-viewer/policy.html?policyUUID=c16d10b8-1b65-43ea-9568-30e7ce727a60"
+      'https://app.termly.io/policy-viewer/policy.html?policyUUID=c16d10b8-1b65-43ea-9568-30e7ce727a60',
     );
   };
 
@@ -401,7 +401,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
         inputRef.current?.focus();
       }, 100);
     },
-    [setCountry, setShowCountrySelector, inputRef]
+    [setCountry, setShowCountrySelector, inputRef],
   );
 
   const handleBackFromCountrySelector = useCallback(() => {
@@ -418,7 +418,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
     (country: Country) => {
       setCountry(country.code);
     },
-    [setCountry]
+    [setCountry],
   );
 
   // Determine minimum phone number length based on country
@@ -482,37 +482,37 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   let termsSection = (
     <View style={{ marginTop: 24, opacity: 0.5 }}>
       <Text style={[styles.termsText, { color: theme.colors.text }]}>
-        By continuing, you agree to our{" "}
+        By continuing, you agree to our{' '}
         <Text
           style={[styles.termsLink, { color: theme.colors.text }]}
           onPress={openTermsOfService}
         >
-          {t("common.terms_of_service")}
+          {t('common.terms_of_service')}
         </Text>
       </Text>
       <Text
         style={[styles.termsText, { marginTop: 4, color: theme.colors.text }]}
       >
-        and{" "}
+        and{' '}
         <Text
           style={[styles.termsLink, { color: theme.colors.text }]}
           onPress={openPrivacyPolicy}
         >
-          {t("common.privacy_policy")}
+          {t('common.privacy_policy')}
         </Text>
         .
       </Text>
     </View>
   );
 
-  if (locale === "ka") {
+  if (locale === 'ka') {
     termsSection = (
       <View style={{ marginTop: 24, opacity: 0.7 }}>
         <Text style={[styles.termsText, { color: theme.colors.text }]}>
           გაგრძელებით თქვენ ეთანხმებით
         </Text>
         <Text
-          style={[styles.termsText, { marginTop: 4, color: "#007AFF" }]}
+          style={[styles.termsText, { marginTop: 4, color: '#007AFF' }]}
           onPress={openPrivacyPolicy}
         >
           მომსახურების პირობებსა და კონფიდენციალურობის პოლიტიკას
@@ -553,7 +553,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
 
       {!showPhoneInput && (
         <ThemedText style={[styles.instructionText]}>
-          {t("common.enter_sms_code")}
+          {t('common.enter_sms_code')}
         </ThemedText>
       )}
 
@@ -568,8 +568,8 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
               textInputProps={{
                 value,
                 onBlur,
-                textContentType: "oneTimeCode",
-                autoComplete: "sms-otp",
+                textContentType: 'oneTimeCode',
+                autoComplete: 'sms-otp',
               }}
               theme={{
                 containerStyle: {
@@ -577,15 +577,15 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
                 },
                 pinCodeTextStyle: {
                   fontSize: 20,
-                  fontWeight: "bold",
+                  fontWeight: 'bold',
                   color: theme.colors.text,
                 },
                 focusedPinCodeContainerStyle: {
-                  borderColor: "#007AFF",
+                  borderColor: '#007AFF',
                 },
                 focusStickStyle: {
-                  backgroundColor: "#333",
-                  borderColor: "#ddd",
+                  backgroundColor: '#333',
+                  borderColor: '#ddd',
                 },
                 pinCodeContainerStyle: {
                   backgroundColor: theme.colors.background,
@@ -617,7 +617,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
           style={styles.tryAgainButton}
           variant="subtle"
           onPress={onTryAgain}
-          title={t("common.try_again_with_other_number")}
+          title={t('common.try_again_with_other_number')}
         />
       )}
 
@@ -633,7 +633,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   phoneInput: {
-    width: "100%",
+    width: '100%',
     marginVertical: 8,
     minHeight: 56,
     fontSize: 24,
@@ -648,16 +648,16 @@ const styles = StyleSheet.create({
     minHeight: 64,
   },
   errorText: {
-    color: "red",
+    color: 'red',
     marginBottom: 8,
   },
   submitButton: {
     marginTop: 12,
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 16,
-    textAlign: "center",
-    justifyContent: "center",
-    width: "100%",
+    textAlign: 'center',
+    justifyContent: 'center',
+    width: '100%',
     borderRadius: 8,
   },
   disabledButton: {
@@ -667,17 +667,17 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.medium,
   },
   timerPrefix: {
-    fontWeight: "normal",
+    fontWeight: 'normal',
   },
   timerValue: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: FontSizes.medium + 2,
   },
   timerSuffix: {
-    fontWeight: "normal",
+    fontWeight: 'normal',
   },
   termsText: {
-    textAlign: "left",
+    textAlign: 'left',
     fontSize: FontSizes.small,
   },
   termsLink: {

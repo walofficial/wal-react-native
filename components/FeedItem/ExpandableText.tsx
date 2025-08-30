@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { cn } from "@/lib/utils";
-import { useRouter, usePathname } from "expo-router";
-import { useLightboxControls } from "@/lib/lightbox/lightbox";
-import { useAtom } from "jotai";
-import { shouldFocusCommentInputAtom } from "@/atoms/comments";
-import { useTheme } from "@/lib/theme";
+import React, { useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { cn } from '@/lib/utils';
+import { useRouter, usePathname } from 'expo-router';
+import { useLightboxControls } from '@/lib/lightbox/lightbox';
+import { useAtom } from 'jotai';
+import { shouldFocusCommentInputAtom } from '@/atoms/comments';
+import { useTheme } from '@/lib/theme';
 
 interface ExpandableTextProps {
   text: string | undefined;
@@ -42,7 +42,7 @@ const ExpandableText = ({
 
   // Only strip URLs if there's a preview to display them
   const displayText = hasPreview
-    ? text.replace(/(https?:\/\/[^\s]+)/g, "").trim()
+    ? text.replace(/(https?:\/\/[^\s]+)/g, '').trim()
     : text;
 
   if (!displayText) return null;
@@ -69,7 +69,7 @@ const ExpandableText = ({
     if (wasLightboxActive) {
       setTimeout(() => {
         router.navigate({
-          pathname: "/verification/[verificationId]",
+          pathname: '/verification/[verificationId]',
           params: {
             verificationId,
           },
@@ -77,7 +77,7 @@ const ExpandableText = ({
       }, 300);
     } else {
       router.navigate({
-        pathname: "/verification/[verificationId]",
+        pathname: '/verification/[verificationId]',
         params: {
           verificationId,
         },
@@ -87,7 +87,7 @@ const ExpandableText = ({
 
   const shouldTruncate = displayText.length > maxLength && !isExpanded;
   const finalText = shouldTruncate
-    ? displayText.substring(0, maxLength) + "... "
+    ? displayText.substring(0, maxLength) + '... '
     : displayText;
 
   return (
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   seeMoreText: {
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

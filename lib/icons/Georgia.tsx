@@ -1,7 +1,7 @@
-import React from "react";
-import Svg, { G, Path } from "react-native-svg";
-import { iconWithClassName } from "./iconWithClassName";
-import type { LucideProps } from "lucide-react-native";
+import React from 'react';
+import Svg, { G, Path } from 'react-native-svg';
+import { iconWithClassName } from './iconWithClassName';
+import type { LucideProps } from 'lucide-react-native';
 
 const Georgia = (props: LucideProps) => (
   <Svg viewBox="0 0 1024 1024" {...props}>

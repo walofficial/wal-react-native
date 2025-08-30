@@ -1,7 +1,6 @@
-
-import { isIOS } from "@/lib/platform";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useFeeds from "./useFeeds";
+import { isIOS } from '@/lib/platform';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useFeeds from './useFeeds';
 
 function useKeyboardVerticalOffset() {
   const { headerHeight } = useFeeds();

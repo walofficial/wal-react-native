@@ -1,11 +1,11 @@
-import { Stack, useLocalSearchParams } from "expo-router";
-import { View, Text, ActivityIndicator } from "react-native";
-import useVerificationById from "@/hooks/useVerificationById";
-import CommentsView from "@/components/VerificationView/CommentsView";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
-import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
+import { Stack, useLocalSearchParams } from 'expo-router';
+import { View, Text, ActivityIndicator } from 'react-native';
+import useVerificationById from '@/hooks/useVerificationById';
+import CommentsView from '@/components/VerificationView/CommentsView';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 function VerificationView() {
   const params = useLocalSearchParams<{
@@ -13,14 +13,14 @@ function VerificationView() {
   }>();
 
   // Runtime check and type assertion
-  const verificationId = params.verificationId || "";
+  const verificationId = params.verificationId || '';
   const insets = useSafeAreaInsets();
-  const color = useThemeColor({}, "text");
+  const color = useThemeColor({}, 'text');
 
   // Early return if verificationId is empty
   if (!verificationId) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ color: color }}>Invalid verification ID</Text>
       </View>
     );
@@ -31,12 +31,12 @@ function VerificationView() {
     true,
     {
       refetchInterval: 5000,
-    }
+    },
   );
 
   if (!verification || isLoading) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={color} />
       </View>
     );

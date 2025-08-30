@@ -1,15 +1,15 @@
 // @ts-nocheck
-import React from "react";
+import React from 'react';
 import {
   Pressable,
   StyleProp,
   View,
   ViewStyle,
   StyleSheet,
-} from "react-native";
-import { Image, ImageStyle } from "expo-image";
-import { HandleRef } from "@/lib/hooks/useHandleRef";
-import type { Dimensions } from "@/lib/media/types";
+} from 'react-native';
+import { Image, ImageStyle } from 'expo-image';
+import { HandleRef } from '@/lib/hooks/useHandleRef';
+import type { Dimensions } from '@/lib/media/types';
 
 interface GalleryItemProps {
   images: Array<{
@@ -20,7 +20,7 @@ interface GalleryItemProps {
   onPress?: (
     index: number,
     containerRefs: HandleRef[],
-    fetchedDims: (Dimensions | null)[]
+    fetchedDims: (Dimensions | null)[],
   ) => void;
   onLongPress?: (index: number) => void;
   onPressIn?: (index: number) => void;
@@ -59,7 +59,7 @@ export function GalleryItem({
         onLongPress={onLongPress ? () => onLongPress(index) : undefined}
         style={[styles.pressable, imageStyle]}
         accessibilityRole="button"
-        accessibilityLabel={image.alt || "Image"}
+        accessibilityLabel={image.alt || 'Image'}
       >
         <Image
           source={{ uri: image.thumb }}
@@ -87,14 +87,14 @@ const styles = StyleSheet.create({
   },
   pressable: {
     flex: 1,
-    overflow: "hidden",
-    backgroundColor: "#f3f4f6", // light gray equivalent
+    overflow: 'hidden',
+    backgroundColor: '#f3f4f6', // light gray equivalent
   },
   image: {
     flex: 1,
   },
   overlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,

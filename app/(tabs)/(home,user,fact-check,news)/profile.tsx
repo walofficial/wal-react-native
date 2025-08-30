@@ -1,6 +1,6 @@
-import { useLocalSearchParams } from "expo-router";
-import UserGNContentProfile from "@/components/UserGNContentProfile";
-import ProfileView from "@/components/ProfileView";
+import { useLocalSearchParams } from 'expo-router';
+import UserGNContentProfile from '@/components/UserGNContentProfile';
+import ProfileView from '@/components/ProfileView';
 
 export default function Profile() {
   const { userId } = useLocalSearchParams<{ userId: string }>();

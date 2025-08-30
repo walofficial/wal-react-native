@@ -4,8 +4,8 @@ import React, {
   useState,
   useEffect,
   useRef,
-} from "react";
-import type { ImageLoadEventData, NativeSyntheticEvent } from "react-native";
+} from 'react';
+import type { ImageLoadEventData, NativeSyntheticEvent } from 'react-native';
 import {
   StyleSheet,
   View,
@@ -20,50 +20,49 @@ import {
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
   Alert,
-} from "react-native";
-import { Video, AVPlaybackStatus, ResizeMode } from "expo-av";
-import { SAFE_AREA_PADDING } from "@/components/CameraPage/Constants";
-import Share from "react-native-share";
-import { useIsForeground } from "@/hooks/useIsForeground";
-import { Ionicons as IonIcon } from "@expo/vector-icons";
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
-import { StatusBarBlurBackground } from "@/components/CameraPage/StatusBarBlurBackground";
-import { useIsFocused } from "@react-navigation/core";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import SubmitButton from "@/components/SubmitButton";
-import RetryButton from "@/components/RetryButton";
-import Button from "@/components/Button";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useToast } from "@/components/ToastUsage";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { Video, AVPlaybackStatus, ResizeMode } from 'expo-av';
+import { SAFE_AREA_PADDING } from '@/components/CameraPage/Constants';
+import Share from 'react-native-share';
+import { useIsForeground } from '@/hooks/useIsForeground';
+import { Ionicons as IonIcon } from '@expo/vector-icons';
+import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import { StatusBarBlurBackground } from '@/components/CameraPage/StatusBarBlurBackground';
+import { useIsFocused } from '@react-navigation/core';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import SubmitButton from '@/components/SubmitButton';
+import RetryButton from '@/components/RetryButton';
+import Button from '@/components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { toast } from '@backpackapp-io/react-native-toast';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useToast } from '@/components/ToastUsage';
+import { t } from '@/lib/i18n';
 
 const requestSavePermission = async (): Promise<boolean> => {
   // On Android 13 and above, scoped storage is used instead and no permission is needed
-  if (Platform.OS !== "android" || Platform.Version >= 33) return true;
+  if (Platform.OS !== 'android' || Platform.Version >= 33) return true;
 
   const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
   if (permission == null) return false;
   let hasPermission = await PermissionsAndroid.check(permission);
   if (!hasPermission) {
-    const permissionRequestResult = await PermissionsAndroid.request(
-      permission
-    );
-    hasPermission = permissionRequestResult === "granted";
+    const permissionRequestResult =
+      await PermissionsAndroid.request(permission);
+    hasPermission = permissionRequestResult === 'granted';
   }
   return hasPermission;
 };
 
 type OnLoadImage = NativeSyntheticEvent<ImageLoadEventData>;
 const isVideoOnLoadEvent = (
-  event: AVPlaybackStatus | OnLoadImage
-): event is AVPlaybackStatus => "isLoaded" in event && event.isLoaded;
+  event: AVPlaybackStatus | OnLoadImage,
+): event is AVPlaybackStatus => 'isLoaded' in event && event.isLoaded;
 
 export default function MediaPage(): React.ReactElement {
   const { path, type, feedId, recordingTime } = useLocalSearchParams<{
     path: string;
-    type: "photo" | "video";
+    type: 'photo' | 'video';
     feedId: string;
     recordingTime: string;
   }>();
@@ -73,8 +72,8 @@ export default function MediaPage(): React.ReactElement {
   const isForeground = useIsForeground();
   const isScreenFocused = useIsFocused();
   const isVideoPaused = !isForeground || !isScreenFocused;
-  const [savingState, setSavingState] = useState<"none" | "saving" | "saved">(
-    "none"
+  const [savingState, setSavingState] = useState<'none' | 'saving' | 'saved'>(
+    'none',
   );
 
   const { success } = useToast();
@@ -82,7 +81,7 @@ export default function MediaPage(): React.ReactElement {
   const [mediaPath, setMediaPath] = useState<string | null>(null);
   const videoRef = useRef<Video>(null);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [caption, setCaption] = useState("");
+  const [caption, setCaption] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
@@ -93,7 +92,7 @@ export default function MediaPage(): React.ReactElement {
         setMediaPath(path as string);
       } else {
         const cachedPath = await AsyncStorage.getItem(
-          `lastRecordedVideoPath_${feedId}`
+          `lastRecordedVideoPath_${feedId}`,
         );
         setMediaPath(cachedPath);
       }
@@ -134,29 +133,29 @@ export default function MediaPage(): React.ReactElement {
 
   const onSavePressed = useCallback(async () => {
     try {
-      setSavingState("saving");
+      setSavingState('saving');
 
       const hasPermission = await requestSavePermission();
       if (!hasPermission) {
         Alert.alert(
-          "Permission denied!",
-          "Vision Camera does not have permission to save the media to your camera roll."
+          'Permission denied!',
+          'Vision Camera does not have permission to save the media to your camera roll.',
         );
         return;
       }
       await CameraRoll.save(`file://${path}`, {
-        type: type as "video" | "photo",
+        type: type as 'video' | 'photo',
       });
-      setSavingState("saved");
-      success({ title: "შენახულია" });
+      setSavingState('saved');
+      success({ title: 'შენახულია' });
       // Remove the saved video path from AsyncStorage after saving to camera roll
       await AsyncStorage.removeItem(`lastRecordedVideoPath_${feedId}`);
     } catch (e) {
       const message = e instanceof Error ? e.message : JSON.stringify(e);
-      setSavingState("none");
+      setSavingState('none');
       Alert.alert(
-        "Failed to save!",
-        `An unexpected error occured while trying to save your ${type}. ${message}`
+        'Failed to save!',
+        `An unexpected error occured while trying to save your ${type}. ${message}`,
       );
     }
   }, [path, type, feedId]);
@@ -164,18 +163,18 @@ export default function MediaPage(): React.ReactElement {
   const onSharePressed = useCallback(async () => {
     try {
       const options = {
-        title: "Share via",
+        title: 'Share via',
         url: `file://${mediaPath}`,
-        type: type === "photo" ? "image/jpeg" : "video/mp4",
+        type: type === 'photo' ? 'image/jpeg' : 'video/mp4',
         failOnCancel: false,
       };
 
       await Share.open(options);
     } catch (error) {
-      console.log("Error =>", error);
+      console.log('Error =>', error);
       Alert.alert(
-        "Failed to share!",
-        "An unexpected error occurred while trying to share your media."
+        'Failed to share!',
+        'An unexpected error occurred while trying to share your media.',
       );
     }
   }, [mediaPath, type]);
@@ -218,7 +217,7 @@ export default function MediaPage(): React.ReactElement {
       videoRef.current.unloadAsync();
     }
     router.navigate({
-      pathname: "/(tabs)/(home)/[feedId]",
+      pathname: '/(tabs)/(home)/[feedId]',
       params: {
         feedId: feedId as string,
       },
@@ -239,17 +238,17 @@ export default function MediaPage(): React.ReactElement {
 
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow",
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       (e) => {
         setKeyboardHeight(e.endCoordinates.height);
-      }
+      },
     );
 
     const keyboardWillHide = Keyboard.addListener(
-      Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide",
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
         setKeyboardHeight(0);
-      }
+      },
     );
 
     return () => {
@@ -268,7 +267,7 @@ export default function MediaPage(): React.ReactElement {
             <ActivityIndicator color="black" size="large" />
           </View>
         )}
-        {type === "photo" && (
+        {type === 'photo' && (
           <Image
             source={source}
             style={StyleSheet.absoluteFill}
@@ -277,7 +276,7 @@ export default function MediaPage(): React.ReactElement {
             onLoad={onMediaLoad}
           />
         )}
-        {type === "video" && (
+        {type === 'video' && (
           <>
             <Video
               ref={videoRef}
@@ -308,7 +307,7 @@ export default function MediaPage(): React.ReactElement {
                 variant="primary"
                 onPress={togglePlayPause}
                 style={{
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
                   width: 70,
                   height: 70,
                   borderRadius: 35,
@@ -326,7 +325,7 @@ export default function MediaPage(): React.ReactElement {
           style={[
             styles.actionButton,
             {
-              position: "absolute",
+              position: 'absolute',
               top: SAFE_AREA_PADDING.paddingTop,
               left: SAFE_AREA_PADDING.paddingLeft,
             },
@@ -344,11 +343,11 @@ export default function MediaPage(): React.ReactElement {
                 isInputFocused && styles.captionInputFocused,
                 {
                   borderWidth: 1,
-                  borderColor: "rgba(255, 255, 255, 0.3)",
+                  borderColor: 'rgba(255, 255, 255, 0.3)',
                   borderRadius: 8,
                 },
               ]}
-              placeholder={t("common.add_caption")}
+              placeholder={t('common.add_caption')}
               placeholderTextColor="rgba(255, 255, 255, 0.6)"
               value={caption}
               onChangeText={setCaption}
@@ -363,27 +362,27 @@ export default function MediaPage(): React.ReactElement {
                 variant="subtle"
                 onPress={handleAcceptCaption}
                 style={{
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
                 }}
               />
             )}
           </View>
           <View
             style={{
-              flexDirection: "row",
-              width: "100%",
-              alignItems: "center",
-              justifyContent: "space-between",
+              flexDirection: 'row',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'space-between',
               paddingHorizontal: 16,
               paddingBottom: insets.bottom,
             }}
           >
-            <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 8, marginTop: 10 }}>
               <Button
                 onPress={onSavePressed}
-                disabled={savingState !== "none"}
-                loading={savingState === "saving"}
-                icon={savingState === "saved" ? "checkmark" : "download"}
+                disabled={savingState !== 'none'}
+                loading={savingState === 'saving'}
+                icon={savingState === 'saved' ? 'checkmark' : 'download'}
                 variant="outline"
                 size="medium"
                 style={styles.actionButton}
@@ -400,8 +399,8 @@ export default function MediaPage(): React.ReactElement {
 
             <View
               style={{
-                flexDirection: "row",
-                alignItems: "center",
+                flexDirection: 'row',
+                alignItems: 'center',
                 gap: 8,
                 marginTop: 10,
                 marginBottom: 10,
@@ -411,7 +410,7 @@ export default function MediaPage(): React.ReactElement {
               <SubmitButton
                 onSubmit={handleBack}
                 mediaBlob={recordingSource}
-                isPhoto={type === "photo"}
+                isPhoto={type === 'photo'}
                 videoDuration={recordingTime}
                 caption={caption.trim()}
               />
@@ -428,8 +427,8 @@ export default function MediaPage(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-end",
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   actionButton: {
     width: 44,
@@ -438,31 +437,31 @@ const styles = StyleSheet.create({
   },
   playPauseOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   captionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     zIndex: 1,
     elevation: 1,
-    width: "100%",
+    width: '100%',
     paddingHorizontal: 16,
     paddingBottom: 16,
   },
   captionInput: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    color: "white",
+    color: 'white',
     fontSize: 16,
     height: 40,
   },
   captionInputFocused: {
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
   },
 });

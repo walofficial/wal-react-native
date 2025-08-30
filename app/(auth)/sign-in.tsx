@@ -1,8 +1,8 @@
-import { View } from "react-native";
+import { View } from 'react-native';
 
-import HomePage from "@/components/HomePage";
-import { isUserRegistered, useSession } from "@/components/AuthLayer";
-import { Redirect } from "expo-router";
+import HomePage from '@/components/HomePage';
+import { isUserRegistered, useSession } from '@/components/AuthLayer';
+import { Redirect } from 'expo-router';
 export default function SignIn() {
   const { user } = useSession();
 

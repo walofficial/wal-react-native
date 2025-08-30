@@ -1,9 +1,9 @@
-import { atom } from "jotai";
+import { atom } from 'jotai';
 import {
   FactCheckingResult,
   AiVideoSummary,
   ExternalVideo,
-} from "@/lib/api/generated";
+} from '@/lib/api/generated';
 
 interface Source {
   title: string;

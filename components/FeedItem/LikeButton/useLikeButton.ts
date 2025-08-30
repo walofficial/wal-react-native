@@ -1,6 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useHaptics } from "@/lib/haptics";
-import { getVerificationLikesCountOptions, getVerificationLikesCountQueryKey, likeVerificationMutation, unlikeVerificationMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useHaptics } from '@/lib/haptics';
+import {
+  getVerificationLikesCountOptions,
+  getVerificationLikesCountQueryKey,
+  likeVerificationMutation,
+  unlikeVerificationMutation,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export function useLikeButton(verificationId: string) {
   const queryClient = useQueryClient();
@@ -8,17 +13,17 @@ export function useLikeButton(verificationId: string) {
   const { data, isLoading } = useQuery({
     ...getVerificationLikesCountOptions({
       path: {
-        verification_id: verificationId
-      }
+        verification_id: verificationId,
+      },
     }),
     placeholderData: { likes_count: 0, has_liked: false },
   });
 
   const queryKey = getVerificationLikesCountQueryKey({
     path: {
-      verification_id: verificationId
-    }
-  })
+      verification_id: verificationId,
+    },
+  });
 
   const likeMutation = useMutation({
     ...likeVerificationMutation(),
@@ -26,7 +31,7 @@ export function useLikeButton(verificationId: string) {
       // Optimistically update the like count
 
       await queryClient.cancelQueries({
-        queryKey
+        queryKey,
       });
       const previousData = queryClient.getQueryData(queryKey);
 
@@ -39,10 +44,7 @@ export function useLikeButton(verificationId: string) {
     },
     onError: (err, variables, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(
-          queryKey,
-          context.previousData
-        );
+        queryClient.setQueryData(queryKey, context.previousData);
       }
       // toast("Failed to like", { id: "like-error" });
     },
@@ -66,10 +68,7 @@ export function useLikeButton(verificationId: string) {
     },
     onError: (err, variables, context) => {
       if (context?.previousData) {
-        queryClient.setQueryData(
-          queryKey,
-          context.previousData
-        );
+        queryClient.setQueryData(queryKey, context.previousData);
       }
       // toast("Failed to unlike", { id: "unlike-error" });
     },
@@ -82,19 +81,19 @@ export function useLikeButton(verificationId: string) {
 
   const handleLike = () => {
     // Trigger haptic feedback
-    haptic("Medium");
+    haptic('Medium');
 
     if (data?.has_liked) {
       unlikeMutation.mutate({
         path: {
-          verification_id: verificationId
-        }
+          verification_id: verificationId,
+        },
       });
     } else {
       likeMutation.mutate({
         path: {
-          verification_id: verificationId
-        }
+          verification_id: verificationId,
+        },
       });
     }
   };

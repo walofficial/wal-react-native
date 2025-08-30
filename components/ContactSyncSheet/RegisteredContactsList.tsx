@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
-} from "react-native";
-import { Text } from "@/components/ui/text";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+} from 'react-native';
+import { Text } from '@/components/ui/text';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   checkRegisteredUsersOptions,
   checkRegisteredUsersQueryKey,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import * as Contacts from "expo-contacts";
-import ContactItem from "./ContactItem";
-import { User } from "@/lib/api/generated/types.gen";
-import ContactListHeader from "./ContactListHeader";
-import { useFriendRequest } from "@/lib/hooks/useFriendRequest";
-import { useAtom } from "jotai";
-import { checkedCountAtom, displayedContactsAtom } from "./atom";
-import { t } from "@/lib/i18n";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import * as Contacts from 'expo-contacts';
+import ContactItem from './ContactItem';
+import { User } from '@/lib/api/generated/types.gen';
+import ContactListHeader from './ContactListHeader';
+import { useFriendRequest } from '@/lib/hooks/useFriendRequest';
+import { useAtom } from 'jotai';
+import { checkedCountAtom, displayedContactsAtom } from './atom';
+import { t } from '@/lib/i18n';
 
 const RegisteredContactsList: React.FC = () => {
   const [contacts, setContacts] = useState<Contacts.Contact[]>([]);
   const [displayedContacts, setDisplayedContacts] = useAtom(
-    displayedContactsAtom
+    displayedContactsAtom,
   );
   const [checkedCount, setCheckedCount] = useAtom(checkedCountAtom);
   const [batchSize, setBatchSize] = useState(300);
@@ -38,7 +38,7 @@ const RegisteredContactsList: React.FC = () => {
   useEffect(() => {
     const fetchContacts = async () => {
       const { status } = await Contacts.requestPermissionsAsync();
-      if (status === "granted") {
+      if (status === 'granted') {
         const { data, hasNextPage } = await Contacts.getContactsAsync({
           fields: [
             Contacts.Fields.Name,
@@ -63,10 +63,10 @@ const RegisteredContactsList: React.FC = () => {
     new Set(
       currentBatch.flatMap((c) =>
         (c.phoneNumbers ?? [])
-          .map((p) => (p.number ?? "").replace(/\D/g, ""))
-          .filter((n) => n.length > 0)
-      )
-    )
+          .map((p) => (p.number ?? '').replace(/\D/g, ''))
+          .filter((n) => n.length > 0),
+      ),
+    ),
   );
 
   const {
@@ -93,7 +93,7 @@ const RegisteredContactsList: React.FC = () => {
   const loadMore = () => {
     const newDisplayedContacts = registeredContacts.slice(
       0,
-      displayedContacts.length + 10
+      displayedContacts.length + 10,
     );
     // setDisplayedContacts(newDisplayedContacts);
 
@@ -112,7 +112,7 @@ const RegisteredContactsList: React.FC = () => {
 
   const uniqueContacts = displayedContacts.filter(
     (contact, index, self) =>
-      index === self.findIndex((t) => t.id === contact.id)
+      index === self.findIndex((t) => t.id === contact.id),
   );
 
   if (uniqueContacts.length === 0 && !isLoading) {
@@ -130,9 +130,9 @@ const RegisteredContactsList: React.FC = () => {
               key={item.id}
               id={item.id}
               alreadyOnApp={true}
-              name={item.username || ""}
-              phone_number={item.phone_number || ""}
-              image={item.photos?.length ? item.photos[0].image_url[0] : ""}
+              name={item.username || ''}
+              phone_number={item.phone_number || ''}
+              image={item.photos?.length ? item.photos[0].image_url[0] : ''}
               onAddPress={() => handleAddFriend(item)}
               buttonText="დამატება"
               isLoading={
@@ -153,7 +153,7 @@ const RegisteredContactsList: React.FC = () => {
           disabled={isLoading}
         >
           <Text style={styles.loadMoreText}>
-            {isLoading ? t("common.loading") : t("common.load_more")}
+            {isLoading ? t('common.loading') : t('common.load_more')}
           </Text>
         </TouchableOpacity>
       )}
@@ -166,16 +166,16 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   loadMoreButton: {
-    backgroundColor: "#6B7280",
+    backgroundColor: '#6B7280',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 9999,
     marginTop: 16,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   loadMoreText: {
-    color: "#FFFFFF",
-    fontWeight: "600",
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
 });
 

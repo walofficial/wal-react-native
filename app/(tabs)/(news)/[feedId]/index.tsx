@@ -1,1 +1,1 @@
-export { default } from "@/screens/home/locationfeed";
+export { default } from '@/screens/home/locationfeed';

@@ -4,27 +4,27 @@ import React, {
   useRef,
   createContext,
   useContext,
-} from "react";
-import { getSocket } from "./socket";
-import { SocketContext } from "./context";
-import { ChatMessage } from "@/lib/api/generated";
-import { useSetAtom } from "jotai";
-import { isChatUserOnlineState } from "@/lib/state/chat";
-import useAuth from "@/hooks/useAuth";
-import { useGlobalSearchParams, useLocalSearchParams } from "expo-router";
-import Sentry from "@sentry/react-native";
+} from 'react';
+import { getSocket } from './socket';
+import { SocketContext } from './context';
+import { ChatMessage } from '@/lib/api/generated';
+import { useSetAtom } from 'jotai';
+import { isChatUserOnlineState } from '@/lib/state/chat';
+import useAuth from '@/hooks/useAuth';
+import { useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
+import Sentry from '@sentry/react-native';
 // Create a context for the socket
 
 export function useSocket() {
   return useContext(SocketContext);
 }
-import { useQueryClient } from "@tanstack/react-query";
-import ProtocolService from "@/lib/services/ProtocolService";
-import { useIsFocused } from "@react-navigation/native";
+import { useQueryClient } from '@tanstack/react-query';
+import ProtocolService from '@/lib/services/ProtocolService';
+import { useIsFocused } from '@react-navigation/native';
 import {
   getMessagesChatMessagesGetInfiniteOptions,
   getMessagesChatMessagesGetInfiniteQueryKey,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export default function MessageConnectionWrapper({
   children,
@@ -68,7 +68,7 @@ export default function MessageConnectionWrapper({
     }
 
     function onError(error: any) {
-      console.log("error", JSON.stringify(error));
+      console.log('error', JSON.stringify(error));
     }
 
     const handleConnectionStatus = ({
@@ -140,17 +140,17 @@ export default function MessageConnectionWrapper({
         id: string;
         temporary_id: string;
       }) => {
-        let decryptedMessage = "";
+        let decryptedMessage = '';
         try {
           decryptedMessage = await ProtocolService.decryptMessage(
             newMessage.sender,
             {
               encryptedMessage: newMessage.encrypted_content,
               nonce: newMessage.nonce,
-            }
+            },
           );
         } catch (error) {
-          console.log("error", error);
+          console.log('error', error);
           Sentry.captureException(error, {
             extra: {
               userId: user?.id,
@@ -175,11 +175,11 @@ export default function MessageConnectionWrapper({
                     id: newMessage.id,
                     message: decryptedMessage,
                     author_id: newMessage.sender,
-                    room_id: roomId || "",
-                    recipient_id: user?.id || "",
+                    room_id: roomId || '',
+                    recipient_id: user?.id || '',
                     encrypted_content: null,
                     nonce: null,
-                    message_state: "SENT",
+                    message_state: 'SENT',
                     sent_date: new Date().toISOString(),
                   } as ChatMessage,
                 ],
@@ -197,22 +197,22 @@ export default function MessageConnectionWrapper({
       addIncomingMessage(privateMessage as any);
     };
 
-    socket.on("user_connection_status", handleConnectionStatus);
-    socket.on("user_public_key", handlePublicKey);
-    socket.on("private_message", handlePrivateMessage);
-    socket.on("notify_single_message_seen", handleMessageSeen);
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
-    socket.on("connect_error", onError);
+    socket.on('user_connection_status', handleConnectionStatus);
+    socket.on('user_public_key', handlePublicKey);
+    socket.on('private_message', handlePrivateMessage);
+    socket.on('notify_single_message_seen', handleMessageSeen);
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('connect_error', onError);
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("private_message", handlePrivateMessage);
-      socket.off("disconnect", onDisconnect);
-      socket.off("connect_error", onError);
-      socket.off("user_connection_status", handleConnectionStatus);
-      socket.off("user_public_key", handlePublicKey);
-      socket.off("notify_single_message_seen", handleMessageSeen);
+      socket.off('connect', onConnect);
+      socket.off('private_message', handlePrivateMessage);
+      socket.off('disconnect', onDisconnect);
+      socket.off('connect_error', onError);
+      socket.off('user_connection_status', handleConnectionStatus);
+      socket.off('user_public_key', handlePublicKey);
+      socket.off('notify_single_message_seen', handleMessageSeen);
     };
   }, [queryClient, roomId]);
 

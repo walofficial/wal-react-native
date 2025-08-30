@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Animated,
@@ -11,32 +11,32 @@ import {
   TouchableOpacity,
   Pressable,
   Linking,
-} from "react-native";
-import { Image } from "expo-image";
-import { useRouter } from "expo-router";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import SimplifiedVideoPlayback from "../SimplifiedVideoPlayback";
-import { AutoSizedImage } from "../AutoSizedImage";
-import ImageGrid from "../ImageGrid";
-import * as MediaLibrary from "expo-media-library";
-import * as FileSystem from "expo-file-system";
-import { measureHandle } from "@/lib/hooks/useHandleRef";
-import { MeasuredDimensions, runOnJS, runOnUI } from "react-native-reanimated";
-import { HandleRef } from "@/lib/hooks/useHandleRef";
-import { useLightboxControls } from "@/lib/lightbox/lightbox";
-import { Dimensions } from "@/components/Lightbox/ImageViewing/@types";
-import { convertToCDNUrl } from "@/lib/utils";
-import FactualityBadge from "../ui/FactualityBadge";
-import { FeedPost, ImageWithDims, LinkPreviewData } from "@/lib/api/generated";
-import SourceIcon from "../SourceIcon";
-import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
-import { getFactCheckBadgeInfo } from "@/utils/factualityUtils";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import SimplifiedVideoPlayback from '../SimplifiedVideoPlayback';
+import { AutoSizedImage } from '../AutoSizedImage';
+import ImageGrid from '../ImageGrid';
+import * as MediaLibrary from 'expo-media-library';
+import * as FileSystem from 'expo-file-system';
+import { measureHandle } from '@/lib/hooks/useHandleRef';
+import { MeasuredDimensions, runOnJS, runOnUI } from 'react-native-reanimated';
+import { HandleRef } from '@/lib/hooks/useHandleRef';
+import { useLightboxControls } from '@/lib/lightbox/lightbox';
+import { Dimensions } from '@/components/Lightbox/ImageViewing/@types';
+import { convertToCDNUrl } from '@/lib/utils';
+import FactualityBadge from '../ui/FactualityBadge';
+import { FeedPost, ImageWithDims, LinkPreviewData } from '@/lib/api/generated';
+import SourceIcon from '../SourceIcon';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
+import { t } from '@/lib/i18n';
 
 interface MediaContentProps {
   videoUrl?: string;
-  imageGalleryWithDims: FeedPost["image_gallery_with_dims"];
+  imageGalleryWithDims: FeedPost['image_gallery_with_dims'];
   isLive?: boolean;
   isVisible: boolean;
   redirectUrl?: string;
@@ -89,7 +89,7 @@ function MediaContent({
     // Only navigate if there are no images and no video (i.e., text-only content)
     if (images.length === 0 && !videoUrl) {
       router.navigate({
-        pathname: "/verification/[verificationId]",
+        pathname: '/verification/[verificationId]',
         params: {
           verificationId,
           feedId,
@@ -99,31 +99,31 @@ function MediaContent({
     }
   };
 
-  const handleLongPress = (url: string, type: "photo" | "video") => {
-    if (Platform.OS === "ios") {
+  const handleLongPress = (url: string, type: 'photo' | 'video') => {
+    if (Platform.OS === 'ios') {
       ActionSheetIOS.showActionSheetWithOptions(
         {
-          options: [t("common.cancel"), t("common.download")],
+          options: [t('common.cancel'), t('common.download')],
           cancelButtonIndex: 0,
         },
         async (buttonIndex) => {
           if (buttonIndex === 1) {
             await downloadMedia(url, type);
           }
-        }
+        },
       );
     } else {
       // For Android, show a simple alert with options
-      Alert.alert(t("common.download"), t("common.want_to_download"), [
-        { text: t("common.cancel"), style: "cancel" },
-        { text: t("common.download"), onPress: () => downloadMedia(url, type) },
+      Alert.alert(t('common.download'), t('common.want_to_download'), [
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.download'), onPress: () => downloadMedia(url, type) },
       ]);
     }
   };
 
   const longPressGesture = Gesture.LongPress().onStart(() => {
     if (videoUrl) {
-      runOnJS(handleLongPress)(videoUrl, "video");
+      runOnJS(handleLongPress)(videoUrl, 'video');
     }
     // } else if (imageUrl) {
     //   runOnJS(handleLongPress)(imageUrl, "photo");
@@ -150,32 +150,32 @@ function MediaContent({
   const _openLightbox = (
     index: number,
     thumbRects: (MeasuredDimensions | null)[],
-    fetchedDims: (Dimensions | null)[]
+    fetchedDims: (Dimensions | null)[],
   ) => {
     openLightbox({
       images: images.map((item, i) => ({
         ...item,
         thumbRect: thumbRects[i] ?? null,
         thumbDimensions: fetchedDims[i] ?? null,
-        type: "image",
+        type: 'image',
         dimensions: fetchedDims[i] ?? null,
       })),
       index,
     });
   };
 
-  const downloadMedia = async (url: string, type: "photo" | "video") => {
+  const downloadMedia = async (url: string, type: 'photo' | 'video') => {
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== "granted") {
+      if (status !== 'granted') {
         Alert.alert(
-          t("common.permission_needed_short"),
-          t("common.download_media_permission")
+          t('common.permission_needed_short'),
+          t('common.download_media_permission'),
         );
         return;
       }
 
-      const filename = url.split("/").pop() || `downloaded-${type}`;
+      const filename = url.split('/').pop() || `downloaded-${type}`;
       const fileUri = FileSystem.documentDirectory + filename;
 
       const { uri } = await FileSystem.downloadAsync(url, fileUri);
@@ -183,10 +183,10 @@ function MediaContent({
 
       await FileSystem.deleteAsync(uri); // Cleanup downloaded file after saving
 
-      Alert.alert(t("common.saved"));
+      Alert.alert(t('common.saved'));
     } catch (error) {
-      Alert.alert(t("common.error_title"), t("common.download_failed"));
-      console.error("Download error:", error);
+      Alert.alert(t('common.error_title'), t('common.download_failed'));
+      console.error('Download error:', error);
     }
   };
 
@@ -196,22 +196,22 @@ function MediaContent({
       if (supported) {
         await Linking.openURL(url);
       } else {
-        Alert.alert(t("common.error_title"), t("common.error_opening_link"));
+        Alert.alert(t('common.error_title'), t('common.error_opening_link'));
       }
     } catch (error) {
-      Alert.alert(t("common.error_title"), t("common.error_opening_link"));
-      console.error("Error opening URL:", error);
+      Alert.alert(t('common.error_title'), t('common.error_opening_link'));
+      console.error('Error opening URL:', error);
     }
   };
 
   const handlePress = (
     index: number,
     containerRefs: HandleRef[],
-    fetchedDims: (Dimensions | null)[]
+    fetchedDims: (Dimensions | null)[],
   ) => {
     const handles = containerRefs.map((r) => r.current);
     runOnUI(() => {
-      "worklet";
+      'worklet';
       const rects = handles.map(measureHandle);
       runOnJS(_openLightbox)(index, rects, fetchedDims);
     })();
@@ -254,14 +254,14 @@ function MediaContent({
           shouldPlay={isVisible}
           isLive={isLive}
           loop={false}
-          thumbnail={convertToCDNUrl(thumbnail || "")}
+          thumbnail={convertToCDNUrl(thumbnail || '')}
         />
       ) : images[0] ? (
         <View style={styles.singleImageContainer}>
           <AutoSizedImage
             image={{
               thumb: { uri: images[0].uri },
-              alt: mediaAlt || "Verification image",
+              alt: mediaAlt || 'Verification image',
               aspectRatio: {
                 width: images[0].aspectRatio.width ?? 1,
                 height: images[0]?.aspectRatio.height ?? 1,
@@ -282,7 +282,7 @@ function MediaContent({
           {(badgeInfo || previewData) && (
             <>
               <LinearGradient
-                colors={["transparent", "rgba(0,0,0,0.8)"]}
+                colors={['transparent', 'rgba(0,0,0,0.8)']}
                 style={styles.linkPreviewGradient}
               />
               <View style={styles.linkPreviewContent}>
@@ -292,7 +292,7 @@ function MediaContent({
                       <View style={styles.linkPreviewHeader}>
                         <TouchableOpacity
                           onPress={() =>
-                            handleSourcePress(previewData.url || "")
+                            handleSourcePress(previewData.url || '')
                           }
                           style={styles.sourceIconButton}
                           activeOpacity={0.7}
@@ -328,37 +328,37 @@ function MediaContent({
 
 const styles = StyleSheet.create({
   mediaContainer: {
-    position: "relative",
-    width: "100%",
+    position: 'relative',
+    width: '100%',
     minHeight: 100,
     marginVertical: 8,
     borderRadius: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   singleImage: {
-    width: "100%",
+    width: '100%',
     borderRadius: 8,
     aspectRatio: 1.5,
   },
   singleImageContainer: {
-    position: "relative",
-    width: "100%",
+    position: 'relative',
+    width: '100%',
   },
   factualityBadgeOverlay: {
     marginTop: 8,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
   factualityBadge: {},
   linkPreviewGradient: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    height: "70%",
+    height: '70%',
     zIndex: 5,
   },
   linkPreviewContent: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
@@ -366,54 +366,54 @@ const styles = StyleSheet.create({
     zIndex: 6,
   },
   linkPreviewHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 8,
   },
   sourceIconButton: {
     padding: 4,
     borderRadius: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   aiSummaryBadge: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 4,
   },
   aiSummaryText: {
     fontSize: 10,
-    fontWeight: "bold",
-    color: "#FFFFFF",
+    fontWeight: 'bold',
+    color: '#FFFFFF',
   },
   linkPreviewTitle: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
+    fontWeight: '600',
+    color: '#FFFFFF',
     marginBottom: 6,
     lineHeight: 20,
   },
   linkPreviewDescription: {
     fontSize: 14,
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     opacity: 0.9,
     lineHeight: 18,
   },
   lightboxButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 12,
     right: 12,
     zIndex: 10,
   },
   lightboxButtonBackground: {
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     borderRadius: 20,
     width: 40,
     height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,

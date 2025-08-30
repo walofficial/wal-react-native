@@ -6,13 +6,13 @@ import {
   StyleSheet,
   useColorScheme,
   BackHandler,
-} from "react-native";
-import AccessView, { CustomBottomSheetBackground } from "../AccessView";
+} from 'react-native';
+import AccessView, { CustomBottomSheetBackground } from '../AccessView';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
   BottomSheetModal,
-} from "@gorhom/bottom-sheet";
+} from '@gorhom/bottom-sheet';
 import {
   forwardRef,
   useCallback,
@@ -20,45 +20,45 @@ import {
   useRef,
   useState,
   useEffect,
-} from "react";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { showPhoneInputState } from "../AccessView/atom";
-import { useAtom } from "jotai";
+} from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { showPhoneInputState } from '../AccessView/atom';
+import { useAtom } from 'jotai';
 import {
   bottomSheetBackgroundStyle,
   getBottomSheetBackgroundStyle,
-} from "@/lib/styles";
-import useSheetCloseOnNavigation from "@/hooks/sheetCloseOnNavigation";
-import { isAndroid } from "@/lib/platform";
+} from '@/lib/styles';
+import useSheetCloseOnNavigation from '@/hooks/sheetCloseOnNavigation';
+import { isAndroid } from '@/lib/platform';
 
 const UserLogin = forwardRef<BottomSheet>(function UserLogin(_, ref) {
   // state
   const [keyboardBehavior, setKeyboardBehavior] = useState<
-    "extend" | "fillParent" | "interactive"
-  >("interactive");
+    'extend' | 'fillParent' | 'interactive'
+  >('interactive');
   const [keyboardBlurBehavior, setKeyboardBlurBehavior] = useState<
-    "none" | "restore"
-  >("none");
+    'none' | 'restore'
+  >('none');
   const inputRef = useRef<TextInput>(null);
   const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => ["45%"], []);
+  const snapPoints = useMemo(() => ['45%'], []);
   const [showPhoneInput, setShowPhoneInput] = useAtom(showPhoneInputState);
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Handle Android back button manually
   useEffect(() => {
     if (isAndroid && isSheetOpen) {
       const backHandler = BackHandler.addEventListener(
-        "hardwareBackPress",
+        'hardwareBackPress',
         () => {
           if (isSheetOpen) {
             (ref as React.RefObject<BottomSheet>).current?.close();
             return true;
           }
           return false;
-        }
+        },
       );
 
       return () => backHandler.remove();
@@ -74,7 +74,7 @@ const UserLogin = forwardRef<BottomSheet>(function UserLogin(_, ref) {
         pressBehavior="collapse"
       />
     ),
-    []
+    [],
   );
 
   const handleSheetChange = useCallback(
@@ -87,7 +87,7 @@ const UserLogin = forwardRef<BottomSheet>(function UserLogin(_, ref) {
         setShowPhoneInput(true);
       }
     },
-    [inputRef, setShowPhoneInput]
+    [inputRef, setShowPhoneInput],
   );
 
   return (
@@ -103,7 +103,7 @@ const UserLogin = forwardRef<BottomSheet>(function UserLogin(_, ref) {
       keyboardBlurBehavior={keyboardBlurBehavior}
       backdropComponent={renderBackdrop}
       backgroundComponent={CustomBottomSheetBackground}
-      handleIndicatorStyle={{ backgroundColor: isDark ? "white" : "black" }}
+      handleIndicatorStyle={{ backgroundColor: isDark ? 'white' : 'black' }}
     >
       <AccessView inputRef={inputRef} />
     </BottomSheet>

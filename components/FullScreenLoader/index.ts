@@ -1,1 +1,1 @@
-export { default } from './FullScreenLoader'; 
+export { default } from './FullScreenLoader';

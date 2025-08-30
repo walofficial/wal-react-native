@@ -1,6 +1,6 @@
-import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { ImagePickerAsset } from "expo-image-picker";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { ImagePickerAsset } from 'expo-image-picker';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 interface ImagePickerGridProps {
   selectedImages: ImagePickerAsset[];
@@ -46,13 +46,13 @@ export default function ImagePickerGrid({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     marginTop: 16,
   },
   imageContainer: {
-    position: "relative",
+    position: 'relative',
   },
   image: {
     width: 112,
@@ -60,20 +60,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   copyButton: {
-    position: "absolute",
+    position: 'absolute',
     bottom: -8,
     right: -8,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 50,
     padding: 6,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   removeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: -8,
     right: -8,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     borderRadius: 50,
     padding: 4,
   },

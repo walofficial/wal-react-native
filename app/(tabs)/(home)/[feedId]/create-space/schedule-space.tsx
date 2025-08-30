@@ -1,10 +1,10 @@
 // @ts-nocheck
-import React, { useState } from "react";
-import { View, TouchableOpacity, Text, StyleSheet } from "react-native";
-import DatePicker from "react-native-date-picker";
-import { useLocalSearchParams, router, useRouter } from "expo-router";
-import { useCreateSpace } from "@/hooks/useCreateSpace";
-import CustomAnimatedButton from "@/components/ui/AnimatedButton";
+import React, { useState } from 'react';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import DatePicker from 'react-native-date-picker';
+import { useLocalSearchParams, router, useRouter } from 'expo-router';
+import { useCreateSpace } from '@/hooks/useCreateSpace';
+import CustomAnimatedButton from '@/components/ui/AnimatedButton';
 
 export default function ScheduleSpace() {
   const [open, setOpen] = useState(true);
@@ -52,8 +52,8 @@ export default function ScheduleSpace() {
       {/* Schedule Button */}
       <CustomAnimatedButton
         style={{
-          backgroundColor: "#2563eb",
-          width: "100%",
+          backgroundColor: '#2563eb',
+          width: '100%',
           paddingVertical: 16,
           borderRadius: 9999,
           marginTop: 16,
@@ -65,8 +65,8 @@ export default function ScheduleSpace() {
         isLoading={isPending}
         loadingColor="black"
       >
-        <Text style={{ color: "#333", textAlign: "center", fontWeight: "600" }}>
-          {isPending ? "მუშავდება..." : "ოთახის ჩანიშვნა"}
+        <Text style={{ color: '#333', textAlign: 'center', fontWeight: '600' }}>
+          {isPending ? 'მუშავდება...' : 'ოთახის ჩანიშვნა'}
         </Text>
       </CustomAnimatedButton>
     </View>
@@ -76,9 +76,9 @@ export default function ScheduleSpace() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "black",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
     padding: 16,
   },
 });

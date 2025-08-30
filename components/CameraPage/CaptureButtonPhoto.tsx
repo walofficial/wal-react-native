@@ -1,26 +1,26 @@
-import React, { useCallback, useRef } from "react";
-import type { ViewProps } from "react-native";
-import { StyleSheet, View } from "react-native";
-import type { TapGestureHandlerStateChangeEvent } from "react-native-gesture-handler";
-import { State, TapGestureHandler } from "react-native-gesture-handler";
+import React, { useCallback, useRef } from 'react';
+import type { ViewProps } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import Reanimated, {
   Easing,
   useAnimatedStyle,
   withSpring,
   withTiming,
   useSharedValue,
-} from "react-native-reanimated";
-import type { Camera, PhotoFile } from "react-native-vision-camera";
-import { CAPTURE_BUTTON_SIZE } from "./Constants";
-import * as Haptics from "expo-haptics";
-import { useHaptics } from "@/lib/haptics";
+} from 'react-native-reanimated';
+import type { Camera, PhotoFile } from 'react-native-vision-camera';
+import { CAPTURE_BUTTON_SIZE } from './Constants';
+import * as Haptics from 'expo-haptics';
+import { useHaptics } from '@/lib/haptics';
 
 const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.1;
 
 interface Props extends ViewProps {
   camera: React.RefObject<Camera>;
-  onMediaCaptured: (media: PhotoFile, type: "photo") => void;
-  flash: "off" | "on";
+  onMediaCaptured: (media: PhotoFile, type: 'photo') => void;
+  flash: 'off' | 'on';
   enabled: boolean;
   setIsPressingButton: (isPressingButton: boolean) => void;
 }
@@ -39,9 +39,9 @@ const _CaptureButton: React.FC<Props> = ({
   const haptic = useHaptics();
   const takePhoto = useCallback(async () => {
     try {
-      if (camera.current == null) throw new Error("Camera ref is null!");
+      if (camera.current == null) throw new Error('Camera ref is null!');
 
-      haptic("Medium");
+      haptic('Medium');
       const durationStart = Date.now();
       const photo = await camera.current.takePhoto({
         flash: flash,
@@ -53,7 +53,7 @@ const _CaptureButton: React.FC<Props> = ({
 
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e) {
-      console.error("Failed to take photo!", e);
+      console.error('Failed to take photo!', e);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   }, [camera, flash, onMediaCaptured]);
@@ -76,7 +76,7 @@ const _CaptureButton: React.FC<Props> = ({
             isPressingButton.value = false;
             setIsPressingButton(false);
             if (photoRef.current) {
-              onMediaCaptured(photoRef.current, "photo");
+              onMediaCaptured(photoRef.current, 'photo');
               photoRef.current = null;
             }
           }
@@ -86,7 +86,7 @@ const _CaptureButton: React.FC<Props> = ({
           break;
       }
     },
-    [isPressingButton, setIsPressingButton, takePhoto]
+    [isPressingButton, setIsPressingButton, takePhoto],
   );
 
   const buttonStyle = useAnimatedStyle(() => {
@@ -144,6 +144,6 @@ const styles = StyleSheet.create({
     height: CAPTURE_BUTTON_SIZE,
     borderRadius: CAPTURE_BUTTON_SIZE / 2,
     borderWidth: BORDER_WIDTH,
-    borderColor: "white",
+    borderColor: 'white',
   },
 });

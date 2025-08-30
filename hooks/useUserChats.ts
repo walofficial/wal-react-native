@@ -1,7 +1,10 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import useAuth from "./useAuth";
-import { getMessageChatRoomQueryKey, getUserChatRoomsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import useAuth from './useAuth';
+import {
+  getMessageChatRoomQueryKey,
+  getUserChatRoomsOptions,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
 
 function useUserChats({ poolMs }: { poolMs?: number } = {}) {
   const { user } = useAuth();
@@ -25,11 +28,14 @@ function useUserChats({ poolMs }: { poolMs?: number } = {}) {
   useEffect(() => {
     if (chats && chats.chat_rooms.length > 0) {
       chats.chat_rooms.forEach((chat) => {
-        queryClient.setQueryData(getMessageChatRoomQueryKey({
-          query: {
-            room_id: chat.id,
-          }
-        }), chat);
+        queryClient.setQueryData(
+          getMessageChatRoomQueryKey({
+            query: {
+              room_id: chat.id,
+            },
+          }),
+          chat,
+        );
       });
     }
   }, [chats, queryClient]);

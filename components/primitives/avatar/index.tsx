@@ -1,20 +1,20 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   ImageErrorEventData,
   ImageLoadEventData,
   NativeSyntheticEvent,
   Image as RNImage,
   View,
-} from "react-native";
-import * as Slot from "~/components/primitives/slot";
+} from 'react-native';
+import * as Slot from '~/components/primitives/slot';
 import {
   ComponentPropsWithAsChild,
   SlottableViewProps,
   ViewRef,
-} from "~/components/primitives/types";
-import { AvatarImageProps, AvatarRootProps } from "./types";
+} from '~/components/primitives/types';
+import { AvatarImageProps, AvatarRootProps } from './types';
 
-type AvatarState = "loading" | "error" | "loaded";
+type AvatarState = 'loading' | 'error' | 'loaded';
 
 interface IRootContext extends AvatarRootProps {
   status: AvatarState;
@@ -25,23 +25,23 @@ const RootContext = React.createContext<IRootContext | null>(null);
 
 const Root = React.forwardRef<ViewRef, SlottableViewProps & AvatarRootProps>(
   ({ asChild, alt, ...viewProps }, ref) => {
-    const [status, setStatus] = React.useState<AvatarState>("loading");
+    const [status, setStatus] = React.useState<AvatarState>('loading');
     const Component = asChild ? Slot.View : View;
     return (
       <RootContext.Provider value={{ alt, status, setStatus }}>
         <Component ref={ref} {...viewProps} />
       </RootContext.Provider>
     );
-  }
+  },
 );
 
-Root.displayName = "RootAvatar";
+Root.displayName = 'RootAvatar';
 
 function useRootContext() {
   const context = React.useContext(RootContext);
   if (!context) {
     throw new Error(
-      "Avatar compound components cannot be rendered outside the Avatar component"
+      'Avatar compound components cannot be rendered outside the Avatar component',
     );
   }
   return context;
@@ -49,7 +49,7 @@ function useRootContext() {
 
 const Image = React.forwardRef<
   React.ElementRef<typeof RNImage>,
-  Omit<ComponentPropsWithAsChild<typeof RNImage>, "alt"> & AvatarImageProps
+  Omit<ComponentPropsWithAsChild<typeof RNImage>, 'alt'> & AvatarImageProps
 >(
   (
     {
@@ -59,29 +59,29 @@ const Image = React.forwardRef<
       onLoadingStatusChange,
       ...props
     },
-    ref
+    ref,
   ) => {
     const { alt, setStatus, status } = useRootContext();
 
     const onLoad = React.useCallback(
       (e: NativeSyntheticEvent<ImageLoadEventData>) => {
-        setStatus("loaded");
-        onLoadingStatusChange?.("loaded");
+        setStatus('loaded');
+        onLoadingStatusChange?.('loaded');
         onLoadProps?.(e);
       },
-      [onLoadProps]
+      [onLoadProps],
     );
 
     const onError = React.useCallback(
       (e: NativeSyntheticEvent<ImageErrorEventData>) => {
-        setStatus("error");
-        onLoadingStatusChange?.("error");
+        setStatus('error');
+        onLoadingStatusChange?.('error');
         onErrorProps?.(e);
       },
-      [onErrorProps]
+      [onErrorProps],
     );
 
-    if (status === "error") {
+    if (status === 'error') {
       return null;
     }
 
@@ -95,23 +95,23 @@ const Image = React.forwardRef<
         {...props}
       />
     );
-  }
+  },
 );
 
-Image.displayName = "ImageAvatar";
+Image.displayName = 'ImageAvatar';
 
 const Fallback = React.forwardRef<ViewRef, SlottableViewProps>(
   ({ asChild, ...props }, ref) => {
     const { alt, status } = useRootContext();
 
-    if (status !== "error") {
+    if (status !== 'error') {
       return null;
     }
     const Component = asChild ? Slot.View : View;
-    return <Component ref={ref} role={"img"} aria-label={alt} {...props} />;
-  }
+    return <Component ref={ref} role={'img'} aria-label={alt} {...props} />;
+  },
 );
 
-Fallback.displayName = "FallbackAvatar";
+Fallback.displayName = 'FallbackAvatar';
 
 export { Fallback, Image, Root };

@@ -1,18 +1,18 @@
-import React, { useEffect, useRef } from "react";
-import { StyleSheet } from "react-native";
-import { atom, useAtom } from "jotai";
+import React, { useEffect, useRef } from 'react';
+import { StyleSheet } from 'react-native';
+import { atom, useAtom } from 'jotai';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
   cancelAnimation,
-} from "react-native-reanimated";
-import { statusBadgeTextState } from "@/lib/state/custom-status";
-import { Badge } from "../ui/badge";
-import { Text } from "../ui/text";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { FontSizes } from "@/lib/theme";
+} from 'react-native-reanimated';
+import { statusBadgeTextState } from '@/lib/state/custom-status';
+import { Badge } from '../ui/badge';
+import { Text } from '../ui/text';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { FontSizes } from '@/lib/theme';
 
 export function AnimatedStatusBadge() {
   const [statusText, setStatusText] = useAtom(statusBadgeTextState);
@@ -51,7 +51,7 @@ export function AnimatedStatusBadge() {
 
         secondTimerRef.current = setTimeout(() => {
           if (isMountedRef.current) {
-            setStatusText(""); // Set text to empty after animation completes
+            setStatusText(''); // Set text to empty after animation completes
           }
         }, 300);
       }, 5000);
@@ -105,7 +105,7 @@ export function AnimatedStatusBadge() {
 
   const badgeStyle = {
     ...styles.statusBadge,
-    backgroundColor: isDarkColorScheme ? "#be185d" : "#f472b6",
+    backgroundColor: isDarkColorScheme ? '#be185d' : '#f472b6',
   };
 
   return (
@@ -114,7 +114,7 @@ export function AnimatedStatusBadge() {
         <Text
           style={{
             ...styles.statusText,
-            color: "white",
+            color: 'white',
           }}
         >
           {statusText}
@@ -127,7 +127,7 @@ export function AnimatedStatusBadge() {
 const styles = StyleSheet.create({
   statusBadge: {
     marginRight: 8,
-    pointerEvents: "none",
+    pointerEvents: 'none',
   },
   statusText: {
     fontSize: FontSizes.medium,

@@ -1,13 +1,16 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { isWeb } from "@/lib/platform";
-import { useIsFocused } from "@react-navigation/native";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect, useRef, useState, useMemo } from "react";
-import { useAtomValue } from "jotai";
-import { debouncedSearchValueAtom } from "@/lib/state/search";
-import { getLocationFeedPaginatedInfiniteOptions, getUserVerificationOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { getLocationFeedPaginated } from "@/lib/api/generated/sdk.gen";
-import { queryClient } from "@/lib/queryClient";
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { isWeb } from '@/lib/platform';
+import { useIsFocused } from '@react-navigation/native';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { debouncedSearchValueAtom } from '@/lib/state/search';
+import {
+  getLocationFeedPaginatedInfiniteOptions,
+  getUserVerificationOptions,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { getLocationFeedPaginated } from '@/lib/api/generated/sdk.gen';
+import { queryClient } from '@/lib/queryClient';
 
 export function useLocationFeedPaginated({
   enabled = true,
@@ -20,7 +23,7 @@ export function useLocationFeedPaginated({
   enabled?: boolean;
   feedId: string;
   pageSize?: number;
-  content_type: "last24h" | "youtube_only" | "social_media_only";
+  content_type: 'last24h' | 'youtube_only' | 'social_media_only';
   searchTerm?: string;
   debounceDelay?: number;
 }) {
@@ -28,7 +31,7 @@ export function useLocationFeedPaginated({
   const globalSearchTerm = useAtomValue(debouncedSearchValueAtom);
 
   // Local debounced search state
-  const [debouncedLocalSearch, setDebouncedLocalSearch] = useState("");
+  const [debouncedLocalSearch, setDebouncedLocalSearch] = useState('');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Debounce the external search term
@@ -38,7 +41,7 @@ export function useLocationFeedPaginated({
     }
 
     debounceTimerRef.current = setTimeout(() => {
-      setDebouncedLocalSearch(externalSearchTerm || "");
+      setDebouncedLocalSearch(externalSearchTerm || '');
     }, debounceDelay);
 
     return () => {
@@ -58,7 +61,8 @@ export function useLocationFeedPaginated({
   }, []);
 
   // Use the external search term if provided, otherwise use global search
-  const finalSearchTerm = externalSearchTerm !== undefined ? debouncedLocalSearch : globalSearchTerm;
+  const finalSearchTerm =
+    externalSearchTerm !== undefined ? debouncedLocalSearch : globalSearchTerm;
 
   const {
     data,
@@ -73,7 +77,6 @@ export function useLocationFeedPaginated({
     hasPreviousPage,
     isPending,
   } = useInfiniteQuery({
-
     ...getLocationFeedPaginatedInfiniteOptions({
       query: {
         page_size: pageSize,
@@ -97,7 +100,7 @@ export function useLocationFeedPaginated({
           feed_id: feedId,
         },
         signal,
-        throwOnError: true
+        throwOnError: true,
       });
       data.forEach((item) => {
         const queryOptions = getUserVerificationOptions({
@@ -130,7 +133,7 @@ export function useLocationFeedPaginated({
     refetchIntervalInBackground: false,
     refetchInterval: (data) => {
       const hasLiveStream = data?.state.data?.pages?.[0]?.some(
-        (item) => item.is_live
+        (item) => item.is_live,
       );
       return hasLiveStream ? 3000 : false;
     },

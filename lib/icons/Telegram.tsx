@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 import Svg, {
   Defs,
   LinearGradient,
   Stop,
   Circle,
   Path,
-} from "react-native-svg";
-import { iconWithClassName } from "./iconWithClassName";
+} from 'react-native-svg';
+import { iconWithClassName } from './iconWithClassName';
 
 const Telegram = (props: any) => (
   <Svg viewBox="0 0 240 240" {...props}>

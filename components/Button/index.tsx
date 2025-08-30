@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -6,20 +6,20 @@ import {
   ViewStyle,
   ActivityIndicator,
   StyleProp,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/lib/theme";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@/lib/theme';
 
 export type ButtonVariant =
-  | "default" // black / white depending on theme
-  | "primary"
-  | "secondary"
-  | "outline"
-  | "subtle"
-  | "destructive"
-  | "destructive-outline";
+  | 'default' // black / white depending on theme
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'subtle'
+  | 'destructive'
+  | 'destructive-outline';
 
-export type ButtonSize = "medium" | "large";
+export type ButtonSize = 'medium' | 'large';
 
 export interface ButtonProps {
   /** Main label shown in the button. If omitted the button will be treated as icon‑only. */
@@ -33,9 +33,9 @@ export interface ButtonProps {
   /** When true the button takes the full available horizontal width. */
   fullWidth?: boolean;
   /** Ionicons icon name to render. */
-  icon?: React.ComponentProps<typeof Ionicons>["name"];
+  icon?: React.ComponentProps<typeof Ionicons>['name'];
   /** Where to render the icon relative to the text. */
-  iconPosition?: "left" | "right";
+  iconPosition?: 'left' | 'right';
   /** Disables the button. */
   disabled?: boolean;
   /** Loading state replaces contents with ActivityIndicator. */
@@ -49,11 +49,11 @@ export interface ButtonProps {
 export default function Button({
   title,
   onPress,
-  variant = "primary",
-  size = "medium",
+  variant = 'primary',
+  size = 'medium',
   fullWidth = false,
   icon,
-  iconPosition = "left",
+  iconPosition = 'left',
   disabled = false,
   loading = false,
   glassy = false,
@@ -65,48 +65,48 @@ export default function Button({
   const variantColour = React.useMemo(() => {
     const baseColors = (() => {
       switch (variant) {
-        case "default":
+        case 'default':
           return {
             background: theme.colors.text,
             text: theme.colors.background,
-            border: "transparent",
+            border: 'transparent',
           } as const;
-        case "secondary":
+        case 'secondary':
           return {
             background: theme.colors.secondary,
-            text: "#FFFFFF",
-            border: "transparent",
+            text: '#FFFFFF',
+            border: 'transparent',
           } as const;
-        case "outline":
+        case 'outline':
           return {
-            background: "transparent",
+            background: 'transparent',
             text: theme.colors.text,
             border: theme.colors.border,
           } as const;
-        case "subtle":
+        case 'subtle':
           return {
-            background: "transparent",
+            background: 'transparent',
             text: theme.colors.text,
-            border: "transparent",
+            border: 'transparent',
           } as const;
-        case "destructive":
+        case 'destructive':
           return {
             background: theme.colors.accent,
-            text: "#FFFFFF",
-            border: "transparent",
+            text: '#FFFFFF',
+            border: 'transparent',
           } as const;
-        case "destructive-outline":
+        case 'destructive-outline':
           return {
-            background: "transparent",
+            background: 'transparent',
             text: theme.colors.accent,
             border: theme.colors.accent,
           } as const;
-        case "primary":
+        case 'primary':
         default:
           return {
             background: theme.colors.primary,
-            text: "#FFFFFF",
-            border: "transparent",
+            text: '#FFFFFF',
+            border: 'transparent',
           } as const;
       }
     })();
@@ -126,7 +126,7 @@ export default function Button({
   /* Size mapping */
   const sizeStyle = React.useMemo(() => {
     switch (size) {
-      case "large":
+      case 'large':
         return {
           paddingVertical: theme.spacing.md,
           paddingHorizontal: theme.spacing.lg,
@@ -134,7 +134,7 @@ export default function Button({
           minWidth: 120,
           iconSize: title ? 22 : 32,
         } as const;
-      case "medium":
+      case 'medium':
       default:
         return {
           paddingVertical: theme.spacing.sm,
@@ -148,7 +148,7 @@ export default function Button({
 
   const isIconOnly = !!icon && !title;
 
-  const defaultDim = size === "large" ? 56 : 44;
+  const defaultDim = size === 'large' ? 56 : 44;
 
   const contentOpacity = disabled ? 0.5 : 1;
 
@@ -158,30 +158,30 @@ export default function Button({
       backgroundColor: variantColour.background,
       borderColor: variantColour.border,
       borderWidth:
-        variant === "outline" || variant === "destructive-outline" || glassy
+        variant === 'outline' || variant === 'destructive-outline' || glassy
           ? 1
           : 0,
       paddingVertical: isIconOnly ? 0 : sizeStyle.paddingVertical,
       paddingHorizontal: isIconOnly ? 0 : sizeStyle.paddingHorizontal,
       opacity: contentOpacity,
-      width: isIconOnly ? defaultDim : fullWidth ? "100%" : undefined,
+      width: isIconOnly ? defaultDim : fullWidth ? '100%' : undefined,
       height: isIconOnly ? defaultDim : undefined,
       minWidth: isIconOnly
         ? undefined
         : fullWidth
-        ? undefined
-        : sizeStyle.minWidth,
+          ? undefined
+          : sizeStyle.minWidth,
       borderRadius: isIconOnly
         ? defaultDim / 2
         : theme.borderRadius.lg || theme.borderRadius.md * 1.5,
-      overflow: "hidden",
-      flexDirection: title ? "row" : "column",
-      alignItems: "center",
-      justifyContent: "center",
+      overflow: 'hidden',
+      flexDirection: title ? 'row' : 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
       // Glassy effects
       ...(glassy && {
         boxShadow: `0 8px 32px rgba(0, 0, 0, 0.1)`,
-        backdropFilter: "blur(4px)",
+        backdropFilter: 'blur(4px)',
       }),
     },
     style,
@@ -194,7 +194,7 @@ export default function Button({
         { transform: [{ scale: pressed ? 0.98 : 1 }] },
       ]}
       disabled={disabled || loading}
-      android_ripple={{ color: "rgba(255,255,255,0.12)" }}
+      android_ripple={{ color: 'rgba(255,255,255,0.12)' }}
       onPress={onPress}
       accessibilityRole="button"
     >
@@ -206,7 +206,7 @@ export default function Button({
         />
       ) : (
         <>
-          {icon && iconPosition === "left" && (
+          {icon && iconPosition === 'left' && (
             <Ionicons
               name={icon}
               size={sizeStyle.iconSize}
@@ -227,7 +227,7 @@ export default function Button({
               {title}
             </Text>
           )}
-          {icon && iconPosition === "right" && (
+          {icon && iconPosition === 'right' && (
             <Ionicons
               name={icon}
               size={sizeStyle.iconSize}
@@ -246,6 +246,6 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   title: {
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

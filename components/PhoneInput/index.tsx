@@ -1,19 +1,19 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef } from 'react';
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
   ActivityIndicator,
-} from "react-native";
-import { BottomSheetTextInput } from "@gorhom/bottom-sheet";
-import { Image } from "expo-image";
-import { Text } from "@/components/ui/text";
-import { Country, getFlagUrl } from "@/lib/countries";
-import { FontSizes } from "@/lib/theme";
-import { ChevronDown } from "lucide-react-native";
-import { useToast } from "@/components/ToastUsage";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { BottomSheetTextInput } from '@gorhom/bottom-sheet';
+import { Image } from 'expo-image';
+import { Text } from '@/components/ui/text';
+import { Country, getFlagUrl } from '@/lib/countries';
+import { FontSizes } from '@/lib/theme';
+import { ChevronDown } from 'lucide-react-native';
+import { useToast } from '@/components/ToastUsage';
+import { t } from '@/lib/i18n';
 
 interface PhoneInputProps {
   value: string;
@@ -35,34 +35,34 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
       onBlur,
       country,
       onCountryPress,
-      placeholder = t("common.enter_number"),
+      placeholder = t('common.enter_number'),
       maxLength,
       editable = true,
       isCountryLoading = false,
     },
-    ref
+    ref,
   ) => {
     const colorScheme = useColorScheme();
-    const isDark = colorScheme === "dark";
+    const isDark = colorScheme === 'dark';
     const { error: errorToast } = useToast();
 
     const handleTextChange = (text: string) => {
       // First remove all spaces and whitespace characters explicitly
-      let cleanedText = text.replace(/\s+/g, "");
+      let cleanedText = text.replace(/\s+/g, '');
 
       // Then remove any non-numeric characters except + at the beginning
-      cleanedText = cleanedText.replace(/[^\d+]/g, "");
+      cleanedText = cleanedText.replace(/[^\d+]/g, '');
 
       // If user tries to input country code, remove it and show toast
       if (cleanedText.startsWith(country.callingCode)) {
         const withoutCountryCode = cleanedText.substring(
-          country.callingCode.length
+          country.callingCode.length,
         );
         errorToast({
-          title: t("common.enter_without_country_code", {
+          title: t('common.enter_without_country_code', {
             countryCode: country.callingCode,
           }),
-          description: t("common.enter_without_country_code", {
+          description: t('common.enter_without_country_code', {
             countryCode: country.callingCode,
           }),
         });
@@ -71,8 +71,8 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
       }
 
       // Remove + if it's not at the beginning or if it appears with country code
-      if (cleanedText.includes("+") && !cleanedText.startsWith("+")) {
-        cleanedText = cleanedText.replace(/\+/g, "");
+      if (cleanedText.includes('+') && !cleanedText.startsWith('+')) {
+        cleanedText = cleanedText.replace(/\+/g, '');
       }
 
       onChangeText(cleanedText);
@@ -82,14 +82,14 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
       <View
         style={[
           styles.container,
-          { backgroundColor: isDark ? "#222" : "#f8f8f8" },
+          { backgroundColor: isDark ? '#222' : '#f8f8f8' },
         ]}
       >
         {/* Country Selector */}
         <TouchableOpacity
           style={[
             styles.countrySelector,
-            { borderRightColor: isDark ? "#444" : "#ddd" },
+            { borderRightColor: isDark ? '#444' : '#ddd' },
           ]}
           onPress={onCountryPress}
           disabled={!editable || isCountryLoading}
@@ -97,7 +97,7 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
           {isCountryLoading ? (
             <ActivityIndicator
               size="small"
-              color={isDark ? "#ccc" : "#666"}
+              color={isDark ? '#ccc' : '#666'}
               style={styles.flag}
             />
           ) : (
@@ -109,13 +109,13 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
             />
           )}
           <Text
-            style={[styles.callingCode, { color: isDark ? "white" : "black" }]}
+            style={[styles.callingCode, { color: isDark ? 'white' : 'black' }]}
           >
             {country.callingCode}
           </Text>
           <ChevronDown
             size={16}
-            color={isDark ? "#ccc" : "#666"}
+            color={isDark ? '#ccc' : '#666'}
             style={styles.chevron}
           />
         </TouchableOpacity>
@@ -123,12 +123,12 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
         {/* Phone Number Input */}
         <BottomSheetTextInput
           ref={ref}
-          style={[styles.phoneInput, { color: isDark ? "white" : "black" }]}
+          style={[styles.phoneInput, { color: isDark ? 'white' : 'black' }]}
           value={value}
           onChangeText={handleTextChange}
           onBlur={onBlur}
           placeholder={placeholder}
-          placeholderTextColor={isDark ? "#666" : "#999"}
+          placeholderTextColor={isDark ? '#666' : '#999'}
           keyboardType="phone-pad"
           textContentType="telephoneNumber"
           autoComplete="tel"
@@ -137,22 +137,22 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
         />
       </View>
     );
-  }
+  },
 );
 
-PhoneInput.displayName = "PhoneInput";
+PhoneInput.displayName = 'PhoneInput';
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     borderRadius: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
     minHeight: 56,
-    alignItems: "center",
+    alignItems: 'center',
   },
   countrySelector: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     paddingVertical: 16,
     borderRightWidth: 1,
@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
   },
   callingCode: {
     fontSize: FontSizes.medium,
-    fontWeight: "500",
+    fontWeight: '500',
     marginRight: 4,
   },
   chevron: {

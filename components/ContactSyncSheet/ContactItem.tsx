@@ -1,15 +1,15 @@
-import React from "react";
-import { View, TouchableOpacity, Linking, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Text } from "@/components/ui/text";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
-import * as SMS from "expo-sms";
-import { ActivityIndicator } from "react-native";
-import UserAvatarLayout from "../UserAvatar";
-import useAuth from "@/hooks/useAuth";
-import { FontSizes, useTheme } from "@/lib/theme";
-import { app_name_slug } from "@/app.config";
+import React from 'react';
+import { View, TouchableOpacity, Linking, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Text } from '@/components/ui/text';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { cn } from '@/lib/utils';
+import * as SMS from 'expo-sms';
+import { ActivityIndicator } from 'react-native';
+import UserAvatarLayout from '../UserAvatar';
+import useAuth from '@/hooks/useAuth';
+import { FontSizes, useTheme } from '@/lib/theme';
+import { app_name_slug } from '@/app.config';
 
 interface ContactItemProps {
   id: string;
@@ -30,7 +30,7 @@ const ContactItem: React.FC<ContactItemProps> = ({
   phone_number,
   image,
   onAddPress,
-  buttonText = "Add",
+  buttonText = 'Add',
   friendRequestSent = false,
   isLoading = false,
 }) => {
@@ -46,13 +46,13 @@ const ContactItem: React.FC<ContactItemProps> = ({
       const isAvailable = await SMS.isAvailableAsync();
       if (isAvailable) {
         const { result } = await SMS.sendSMSAsync([phone_number], message);
-        if (result === "sent") {
-          console.log("SMS sent successfully");
+        if (result === 'sent') {
+          console.log('SMS sent successfully');
         } else {
-          console.log("SMS sending was cancelled or failed");
+          console.log('SMS sending was cancelled or failed');
         }
       } else {
-        console.log("SMS is not available on this device");
+        console.log('SMS is not available on this device');
       }
     }
   };
@@ -107,14 +107,14 @@ const ContactItem: React.FC<ContactItemProps> = ({
           <>
             <Ionicons
               style={styles.buttonIcon}
-              name={friendRequestSent ? "checkmark" : "add"}
+              name={friendRequestSent ? 'checkmark' : 'add'}
               size={24}
               color={theme.colors.button.text}
             />
             <Text
               style={[styles.buttonText, { color: theme.colors.button.text }]}
             >
-              {friendRequestSent ? "გაიგზავნა" : buttonText}
+              {friendRequestSent ? 'გაიგზავნა' : buttonText}
             </Text>
           </>
         )}
@@ -125,25 +125,25 @@ const ContactItem: React.FC<ContactItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 4,
-    width: "100%",
+    width: '100%',
   },
   leftContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
     marginRight: 12,
   },
   avatarContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
   roundedFull: {
     borderRadius: 9999,
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   nameText: {
     fontSize: FontSizes.medium,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 4,
   },
   appUserText: {
@@ -170,9 +170,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 9999,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonEnabled: {},
   buttonDisabled: {},
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   buttonText: {
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

@@ -1,9 +1,9 @@
-import { View, StyleSheet } from "react-native";
-import { ActivityIndicator } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import { View, StyleSheet } from 'react-native';
+import { ActivityIndicator } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 function ScreenLoader() {
-  const color = useThemeColor({}, "text"); // Using 'text' color, adjust if needed
+  const color = useThemeColor({}, 'text'); // Using 'text' color, adjust if needed
 
   return (
     <View style={styles.container}>
@@ -15,10 +15,10 @@ function ScreenLoader() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "100%",
-    justifyContent: "center",
-    flexDirection: "row",
-    alignItems: "center",
+    height: '100%',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });
 
