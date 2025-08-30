@@ -1,0 +1,64 @@
+area:app:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - app/**
+area:components:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - components/**
+area:hooks:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - hooks/**
+area:lib:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - lib/**
+area:screens:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - screens/**
+area:workflows:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - .github/workflows/**
+type:docs:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - '**/*.md'
+type:tests:
+  - any:
+      - changed-files:
+          - any-glob-to-any-file:
+              - components/__tests__/**
+area:app:
+  - changed-files:
+      - any-glob-to-any-file: ["app/**"]
+area:components:
+  - changed-files:
+      - any-glob-to-any-file: ["components/**"]
+area:hooks:
+  - changed-files:
+      - any-glob-to-any-file: ["hooks/**"]
+area:lib:
+  - changed-files:
+      - any-glob-to-any-file: ["lib/**"]
+area:screens:
+  - changed-files:
+      - any-glob-to-any-file: ["screens/**"]
+area:workflows:
+  - changed-files:
+      - any-glob-to-any-file: [".github/workflows/**"]
+type:docs:
+  - changed-files:
+      - any-glob-to-any-file: ["**/*.md"]
+type:tests:
+  - changed-files:
+      - any-glob-to-any-file: ["components/__tests__/**"]
