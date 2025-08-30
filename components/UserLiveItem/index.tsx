@@ -1,36 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
-import { Text } from "@/components/ui/text";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { User } from "@/lib/api/generated";
-import { Skeleton } from "../ui/skeleton";
-import { Ionicons } from "@expo/vector-icons";
-import * as Progress from "react-native-progress";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text } from '@/components/ui/text';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { User } from '@/lib/api/generated';
+import { Skeleton } from '../ui/skeleton';
+import { Ionicons } from '@expo/vector-icons';
+import * as Progress from 'react-native-progress';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
-} from "react-native-reanimated";
-import UserAvatarLayout, { AvatarWidth } from "../UserAvatar";
-import ImageLoader from "../ImageLoader";
-import { convertToCDNUrl } from "@/lib/utils";
-import { useTheme } from "@/lib/theme";
+} from 'react-native-reanimated';
+import UserAvatarLayout, { AvatarWidth } from '../UserAvatar';
+import ImageLoader from '../ImageLoader';
+import { convertToCDNUrl } from '@/lib/utils';
+import { useTheme } from '@/lib/theme';
 
 export default function UserLiveItem({
-  size = "md",
+  size = 'md',
   user,
   isLoading,
   isSuccess,
-  color = "green",
+  color = 'green',
   showName = false,
   showClose = false,
 }: {
   user: User;
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   isSuccess?: boolean;
-  color?: "green" | "pink" | "blue" | "gray";
+  color?: 'green' | 'pink' | 'blue' | 'gray';
   showName?: boolean;
   showClose?: boolean;
 }) {
@@ -48,7 +48,7 @@ export default function UserLiveItem({
             {
               backgroundColor: !imageUrl
                 ? theme.colors.card.background
-                : "transparent",
+                : 'transparent',
             },
             styles.imageContainer,
             !imageUrl && styles.roundedFull,
@@ -58,8 +58,8 @@ export default function UserLiveItem({
             <ImageLoader
               style={{
                 borderRadius: 100,
-                width: "100%",
-                height: "100%",
+                width: '100%',
+                height: '100%',
               }}
               source={{
                 uri: convertToCDNUrl(imageUrl),
@@ -69,7 +69,7 @@ export default function UserLiveItem({
             <Text
               style={[styles.placeholderText, { color: theme.colors.text }]}
             >
-              {user?.username || "N/A"}
+              {user?.username || 'N/A'}
             </Text>
           )}
         </Animated.View>
@@ -91,16 +91,16 @@ export default function UserLiveItem({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    position: "relative",
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
   },
   imageContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
   roundedFull: {
     borderRadius: 9999,
@@ -109,20 +109,20 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   iconContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nameContainer: {
-    width: "100%",
-    textAlign: "center",
+    width: '100%',
+    textAlign: 'center',
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   username: {
     fontSize: 14,
@@ -130,12 +130,12 @@ const styles = StyleSheet.create({
 });
 
 export const UserLiveItemSkeleton = ({
-  size = "md",
+  size = 'md',
 }: {
-  size: "sm" | "md" | "lg";
+  size: 'sm' | 'md' | 'lg';
 }) => {
   return (
-    <UserAvatarLayout size={size} borderColor={"gray"}>
+    <UserAvatarLayout size={size} borderColor={'gray'}>
       <Skeleton style={styles.roundedFull} />
     </UserAvatarLayout>
   );

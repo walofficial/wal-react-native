@@ -1,8 +1,8 @@
-import { forwardRef } from "react";
-import { FlatListComponent } from "react-native";
-import { View, ViewProps } from "react-native";
-import Animated from "react-native-reanimated";
-import { FlatListPropsWithLayout } from "react-native-reanimated";
+import { forwardRef } from 'react';
+import { FlatListComponent } from 'react-native';
+import { View, ViewProps } from 'react-native';
+import Animated from 'react-native-reanimated';
+import { FlatListPropsWithLayout } from 'react-native-reanimated';
 
 // If you explode these into functions, don't forget to forwardRef!
 
@@ -13,7 +13,7 @@ import { FlatListPropsWithLayout } from "react-native-reanimated";
 export const FlatList_INTERNAL = Animated.FlatList;
 export type FlatList_INTERNAL<ItemT = any> = Omit<
   FlatListComponent<ItemT, FlatListPropsWithLayout<ItemT>>,
-  "CellRendererComponent"
+  'CellRendererComponent'
 >;
 
 /**

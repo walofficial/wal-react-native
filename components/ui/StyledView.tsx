@@ -1,6 +1,6 @@
-import * as React from "react";
-import { View, StyleSheet, ViewStyle, ViewProps } from "react-native";
-import { colors, spacing, borderRadius } from "@/utils/styleUtils";
+import * as React from 'react';
+import { View, StyleSheet, ViewStyle, ViewProps } from 'react-native';
+import { colors, spacing, borderRadius } from '@/utils/styleUtils';
 
 export interface StyledViewProps extends ViewProps {
   padding?: keyof typeof spacing;
@@ -12,15 +12,15 @@ export interface StyledViewProps extends ViewProps {
   rounded?: keyof typeof borderRadius | boolean;
   backgroundColor?: string;
   flex?: boolean | number;
-  direction?: "row" | "column";
+  direction?: 'row' | 'column';
   justify?:
-    | "flex-start"
-    | "flex-end"
-    | "center"
-    | "space-between"
-    | "space-around"
-    | "space-evenly";
-  align?: "flex-start" | "flex-end" | "center" | "stretch" | "baseline";
+    | 'flex-start'
+    | 'flex-end'
+    | 'center'
+    | 'space-between'
+    | 'space-around'
+    | 'space-evenly';
+  align?: 'flex-start' | 'flex-end' | 'center' | 'stretch' | 'baseline';
   border?: boolean;
   borderColor?: string;
   shadow?: boolean;
@@ -63,10 +63,10 @@ export const StyledView: React.FC<StyledViewProps> = ({
     }),
     ...(rounded === true && { borderRadius: borderRadius.DEFAULT }),
     ...(rounded &&
-      typeof rounded !== "boolean" && { borderRadius: borderRadius[rounded] }),
+      typeof rounded !== 'boolean' && { borderRadius: borderRadius[rounded] }),
     ...(backgroundColor && { backgroundColor }),
     ...(flex === true && { flex: 1 }),
-    ...(typeof flex === "number" && { flex }),
+    ...(typeof flex === 'number' && { flex }),
     ...(direction && { flexDirection: direction }),
     ...(justify && { justifyContent: justify }),
     ...(align && { alignItems: align }),

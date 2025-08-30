@@ -1,12 +1,12 @@
-import { getMessageChatRoom } from "@/lib/api/generated";
-import { getMessageChatRoomOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
-import { useEffect } from "react";
+import { getMessageChatRoom } from '@/lib/api/generated';
+import { getMessageChatRoomOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useQuery } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { useEffect } from 'react';
 
 export default function useMessageRoom(
   roomId: string,
-  enabled: boolean = true
+  enabled: boolean = true,
 ) {
   const {
     data: room,
@@ -16,8 +16,8 @@ export default function useMessageRoom(
   } = useQuery({
     ...getMessageChatRoomOptions({
       query: {
-        room_id: roomId
-      }
+        room_id: roomId,
+      },
     }),
     retry: false,
     enabled,

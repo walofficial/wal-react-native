@@ -1,26 +1,26 @@
-import React from "react";
-import { View, ActivityIndicator } from "react-native";
+import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
 import {
   InfiniteData,
   useInfiniteQuery,
   useMutation,
   useQueryClient,
   useQuery,
-} from "@tanstack/react-query";
-import ContactListHeader from "./ContactListHeader";
-import ContactSyncFriendItem from "./ContactSyncFriendItem";
-import { checkedCountAtom, displayedContactsAtom } from "./atom";
-import { useSetAtom } from "jotai";
-import { useIsFocused } from "@react-navigation/native";
-import useUnblockMutation from "@/hooks/useUnblockMutation";
+} from '@tanstack/react-query';
+import ContactListHeader from './ContactListHeader';
+import ContactSyncFriendItem from './ContactSyncFriendItem';
+import { checkedCountAtom, displayedContactsAtom } from './atom';
+import { useSetAtom } from 'jotai';
+import { useIsFocused } from '@react-navigation/native';
+import useUnblockMutation from '@/hooks/useUnblockMutation';
 import {
   checkRegisteredUsersQueryKey,
   getBlockedFriendsOptions,
   getFriendsListInfiniteOptions,
   getFriendsListQueryKey,
   removeFriendMutation,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import { t } from "@/lib/i18n";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { t } from '@/lib/i18n';
 const PAGE_SIZE = 10;
 
 const FriendsList: React.FC = () => {
@@ -79,7 +79,7 @@ const FriendsList: React.FC = () => {
     <View style={{ marginBottom: 12 }}>
       <ContactListHeader
         icon="people-outline"
-        title={t("common.friends_list_header")}
+        title={t('common.friends_list_header')}
       />
       {friends.map((item) => (
         <ContactSyncFriendItem

@@ -1,6 +1,6 @@
-import { useEffect, forwardRef, useImperativeHandle } from "react";
-import { useOtpVerify } from "react-native-otp-verify";
-import { StyleSheet } from "react-native";
+import { useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useOtpVerify } from 'react-native-otp-verify';
+import { StyleSheet } from 'react-native';
 
 export interface AndroidAutoSMSRef {
   start: () => void;

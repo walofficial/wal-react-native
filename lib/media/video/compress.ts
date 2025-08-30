@@ -1,9 +1,9 @@
-import { getVideoMetaData, Video } from "react-native-compressor";
-import { ImagePickerAsset } from "expo-image-picker";
+import { getVideoMetaData, Video } from 'react-native-compressor';
+import { ImagePickerAsset } from 'expo-image-picker';
 
-import { SUPPORTED_MIME_TYPES, SupportedMimeTypes } from "@/lib/constants";
-import { CompressedVideo } from "./types";
-import { extToMime } from "./util";
+import { SUPPORTED_MIME_TYPES, SupportedMimeTypes } from '@/lib/constants';
+import { CompressedVideo } from './types';
+import { extToMime } from './util';
 
 const MIN_SIZE_FOR_COMPRESSION = 25; // 25mb
 
@@ -12,12 +12,12 @@ export async function compressVideo(
   opts?: {
     signal?: AbortSignal;
     onProgress?: (progress: number) => void;
-  }
+  },
 ): Promise<CompressedVideo> {
   const { onProgress, signal } = opts || {};
 
   const isAcceptableFormat = SUPPORTED_MIME_TYPES.includes(
-    file.mimeType as SupportedMimeTypes
+    file.mimeType as SupportedMimeTypes,
   );
 
   const minimumFileSizeForCompress = isAcceptableFormat
@@ -27,20 +27,20 @@ export async function compressVideo(
   const compressed = await Video.compress(
     file.uri,
     {
-      compressionMethod: "manual",
+      compressionMethod: 'manual',
       bitrate: 3_000_000, // 3mbps
       maxSize: 1920,
       // WARNING: this ONE SPECIFIC ARG is in MB -sfn
       minimumFileSizeForCompress,
       getCancellationId: (id) => {
         if (signal) {
-          signal.addEventListener("abort", () => {
+          signal.addEventListener('abort', () => {
             Video.cancelCompression(id);
           });
         }
       },
     },
-    onProgress
+    onProgress,
   );
 
   const info = await getVideoMetaData(compressed);

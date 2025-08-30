@@ -1,6 +1,6 @@
-export type ToastType = "default" | "success" | "error" | "warning" | "info";
+export type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info';
 
-export type ToastPosition = "top" | "bottom";
+export type ToastPosition = 'top' | 'bottom';
 
 export interface ToastProps {
   children: React.ReactNode;
@@ -25,12 +25,24 @@ export interface Toast {
 export interface ToastContextValue {
   toasts: Toast[];
   show: (content: React.ReactNode | string, options?: ToastOptions) => string;
-  error: ({ title, description }: { title: string, description?: string }) => string;
-  success: ({ title, description }: { title: string, description?: string }) => string;
+  error: ({
+    title,
+    description,
+  }: {
+    title: string;
+    description?: string;
+  }) => string;
+  success: ({
+    title,
+    description,
+  }: {
+    title: string;
+    description?: string;
+  }) => string;
   update: (
     id: string,
     content: React.ReactNode | string,
-    options?: ToastOptions
+    options?: ToastOptions,
   ) => void;
   dismiss: (id: string) => void;
   dismissAll: () => void;

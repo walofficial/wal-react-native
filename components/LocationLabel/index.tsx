@@ -1,7 +1,7 @@
-import { View, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { colors } from "@/lib/colors";
-import { Text } from "@/components/ui/text";
+import { View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { colors } from '@/lib/colors';
+import { Text } from '@/components/ui/text';
 
 interface LocationLabelProps {
   locationName?: string;
@@ -9,8 +9,8 @@ interface LocationLabelProps {
 }
 
 function LocationLabel({
-  locationName = "",
-  address = "",
+  locationName = '',
+  address = '',
 }: LocationLabelProps) {
   return (
     <View style={styles.container}>
@@ -27,31 +27,31 @@ function LocationLabel({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: 9999,
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderWidth: 1,
-    borderColor: "#374151",
+    borderColor: '#374151',
   },
   iconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   textContainer: {
     marginLeft: 16,
   },
   locationName: {
     fontSize: 20,
-    fontWeight: "bold",
-    color: "#ffffff",
+    fontWeight: 'bold',
+    color: '#ffffff',
   },
   address: {
     fontSize: 14,
-    color: "#D1D5DB",
+    color: '#D1D5DB',
   },
 });
 

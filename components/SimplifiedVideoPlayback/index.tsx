@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState } from 'react';
 import {
   View,
   ActivityIndicator,
@@ -10,17 +10,17 @@ import {
   useColorScheme,
   StyleProp,
   ViewStyle,
-} from "react-native";
-import { BlueskyVideoView } from "@haileyok/bluesky-video";
-import { convertToCDNUrl } from "@/lib/utils";
-import { useIsFocused } from "@react-navigation/native";
-import MuteButton from "../MuteButton";
-import { useGlobalMute } from "@/hooks/useGlobalMute";
-import { isDev } from "@/lib/api/config";
-import { Image, ImageBackground } from "expo-image";
-import { isNative } from "@/lib/platform";
-import { useTheme } from "@/lib/theme";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native';
+import { BlueskyVideoView } from '@haileyok/bluesky-video';
+import { convertToCDNUrl } from '@/lib/utils';
+import { useIsFocused } from '@react-navigation/native';
+import MuteButton from '../MuteButton';
+import { useGlobalMute } from '@/hooks/useGlobalMute';
+import { isDev } from '@/lib/api/config';
+import { Image, ImageBackground } from 'expo-image';
+import { isNative } from '@/lib/platform';
+import { useTheme } from '@/lib/theme';
+import { Ionicons } from '@expo/vector-icons';
 
 interface SimplifiedVideoPlaybackProps {
   src: string;
@@ -60,28 +60,28 @@ function ConstrainedVideo({
   }, [aspectRatio]);
 
   return (
-    <View style={{ width: "100%" }}>
-      <View style={{ overflow: "hidden", paddingTop: outerAspectRatio }}>
+    <View style={{ width: '100%' }}>
+      <View style={{ overflow: 'hidden', paddingTop: outerAspectRatio }}>
         <View
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            flexDirection: "row",
+            flexDirection: 'row',
           }}
         >
           <View
             style={{
-              height: "100%",
-              width: aspectRatio < 1 ? undefined : "75%", // 3:4 ratio for non-portrait videos
+              height: '100%',
+              width: aspectRatio < 1 ? undefined : '75%', // 3:4 ratio for non-portrait videos
               aspectRatio: aspectRatio < 1 ? aspectRatio : 3 / 4,
-              alignSelf: "center",
+              alignSelf: 'center',
               borderRadius: 10,
-              overflow: "hidden",
-              backgroundColor: "rgba(0,0,0,0.25)",
-              marginHorizontal: "auto",
+              overflow: 'hidden',
+              backgroundColor: 'rgba(0,0,0,0.25)',
+              marginHorizontal: 'auto',
             }}
           >
             {children}
@@ -102,15 +102,15 @@ function TimeIndicator({
 }) {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60);
-  const timeStr = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
 
   return (
     <View
       style={[
         {
-          position: "absolute",
+          position: 'absolute',
           bottom: 6,
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
           paddingHorizontal: 6,
           paddingVertical: 2,
           borderRadius: 999,
@@ -119,7 +119,7 @@ function TimeIndicator({
         style,
       ]}
     >
-      <Text style={{ color: "white", fontSize: 11, fontWeight: "500" }}>
+      <Text style={{ color: 'white', fontSize: 11, fontWeight: '500' }}>
         {timeStr}
       </Text>
     </View>
@@ -144,11 +144,11 @@ function ControlButton({
     <View
       style={[
         {
-          position: "absolute",
+          position: 'absolute',
           borderRadius: 999,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
           paddingHorizontal: 4,
           paddingVertical: 4,
           bottom: 6,
@@ -160,7 +160,7 @@ function ControlButton({
     >
       <Pressable
         onPress={onPress}
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}
         accessibilityLabel={label}
         accessibilityHint={accessibilityHint}
         accessibilityRole="button"
@@ -203,7 +203,7 @@ function VideoControls({
 
       <ControlButton
         onPress={togglePlayback}
-        label={isPlaying ? "Pause" : "Play"}
+        label={isPlaying ? 'Pause' : 'Play'}
         accessibilityHint="Plays or pauses the video"
         style={{ left: 6 }}
       >
@@ -218,7 +218,7 @@ function VideoControls({
 
       <ControlButton
         onPress={toggleMuted}
-        label={isMuted ? "Unmute" : "Mute"}
+        label={isMuted ? 'Unmute' : 'Mute'}
         accessibilityHint="Toggles the sound"
         style={{ right: 6 }}
       >
@@ -255,8 +255,8 @@ const SimplifiedVideoPlayback: React.FC<SimplifiedVideoPlaybackProps> = ({
   } | null>(null);
   const videoRef = useRef<BlueskyVideoView>(null);
   const isFocused = useIsFocused();
-  const [status, setStatus] = useState<"playing" | "paused" | "pending">(
-    "pending"
+  const [status, setStatus] = useState<'playing' | 'paused' | 'pending'>(
+    'pending',
   );
 
   // Calculate video aspect ratio - default to 16:9 if not provided
@@ -272,25 +272,25 @@ const SimplifiedVideoPlayback: React.FC<SimplifiedVideoPlaybackProps> = ({
   const showOverlay =
     !isActive ||
     isLoading ||
-    (status === "paused" && !isActive) ||
-    status === "pending";
+    (status === 'paused' && !isActive) ||
+    status === 'pending';
 
   const handleMute = () => {
-    console.log("Mute button pressed");
+    console.log('Mute button pressed');
     if (videoRef.current) {
       videoRef.current.toggleMuted();
     }
   };
 
   const handlePress = () => {
-    console.log("Entering fullscreen");
+    console.log('Entering fullscreen');
     if (videoRef.current) {
       videoRef.current.enterFullscreen(true);
     }
   };
 
   const togglePlayback = () => {
-    console.log("Toggle playback pressed");
+    console.log('Toggle playback pressed');
     if (videoRef.current) {
       videoRef.current.togglePlayback();
     }
@@ -299,8 +299,8 @@ const SimplifiedVideoPlayback: React.FC<SimplifiedVideoPlaybackProps> = ({
   const renderDevInfo = isDev && (
     <View style={styles.devInfo}>
       <Text style={styles.devInfoText}>
-        {isPlaying ? "Playing" : "Paused"} - {currentTime.toFixed(2)}s /{" "}
-        {duration.toFixed(2)}s - Focused: {isFocused ? "Yes" : "No"}
+        {isPlaying ? 'Playing' : 'Paused'} - {currentTime.toFixed(2)}s /{' '}
+        {duration.toFixed(2)}s - Focused: {isFocused ? 'Yes' : 'No'}
       </Text>
     </View>
   );
@@ -315,8 +315,8 @@ const SimplifiedVideoPlayback: React.FC<SimplifiedVideoPlaybackProps> = ({
         style={styles.videoView}
         onActiveChange={(e) => {
           setIsActive(e.nativeEvent.isActive);
-          if (!e.nativeEvent.isActive && status !== "pending") {
-            setStatus("pending");
+          if (!e.nativeEvent.isActive && status !== 'pending') {
+            setStatus('pending');
           }
         }}
         onLoadingChange={(e) => {
@@ -326,8 +326,8 @@ const SimplifiedVideoPlayback: React.FC<SimplifiedVideoPlaybackProps> = ({
           setGlobalMute(e.nativeEvent.isMuted);
         }}
         onStatusChange={(e) => {
-          setIsPlaying(e.nativeEvent.status === "playing");
-          setStatus(e.nativeEvent.status === "playing" ? "playing" : "paused");
+          setIsPlaying(e.nativeEvent.status === 'playing');
+          setStatus(e.nativeEvent.status === 'playing' ? 'playing' : 'paused');
         }}
         onTimeRemainingChange={(e) => {
           setTimeRemaining(e.nativeEvent.timeRemaining);
@@ -343,7 +343,7 @@ const SimplifiedVideoPlayback: React.FC<SimplifiedVideoPlaybackProps> = ({
           style={[
             styles.thumbnailBackground,
             {
-              backgroundColor: thumbnail ? undefined : "rgba(0,0,0,0.1)",
+              backgroundColor: thumbnail ? undefined : 'rgba(0,0,0,0.1)',
             },
           ]}
         >
@@ -388,60 +388,60 @@ const SimplifiedVideoPlayback: React.FC<SimplifiedVideoPlaybackProps> = ({
 
 const styles = StyleSheet.create({
   videoView: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 10,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   devInfo: {
-    position: "absolute",
+    position: 'absolute',
     top: 20,
     left: 20,
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 5,
     zIndex: 1000,
     height: 30,
   },
   devInfoText: {
-    color: "white",
+    color: 'white',
   },
   liveIndicator: {
-    position: "absolute",
+    position: 'absolute',
     top: 8,
     right: 8,
     zIndex: 50,
-    backgroundColor: "#ef4444",
+    backgroundColor: '#ef4444',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 9999,
   },
   liveText: {
-    color: "white",
+    color: 'white',
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   thumbnailBackground: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 10,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   thumbnail: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderRadius: 10,
   },
   loaderContainer: {
-    position: "absolute",
+    position: 'absolute',
     borderRadius: 9999,
     padding: 4,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

@@ -1,8 +1,8 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { FontSizes, useTheme } from "@/lib/theme";
-import SourceIcon from "@/components/SourceIcon";
-import { t } from "@/lib/i18n";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { FontSizes, useTheme } from '@/lib/theme';
+import SourceIcon from '@/components/SourceIcon';
+import { t } from '@/lib/i18n';
 
 interface SourceInfoCardProps {
   hide?: boolean;
@@ -48,7 +48,7 @@ const SourceInfoCard: React.FC<SourceInfoCardProps> = ({ hide = false }) => {
               { color: theme.colors.text, fontSize: 15 },
             ]}
           >
-            {t("common.source_info_card_description")}
+            {t('common.source_info_card_description')}
           </Text>
         </View>
       </View>
@@ -65,9 +65,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     padding: 16,
     marginBottom: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    shadowColor: "#000",
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 1,
@@ -79,10 +79,10 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   iconsRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 10,
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
   },
   infoCardContent: {
     flex: 1,
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   infoCardDescription: {
     fontSize: FontSizes.small,
     lineHeight: 18,
-    fontWeight: "500",
+    fontWeight: '500',
   },
 });
 

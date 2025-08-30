@@ -1,7 +1,7 @@
-import * as Slot from "~/components/primitives/slot";
-import { SlottableTextProps, TextRef } from "~/components/primitives/types";
-import * as React from "react";
-import { Text as RNText, StyleSheet } from "react-native";
+import * as Slot from '~/components/primitives/slot';
+import { SlottableTextProps, TextRef } from '~/components/primitives/types';
+import * as React from 'react';
+import { Text as RNText, StyleSheet } from 'react-native';
 
 const TextClassContext = React.createContext<{ style?: any }>({
   style: undefined,
@@ -18,14 +18,14 @@ const Text = React.forwardRef<TextRef, SlottableTextProps>(
         {...props}
       />
     );
-  }
+  },
 );
-Text.displayName = "Text";
+Text.displayName = 'Text';
 
 const styles = StyleSheet.create({
   text: {
     fontSize: 16,
-    color: "#000000",
+    color: '#000000',
   },
 });
 

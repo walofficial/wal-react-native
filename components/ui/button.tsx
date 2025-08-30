@@ -1,15 +1,15 @@
-import * as React from "react";
-import { Pressable, StyleSheet, View } from "react-native";
-import type { PressableProps, StyleProp, ViewStyle } from "react-native";
+import * as React from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
+import type { PressableProps, StyleProp, ViewStyle } from 'react-native';
 
 type ButtonVariant =
-  | "default"
-  | "destructive"
-  | "outline"
-  | "secondary"
-  | "ghost"
-  | "link";
-type ButtonSize = "default" | "sm" | "lg" | "icon";
+  | 'default'
+  | 'destructive'
+  | 'outline'
+  | 'secondary'
+  | 'ghost'
+  | 'link';
+type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
 
 interface ButtonProps extends PressableProps {
   variant?: ButtonVariant;
@@ -22,8 +22,8 @@ const Button = React.forwardRef<
   ButtonProps
 >(
   (
-    { variant = "default", size = "default", style, disabled, ...props },
-    ref
+    { variant = 'default', size = 'default', style, disabled, ...props },
+    ref,
   ) => {
     return (
       <Pressable
@@ -39,38 +39,38 @@ const Button = React.forwardRef<
         {...props}
       />
     );
-  }
+  },
 );
 
-Button.displayName = "Button";
+Button.displayName = 'Button';
 
 const styles = StyleSheet.create({
   base: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 8,
   },
   // Variants
   default: {
-    backgroundColor: "#0284c7", // primary color
+    backgroundColor: '#0284c7', // primary color
   },
   destructive: {
-    backgroundColor: "#ef4444", // destructive color
+    backgroundColor: '#ef4444', // destructive color
   },
   outline: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: "#e5e7eb", // input border color
+    borderColor: '#e5e7eb', // input border color
   },
   secondary: {
-    backgroundColor: "#f3f4f6", // secondary color
+    backgroundColor: '#f3f4f6', // secondary color
   },
   ghost: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   link: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   // Sizes
   defaultSize: {

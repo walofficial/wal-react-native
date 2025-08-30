@@ -1,5 +1,5 @@
-import React, { forwardRef, ForwardedRef } from "react";
-import { StyleSheet, View, useColorScheme } from "react-native";
+import React, { forwardRef, ForwardedRef } from 'react';
+import { StyleSheet, View, useColorScheme } from 'react-native';
 
 const MessageItemLayout = forwardRef(function MessageItemLayout(
   {
@@ -9,10 +9,10 @@ const MessageItemLayout = forwardRef(function MessageItemLayout(
     isAuthor: boolean;
     children: React.ReactNode;
   },
-  ref: ForwardedRef<View>
+  ref: ForwardedRef<View>,
 ) {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
 
   return (
     <View
@@ -30,8 +30,8 @@ const MessageItemLayout = forwardRef(function MessageItemLayout(
               ? styles.authorMessageDark
               : styles.authorMessageLight
             : isDark
-            ? styles.nonAuthorMessageDark
-            : styles.nonAuthorMessageLight,
+              ? styles.nonAuthorMessageDark
+              : styles.nonAuthorMessageLight,
         ]}
       >
         {children}
@@ -42,18 +42,18 @@ const MessageItemLayout = forwardRef(function MessageItemLayout(
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "column",
+    flexDirection: 'column',
     paddingHorizontal: 12,
     paddingVertical: 4,
-    maxWidth: "80%",
+    maxWidth: '80%',
   },
   authorContainer: {
-    alignItems: "flex-end",
-    alignSelf: "flex-end",
+    alignItems: 'flex-end',
+    alignSelf: 'flex-end',
   },
   nonAuthorContainer: {
-    alignItems: "flex-start",
-    alignSelf: "flex-start",
+    alignItems: 'flex-start',
+    alignSelf: 'flex-start',
   },
   messageBox: {
     padding: 8,
@@ -62,14 +62,14 @@ const styles = StyleSheet.create({
   },
   // Dark mode styles
   authorMessageDark: {
-    backgroundColor: "#107896", // Signal-like blue for dark mode
+    backgroundColor: '#107896', // Signal-like blue for dark mode
     borderTopRightRadius: 0,
     borderTopLeftRadius: 10,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 10,
   },
   nonAuthorMessageDark: {
-    backgroundColor: "#333333", // Dark gray for dark mode
+    backgroundColor: '#333333', // Dark gray for dark mode
     borderTopRightRadius: 10,
     borderTopLeftRadius: 0,
     borderBottomRightRadius: 10,
@@ -77,14 +77,14 @@ const styles = StyleSheet.create({
   },
   // Light mode styles
   authorMessageLight: {
-    backgroundColor: "#3A76F0", // Signal's blue for light mode
+    backgroundColor: '#3A76F0', // Signal's blue for light mode
     borderTopRightRadius: 0,
     borderTopLeftRadius: 10,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 10,
   },
   nonAuthorMessageLight: {
-    backgroundColor: "#E9E9EB", // Light gray for light mode (Messenger/Signal style)
+    backgroundColor: '#E9E9EB', // Light gray for light mode (Messenger/Signal style)
     borderTopRightRadius: 10,
     borderTopLeftRadius: 0,
     borderBottomRightRadius: 10,

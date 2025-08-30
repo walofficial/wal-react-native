@@ -1,14 +1,14 @@
-"area:components":
+'area:components':
   - components/**
-"area:hooks":
+'area:hooks':
   - hooks/**
-"area:lib":
+'area:lib':
   - lib/**
-"area:screens":
+'area:screens':
   - screens/**
-"area:workflows":
+'area:workflows':
   - .github/workflows/**
-"type:docs":
-  - "**/*.md"
-"type:tests":
+'type:docs':
+  - '**/*.md'
+'type:tests':
   - components/__tests__/**

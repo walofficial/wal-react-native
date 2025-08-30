@@ -1,26 +1,26 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Linking, Platform, View, StyleSheet } from "react-native";
-import Button from "@/components/Button";
-import * as Notifications from "expo-notifications";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Text } from "../ui/text";
-import { isDev } from "@/lib/api/config";
+import React, { useState, useEffect, useRef } from 'react';
+import { Linking, Platform, View, StyleSheet } from 'react-native';
+import Button from '@/components/Button';
+import * as Notifications from 'expo-notifications';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Text } from '../ui/text';
+import { isDev } from '@/lib/api/config';
 import {
   registerForPushNotificationsAsync,
   sendPushNotification,
-} from "@/lib/utils";
-import { useRouter } from "expo-router";
-import { Alert } from "react-native";
-import { useAtom } from "jotai";
-import { expoPushTokenAtom, isSubscribedAtom } from "./atom";
+} from '@/lib/utils';
+import { useRouter } from 'expo-router';
+import { Alert } from 'react-native';
+import { useAtom } from 'jotai';
+import { expoPushTokenAtom, isSubscribedAtom } from './atom';
 import {
   deleteFcmMutation,
   getFcmTokenOptions,
   getFcmTokenQueryKey,
   upsertFcmMutation,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import { t } from "@/lib/i18n";
-import { trackEvent, setUserProperties } from "@/lib/analytics";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { t } from '@/lib/i18n';
+import { trackEvent, setUserProperties } from '@/lib/analytics';
 
 export const openNotificationSettings = () => {
   return Linking.openSettings();
@@ -73,9 +73,9 @@ export default function EnableNotifications({
       await Notifications.unregisterForNotificationsAsync();
       deleteFCM.mutate({});
       setUserDismissed(true);
-      trackEvent("push_opt_in", {
-        status: "disabled",
-        from_screen: "settings",
+      trackEvent('push_opt_in', {
+        status: 'disabled',
+        from_screen: 'settings',
       });
       setUserProperties({ has_push_opt_in: false });
     } else {
@@ -84,22 +84,22 @@ export default function EnableNotifications({
         const token = await registerForPushNotificationsAsync();
         if (!token) {
           Alert.alert(
-            t("common.enable_notifications"),
-            t("common.go_to_settings_enable_notifications"),
+            t('common.enable_notifications'),
+            t('common.go_to_settings_enable_notifications'),
             [
               {
-                text: t("common.settings"),
+                text: t('common.settings'),
                 onPress: () => {
                   openNotificationSettings();
                 },
               },
               {
-                text: t("common.cancel"),
-                style: "destructive",
+                text: t('common.cancel'),
+                style: 'destructive',
               },
-            ]
+            ],
           );
-          trackEvent("push_opt_in", { status: "prompt_denied" });
+          trackEvent('push_opt_in', { status: 'prompt_denied' });
           return;
         }
         if (token) {
@@ -110,14 +110,14 @@ export default function EnableNotifications({
             } as any,
           });
           setUserDismissed(false);
-          trackEvent("push_opt_in", { status: "enabled" });
+          trackEvent('push_opt_in', { status: 'enabled' });
           setUserProperties({ has_push_opt_in: true });
         }
       } catch (error) {
         console.error(error);
-        trackEvent("error_event", {
-          scope: "push_subscription",
-          message: (error as Error)?.message || "unknown",
+        trackEvent('error_event', {
+          scope: 'push_subscription',
+          message: (error as Error)?.message || 'unknown',
         });
       }
     }
@@ -135,21 +135,21 @@ export default function EnableNotifications({
       Notifications.addNotificationResponseReceivedListener((response) => {
         // Navigate to the chat route when notification is tapped
         if (response.notification.request.content.data?.chatId) {
-          trackEvent("push_open_details", {
-            source: "tap",
+          trackEvent('push_open_details', {
+            source: 'tap',
             has_chat_id: true,
           });
           router.navigate(
-            `/chat/${response.notification.request.content.data.chatId}`
+            `/chat/${response.notification.request.content.data.chatId}`,
           );
         }
-        trackEvent("push_open_details", { source: "tap", has_chat_id: false });
+        trackEvent('push_open_details', { source: 'tap', has_chat_id: false });
       });
 
     return () => {
       notificationListener.current &&
         Notifications.removeNotificationSubscription(
-          notificationListener.current
+          notificationListener.current,
         );
       responseListener.current &&
         Notifications.removeNotificationSubscription(responseListener.current);
@@ -163,18 +163,18 @@ export default function EnableNotifications({
       <Button
         glassy={true}
         style={styles.button}
-        variant={!isSubscribed ? "default" : "secondary"}
+        variant={!isSubscribed ? 'default' : 'secondary'}
         size="large"
         onPress={toggleNotifications}
         disabled={saveToken.isPending}
         loading={saveToken.isPending}
         title={
           isSubscribed
-            ? t("common.disable_notifications")
-            : t("common.enable_notifications")
+            ? t('common.disable_notifications')
+            : t('common.enable_notifications')
         }
         icon={
-          isSubscribed ? "notifications-off-outline" : "notifications-outline"
+          isSubscribed ? 'notifications-off-outline' : 'notifications-outline'
         }
       />
       {isDev && (
@@ -185,17 +185,17 @@ export default function EnableNotifications({
           size="large"
           onPress={() => sendPushNotification(expoPushToken)}
           disabled={saveToken.isPending}
-          title={"Test notification"}
+          title={'Test notification'}
         />
       )}
       {isDev && (
         <View style={styles.devContainer}>
           <Text>
-            Title: {notification && notification.request.content.title}{" "}
+            Title: {notification && notification.request.content.title}{' '}
           </Text>
           <Text>Body: {notification && notification.request.content.body}</Text>
           <Text>
-            Data:{" "}
+            Data:{' '}
             {notification && JSON.stringify(notification.request.content.data)}
           </Text>
         </View>
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   devContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

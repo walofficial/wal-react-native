@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { AlertCircle, CheckCircle, HelpCircle } from "lucide-react-native";
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { AlertCircle, CheckCircle, HelpCircle } from 'lucide-react-native';
 
 interface Claim {
   id: string;
@@ -17,9 +17,9 @@ const FactCheckClaims = ({ claims }: FactCheckClaimsProps) => {
   const getVerdictIcon = (verdict: string) => {
     const verdictLower = verdict.toLowerCase();
 
-    if (verdictLower.includes("true")) {
+    if (verdictLower.includes('true')) {
       return <CheckCircle size={16} color="#22c55e" />;
-    } else if (verdictLower.includes("false")) {
+    } else if (verdictLower.includes('false')) {
       return <AlertCircle size={16} color="#ef4444" />;
     } else {
       return <HelpCircle size={16} color="#f59e0b" />;
@@ -29,12 +29,12 @@ const FactCheckClaims = ({ claims }: FactCheckClaimsProps) => {
   const getVerdictColor = (verdict: string) => {
     const verdictLower = verdict.toLowerCase();
 
-    if (verdictLower.includes("true")) {
-      return "#22c55e"; // green
-    } else if (verdictLower.includes("false")) {
-      return "#ef4444"; // red
+    if (verdictLower.includes('true')) {
+      return '#22c55e'; // green
+    } else if (verdictLower.includes('false')) {
+      return '#ef4444'; // red
     } else {
-      return "#f59e0b"; // amber
+      return '#f59e0b'; // amber
     }
   };
 
@@ -76,26 +76,26 @@ const FactCheckClaims = ({ claims }: FactCheckClaimsProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "rgba(31, 41, 55, 0.5)",
+    backgroundColor: 'rgba(31, 41, 55, 0.5)',
     padding: 12,
     borderRadius: 8,
     marginBottom: 12,
-    width: "100%",
+    width: '100%',
   },
   title: {
-    color: "#ffffff",
-    fontWeight: "600",
+    color: '#ffffff',
+    fontWeight: '600',
     marginBottom: 12,
   },
   claimContainer: {
     marginBottom: 12,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(55, 65, 81, 0.5)",
+    borderBottomColor: 'rgba(55, 65, 81, 0.5)',
   },
   claimContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
   },
   iconContainer: {
     marginTop: 4,
@@ -105,14 +105,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statement: {
-    color: "#ffffff",
-    fontWeight: "500",
+    color: '#ffffff',
+    fontWeight: '500',
     marginBottom: 4,
   },
   verdictContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    alignSelf: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
     borderRadius: 9999,
     paddingHorizontal: 8,
     paddingVertical: 2,
@@ -120,10 +120,10 @@ const styles = StyleSheet.create({
   },
   verdictText: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   reason: {
-    color: "#D1D5DB",
+    color: '#D1D5DB',
     fontSize: 14,
   },
 });

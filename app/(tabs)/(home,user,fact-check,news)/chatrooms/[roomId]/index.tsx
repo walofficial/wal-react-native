@@ -1,13 +1,13 @@
-import Chat from "@/components/Chat";
-import ChatTopbar from "@/components/Chat/chat-topbar";
-import ScreenLoader from "@/components/ScreenLoader";
-import useAuth from "@/hooks/useAuth";
-import useMessageRoom from "@/hooks/useMessageRoom";
-import { publicKeyState } from "@/lib/state/auth";
-import { useAtom } from "jotai";
-import { Stack, useGlobalSearchParams } from "expo-router";
-import MessageConnectionWrapper from "@/components/Chat/socket/MessageConnectionWrapper";
-import ErrorMessageCard from "@/components/ErrorMessageCard";
+import Chat from '@/components/Chat';
+import ChatTopbar from '@/components/Chat/chat-topbar';
+import ScreenLoader from '@/components/ScreenLoader';
+import useAuth from '@/hooks/useAuth';
+import useMessageRoom from '@/hooks/useMessageRoom';
+import { publicKeyState } from '@/lib/state/auth';
+import { useAtom } from 'jotai';
+import { Stack, useGlobalSearchParams } from 'expo-router';
+import MessageConnectionWrapper from '@/components/Chat/socket/MessageConnectionWrapper';
+import ErrorMessageCard from '@/components/ErrorMessageCard';
 // THis component only used for the navigation from notification to not brake routing
 
 export default function SharedChat() {

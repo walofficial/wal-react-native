@@ -1,16 +1,16 @@
-import { useToast } from "@/lib/context/ToastContext";
-import React from "react";
-import { StyleSheet, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Toast } from "./Toast";
+import { useToast } from '@/lib/context/ToastContext';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Toast } from './Toast';
 
 export const ToastViewport: React.FC = () => {
   const { toasts } = useToast();
   const insets = useSafeAreaInsets();
 
-  const topToasts = toasts.filter((toast) => toast.options.position === "top");
+  const topToasts = toasts.filter((toast) => toast.options.position === 'top');
   const bottomToasts = toasts.filter(
-    (toast) => toast.options.position === "bottom"
+    (toast) => toast.options.position === 'bottom',
   );
 
   return (
@@ -51,19 +51,19 @@ export const ToastViewport: React.FC = () => {
 
 const styles = StyleSheet.create({
   viewport: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     zIndex: 9999,
     paddingHorizontal: 16,
-    pointerEvents: "box-none",
+    pointerEvents: 'box-none',
   },
   topViewport: {
     top: 0,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
   },
   bottomViewport: {
     bottom: 0,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
 });

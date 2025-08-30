@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import type { ViewProps } from "react-native";
-import { StyleSheet, View } from "react-native";
-import type { TapGestureHandlerStateChangeEvent } from "react-native-gesture-handler";
-import { State, TapGestureHandler } from "react-native-gesture-handler";
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import type { ViewProps } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
+import { State, TapGestureHandler } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
   Easing,
@@ -12,23 +12,23 @@ import Reanimated, {
   useSharedValue,
   withRepeat,
   interpolate,
-} from "react-native-reanimated";
-import type { Camera, VideoFile } from "react-native-vision-camera";
-import { CAPTURE_BUTTON_SIZE } from "./Constants";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { useHaptics } from "@/lib/haptics";
-import { useToast } from "../ToastUsage";
-import { t } from "@/lib/i18n";
+} from 'react-native-reanimated';
+import type { Camera, VideoFile } from 'react-native-vision-camera';
+import { CAPTURE_BUTTON_SIZE } from './Constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { toast } from '@backpackapp-io/react-native-toast';
+import { useHaptics } from '@/lib/haptics';
+import { useToast } from '../ToastUsage';
+import { t } from '@/lib/i18n';
 const BORDER_WIDTH = CAPTURE_BUTTON_SIZE * 0.05;
 const MIN_RECORDING_TIME = 500; // 1 second in milliseconds
 const MAX_RECORDING_TIME = 30000; // 30 seconds in milliseconds
 
 interface Props extends ViewProps {
   camera: React.RefObject<Camera>;
-  onMediaCaptured: (media: VideoFile, type: "video") => void;
+  onMediaCaptured: (media: VideoFile, type: 'video') => void;
 
-  flash: "off" | "on";
+  flash: 'off' | 'on';
 
   enabled: boolean;
   setRecordingTimeView: (visible: boolean) => void;
@@ -70,7 +70,7 @@ const _CaptureButton: React.FC<Props> = ({
 
   const stopRecording = useCallback(async () => {
     try {
-      if (camera.current == null) throw new Error("Camera ref is null!");
+      if (camera.current == null) throw new Error('Camera ref is null!');
 
       await camera.current.stopRecording();
 
@@ -82,38 +82,38 @@ const _CaptureButton: React.FC<Props> = ({
       setIsRecording(false);
       recordingProgress.value = withTiming(0);
     } catch (e) {
-      console.error("Failed to stop recording!", e);
+      console.error('Failed to stop recording!', e);
     }
   }, [camera, recordingProgress]);
   const { error } = useToast();
 
   const startRecording = useCallback(() => {
     try {
-      if (camera.current == null) throw new Error("Camera ref is null!");
+      if (camera.current == null) throw new Error('Camera ref is null!');
 
       camera.current.startRecording({
-        videoCodec: "h264",
-        fileType: "mp4",
+        videoCodec: 'h264',
+        fileType: 'mp4',
         flash: flash,
         onRecordingError: (error) => {
-          console.error("Recording failed!", error);
+          console.error('Recording failed!', error);
           setIsRecording(false);
           recordingProgress.value = withTiming(0);
-          haptic("Medium");
+          haptic('Medium');
         },
         onRecordingFinished: async (video) => {
           const recordingDuration =
             Date.now() - (recordingStartTime.current || Date.now());
           if (recordingDuration < MIN_RECORDING_TIME) {
-            error({ title: t("common.short_recording_error") });
-            haptic("Medium");
+            error({ title: t('common.short_recording_error') });
+            haptic('Medium');
           } else {
             await AsyncStorage.setItem(
               `lastRecordedVideoPath_${feedId}`,
-              video.path
+              video.path,
             );
-            onMediaCaptured(video, "video");
-            haptic("Medium");
+            onMediaCaptured(video, 'video');
+            haptic('Medium');
           }
           setIsRecording(false);
           recordingProgress.value = withTiming(0);
@@ -122,14 +122,14 @@ const _CaptureButton: React.FC<Props> = ({
       recordingStartTime.current = Date.now();
       setIsRecording(true);
       recordingProgress.value = withTiming(1, { duration: MAX_RECORDING_TIME });
-      haptic("Medium");
+      haptic('Medium');
 
       recordingTimer.current = setTimeout(() => {
         stopRecording();
       }, MAX_RECORDING_TIME);
     } catch (e) {
-      console.error("Failed to start recording!", e);
-      haptic("Medium");
+      console.error('Failed to start recording!', e);
+      haptic('Medium');
     }
   }, [
     camera,
@@ -165,7 +165,7 @@ const _CaptureButton: React.FC<Props> = ({
       stopRecording,
       isPressingButton,
       setIsPressingButton,
-    ]
+    ],
   );
 
   const buttonStyle = useAnimatedStyle(() => {
@@ -178,7 +178,7 @@ const _CaptureButton: React.FC<Props> = ({
             damping: 1000,
           }),
           -1,
-          true
+          true,
         );
       } else {
         scale = withSpring(0.9, {
@@ -210,14 +210,14 @@ const _CaptureButton: React.FC<Props> = ({
     const size = interpolate(
       recordingProgress.value,
       [0, 1],
-      [CAPTURE_BUTTON_SIZE * 0.8, CAPTURE_BUTTON_SIZE * 0.5]
+      [CAPTURE_BUTTON_SIZE * 0.8, CAPTURE_BUTTON_SIZE * 0.5],
     );
     const borderRadius = isRecording
       ? CAPTURE_BUTTON_SIZE * 0.1
       : interpolate(
           recordingProgress.value,
           [0, 1],
-          [CAPTURE_BUTTON_SIZE * 0.4, CAPTURE_BUTTON_SIZE * 0.2]
+          [CAPTURE_BUTTON_SIZE * 0.4, CAPTURE_BUTTON_SIZE * 0.2],
         );
 
     return {
@@ -256,12 +256,12 @@ const styles = StyleSheet.create({
     height: CAPTURE_BUTTON_SIZE,
     borderRadius: CAPTURE_BUTTON_SIZE / 2,
     borderWidth: BORDER_WIDTH,
-    borderColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
+    borderColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   innerButton: {
-    backgroundColor: "#ff0000",
+    backgroundColor: '#ff0000',
   },
   notRecordingButton: {},
   recordingButton: {

@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Image, View, ViewStyle, StyleSheet, Text } from "react-native";
+import * as React from 'react';
+import { Image, View, ViewStyle, StyleSheet, Text } from 'react-native';
 import {
   isTrackReference,
   TrackReferenceOrPlaceholder,
@@ -8,8 +8,8 @@ import {
   useIsSpeaking,
   useParticipantInfo,
   VideoTrack,
-} from "@livekit/react-native";
-import { Track } from "livekit-client";
+} from '@livekit/react-native';
+import { Track } from 'livekit-client';
 
 interface ParticipantViewProps {
   trackRef: TrackReferenceOrPlaceholder;
@@ -64,38 +64,38 @@ export const ParticipantView = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#00153C",
+    backgroundColor: '#00153C',
   },
   placeholderContainer: {
-    width: "100%",
-    height: "100%",
-    alignItems: "center",
-    justifyContent: "center",
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   placeholderImage: {
     width: 40,
     height: 40,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   flex: {
     flex: 1,
   },
   nameContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
-    width: "100%",
+    width: '100%',
     padding: 2,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   nameText: {
-    color: "white",
+    color: 'white',
   },
   speakingBorder: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     borderWidth: 3,
-    borderColor: "#007DFF",
+    borderColor: '#007DFF',
   },
 });

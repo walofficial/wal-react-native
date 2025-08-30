@@ -1,6 +1,6 @@
-import React, { memo } from "react";
-import { Image, ImageProps } from "expo-image";
-import { View, StyleSheet, ViewStyle } from "react-native";
+import React, { memo } from 'react';
+import { Image, ImageProps } from 'expo-image';
+import { View, StyleSheet, ViewStyle } from 'react-native';
 
 interface ImageLoaderProps extends Partial<ImageProps> {
   blurhash?: string;
@@ -11,7 +11,7 @@ interface ImageLoaderProps extends Partial<ImageProps> {
 const ImageLoader = memo(
   ({
     style,
-    contentFit = "cover",
+    contentFit = 'cover',
     noAnimation,
     blurhash,
     source,
@@ -35,26 +35,26 @@ const ImageLoader = memo(
           placeholder={blurhash ? { blurhash } : undefined}
           source={source}
           onLoad={onLoad}
-          recyclingKey={typeof source === "string" ? source : undefined}
+          recyclingKey={typeof source === 'string' ? source : undefined}
         />
       </View>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({
   container: {
-    overflow: "hidden",
-    width: "100%",
-    height: "100%",
+    overflow: 'hidden',
+    width: '100%',
+    height: '100%',
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     flex: 1,
   },
 });
 
-ImageLoader.displayName = "ImageLoader";
+ImageLoader.displayName = 'ImageLoader';
 
 export default ImageLoader;

@@ -1,15 +1,15 @@
 // @ts-nocheck
-import React, { useCallback } from "react";
-import { View, TouchableHighlight, StyleSheet } from "react-native";
-import { Link } from "expo-router";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import useAuth from "@/hooks/useAuth";
-import { Text } from "../ui/text";
-import { ChatRoom } from "@/lib/api/generated";
-import { CheckCircle2 } from "lucide-react-native";
-import { FontSizes } from "@/lib/theme";
-import { useQueryClient } from "@tanstack/react-query";
-import { useTheme } from "@/lib/theme";
+import React, { useCallback } from 'react';
+import { View, TouchableHighlight, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import useAuth from '@/hooks/useAuth';
+import { Text } from '../ui/text';
+import { ChatRoom } from '@/lib/api/generated';
+import { CheckCircle2 } from 'lucide-react-native';
+import { FontSizes } from '@/lib/theme';
+import { useQueryClient } from '@tanstack/react-query';
+import { useTheme } from '@/lib/theme';
 
 function ChatItem({ item }: { item: ChatRoom }) {
   const { user: authorizedUser } = useAuth();
@@ -17,7 +17,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
   const theme = useTheme();
 
   const targetUser = item.participants.find(
-    (user) => user.id !== authorizedUser.id
+    (user) => user.id !== authorizedUser.id,
   );
 
   const isNavigationEnabled = !!targetUser?.username;
@@ -46,11 +46,11 @@ function ChatItem({ item }: { item: ChatRoom }) {
     const now = new Date();
     const messageDate = new Date(date);
     const diffSeconds = Math.floor(
-      (now.getTime() - messageDate.getTime()) / 1000
+      (now.getTime() - messageDate.getTime()) / 1000,
     );
 
     if (diffSeconds < 10) {
-      return "Now";
+      return 'Now';
     }
 
     const diffMinutes = Math.floor(diffSeconds / 60);
@@ -64,20 +64,20 @@ function ChatItem({ item }: { item: ChatRoom }) {
       if (diffMinutes > 0) {
         return `${diffMinutes}m`;
       }
-      return "Now";
+      return 'Now';
     }
 
     if (diffDays < 7) {
-      return messageDate.toLocaleDateString("en-US", { weekday: "short" });
+      return messageDate.toLocaleDateString('en-US', { weekday: 'short' });
     }
-    return messageDate.toLocaleDateString("en-US", {
-      month: "numeric",
-      day: "numeric",
+    return messageDate.toLocaleDateString('en-US', {
+      month: 'numeric',
+      day: 'numeric',
     });
   };
 
   const renderMessageStatus = () => {
-    if (item.last_message?.message_state === "SENT") {
+    if (item.last_message?.message_state === 'SENT') {
       if (item.last_message.author_id !== authorizedUser.id) {
         return null;
       }
@@ -89,7 +89,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
         />
       );
     }
-    if (item.last_message?.message_state === "READ") {
+    if (item.last_message?.message_state === 'READ') {
       return (
         <CheckCircle2
           fill={theme.colors.primary}
@@ -105,7 +105,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
   return (
     <Link
       href={{
-        pathname: "/chatrooms/[roomId]",
+        pathname: '/chatrooms/[roomId]',
         params: { roomId: item.id },
       }}
       asChild
@@ -132,7 +132,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
                   source={{ uri: targetUser?.photos[0].image_url[0] }}
                 />
                 <AvatarFallback>
-                  <Text>{targetUser?.username?.[0] || "[d]"}</Text>
+                  <Text>{targetUser?.username?.[0] || '[d]'}</Text>
                 </AvatarFallback>
               </Avatar>
             </View>
@@ -140,7 +140,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
             <View style={styles.messageContainer}>
               <View style={styles.headerContainer}>
                 <Text style={[styles.username, { color: theme.colors.text }]}>
-                  {targetUser?.username || "[deleted]"}
+                  {targetUser?.username || '[deleted]'}
                 </Text>
                 <Text
                   style={[
@@ -175,24 +175,24 @@ function ChatItem({ item }: { item: ChatRoom }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginVertical: 8,
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
   },
   disabledContainer: {
     opacity: 0.5,
   },
   mainContent: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   rowContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
   avatarContainer: {
@@ -209,22 +209,22 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingTop: 8,
     paddingRight: 12,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   username: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   timestamp: {
     fontSize: 14,
     marginTop: 8,
   },
   messageContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingBottom: 40,
   },
   messageText: {
@@ -233,8 +233,8 @@ const styles = StyleSheet.create({
     marginRight: 48,
   },
   statusContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingRight: 20,
     paddingTop: 12,
   },

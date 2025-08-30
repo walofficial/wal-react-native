@@ -1,11 +1,11 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import useLocationSession from "./useLocationSession";
-import { useIsFocused } from "@react-navigation/native";
-import { getLocationFeedsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import useLocationSession from './useLocationSession';
+import { useIsFocused } from '@react-navigation/native';
+import { getLocationFeedsOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export default function useLocationsInfo(
   categoryId: string,
-  enabled: boolean = true
+  enabled: boolean = true,
 ) {
   const isFocused = useIsFocused();
   const { location, errorMsg, isGettingLocation } = useLocationSession();
@@ -22,9 +22,9 @@ export default function useLocationsInfo(
         category_id: categoryId,
       },
       headers: {
-        "x-user-location-latitude": location?.coords?.latitude || 0,
-        "x-user-location-longitude": location?.coords?.longitude || 0,
-      }
+        'x-user-location-latitude': location?.coords?.latitude || 0,
+        'x-user-location-longitude': location?.coords?.longitude || 0,
+      },
     }),
     enabled: !!categoryId && enabled && (!!location || !!errorMsg),
     placeholderData: keepPreviousData,

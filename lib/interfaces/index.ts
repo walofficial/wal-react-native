@@ -1,9 +1,9 @@
-import { JSXElementConstructor } from "react";
-import { ReactElement } from "react";
-import { NativeScrollEvent } from "react-native";
-import { NativeSyntheticEvent } from "react-native";
-import { SharedValue } from "react-native-reanimated";
-import { Feed, User } from "../api/generated";
+import { JSXElementConstructor } from 'react';
+import { ReactElement } from 'react';
+import { NativeScrollEvent } from 'react-native';
+import { NativeSyntheticEvent } from 'react-native';
+import { SharedValue } from 'react-native-reanimated';
+import { Feed, User } from '../api/generated';
 
 export interface Photo {
   blur_hash: string;
@@ -16,8 +16,6 @@ export type Affiliated = {
   icon_url: string;
 };
 
-
-
 export type PlaybackMedia = {
   hls: string;
   dash: string;
@@ -29,7 +27,7 @@ export type BaseVerification = {
   id: string;
   assignee_user_id: string;
   task_id: string;
-  type: "image" | "video";
+  type: 'image' | 'video';
   state: string;
   transcode_job_name?: string;
   verified_media_playback?: PlaybackMedia;
@@ -59,11 +57,10 @@ export type AIVideoSummary = {
 
 export type ExternalVideo = {
   url: string;
-  platform: "youtube" | "facebook" | "twitter";
+  platform: 'youtube' | 'facebook' | 'twitter';
   thumbnail_url?: string;
   duration?: string;
 };
-
 
 export interface LinkPreviewData {
   url: string;
@@ -71,7 +68,7 @@ export interface LinkPreviewData {
   description?: string;
   images?: string[];
   siteName?: string;
-  platform?: "youtube" | "facebook" | "x";
+  platform?: 'youtube' | 'facebook' | 'x';
 }
 
 export interface LinkPreviewResponse {
@@ -101,20 +98,16 @@ export type UserVerification = BaseVerification & {
   is_public?: boolean;
 };
 
-
 export type FeedUser = User;
 
-
-
-
 export enum ReactionType {
-  LIKE = "like",
-  LOVE = "love",
-  LAUGH = "laugh",
-  ANGRY = "angry",
-  SAD = "sad",
-  WOW = "wow",
-  DISLIKE = "dislike",
+  LIKE = 'like',
+  LOVE = 'love',
+  LAUGH = 'laugh',
+  ANGRY = 'angry',
+  SAD = 'sad',
+  WOW = 'wow',
+  DISLIKE = 'dislike',
 }
 
 export interface ReactionCount {
@@ -135,19 +128,12 @@ export interface CurrentUserReaction {
   type: ReactionType;
 }
 
-
-
-
-
-export type MessageState = "UNREAD" | "READ" | "SENT";
-
-
-
+export type MessageState = 'UNREAD' | 'READ' | 'SENT';
 
 export enum FriendRequestStatus {
-  PENDING = "pending",
-  ACCEPTED = "accepted",
-  REJECTED = "rejected",
+  PENDING = 'pending',
+  ACCEPTED = 'accepted',
+  REJECTED = 'rejected',
 }
 
 export type FriendRequest = {
@@ -159,12 +145,10 @@ export type FriendRequest = {
   updated_at: string;
 };
 
-
 export type CheckLocationResponse = [
   boolean,
-  { name: string; address: string; location: [number, number] }
+  { name: string; address: string; location: [number, number] },
 ];
-
 
 export type Notification = {
   id: string;
@@ -232,20 +216,20 @@ export type AnimatedFlashListProps = {
   scrollEventThrottle: number;
   onScroll?: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   renderItem: (
-    item: any
+    item: any,
   ) => ReactElement<any | string | JSXElementConstructor<any>>;
   estimatedItemSize: number;
   getItemType: (
     item: any,
     index: number,
-    extraData?: any
+    extraData?: any,
   ) => string | number | undefined;
   keyboardShouldPersistTaps?:
-  | boolean
-  | "always"
-  | "never"
-  | "handled"
-  | undefined;
+    | boolean
+    | 'always'
+    | 'never'
+    | 'handled'
+    | undefined;
   initialScrollIndex: number;
   scrollEnabled: boolean;
   scrollX: SharedValue<number>;
@@ -255,7 +239,7 @@ export type AnimatedFlashListProps = {
   overrideItemLayout: (
     layout: { span: number; size: number },
     item: any,
-    index: number
+    index: number,
   ) => void;
   ListEmptyComponent: React.ReactNode;
   ListFooterComponent: React.ReactNode;
@@ -265,7 +249,7 @@ export type AnimatedFlashListProps = {
   windowSize: number;
   getItemLayout: (
     data: any,
-    index: number
+    index: number,
   ) => { length: number; offset: number; index: number };
 };
 

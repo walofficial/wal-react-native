@@ -1,6 +1,6 @@
-import React from "react";
-import { View } from "react-native";
-import ChatRoomList from "@/components/ChatRoomList";
+import React from 'react';
+import { View } from 'react-native';
+import ChatRoomList from '@/components/ChatRoomList';
 
 export default function TabTwoScreen() {
   return (

@@ -1,16 +1,16 @@
 // @ts-nocheck
-import React from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import Share, { ShareSingleOptions, Social } from "react-native-share";
-import ContactListHeader from "./ContactListHeader";
-import { Text } from "@/components/ui/text";
-import { Telegram } from "@/lib/icons/Telegram";
-import { LinearGradient } from "expo-linear-gradient";
-import useAuth from "@/hooks/useAuth";
-import { useTheme } from "@/lib/theme";
-import { app_name_slug } from "@/app.config";
-import { t } from "@/lib/i18n";
+import React from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import Share, { ShareSingleOptions, Social } from 'react-native-share';
+import ContactListHeader from './ContactListHeader';
+import { Text } from '@/components/ui/text';
+import { Telegram } from '@/lib/icons/Telegram';
+import { LinearGradient } from 'expo-linear-gradient';
+import useAuth from '@/hooks/useAuth';
+import { useTheme } from '@/lib/theme';
+import { app_name_slug } from '@/app.config';
+import { t } from '@/lib/i18n';
 
 const AddUserFromOtherApps: React.FC = () => {
   const { user } = useAuth();
@@ -20,8 +20,8 @@ const AddUserFromOtherApps: React.FC = () => {
 
   const shareToApp = async (app: keyof typeof Share.Social) => {
     const shareOptions: ShareSingleOptions = {
-      title: "Share via",
-      message: "წამო WAL ზე",
+      title: 'Share via',
+      message: 'წამო WAL ზე',
       url: shareMessage,
       social: Share.Social[app] as Social,
     };
@@ -35,14 +35,14 @@ const AddUserFromOtherApps: React.FC = () => {
 
   const shareToOthers = async () => {
     const shareOptions = {
-      message: "მოდი",
+      message: 'მოდი',
       url: `https://${app_name_slug}.ge/links/${user?.username}`,
     };
 
     try {
       await Share.open(shareOptions);
     } catch (error) {
-      console.error("Error sharing:", error);
+      console.error('Error sharing:', error);
     }
   };
 
@@ -50,26 +50,26 @@ const AddUserFromOtherApps: React.FC = () => {
     <View style={styles.container}>
       <ContactListHeader
         icon="share-social-outline"
-        title={t("common.add_from_other_apps")}
+        title={t('common.add_from_other_apps')}
       />
       <View style={styles.buttonContainer}>
         <TouchableOpacity
-          onPress={() => shareToApp("INSTAGRAM")}
+          onPress={() => shareToApp('INSTAGRAM')}
           style={styles.buttonWrapper}
         >
-          <View style={[styles.iconBorder, { borderColor: "#E1306C" }]}>
+          <View style={[styles.iconBorder, { borderColor: '#E1306C' }]}>
             <LinearGradient
               colors={[
-                "#FFDC80",
-                "#FCAF45",
-                "#F77737",
-                "#F56040",
-                "#FD1D1D",
-                "#E1306C",
-                "#C13584",
-                "#833AB4",
-                "#5851DB",
-                "#405DE6",
+                '#FFDC80',
+                '#FCAF45',
+                '#F77737',
+                '#F56040',
+                '#FD1D1D',
+                '#E1306C',
+                '#C13584',
+                '#833AB4',
+                '#5851DB',
+                '#405DE6',
               ]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
@@ -83,12 +83,12 @@ const AddUserFromOtherApps: React.FC = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => shareToApp("WHATSAPP")}
+          onPress={() => shareToApp('WHATSAPP')}
           style={styles.buttonWrapper}
         >
-          <View style={[styles.iconBorder, { borderColor: "#25D366" }]}>
+          <View style={[styles.iconBorder, { borderColor: '#25D366' }]}>
             <View
-              style={[styles.iconBackground, { backgroundColor: "#25D366" }]}
+              style={[styles.iconBackground, { backgroundColor: '#25D366' }]}
             >
               <Ionicons name="logo-whatsapp" size={32} color="white" />
             </View>
@@ -98,12 +98,12 @@ const AddUserFromOtherApps: React.FC = () => {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => shareToApp("TELEGRAM")}
+          onPress={() => shareToApp('TELEGRAM')}
           style={styles.buttonWrapper}
         >
-          <View style={[styles.iconBorder, { borderColor: "#0088cc" }]}>
+          <View style={[styles.iconBorder, { borderColor: '#0088cc' }]}>
             <View
-              style={[styles.iconBackground, { backgroundColor: "#3B82F6" }]}
+              style={[styles.iconBackground, { backgroundColor: '#3B82F6' }]}
             >
               <Telegram />
             </View>
@@ -139,13 +139,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     marginTop: 16,
     paddingHorizontal: 4,
   },
   buttonWrapper: {
-    alignItems: "center",
+    alignItems: 'center',
     marginRight: 24,
   },
   iconBorder: {
@@ -157,15 +157,15 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   iconBackground: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     marginTop: 4,

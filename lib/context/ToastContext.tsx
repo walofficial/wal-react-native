@@ -1,22 +1,22 @@
-import { toastMainStyle } from "@/components/CustomToast";
+import { toastMainStyle } from '@/components/CustomToast';
 import type {
   Toast,
   ToastContextValue,
   ToastOptions,
-} from "@/lib/types/Toast.types";
+} from '@/lib/types/Toast.types';
 import React, {
   createContext,
   useCallback,
   useContext,
   useEffect,
   useState,
-} from "react";
-import { useColorScheme } from "../useColorScheme";
+} from 'react';
+import { useColorScheme } from '../useColorScheme';
 
 const DEFAULT_TOAST_OPTIONS: Required<ToastOptions> = {
   duration: 3000,
-  type: "default",
-  position: "bottom",
+  type: 'default',
+  position: 'bottom',
   onClose: () => {},
   action: null,
 };
@@ -26,7 +26,7 @@ const ToastContext = createContext<ToastContextValue | undefined>(undefined);
 export const useToast = (): ToastContextValue => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
+    throw new Error('useToast must be used within a ToastProvider');
   }
   return context;
 };
@@ -52,40 +52,40 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       setToasts((prevToasts) => [...prevToasts, toast]);
       return id;
     },
-    []
+    [],
   );
 
   const success = useCallback(
     ({ title, description }: { title: string; description?: string }) =>
       show(
         toastMainStyle({
-          icon: "checkmark-circle-outline",
+          icon: 'checkmark-circle-outline',
           title: title,
           description: description,
-          color: "#10B981",
+          color: '#10B981',
           dark: isDarkColorScheme,
         }),
         {
-          position: "top",
-        }
+          position: 'top',
+        },
       ),
-    [isDarkColorScheme]
+    [isDarkColorScheme],
   );
   const error = useCallback(
     ({ title, description }: { title: string; description?: string }) =>
       show(
         toastMainStyle({
-          icon: "alert-circle-outline",
+          icon: 'alert-circle-outline',
           title: title,
           description: description,
-          color: "#EF4444",
+          color: '#EF4444',
           dark: isDarkColorScheme,
         }),
         {
-          position: "top",
-        }
+          position: 'top',
+        },
       ),
-    [isDarkColorScheme]
+    [isDarkColorScheme],
   );
 
   const update = useCallback(
@@ -101,11 +101,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
                   ...options,
                 },
               }
-            : toast
-        )
+            : toast,
+        ),
       );
     },
-    []
+    [],
   );
 
   const dismiss = useCallback((id: string) => {

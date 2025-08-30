@@ -1,5 +1,5 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import { getVerificationsInfiniteOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { getVerificationsInfiniteOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export function useUserVerificationsPaginated({
   targetUserId,

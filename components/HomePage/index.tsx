@@ -4,23 +4,23 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-} from "react-native";
-import Svg, { Circle, Path } from "react-native-svg";
-import UserLogin from "../UserLogin";
-import VideoPlayer from "../VideoPlayer";
-import { useRef, useEffect } from "react";
-import { useAtom } from "jotai";
-import BottomSheet, { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { FontSizes } from "@/lib/theme";
-import { isAndroid } from "@/lib/platform";
-import * as NavigationBar from "expo-navigation-bar";
-import { StatusBar } from "expo-status-bar";
-import { useTranslation } from "@/hooks/useTranslation";
-import LanguageSelectionOverlay from "@/components/LanguageOverlay";
-import { appLocaleAtom } from "@/hooks/useAppLocalization";
+} from 'react-native';
+import Svg, { Circle, Path } from 'react-native-svg';
+import UserLogin from '../UserLogin';
+import VideoPlayer from '../VideoPlayer';
+import { useRef, useEffect } from 'react';
+import { useAtom } from 'jotai';
+import BottomSheet, { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { FontSizes } from '@/lib/theme';
+import { isAndroid } from '@/lib/platform';
+import * as NavigationBar from 'expo-navigation-bar';
+import { StatusBar } from 'expo-status-bar';
+import { useTranslation } from '@/hooks/useTranslation';
+import LanguageSelectionOverlay from '@/components/LanguageOverlay';
+import { appLocaleAtom } from '@/hooks/useAppLocalization';
 
 const VIDEO_URI =
-  "https://cdn.wal.ge/video-verifications/transcoded/f2897541-6768-4ae2-ab28-1894d3e96e5f/manifest.mpd";
+  'https://cdn.wal.ge/video-verifications/transcoded/f2897541-6768-4ae2-ab28-1894d3e96e5f/manifest.mpd';
 
 export default function HomePage() {
   const userLoginRef = useRef<BottomSheet>(null);
@@ -29,8 +29,8 @@ export default function HomePage() {
 
   useEffect(() => {
     if (isAndroid) {
-      NavigationBar.setPositionAsync("absolute");
-      NavigationBar.setBackgroundColorAsync("transparent");
+      NavigationBar.setPositionAsync('absolute');
+      NavigationBar.setBackgroundColorAsync('transparent');
     }
   }, []);
 
@@ -46,9 +46,9 @@ export default function HomePage() {
           <View style={styles.bottomContent}>
             <Text style={styles.logo}>WAL</Text>
             <View style={styles.textContainer}>
-              <Text style={styles.title}>{t("common.what_happening")}</Text>
+              <Text style={styles.title}>{t('common.what_happening')}</Text>
               <Text style={styles.subtitle}>
-                {t("common.unfiltered_verified_info")}
+                {t('common.unfiltered_verified_info')}
               </Text>
             </View>
             <TouchableOpacity
@@ -57,7 +57,7 @@ export default function HomePage() {
               }}
               style={styles.button}
             >
-              <Text style={styles.buttonText}>{t("common.sign_in")}</Text>
+              <Text style={styles.buttonText}>{t('common.sign_in')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -84,43 +84,43 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 24,
     paddingHorizontal: 16,
-    justifyContent: "flex-end",
+    justifyContent: 'flex-end',
   },
   bottomContent: {
     gap: 16,
-    alignItems: "flex-start",
-    width: "100%",
+    alignItems: 'flex-start',
+    width: '100%',
   },
   logo: {
     fontSize: 36,
-    fontWeight: "bold",
-    color: "white",
+    fontWeight: 'bold',
+    color: 'white',
   },
   textContainer: {
     gap: 8,
-    width: "100%",
+    width: '100%',
   },
   title: {
     fontSize: 30,
-    fontWeight: "bold",
-    color: "white",
+    fontWeight: 'bold',
+    color: 'white',
   },
   subtitle: {
     fontSize: FontSizes.medium,
-    color: "#D1D5DB",
+    color: '#D1D5DB',
   },
   button: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#efefef",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#efefef',
     borderRadius: 12,
-    width: "100%",
+    width: '100%',
     padding: 16,
   },
   buttonText: {
-    color: "black",
+    color: 'black',
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

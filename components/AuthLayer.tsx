@@ -1,18 +1,17 @@
-import "react-native-url-polyfill/auto";
-import { useState, useEffect, useContext, createContext } from "react";
-import { supabase } from "@/lib/supabase";
-import { Session } from "@supabase/supabase-js";
-import RemoteConfigBanner from "./RemoteConfigBanner";
-import { useRouter } from "expo-router";
-import ProtocolService from "@/lib/services/ProtocolService";
-import { createUser, getUser, User } from "@/lib/api/generated";
-import useSendPublicKey from "@/hooks/useSendPublicKey";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { isWeb } from "@/lib/platform";
-import { useToast } from "./ToastUsage";
-import { getCurrentLocale, getLanguageFromLocale, t } from "@/lib/i18n";
-import { updateAcceptLanguageHeader } from "@/lib/api/client";
-import { useQueryClient } from "@tanstack/react-query";
+import 'react-native-url-polyfill/auto';
+import { useState, useEffect, useContext, createContext } from 'react';
+import { supabase } from '@/lib/supabase';
+import { Session } from '@supabase/supabase-js';
+import RemoteConfigBanner from './RemoteConfigBanner';
+import { useRouter } from 'expo-router';
+import ProtocolService from '@/lib/services/ProtocolService';
+import { createUser, getUser, User } from '@/lib/api/generated';
+import useSendPublicKey from '@/hooks/useSendPublicKey';
+import { isWeb } from '@/lib/platform';
+import { useToast } from './ToastUsage';
+import { getCurrentLocale, getLanguageFromLocale, t } from '@/lib/i18n';
+import { updateAcceptLanguageHeader } from '@/lib/api/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AuthContext = createContext<{
   isLoading: boolean;
@@ -36,9 +35,9 @@ const AuthContext = createContext<{
 
 export function useSession() {
   const value = useContext(AuthContext);
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== 'production') {
     if (!value) {
-      throw new Error("useSession must be wrapped in a <SessionProvider />");
+      throw new Error('useSession must be wrapped in a <SessionProvider />');
     }
   }
 
@@ -57,9 +56,9 @@ async function handleUserNotFound(supabaseUser: any) {
       external_user_id: supabaseUser.id,
       email: supabaseUser.email || supabaseUser?.phone,
       phone_number: supabaseUser?.phone,
-      date_of_birth: "",
+      date_of_birth: '',
       gender: null,
-      username: "",
+      username: '',
       photos: [],
       interests: [],
       city: null,
@@ -82,17 +81,14 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Update the API client configuration whenever the Accept-Language header changes
-    updateAcceptLanguageHeader(user?.preferred_content_language);
-    // queryClient.invalidateQueries();
-    // queryClient.clear();
-    // queryClient.resetQueries();
+    updateAcceptLanguageHeader(user?.preferred_content_language || '');
   }, [user?.preferred_content_language]);
 
   // Handle user registration status
   useEffect(() => {
     if (user) {
       if (!isUserRegistered(user)) {
-        router.navigate("/(auth)/register");
+        router.navigate('/(auth)/register');
       }
       // Send public key when we have a user
       sendPublicKey({ userId: user.id });
@@ -119,7 +115,7 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
           }
 
           try {
-            successToast({ title: t("common.finalize_user_details") });
+            successToast({ title: t('common.finalize_user_details') });
             const newUser = await handleUserNotFound(supabaseUser.data.user);
             setUser(newUser.data);
             dismissAll();
@@ -127,19 +123,19 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
           } catch (innerError) {
             dismissAll();
             setUserIsLoading(false);
-            errorToast({ title: t("common.system_error") });
-            console.error("Error creating new user (inner):", innerError);
+            errorToast({ title: t('common.system_error') });
+            console.error('Error creating new user (inner):', innerError);
           }
         } else if (e.response?.status === 401) {
           dismissAll();
-          errorToast({ title: t("common.session_expired") });
+          errorToast({ title: t('common.session_expired') });
           await supabase.auth.signOut();
         } else {
           setUserIsLoading(false);
           dismissAll();
-          errorToast({ title: t("common.session_expired") });
+          errorToast({ title: t('common.session_expired') });
 
-          console.error("Error fetching user:", e);
+          console.error('Error fetching user:', e);
         }
       }
     }
@@ -161,7 +157,7 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
       });
 
     supabase.auth.onAuthStateChange((_event, session) => {
-      if (_event === "SIGNED_OUT") {
+      if (_event === 'SIGNED_OUT') {
         ProtocolService.clearKeys();
         setUser(undefined);
       }

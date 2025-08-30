@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   ActivityIndicator,
   StyleProp,
@@ -6,15 +6,15 @@ import {
   Text,
   TextStyle,
   ViewStyle,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   interpolateColor,
   Easing,
-} from "react-native-reanimated";
-import { Button } from "./button";
+} from 'react-native-reanimated';
+import { Button } from './button';
 
 const AnimatedButton = Animated.createAnimatedComponent(Button);
 
@@ -22,14 +22,14 @@ interface AnimatedButtonProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   disabled?: boolean;
-  size?: "default" | "sm" | "lg" | "icon";
+  size?: 'default' | 'sm' | 'lg' | 'icon';
   variant?:
-    | "default"
-    | "destructive"
-    | "outline"
-    | "secondary"
-    | "ghost"
-    | "link";
+    | 'default'
+    | 'destructive'
+    | 'outline'
+    | 'secondary'
+    | 'ghost'
+    | 'link';
   onPress?: () => void;
   isLoading?: boolean;
   loadingColor?: string;
@@ -40,11 +40,11 @@ export default function CustomAnimatedButton({
   children,
   style,
   disabled = false,
-  size = "default",
-  variant = "secondary",
+  size = 'default',
+  variant = 'secondary',
   onPress,
   isLoading = false,
-  loadingColor = "black",
+  loadingColor = 'black',
   textStyle,
   ...props
 }: AnimatedButtonProps) {
@@ -58,7 +58,7 @@ export default function CustomAnimatedButton({
       backgroundColor: interpolateColor(
         pressed.value,
         [0, 1],
-        ["#efefef", "#d1d1d1"]
+        ['#efefef', '#d1d1d1'],
       ),
     };
   });
@@ -98,11 +98,11 @@ export default function CustomAnimatedButton({
 
 const styles = StyleSheet.create({
   button: {
-    width: "100%",
+    width: '100%',
     borderRadius: 16,
-    backgroundColor: "#efefef",
+    backgroundColor: '#efefef',
     height: 56,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,

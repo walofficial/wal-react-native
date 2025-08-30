@@ -1,7 +1,7 @@
-import RegisterView from "@/components/RegisterView";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { View } from "react-native";
-import { useTheme } from "@/lib/theme";
+import RegisterView from '@/components/RegisterView';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { View } from 'react-native';
+import { useTheme } from '@/lib/theme';
 
 export default function Register() {
   const insets = useSafeAreaInsets();

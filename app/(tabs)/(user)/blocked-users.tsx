@@ -1,10 +1,10 @@
-import React from "react";
-import { View, ActivityIndicator, StyleSheet } from "react-native";
-import { Text } from "@/components/ui/text";
-import ContactSyncFriendItem from "@/components/ContactSyncSheet/ContactSyncFriendItem";
-import useUnblockMutation from "@/hooks/useUnblockMutation";
-import useGetBlockedUsers from "@/hooks/useGetBlockedUsers";
-import { useTheme } from "@/lib/theme";
+import React from 'react';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
+import { Text } from '@/components/ui/text';
+import ContactSyncFriendItem from '@/components/ContactSyncSheet/ContactSyncFriendItem';
+import useUnblockMutation from '@/hooks/useUnblockMutation';
+import useGetBlockedUsers from '@/hooks/useGetBlockedUsers';
+import { useTheme } from '@/lib/theme';
 
 const BlockedUsers: React.FC = () => {
   const { blockedUsers, isLoading } = useGetBlockedUsers();
@@ -72,8 +72,8 @@ const styles = StyleSheet.create({
   },
   centerContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

@@ -1,15 +1,15 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   ActivityIndicator,
   TouchableOpacity,
   StyleSheet,
-} from "react-native";
-import LocationLabel from "../LocationLabel";
-import { isWeb } from "@/lib/platform";
-import { useTheme, Theme } from "@/lib/theme";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import LocationLabel from '../LocationLabel';
+import { isWeb } from '@/lib/platform';
+import { useTheme, Theme } from '@/lib/theme';
+import { t } from '@/lib/i18n';
 
 export function ListEmptyComponent({
   isFetching,
@@ -44,11 +44,11 @@ export function ListEmptyComponent({
   }
 
   const mainView = isUserInSelectedLocation ? (
-    <Text style={styles.emptyText}>{"..."}</Text>
+    <Text style={styles.emptyText}>{'...'}</Text>
   ) : (
     <View style={styles.mainContainer}>
       <Text style={styles.instructionText}>
-        {t("common.go_to_location_to_post")}
+        {t('common.go_to_location_to_post')}
       </Text>
       {selectedLocation &&
         selectedLocation.task &&
@@ -74,31 +74,31 @@ const createStyles = (theme: Theme) =>
     container: {
       flex: 1,
       height: 400,
-      alignItems: "center",
-      justifyContent: "center",
+      alignItems: 'center',
+      justifyContent: 'center',
       paddingHorizontal: theme.spacing.md,
       backgroundColor: theme.colors.background,
     },
     mainContainer: {
       flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
+      alignItems: 'center',
+      justifyContent: 'center',
       paddingHorizontal: theme.spacing.md,
       backgroundColor: theme.colors.background,
     },
     emptyText: {
       color: theme.colors.feedItem.secondaryText,
       height: 400,
-      textAlign: "center",
+      textAlign: 'center',
       marginBottom: theme.spacing.md * 1.5, // 24px
     },
     instructionText: {
       color: theme.colors.text,
-      textAlign: "center",
+      textAlign: 'center',
       fontSize: theme.fontSizes.md,
       marginBottom: theme.spacing.xl + theme.spacing.sm, // 40px
     },
     locationButton: {
-      width: "100%",
+      width: '100%',
     },
   });

@@ -1,9 +1,9 @@
-import { atom, useAtom } from "jotai";
-import React from "react";
-import { Dimensions, ScaledSize, View } from "react-native";
+import { atom, useAtom } from 'jotai';
+import React from 'react';
+import { Dimensions, ScaledSize, View } from 'react-native';
 
 export const dimensionsState = atom<ScaledSize | null>(
-  Dimensions.get("window")
+  Dimensions.get('window'),
 );
 
 interface ScreenDimensionsProviderProps {

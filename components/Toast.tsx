@@ -1,9 +1,9 @@
-import { useToast } from "@/lib/context/ToastContext";
+import { useToast } from '@/lib/context/ToastContext';
 import type {
   Toast as ToastType,
   ToastType as ToastVariant,
-} from "@/lib/types/Toast.types";
-import React, { useEffect, useRef } from "react";
+} from '@/lib/types/Toast.types';
+import React, { useEffect, useRef } from 'react';
 import {
   LayoutAnimation,
   Platform,
@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   UIManager,
   View,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   Easing,
   runOnJS,
@@ -21,9 +21,9 @@ import Animated, {
   useSharedValue,
   withSpring,
   withTiming,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
-if (Platform.OS === "android") {
+if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
@@ -37,31 +37,31 @@ interface ToastProps {
 
 const getBackgroundColor = (type: ToastVariant) => {
   switch (type) {
-    case "success":
-      return "rgba(16, 185, 129, 0.95)";
-    case "error":
-      return "rgba(239, 68, 68, 0.95)";
-    case "warning":
-      return "rgba(245, 158, 11, 0.95)";
-    case "info":
-      return "rgba(59, 130, 246, 0.95)";
+    case 'success':
+      return 'rgba(16, 185, 129, 0.95)';
+    case 'error':
+      return 'rgba(239, 68, 68, 0.95)';
+    case 'warning':
+      return 'rgba(245, 158, 11, 0.95)';
+    case 'info':
+      return 'rgba(59, 130, 246, 0.95)';
     default:
-      return "rgba(38, 38, 38, 0.95)";
+      return 'rgba(38, 38, 38, 0.95)';
   }
 };
 
 const getIconForType = (type: ToastVariant) => {
   switch (type) {
-    case "success":
-      return "✓";
-    case "error":
-      return "✗";
-    case "warning":
-      return "⚠";
-    case "info":
-      return "ℹ";
+    case 'success':
+      return '✓';
+    case 'error':
+      return '✗';
+    case 'warning':
+      return '⚠';
+    case 'info':
+      return 'ℹ';
     default:
-      return "";
+      return '';
   }
 };
 
@@ -73,7 +73,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
   const { dismiss } = useToast();
   const opacity = useSharedValue(0);
   const translateY = useSharedValue(
-    toast.options.position === "top" ? -100 : 100
+    toast.options.position === 'top' ? -100 : 100,
   );
   const scale = useSharedValue(0.9);
   const rotateZ = useSharedValue(0);
@@ -84,7 +84,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
     const baseOffset = 4;
     const maxOffset = 12;
     const offset = Math.min(index * baseOffset, maxOffset);
-    return toast.options.position === "top" ? offset : -offset;
+    return toast.options.position === 'top' ? offset : -offset;
   };
 
   const getStackScale = () => {
@@ -95,7 +95,7 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
 
   useEffect(() => {
     if (prevIndexRef.current !== index && opacity.value > 0) {
-      const soonerOffset = toast.options.position === "top" ? 2 : -2;
+      const soonerOffset = toast.options.position === 'top' ? 2 : -2;
 
       translateY.value = withTiming(getStackOffset() + soonerOffset, {
         duration: 400,
@@ -184,11 +184,11 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
         });
 
         translateY.value = withTiming(
-          toast.options.position === "top" ? -20 : 20,
+          toast.options.position === 'top' ? -20 : 20,
           {
             duration: 400,
             easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-          }
+          },
         );
 
         scale.value = withTiming(0.95, {
@@ -224,11 +224,11 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
     });
 
     translateY.value = withTiming(
-      toast.options.position === "top" ? -100 : 100,
+      toast.options.position === 'top' ? -100 : 100,
       {
         duration: 250,
         easing: Easing.bezier(0.25, 0.46, 0.45, 0.94),
-      }
+      },
     );
 
     scale.value = withTiming(0.8, {
@@ -252,9 +252,9 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
         {
           marginTop: 0,
           marginBottom: 0,
-          position: "absolute",
-          top: toast.options.position === "top" ? 100 : undefined,
-          bottom: toast.options.position === "bottom" ? 0 : undefined,
+          position: 'absolute',
+          top: toast.options.position === 'top' ? 100 : undefined,
+          bottom: toast.options.position === 'bottom' ? 0 : undefined,
         },
       ]}
     >
@@ -262,8 +262,8 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
         style={[
           styles.toast,
           {
-            backgroundColor: "transparent",
-            shadowColor: "#000",
+            backgroundColor: 'transparent',
+            shadowColor: '#000',
             shadowOffset: {
               width: 0,
               height: 4,
@@ -274,11 +274,11 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
           },
         ]}
         onPress={handlePress}
-        android_ripple={{ color: "rgba(255, 255, 255, 0.1)" }}
+        android_ripple={{ color: 'rgba(255, 255, 255, 0.1)' }}
       >
         {icon ? <Text style={styles.icon}>{icon}</Text> : null}
         <View style={styles.contentContainer}>
-          {typeof toast.content === "string" ? (
+          {typeof toast.content === 'string' ? (
             <Text style={styles.text}>{toast.content}</Text>
           ) : (
             toast.content
@@ -302,13 +302,13 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
 
 const styles = StyleSheet.create({
   toastContainer: {
-    width: "90%",
+    width: '90%',
     maxWidth: 400,
-    alignSelf: "center",
+    alignSelf: 'center',
     marginVertical: 4,
     borderRadius: 12,
-    overflow: "hidden",
-    shadowColor: "#000",
+    overflow: 'hidden',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 8,
@@ -318,8 +318,8 @@ const styles = StyleSheet.create({
     elevation: 12,
   },
   toast: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     // borderRadius: 12,
     // padding: 16,
     // backgroundColor: "rgba(255, 255, 255, 0.95)",
@@ -328,32 +328,32 @@ const styles = StyleSheet.create({
     // backdropFilter: "blur(10px)",
   },
   icon: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 20,
     marginRight: 12,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
     width: 24,
   },
   contentContainer: {
     flex: 1,
   },
   text: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
     lineHeight: 20,
   },
   actionButton: {
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 6,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
     marginLeft: 12,
   },
   actionText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

@@ -1,4 +1,4 @@
-import { Dumbbell } from "lucide-react-native";
-import { iconWithClassName } from "./iconWithClassName";
+import { Dumbbell } from 'lucide-react-native';
+import { iconWithClassName } from './iconWithClassName';
 iconWithClassName(Dumbbell);
 export { Dumbbell };

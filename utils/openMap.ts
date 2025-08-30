@@ -1,10 +1,10 @@
-import { Platform, Linking } from "react-native";
+import { Platform, Linking } from 'react-native';
 
 export function openMap(coordinates: number[], name: string) {
   if (coordinates && name) {
     const scheme = Platform.select({
-      ios: "maps://0,0?q=",
-      android: "geo:0,0?q=",
+      ios: 'maps://0,0?q=',
+      android: 'geo:0,0?q=',
     });
     const latLng = `${coordinates[0]},${coordinates[1]}`;
     const label = name;

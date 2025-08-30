@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { ActivityIndicator, StyleSheet } from "react-native";
+import React, { useState } from 'react';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import {
   Gesture,
   GestureDetector,
   PanGesture,
-} from "react-native-gesture-handler";
+} from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
   SharedValue,
@@ -13,14 +13,14 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
-} from "react-native-reanimated";
-import { Image } from "expo-image";
+} from 'react-native-reanimated';
+import { Image } from 'expo-image';
 
 import type {
   Dimensions as ImageDimensions,
   ImageSource,
   Transform,
-} from "../../@types";
+} from '../../@types';
 import {
   applyRounding,
   createTransform,
@@ -29,7 +29,7 @@ import {
   prependTransform,
   readTransform,
   TransformMatrix,
-} from "../../transforms";
+} from '../../transforms';
 
 const MIN_SCREEN_ZOOM = 2;
 const MAX_ORIGINAL_IMAGE_ZOOM = 2;
@@ -103,7 +103,7 @@ const ImageItem = ({
       if (nextIsScaled !== prevIsScaled) {
         runOnJS(handleZoom)(nextIsScaled);
       }
-    }
+    },
   );
 
   function handleZoom(nextIsScaled: boolean) {
@@ -115,9 +115,9 @@ const ImageItem = ({
   // If the user tried to pan too hard, this function will provide the negative panning to stay in bounds.
   function getExtraTranslationToStayInBounds(
     candidateTransform: TransformMatrix,
-    screenSize: { width: number; height: number }
+    screenSize: { width: number; height: number },
   ) {
-    "worklet";
+    'worklet';
     if (!imageAspect) {
       return [0, 0];
     }
@@ -126,17 +126,17 @@ const ImageItem = ({
     const scaledDimensions = getScaledDimensions(
       imageAspect,
       nextScale,
-      screenSize
+      screenSize,
     );
     const clampedTranslateX = clampTranslation(
       nextTranslateX,
       scaledDimensions.width,
-      screenSize.width
+      screenSize.width,
     );
     const clampedTranslateY = clampTranslation(
       nextTranslateY,
       scaledDimensions.height,
-      screenSize.height
+      screenSize.height,
     );
     const dx = clampedTranslateX - nextTranslateX;
     const dy = clampedTranslateY - nextTranslateY;
@@ -145,7 +145,7 @@ const ImageItem = ({
 
   const pinch = Gesture.Pinch()
     .onStart((e) => {
-      "worklet";
+      'worklet';
       const screenSize = measureSafeArea();
       pinchOrigin.set({
         x: e.focalX - screenSize.width / 2,
@@ -153,7 +153,7 @@ const ImageItem = ({
       });
     })
     .onChange((e) => {
-      "worklet";
+      'worklet';
       const screenSize = measureSafeArea();
       if (!imageDimensions) {
         return;
@@ -163,13 +163,13 @@ const ImageItem = ({
       const [, , committedScale] = readTransform(committedTransform.get());
       const maxCommittedScale = Math.max(
         MIN_SCREEN_ZOOM,
-        (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM
+        (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM,
       );
       const minPinchScale = 1 / committedScale;
       const maxPinchScale = maxCommittedScale / committedScale;
       const nextPinchScale = Math.min(
         Math.max(minPinchScale, e.scale),
-        maxPinchScale
+        maxPinchScale,
       );
       pinchScale.set(nextPinchScale);
 
@@ -181,7 +181,7 @@ const ImageItem = ({
         t,
         nextPinchScale,
         pinchOrigin.get(),
-        pinchTranslation.get()
+        pinchTranslation.get(),
       );
       prependTransform(t, committedTransform.get());
       const [dx, dy] = getExtraTranslationToStayInBounds(t, screenSize);
@@ -194,14 +194,14 @@ const ImageItem = ({
       }
     })
     .onEnd(() => {
-      "worklet";
+      'worklet';
       // Commit just the pinch.
       let t = createTransform();
       prependPinch(
         t,
         pinchScale.get(),
         pinchOrigin.get(),
-        pinchTranslation.get()
+        pinchTranslation.get(),
       );
       prependTransform(t, committedTransform.get());
       applyRounding(t);
@@ -218,7 +218,7 @@ const ImageItem = ({
     // Unlike .enabled(isScaled), this ensures that an initial pinch can turn into a pan midway:
     .minPointers(isScaled ? 1 : 2)
     .onChange((e) => {
-      "worklet";
+      'worklet';
       const screenSize = measureSafeArea();
       if (!imageDimensions) {
         return;
@@ -231,7 +231,7 @@ const ImageItem = ({
         t,
         pinchScale.get(),
         pinchOrigin.get(),
-        pinchTranslation.get()
+        pinchTranslation.get(),
       );
       prependTransform(t, committedTransform.get());
 
@@ -242,7 +242,7 @@ const ImageItem = ({
       panTranslation.set(nextPanTranslation);
     })
     .onEnd(() => {
-      "worklet";
+      'worklet';
       // Commit just the pan.
       let t = createTransform();
       prependPan(t, panTranslation.get());
@@ -255,14 +255,14 @@ const ImageItem = ({
     });
 
   const singleTap = Gesture.Tap().onEnd(() => {
-    "worklet";
+    'worklet';
     runOnJS(onTap)();
   });
 
   const doubleTap = Gesture.Tap()
     .numberOfTaps(2)
     .onEnd((e) => {
-      "worklet";
+      'worklet';
       const screenSize = measureSafeArea();
       if (!imageDimensions || !imageAspect) {
         return;
@@ -280,12 +280,12 @@ const ImageItem = ({
       const candidateScale = Math.max(
         imageAspect / screenAspect,
         screenAspect / imageAspect,
-        MIN_SCREEN_ZOOM
+        MIN_SCREEN_ZOOM,
       );
       // But don't zoom in so close that the picture gets blurry.
       const maxScale = Math.max(
         MIN_SCREEN_ZOOM,
-        (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM
+        (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM,
       );
       const scale = Math.min(candidateScale, maxScale);
 
@@ -301,7 +301,7 @@ const ImageItem = ({
       // Now we know how much we went out of bounds, so we can shoot correctly.
       const [dx, dy] = getExtraTranslationToStayInBounds(
         candidateTransform,
-        screenSize
+        screenSize,
       );
       const finalTransform = createTransform();
       prependPinch(finalTransform, scale, origin, { x: dx, y: dy });
@@ -315,7 +315,7 @@ const ImageItem = ({
         dismissSwipePan,
         Gesture.Simultaneous(pinch, pan),
         doubleTap,
-        singleTap
+        singleTap,
       );
 
   const containerStyle = useAnimatedStyle(() => {
@@ -328,7 +328,7 @@ const ImageItem = ({
       t,
       pinchScale.get(),
       pinchOrigin.get(),
-      pinchTranslation.get()
+      pinchTranslation.get(),
     );
     prependTransform(t, committedTransform.get());
     const [translateX, translateY, scale] = readTransform(t);
@@ -343,7 +343,7 @@ const ImageItem = ({
       transform: scaleAndMoveTransform.concat(manipulationTransform),
       width: screenSize.width,
       maxHeight: screenSize.height,
-      alignSelf: "center",
+      alignSelf: 'center',
       aspectRatio: imageAspect ?? 1 /* force onLoad */,
     };
   });
@@ -352,7 +352,7 @@ const ImageItem = ({
     const { cropFrameTransform } = transforms.get();
     return {
       flex: 1,
-      overflow: "hidden",
+      overflow: 'hidden',
       transform: cropFrameTransform,
     };
   });
@@ -378,12 +378,12 @@ const ImageItem = ({
       } else if (prevShow && !show) {
         runOnJS(setShowLoader)(false);
       }
-    }
+    },
   );
 
   const type = imageSrc.type;
   const borderRadius =
-    type === "circle-avi" ? 1e5 : type === "rect-avi" ? 20 : 0;
+    type === 'circle-avi' ? 1e5 : type === 'rect-avi' ? 20 : 0;
 
   return (
     <GestureDetector gesture={composedGesture}>
@@ -434,26 +434,26 @@ const ImageItem = ({
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    overflow: "hidden",
-    justifyContent: "center",
+    height: '100%',
+    overflow: 'hidden',
+    justifyContent: 'center',
   },
   loading: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
 });
 
 function getScaledDimensions(
   imageAspect: number,
   scale: number,
-  screenSize: { width: number; height: number }
+  screenSize: { width: number; height: number },
 ): ImageDimensions {
-  "worklet";
+  'worklet';
   const screenAspect = screenSize.width / screenSize.height;
   const isLandscape = imageAspect > screenAspect;
   if (isLandscape) {
@@ -472,9 +472,9 @@ function getScaledDimensions(
 function clampTranslation(
   value: number,
   scaledSize: number,
-  screenSize: number
+  screenSize: number,
 ): number {
-  "worklet";
+  'worklet';
   // Figure out how much the user should be allowed to pan, and constrain the translation.
   const panDistance = Math.max(0, (scaledSize - screenSize) / 2);
   const clampedValue = Math.min(Math.max(-panDistance, value), panDistance);
@@ -482,7 +482,7 @@ function clampTranslation(
 }
 
 function withClampedSpring(value: any) {
-  "worklet";
+  'worklet';
   return withSpring(value, { overshootClamping: true });
 }
 

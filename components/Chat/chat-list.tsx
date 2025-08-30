@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
   useMemo,
-} from "react";
+} from 'react';
 import {
   View,
   ScrollView,
@@ -16,35 +16,35 @@ import {
   Platform,
   UIManager,
   InteractionManager,
-} from "react-native";
-import ChatBottombar from "./chat-bottombar";
-import { useQueryClient } from "@tanstack/react-query";
-import { User, ChatMessage } from "@/lib/api/generated";
-import useAuth from "@/hooks/useAuth";
-import { SocketContext } from "./socket/context";
-import useMessageUpdates from "./useMessageUpdates";
-import useMessageFetching from "./useMessageFetching";
-import { format } from "date-fns";
-import Sentry from "@sentry/react-native";
-import { useKeyboardHandler } from "react-native-keyboard-controller";
-require("dayjs/locale/ka");
+} from 'react-native';
+import ChatBottombar from './chat-bottombar';
+import { useQueryClient } from '@tanstack/react-query';
+import { User, ChatMessage } from '@/lib/api/generated';
+import useAuth from '@/hooks/useAuth';
+import { SocketContext } from './socket/context';
+import useMessageUpdates from './useMessageUpdates';
+import useMessageFetching from './useMessageFetching';
+import { format } from 'date-fns';
+import Sentry from '@sentry/react-native';
+import { useKeyboardHandler } from 'react-native-keyboard-controller';
+require('dayjs/locale/ka');
 
 interface ChatListProps {
   selectedUser: User;
   isMobile: boolean;
   canText?: boolean;
 }
-import { useAtomValue, useSetAtom } from "jotai";
-import { isChatUserOnlineState, messageAtom } from "@/lib/state/chat";
-import { useLocalSearchParams } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import SentMediaItem from "../SentMediaItem";
-import useMessageRoom from "@/hooks/useMessageRoom";
-import ProtocolService from "@/lib/services/ProtocolService";
-import { List, ListMethods } from "../List";
-import { ScrollProvider } from "../List/ScrollContext";
-import { isIOS, isWeb } from "@/lib/platform";
-import { isNative } from "@/lib/platform";
+import { useAtomValue, useSetAtom } from 'jotai';
+import { isChatUserOnlineState, messageAtom } from '@/lib/state/chat';
+import { useLocalSearchParams } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import SentMediaItem from '../SentMediaItem';
+import useMessageRoom from '@/hooks/useMessageRoom';
+import ProtocolService from '@/lib/services/ProtocolService';
+import { List, ListMethods } from '../List';
+import { ScrollProvider } from '../List/ScrollContext';
+import { isIOS, isWeb } from '@/lib/platform';
+import { isNative } from '@/lib/platform';
 import Animated, {
   clamp,
   useAnimatedStyle,
@@ -53,13 +53,13 @@ import Animated, {
   useAnimatedRef,
   runOnJS,
   useAnimatedScrollHandler,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
-import { ReanimatedScrollEvent } from "react-native-reanimated/lib/typescript/hook/commonTypes";
-import useFeeds from "@/hooks/useFeeds";
+import { ReanimatedScrollEvent } from 'react-native-reanimated/lib/typescript/hook/commonTypes';
+import useFeeds from '@/hooks/useFeeds';
 
 // Enable LayoutAnimation for Android
-if (Platform.OS === "android") {
+if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
@@ -88,13 +88,13 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
     params.roomId,
     refetchInterval,
     false,
-    selectedUser.id
+    selectedUser.id,
   );
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const setMessage = useSetAtom(messageAtom);
   const { sendMessageIdsToBackend, addMessageToCache } = useMessageUpdates(
     params.roomId,
-    trackedMessageIdsRef
+    trackedMessageIdsRef,
   );
   const { headerHeight } = useFeeds();
 
@@ -103,7 +103,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       setIsChatUserOnline(false);
     }, 1000);
     const intervalId = setInterval(() => {
-      socketContext?.emit("check_user_connection", {
+      socketContext?.emit('check_user_connection', {
         is_that_connected_id: selectedUser.id,
       });
     }, 1000);
@@ -135,7 +135,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       page.messages.forEach((item: ChatMessage, messageIndex: number) => {
         if (item.author_id !== user.id) {
           if (page.page === 1 && messageIndex === 0) {
-            socketContext?.emit("notify_single_message_seen", {
+            socketContext?.emit('notify_single_message_seen', {
               recipient: selectedUser.id,
               temporary_id: item.temporary_id || item.id,
               author_id: item.author_id,
@@ -179,15 +179,15 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
               ? getTimestampFromObjectId(message.id)
               : new Date(),
           user: getUserBasedOnId(message.author_id),
-        }))
+        })),
       ) || [],
-    [orderedPages]
+    [orderedPages],
   );
 
   // Memoize the messageItems array to prevent recreation on every render
   const messageItems = useMemo(
     () => [...convertedMessagesForGiftedChat.flat()],
-    [convertedMessagesForGiftedChat]
+    [convertedMessagesForGiftedChat],
   );
 
   // Memoize the renderItem function to prevent recreation on every render
@@ -221,7 +221,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         />
       );
     },
-    [messageItems, user?.id]
+    [messageItems, user?.id],
   );
 
   const flatListRef = useRef<ListMethods>(null);
@@ -229,7 +229,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const onSendMessage = async (message: string) => {
     if (message.trim().length === 0) return;
     if (message.trim()) {
-      setMessage("");
+      setMessage('');
       const messageToSend = message.trim();
 
       // Don't use layout animation here to avoid conflict with list updates
@@ -240,7 +240,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         author_id: user.id,
         message: messageToSend,
         room_id: params.roomId,
-        message_state: "SENT",
+        message_state: 'SENT',
         recipient_id: selectedUser.id,
         sent_date: new Date().toISOString(),
       };
@@ -256,7 +256,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       try {
         const { encrypted_content, nonce } =
           await ProtocolService.encryptMessage(selectedUser.id, messageToSend);
-        socketContext?.emit("private_message", {
+        socketContext?.emit('private_message', {
           temporary_id: randomTemporaryMessageId,
           recipient: selectedUser.id,
           encrypted_content: encrypted_content,
@@ -296,7 +296,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         });
       }
     },
-    []
+    [],
   );
 
   const handleScrollToEnd = useCallback((animated: boolean) => {
@@ -359,19 +359,19 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       isAtTop.value,
       isAtBottom.value,
       layoutHeight.value,
-    ]
+    ],
   );
 
   const handleScrolledDownChange = useCallback(
     (isDown: boolean) => {
       // This callback is triggered by the List component based on its internal logic
     },
-    [isAtBottom]
+    [isAtBottom],
   );
 
   const onScroll = useCallback(
     (e: ReanimatedScrollEvent) => {
-      "worklet";
+      'worklet';
       layoutHeight.value = e.layoutMeasurement.height;
       const bottomOffset = e.contentOffset.y + e.layoutMeasurement.height;
 
@@ -383,7 +383,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         runOnJS(setHasScrolled)(true);
       }
     },
-    [layoutHeight, isAtBottom, isAtTop, hasScrolled, setHasScrolled]
+    [layoutHeight, isAtBottom, isAtTop, hasScrolled, setHasScrolled],
   );
 
   const bottomOffset = isWeb ? 0 : 0;
@@ -395,7 +395,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const animatedListStyle = useAnimatedStyle(() => ({
     marginBottom: Math.max(
       keyboardHeight.value - keyboardOffsetValue,
-      bottomOffset
+      bottomOffset,
     ),
   }));
 
@@ -404,7 +404,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       {
         translateY: -Math.max(
           keyboardHeight.value - keyboardOffsetValue,
-          bottomOffset
+          bottomOffset,
         ),
       },
     ],
@@ -413,7 +413,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   useKeyboardHandler(
     {
       onStart: (e) => {
-        "worklet";
+        'worklet';
         // Immediate updates - like opening the emoji picker - will have a duration of zero. In those cases, we should
         // just update the height here instead of having the `onMove` event do it (that event will not fire!)
         if (e.duration === 0) {
@@ -424,7 +424,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         }
       },
       onMove: (e) => {
-        "worklet";
+        'worklet';
         keyboardHeight.value = e.height;
         // Scroll to bottom when keyboard moves if we are near the bottom
         if (e.height > bottomOffset && isAtBottom.value) {
@@ -432,7 +432,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         }
       },
       onEnd: (e) => {
-        "worklet";
+        'worklet';
         keyboardHeight.value = e.height;
         if (e.height > bottomOffset && isAtBottom.value) {
           runOnJS(handleScrollToEnd)(false);
@@ -440,7 +440,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         keyboardIsOpening.value = false;
       },
     },
-    [bottomOffset, handleScrollToEnd, isAtBottom.value]
+    [bottomOffset, handleScrollToEnd, isAtBottom.value],
   );
 
   const layoutScrollWithoutAnimation = useSharedValue(false);
@@ -462,7 +462,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       keyboardIsOpening.value,
       layoutScrollWithoutAnimation.value,
       layoutHeight,
-    ]
+    ],
   );
 
   return (

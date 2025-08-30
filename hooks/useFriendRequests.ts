@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
-import { useIsFocused } from "@react-navigation/native";
-import { getFriendRequestsOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useQuery } from '@tanstack/react-query';
+import { useIsFocused } from '@react-navigation/native';
+import { getFriendRequestsOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export function useFriendRequests() {
-  const isFocused = useIsFocused()
+  const isFocused = useIsFocused();
   const {
     data: friendRequests,
     isLoading,

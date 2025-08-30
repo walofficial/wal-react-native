@@ -1,18 +1,18 @@
 import {
   configureReanimatedLogger,
   ReanimatedLogLevel,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
 // This is the default configuration
 configureReanimatedLogger({
   level: ReanimatedLogLevel.error,
   strict: false, // Reanimated runs in strict mode by default
 });
-import { useSession } from "@/components/AuthLayer";
-import { Redirect } from "expo-router";
-import { useEffect } from "react";
-import { appIsReadyState } from "@/lib/state/app";
-import { useAtom } from "jotai";
+import { useSession } from '@/components/AuthLayer';
+import { Redirect } from 'expo-router';
+import { useEffect } from 'react';
+import { appIsReadyState } from '@/lib/state/app';
+import { useAtom } from 'jotai';
 
 export default function Index() {
   const { session, isLoading, userIsLoading, user } = useSession();

@@ -1,16 +1,16 @@
 // default implementation fallback for web
 
-import React from "react";
-import { View } from "react-native";
-import { PanGesture } from "react-native-gesture-handler";
-import { SharedValue } from "react-native-reanimated";
+import React from 'react';
+import { View } from 'react-native';
+import { PanGesture } from 'react-native-gesture-handler';
+import { SharedValue } from 'react-native-reanimated';
 
 import {
   Dimensions,
   Dimensions as ImageDimensions,
   ImageSource,
   Transform,
-} from "../../@types";
+} from '../../@types';
 
 type Props = {
   imageSrc: ImageSource;

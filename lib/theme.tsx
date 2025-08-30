@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useMemo } from "react";
-import { useColorScheme as useRNColorScheme } from "react-native";
+import React, { createContext, useContext, useMemo } from 'react';
+import { useColorScheme as useRNColorScheme } from 'react-native';
 
 // Theme Colors Interface
 export interface ThemeColors {
@@ -55,27 +55,27 @@ export interface Theme {
 // Default light theme
 const lightTheme: Theme = {
   colors: {
-    background: "#efefef",
-    text: "#000000",
-    primary: "#004cb0",
-    secondary: "#004cb0",
-    accent: "#FF2D55",
-    border: "rgba(47, 51, 54, 0.5)",
+    background: '#efefef',
+    text: '#000000',
+    primary: '#004cb0',
+    secondary: '#004cb0',
+    accent: '#FF2D55',
+    border: 'rgba(47, 51, 54, 0.5)',
     feedItem: {
-      background: "#FFFFFF",
-      text: "#000000",
-      secondaryText: "#71767B",
-      border: "rgba(47, 51, 54, 0.2)",
+      background: '#FFFFFF',
+      text: '#000000',
+      secondaryText: '#71767B',
+      border: 'rgba(47, 51, 54, 0.2)',
     },
     button: {
-      background: "#007AFF",
-      text: "#FFFFFF",
+      background: '#007AFF',
+      text: '#FFFFFF',
     },
     card: {
-      background: "#F2F2F7",
-      text: "#000000",
+      background: '#F2F2F7',
+      text: '#000000',
     },
-    icon: "#000000",
+    icon: '#000000',
   },
   spacing: {
     xs: 4,
@@ -103,27 +103,27 @@ const lightTheme: Theme = {
 // Default dark theme
 const darkTheme: Theme = {
   colors: {
-    background: "#000000",
-    text: "#FFFFFF",
-    primary: "#004cb0",
-    secondary: "#004cb0",
-    accent: "#FF375F",
-    border: "rgba(110, 118, 125, 0.3)",
+    background: '#000000',
+    text: '#FFFFFF',
+    primary: '#004cb0',
+    secondary: '#004cb0',
+    accent: '#FF375F',
+    border: 'rgba(110, 118, 125, 0.3)',
     feedItem: {
-      background: "#000000",
-      text: "#FFFFFF",
-      secondaryText: "#8E8E93",
-      border: "rgba(110, 118, 125, 0.2)",
+      background: '#000000',
+      text: '#FFFFFF',
+      secondaryText: '#8E8E93',
+      border: 'rgba(110, 118, 125, 0.2)',
     },
     button: {
-      background: "#0A84FF",
-      text: "#FFFFFF",
+      background: '#0A84FF',
+      text: '#FFFFFF',
     },
     card: {
-      background: "#141414",
-      text: "#FFFFFF",
+      background: '#141414',
+      text: '#FFFFFF',
     },
-    icon: "#FFFFFF",
+    icon: '#FFFFFF',
   },
   spacing: {
     xs: 4,
@@ -173,14 +173,14 @@ interface ThemeProviderProps {
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
   // Get the system color scheme
-  const systemColorScheme = useRNColorScheme() || "dark";
+  const systemColorScheme = useRNColorScheme() || 'dark';
 
   const value = useMemo<ThemeContextType>(
     () => ({
       theme: themes[systemColorScheme],
       themes,
     }),
-    [systemColorScheme]
+    [systemColorScheme],
   );
 
   return (
@@ -193,7 +193,7 @@ export function useTheme() {
   const context = useContext(ThemeContext);
 
   if (!context) {
-    throw new Error("useTheme must be used within a ThemeProvider");
+    throw new Error('useTheme must be used within a ThemeProvider');
   }
 
   return context.theme;

@@ -54,7 +54,9 @@ export function getDeviceLocale(): string {
 }
 
 // Map locale codes to region names for feed selection
-export function getRegionFromLocale(locale: string): 'georgia' | 'united_states' | 'france' {
+export function getRegionFromLocale(
+  locale: string,
+): 'georgia' | 'united_states' | 'france' {
   switch (locale) {
     case 'ka':
       return 'georgia';

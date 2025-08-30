@@ -1,39 +1,39 @@
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ViewStyle,
   TouchableOpacity,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { FactCheckingResult } from "@/lib/api/generated";
-import { useSetAtom } from "jotai";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { FactCheckingResult } from '@/lib/api/generated';
+import { useSetAtom } from 'jotai';
 import {
   activeFactCheckData,
   factCheckBottomSheetState,
-} from "@/lib/atoms/news";
-import { renderFormattedText } from "@/lib/utils/text";
-import { useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { SourceIcon } from "@/components/SourceIcon";
-import { t } from "@/lib/i18n";
-import { trackEvent } from "@/lib/analytics";
+} from '@/lib/atoms/news';
+import { renderFormattedText } from '@/lib/utils/text';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { SourceIcon } from '@/components/SourceIcon';
+import { t } from '@/lib/i18n';
+import { trackEvent } from '@/lib/analytics';
 
 // Enum for fact check statuses
 export enum FactCheckStatus {
-  VERIFIED = "გადამოწმებული",
-  NEEDS_CONTEXT = "საჭიროებს კონტექსტს",
-  MISLEADING = "შეცდომაში შემყვანი",
-  FALSE_HARMFUL = "მცდარი და საზიანო",
+  VERIFIED = 'გადამოწმებული',
+  NEEDS_CONTEXT = 'საჭიროებს კონტექსტს',
+  MISLEADING = 'შეცდომაში შემყვანი',
+  FALSE_HARMFUL = 'მცდარი და საზიანო',
 }
 
 // Fixed colors for each status
 const STATUS_COLORS = {
-  [FactCheckStatus.VERIFIED]: "#10b981", // More saturated green
-  [FactCheckStatus.NEEDS_CONTEXT]: "#1877F2", // Blue
-  [FactCheckStatus.MISLEADING]: "#ff6666", // Light red
-  [FactCheckStatus.FALSE_HARMFUL]: "#FF0000", // Red
+  [FactCheckStatus.VERIFIED]: '#10b981', // More saturated green
+  [FactCheckStatus.NEEDS_CONTEXT]: '#1877F2', // Blue
+  [FactCheckStatus.MISLEADING]: '#ff6666', // Light red
+  [FactCheckStatus.FALSE_HARMFUL]: '#FF0000', // Red
 };
 
 interface FactCheckBoxProps {
@@ -46,7 +46,7 @@ const FactCheckSourcesDisplay = ({
   references,
   color,
 }: {
-  references?: FactCheckingResult["references"];
+  references?: FactCheckingResult['references'];
   color: string;
 }) => {
   const theme = useTheme();
@@ -94,8 +94,8 @@ const FactCheckSourcesDisplay = ({
               styles.sourceCountIcon,
               {
                 backgroundColor: isDarkColorScheme
-                  ? "rgba(255, 255, 255, 0.15)"
-                  : "rgba(0, 0, 0, 0.1)",
+                  ? 'rgba(255, 255, 255, 0.15)'
+                  : 'rgba(0, 0, 0, 0.1)',
               },
             ]}
           >
@@ -112,13 +112,13 @@ const FactCheckSourcesDisplay = ({
           styles.sourcesLabel,
           {
             backgroundColor: isDarkColorScheme
-              ? "rgba(255, 255, 255, 0.08)"
-              : "rgba(0, 0, 0, 0.05)",
+              ? 'rgba(255, 255, 255, 0.08)'
+              : 'rgba(0, 0, 0, 0.05)',
           },
         ]}
       >
         <Text style={[styles.sourcesLabelText, { color: theme.colors.text }]}>
-          {references.length} {t("common.based_on_sources")}
+          {references.length} {t('common.based_on_sources')}
         </Text>
       </View>
     </View>
@@ -136,7 +136,7 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
   const { isDarkColorScheme } = useColorScheme();
 
   const handlePress = () => {
-    trackEvent("fact_check_opened", {});
+    trackEvent('fact_check_opened', {});
     setFactCheckData(factCheckData);
     setIsBottomSheetOpen(true);
   };
@@ -165,12 +165,12 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
     // Special handling for verified (green) status to make it more visible
     if (status === FactCheckStatus.VERIFIED) {
       return {
-        color: isDarkColorScheme ? statusColor : "#008c5f", // Darker green for light mode
+        color: isDarkColorScheme ? statusColor : '#008c5f', // Darker green for light mode
         backgroundColor: `${STATUS_COLORS[status]}${
-          isDarkColorScheme ? "33" : "59"
+          isDarkColorScheme ? '33' : '59'
         }`, // Hex opacity: 33=20%, 59=35%
         borderColor: `${STATUS_COLORS[status]}${
-          isDarkColorScheme ? "40" : "80"
+          isDarkColorScheme ? '40' : '80'
         }`, // Add border for better contrast
       };
     }
@@ -178,20 +178,20 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
     // Special handling for blue (needs context)
     if (status === FactCheckStatus.NEEDS_CONTEXT) {
       return {
-        color: isDarkColorScheme ? statusColor : "#0057c2", // Darker blue for light mode
+        color: isDarkColorScheme ? statusColor : '#0057c2', // Darker blue for light mode
         backgroundColor: `${STATUS_COLORS[status]}${
-          isDarkColorScheme ? "26" : "40"
+          isDarkColorScheme ? '26' : '40'
         }`, // Hex opacity
         borderColor: `${STATUS_COLORS[status]}${
-          isDarkColorScheme ? "40" : "80"
+          isDarkColorScheme ? '40' : '80'
         }`, // Add border for better contrast
       };
     }
 
     return {
       color: statusColor,
-      backgroundColor: `${statusColor}${isDarkColorScheme ? "26" : "40"}`, // Hex opacity
-      borderColor: `${statusColor}${isDarkColorScheme ? "40" : "80"}`, // Add border for better contrast
+      backgroundColor: `${statusColor}${isDarkColorScheme ? '26' : '40'}`, // Hex opacity
+      borderColor: `${statusColor}${isDarkColorScheme ? '40' : '80'}`, // Add border for better contrast
     };
   };
 
@@ -207,12 +207,12 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
         styles.container,
         {
           backgroundColor: isDarkColorScheme
-            ? "rgba(255, 255, 255, 0.04)"
-            : "rgba(0, 0, 0, 0.01)",
+            ? 'rgba(255, 255, 255, 0.04)'
+            : 'rgba(0, 0, 0, 0.01)',
           borderWidth: 1,
           borderColor: isDarkColorScheme
-            ? "rgba(255, 255, 255, 0.08)"
-            : "rgba(0, 0, 0, 0.05)",
+            ? 'rgba(255, 255, 255, 0.08)'
+            : 'rgba(0, 0, 0, 0.05)',
           shadowColor: borderColor,
           shadowOffset: { width: 0, height: 2 },
         },
@@ -222,8 +222,8 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
       <View style={[styles.headerContainer, { backgroundColor }]}>
         <Text style={[styles.scoreText, { color }]}>
           {score >= 0.5
-            ? `${Math.round(score * 100)}% ${t("common.truth")}`
-            : `${Math.round((1 - score) * 100)}% ${t("common.falsehood")}`}
+            ? `${Math.round(score * 100)}% ${t('common.truth')}`
+            : `${Math.round((1 - score) * 100)}% ${t('common.falsehood')}`}
         </Text>
         <View style={styles.arrowContainer}>
           <Ionicons name="chevron-down" size={20} color={color} />
@@ -242,7 +242,7 @@ const FactCheckBox: React.FC<FactCheckBoxProps> = ({
           ellipsizeMode="tail"
         >
           {renderFormattedText(
-            reason_summary || reason || "არ არის ინფორმაცია"
+            reason_summary || reason || 'არ არის ინფორმაცია',
           )}
         </Text>
         <View style={styles.sourcesContainer}>
@@ -257,14 +257,14 @@ const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
     marginVertical: 8,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   headerContainer: {
     paddingVertical: 16,
     paddingHorizontal: 16,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   scoreSection: {
     flex: 1,
@@ -275,37 +275,37 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   reasonText: {
     fontSize: 15,
     lineHeight: 22,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   arrowContainer: {
     padding: 4,
     marginLeft: 8,
   },
   sourcesRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   sourcesIconsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 3,
   },
   sourceCountIcon: {
     width: 18,
     height: 18,
     borderRadius: 9,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   sourceCountIconText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   sourcesLabel: {
     paddingHorizontal: 8,
@@ -314,11 +314,11 @@ const styles = StyleSheet.create({
   },
   sourcesLabelText: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   sourcesContainer: {
     marginTop: 12,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
 });
 

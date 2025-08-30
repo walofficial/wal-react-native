@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Pressable,
   Text,
@@ -7,13 +7,13 @@ import {
   PressableStateCallbackType,
   StyleProp,
   ViewStyle,
-} from "react-native";
-import { useRouter, usePathname } from "expo-router";
-import { useLightboxControls } from "@/lib/lightbox/lightbox";
-import { useAtom } from "jotai";
-import { shouldFocusCommentInputAtom } from "@/atoms/comments";
-import { Ionicons } from "@expo/vector-icons";
-import { FontSizes, useTheme } from "@/lib/theme";
+} from 'react-native';
+import { useRouter, usePathname } from 'expo-router';
+import { useLightboxControls } from '@/lib/lightbox/lightbox';
+import { useAtom } from 'jotai';
+import { shouldFocusCommentInputAtom } from '@/atoms/comments';
+import { Ionicons } from '@expo/vector-icons';
+import { FontSizes, useTheme } from '@/lib/theme';
 
 interface CommentButtonProps {
   verificationId: string;
@@ -52,7 +52,7 @@ const CommentButton = ({
     if (wasLightboxActive) {
       setTimeout(() => {
         router.navigate({
-          pathname: "/verification/[verificationId]",
+          pathname: '/verification/[verificationId]',
           params: {
             verificationId,
           },
@@ -60,7 +60,7 @@ const CommentButton = ({
       }, 300);
     } else {
       router.navigate({
-        pathname: "/verification/[verificationId]",
+        pathname: '/verification/[verificationId]',
         params: {
           verificationId,
         },
@@ -70,7 +70,7 @@ const CommentButton = ({
 
   // Get icon color based on theme
   const getIconColor = () => {
-    return bright ? "#ffffff" : theme.colors.feedItem.secondaryText;
+    return bright ? '#ffffff' : theme.colors.feedItem.secondaryText;
   };
 
   return (
@@ -92,7 +92,7 @@ const CommentButton = ({
           style={[
             styles.count,
             {
-              color: bright ? "#ffffff" : theme.colors.feedItem.secondaryText,
+              color: bright ? '#ffffff' : theme.colors.feedItem.secondaryText,
             },
           ]}
         >
@@ -105,15 +105,15 @@ const CommentButton = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-end",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
     paddingVertical: 8,
   },
   count: {
     marginLeft: 4,
     fontSize: FontSizes.small,
-    fontWeight: "500",
+    fontWeight: '500',
   },
 });
 

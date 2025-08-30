@@ -1,7 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
-import { raiseHandSpaceRaiseHandPostMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useState, useEffect, useRef } from "react";
-import { useLocalParticipant, useParticipantInfo } from "@livekit/react-native";
+import { useMutation } from '@tanstack/react-query';
+import { raiseHandMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useState, useEffect, useRef } from 'react';
+import { useLocalParticipant, useParticipantInfo } from '@livekit/react-native';
 
 export default function useRaiseHand() {
   const [isHandRaised, setIsHandRaised] = useState(false);
@@ -9,7 +9,7 @@ export default function useRaiseHand() {
   const { metadata } = useParticipantInfo({
     participant: localParticipant,
   });
-  const localMetadata = JSON.parse(metadata ?? "{}") as {
+  const localMetadata = JSON.parse(metadata ?? '{}') as {
     hand_raised: boolean;
   };
 
@@ -30,17 +30,23 @@ export default function useRaiseHand() {
   }, []);
 
   const { mutate: raiseHand, isPending } = useMutation({
-    ...raiseHandSpaceRaiseHandPostMutation(),
+    ...raiseHandMutation(),
     onMutate: async () => {
       setIsHandRaised(true);
     },
-    onError: async () => { },
+    onError: async () => {},
   });
 
   return {
     setIsHandRaised,
     isPending,
-    raiseHand: (roomName: string) => (raiseHand as any)({ body: { livekit_room_name: roomName } }),
+    raiseHand: (roomName: string) =>
+      (raiseHand as any)({
+        body: {
+          livekit_room_name: roomName,
+          user_id: localParticipant.identity,
+        },
+      }),
     isHandRaised,
   };
 }

@@ -5,47 +5,47 @@ import React, {
   memo,
   useState,
   useEffect,
-} from "react";
+} from 'react';
 import {
   View,
   ScrollView,
   Text,
   StyleSheet,
   TouchableOpacity,
-} from "react-native";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import CommentsList from "@/components/Comments/CommentsList";
-import useAuth from "@/hooks/useAuth";
-import LiveStreamViewer from "@/components/LiveStreamViewer";
-import SpaceView from "@/components/FeedItem/SpaceView";
-import { LocationFeedPost, Source } from "@/lib/api/generated";
-import { getVideoSrc } from "@/lib/utils";
-import { useAtom } from "jotai";
-import FeedActions from "../FeedItem/FeedActions";
-import { FontSizes, useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { SourceIcon } from "@/components/SourceIcon";
-import { activeSourcesState, newsBottomSheetState } from "@/lib/atoms/news";
-import PostHeader from "./PostHeader";
-import FeedItemMediaContent from "@/components/FeedItem/MediaContent";
-import FactCheckBox from "@/components/ui/FactCheckBox";
-import AISummaryBox from "@/components/ui/AISummaryBox";
-import { useLinkPreview } from "@/hooks/useLinkPreview";
-import LinkPreview from "@/components/LinkPreview";
-import CommentInput from "../Comments/CommentInput";
-import useKeyboardVerticalOffset from "@/hooks/useKeyboardVerticalOffset";
-import { isIOS } from "@/lib/platform";
-import RenderMdx from "../RenderMdx/index";
-import useVerificationById from "@/hooks/useVerificationById";
-import NewsSourcesBottomSheet from "../FeedItem/NewsSourcesBottomSheet";
-import BottomSheet, { BottomSheetModal } from "@gorhom/bottom-sheet";
-import FactCheckBottomSheet from "../FactCheckBottomSheet";
-import { useUniqueSources } from "@/utils/sourceUtils";
-import useFeeds from "@/hooks/useFeeds";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import CommentsList from '@/components/Comments/CommentsList';
+import useAuth from '@/hooks/useAuth';
+import LiveStreamViewer from '@/components/LiveStreamViewer';
+import SpaceView from '@/components/FeedItem/SpaceView';
+import { LocationFeedPost, Source } from '@/lib/api/generated';
+import { getVideoSrc } from '@/lib/utils';
+import { useAtom } from 'jotai';
+import FeedActions from '../FeedItem/FeedActions';
+import { FontSizes, useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { SourceIcon } from '@/components/SourceIcon';
+import { activeSourcesState, newsBottomSheetState } from '@/lib/atoms/news';
+import PostHeader from './PostHeader';
+import FeedItemMediaContent from '@/components/FeedItem/MediaContent';
+import FactCheckBox from '@/components/ui/FactCheckBox';
+import AISummaryBox from '@/components/ui/AISummaryBox';
+import { useLinkPreview } from '@/hooks/useLinkPreview';
+import LinkPreview from '@/components/LinkPreview';
+import CommentInput from '../Comments/CommentInput';
+import useKeyboardVerticalOffset from '@/hooks/useKeyboardVerticalOffset';
+import { isIOS } from '@/lib/platform';
+import RenderMdx from '../RenderMdx/index';
+import useVerificationById from '@/hooks/useVerificationById';
+import NewsSourcesBottomSheet from '../FeedItem/NewsSourcesBottomSheet';
+import BottomSheet, { BottomSheetModal } from '@gorhom/bottom-sheet';
+import FactCheckBottomSheet from '../FactCheckBottomSheet';
+import { useUniqueSources } from '@/utils/sourceUtils';
+import useFeeds from '@/hooks/useFeeds';
+import { t } from '@/lib/i18n';
 
 // Tab types for news content
-type NewsTab = "neutral" | "opposition" | "government";
+type NewsTab = 'neutral' | 'opposition' | 'government';
 
 // News Tabs Component
 const NewsTabs = memo(
@@ -63,19 +63,19 @@ const NewsTabs = memo(
 
     const tabs = [
       {
-        key: "neutral" as NewsTab,
-        label: t("common.neutral"),
-        color: isDarkColorScheme ? "#6b7280" : "#4b5563",
+        key: 'neutral' as NewsTab,
+        label: t('common.neutral'),
+        color: isDarkColorScheme ? '#6b7280' : '#4b5563',
       },
       {
-        key: "opposition" as NewsTab,
-        label: t("common.opposition"),
-        color: isDarkColorScheme ? "#dc2626" : "#b91c1c",
+        key: 'opposition' as NewsTab,
+        label: t('common.opposition'),
+        color: isDarkColorScheme ? '#dc2626' : '#b91c1c',
       },
       {
-        key: "government" as NewsTab,
-        label: t("common.government"),
-        color: isDarkColorScheme ? "#2563eb" : "#1d4ed8",
+        key: 'government' as NewsTab,
+        label: t('common.government'),
+        color: isDarkColorScheme ? '#2563eb' : '#1d4ed8',
       },
     ];
 
@@ -85,8 +85,8 @@ const NewsTabs = memo(
           styles.tabsContainer,
           {
             backgroundColor: isDarkColorScheme
-              ? "rgba(255, 255, 255, 0.05)"
-              : "rgba(0, 0, 0, 0.03)",
+              ? 'rgba(255, 255, 255, 0.05)'
+              : 'rgba(0, 0, 0, 0.03)',
           },
         ]}
       >
@@ -102,7 +102,7 @@ const NewsTabs = memo(
                 style={[
                   styles.tab,
                   {
-                    backgroundColor: isActive ? tab.color : "transparent",
+                    backgroundColor: isActive ? tab.color : 'transparent',
                     opacity: isDisabled ? 0.6 : 1,
                   },
                 ]}
@@ -114,14 +114,14 @@ const NewsTabs = memo(
                     styles.tabText,
                     {
                       color: isActive
-                        ? "#ffffff"
+                        ? '#ffffff'
                         : isDisabled
-                        ? isDarkColorScheme
-                          ? "rgba(255, 255, 255, 0.5)"
-                          : "rgba(0, 0, 0, 0.5)"
-                        : isDarkColorScheme
-                        ? "rgba(255, 255, 255, 0.7)"
-                        : "rgba(0, 0, 0, 0.7)",
+                          ? isDarkColorScheme
+                            ? 'rgba(255, 255, 255, 0.5)'
+                            : 'rgba(0, 0, 0, 0.5)'
+                          : isDarkColorScheme
+                            ? 'rgba(255, 255, 255, 0.7)'
+                            : 'rgba(0, 0, 0, 0.7)',
                     },
                   ]}
                 >
@@ -133,10 +133,10 @@ const NewsTabs = memo(
         </View>
       </View>
     );
-  }
+  },
 );
 
-NewsTabs.displayName = "NewsTabs";
+NewsTabs.displayName = 'NewsTabs';
 
 // Reusable component for rendering sources section
 const SourcesSection = memo(
@@ -144,7 +144,7 @@ const SourcesSection = memo(
     sources,
     onPress,
   }: {
-    sources?: Array<{ uri: string; title?: string; domain?: string }> | null;
+    sources?: Array<Source> | null;
     onPress: () => void;
   }) => {
     const theme = useTheme();
@@ -153,7 +153,7 @@ const SourcesSection = memo(
     if (!sources || sources.length === 0) return null;
 
     // Filter sources to only include unique domains/hosts
-    const uniqueSources = useUniqueSources(sources || []);
+    const uniqueSources = useUniqueSources(sources);
 
     return (
       <TouchableOpacity
@@ -162,13 +162,13 @@ const SourcesSection = memo(
           styles.sourcesContainer,
           {
             backgroundColor: isDarkColorScheme
-              ? "rgba(255, 255, 255, 0.04)"
-              : "rgba(0, 0, 0, 0.02)",
+              ? 'rgba(255, 255, 255, 0.04)'
+              : 'rgba(0, 0, 0, 0.02)',
             borderRadius: 12,
             borderWidth: 1,
             borderColor: isDarkColorScheme
-              ? "rgba(255, 255, 255, 0.08)"
-              : "rgba(0, 0, 0, 0.06)",
+              ? 'rgba(255, 255, 255, 0.08)'
+              : 'rgba(0, 0, 0, 0.06)',
             paddingVertical: 12,
             paddingHorizontal: 16,
           },
@@ -180,8 +180,8 @@ const SourcesSection = memo(
             {uniqueSources.slice(0, maxSources).map((source, index) => (
               <SourceIcon
                 key={index}
-                sourceUrl={source.uri || source.url || ""}
-                fallbackUrl={source.uri || source.url || ""}
+                sourceUrl={source.uri || ''}
+                fallbackUrl={source.uri || ''}
               />
             ))}
             {uniqueSources.length > maxSources && (
@@ -204,8 +204,8 @@ const SourcesSection = memo(
               styles.sourcesLabel,
               {
                 backgroundColor: isDarkColorScheme
-                  ? "rgba(255, 255, 255, 0.08)"
-                  : "rgba(0, 0, 0, 0.05)",
+                  ? 'rgba(255, 255, 255, 0.08)'
+                  : 'rgba(0, 0, 0, 0.05)',
               },
             ]}
           >
@@ -215,17 +215,17 @@ const SourcesSection = memo(
                 { color: theme.colors.text, opacity: 0.8 },
               ]}
             >
-              {uniqueSources.length} {t("common.sources")}
-              {""}
+              {uniqueSources.length} {t('common.sources')}
+              {''}
             </Text>
           </View>
         </View>
       </TouchableOpacity>
     );
-  }
+  },
 );
 
-SourcesSection.displayName = "SourcesSection";
+SourcesSection.displayName = 'SourcesSection';
 
 // Post Content Component
 const PostContent = memo(
@@ -251,15 +251,15 @@ const PostContent = memo(
         verification.neutral_summary,
         verification.opposition_summary,
         verification.government_summary,
-      ]
+      ],
     );
 
     // Find the first tab that has content, defaulting to neutral if none have content
     const getInitialActiveTab = useCallback((): NewsTab => {
-      if (tabContentAvailability.neutral) return "neutral";
-      if (tabContentAvailability.opposition) return "opposition";
-      if (tabContentAvailability.government) return "government";
-      return "neutral"; // fallback
+      if (tabContentAvailability.neutral) return 'neutral';
+      if (tabContentAvailability.opposition) return 'opposition';
+      if (tabContentAvailability.government) return 'government';
+      return 'neutral'; // fallback
     }, [tabContentAvailability]);
 
     const [activeTab, setActiveTab] = useState<NewsTab>(getInitialActiveTab());
@@ -282,16 +282,16 @@ const PostContent = memo(
       verification?.image_gallery_with_dims?.[0]?.url || imageUrl;
 
     const localLinkPreview = useLinkPreview(
-      verification.text_content || "",
-      false
+      verification.text_content || '',
+      false,
     );
     const hasPreview =
       !!verification.preview_data || !!localLinkPreview.previewData;
     const visibleTextContent = hasPreview
-      ? (verification?.text_content || "")
-          .replace(/(https?:\/\/[^\s]+)/g, "")
+      ? (verification?.text_content || '')
+          .replace(/(https?:\/\/[^\s]+)/g, '')
           .trim()
-      : (verification?.text_content || "").trim();
+      : (verification?.text_content || '').trim();
     // --- END FEED ITEM-LIKE PREVIEW LOGIC ---
 
     // Handle Space view
@@ -300,7 +300,7 @@ const PostContent = memo(
         <View style={styles.postContentContainer}>
           <View style={styles.spaceContainer}>
             <SpaceView
-              description={verification.text_content || ""}
+              description={verification.text_content || ''}
               roomName={verification.livekit_room_name}
               isHost={verification.assignee_user?.id === user.id}
               scheduledAt={verification.scheduled_at || undefined}
@@ -385,11 +385,11 @@ const PostContent = memo(
             <View style={{ opacity: 1 }}>
               <RenderMdx
                 content={
-                  activeTab === "government"
-                    ? verification.government_summary || ""
-                    : activeTab === "opposition"
-                    ? verification.opposition_summary || ""
-                    : verification.neutral_summary || ""
+                  activeTab === 'government'
+                    ? verification.government_summary || ''
+                    : activeTab === 'opposition'
+                      ? verification.opposition_summary || ''
+                      : verification.neutral_summary || ''
                 }
               />
             </View>
@@ -426,12 +426,13 @@ const PostContent = memo(
               undefined
             }
             hasAISummary={
-              verification.ai_video_summary_status === "COMPLETED" ||
-              verification.ai_video_summary_status === "PENDING"
+              verification.ai_video_summary_status === 'COMPLETED' ||
+              verification.ai_video_summary_status === 'PENDING'
             }
           />
           {hasPreview && !imageUrl && !realTimeImageUrl && (
             <LinkPreview
+              // @ts-ignore
               previewData={
                 verification.preview_data
                   ? verification.preview_data
@@ -439,8 +440,8 @@ const PostContent = memo(
               }
               isLoading={false}
               hasAISummary={
-                verification.ai_video_summary_status === "COMPLETED" ||
-                verification.ai_video_summary_status === "PENDING"
+                verification.ai_video_summary_status === 'COMPLETED' ||
+                verification.ai_video_summary_status === 'PENDING'
               }
               verificationId={verificationId}
               inFeedView={false}
@@ -449,7 +450,7 @@ const PostContent = memo(
           )}
 
           {verification.external_video &&
-            verification.ai_video_summary_status === "COMPLETED" && (
+            verification.ai_video_summary_status === 'COMPLETED' && (
               <AISummaryBox
                 aiSummary={verification.ai_video_summary || undefined}
                 videoData={verification.external_video}
@@ -475,10 +476,10 @@ const PostContent = memo(
         </View>
       </View>
     );
-  }
+  },
 );
 
-PostContent.displayName = "PostContent";
+PostContent.displayName = 'PostContent';
 
 // Main CommentsView Component
 const CommentsView = ({
@@ -518,7 +519,7 @@ const CommentsView = ({
           {/* Header Section */}
           {!verification.title ? (
             <PostHeader
-              name={verification.assignee_user?.username || user.username || ""}
+              name={verification.assignee_user?.username || user.username || ''}
               time={verification.last_modified_date}
               avatarUrl={
                 verification.assignee_user?.photos[0]?.image_url[0] ||
@@ -531,7 +532,7 @@ const CommentsView = ({
             />
           ) : (
             <View
-              style={{ paddingTop: headerHeight - 20, position: "relative" }}
+              style={{ paddingTop: headerHeight - 20, position: 'relative' }}
             ></View>
           )}
 
@@ -546,9 +547,9 @@ const CommentsView = ({
       </ScrollView>
       <KeyboardAvoidingView
         keyboardVerticalOffset={keyboardVerticalOffset}
-        behavior={isIOS ? "padding" : "padding"}
+        behavior={isIOS ? 'padding' : 'padding'}
         style={{
-          backgroundColor: "transparent",
+          backgroundColor: 'transparent',
         }}
       >
         <CommentInput postId={verificationId} />
@@ -569,7 +570,7 @@ const styles = StyleSheet.create({
   },
   titleText: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 12,
     lineHeight: 26,
     letterSpacing: -0.3,
@@ -582,13 +583,13 @@ const styles = StyleSheet.create({
   },
   textContent: {
     fontSize: FontSizes.medium,
-    fontWeight: "400",
+    fontWeight: '400',
     letterSpacing: 0.5,
     lineHeight: 24,
     marginBottom: 5,
   },
   mediaContainer: {
-    position: "relative",
+    position: 'relative',
     paddingHorizontal: 8,
     flex: 1,
   },
@@ -597,8 +598,8 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   sourcesHorizontalContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sourcesContainer: {
     paddingHorizontal: 8,
@@ -607,14 +608,14 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   sourcesRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   sourcesIconsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   sourcesLabel: {
@@ -624,43 +625,43 @@ const styles = StyleSheet.create({
   },
   sourcesLabelText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   sourceIconRounded: {
     width: 24,
     height: 24,
     borderRadius: 12,
     marginRight: 4,
-    justifyContent: "center",
-    alignItems: "center",
-    overflow: "hidden",
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
   },
   sourceCountText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   factCheckBadgePosition: {
-    position: "absolute",
+    position: 'absolute',
     top: -24,
     left: 0,
     zIndex: 10,
   },
   titleContainer: {
-    position: "relative",
+    position: 'relative',
     marginBottom: 8,
   },
   titleRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   factCheckBox: {
     marginHorizontal: 6,
     marginVertical: 12,
   },
   dateText: {
-    color: "rgb(101, 104, 108)",
+    color: 'rgb(101, 104, 108)',
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: '500',
     paddingHorizontal: 8,
   },
   aiSummaryBox: {
@@ -676,35 +677,35 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   commentsHeaderText: {
-    fontWeight: "500",
+    fontWeight: '500',
     fontSize: 16,
   },
   emptyCommentsContainer: {
     padding: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   emptyCommentsText: {
-    color: "rgb(101, 104, 108)",
+    color: 'rgb(101, 104, 108)',
     fontSize: 14,
   },
   loadingContainer: {
     padding: 20,
-    alignItems: "center",
+    alignItems: 'center',
   },
   errorContainer: {
     padding: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   errorText: {
-    color: "#ef4444",
+    color: '#ef4444',
     fontSize: 14,
   },
   loadMoreIndicator: {
     marginVertical: 16,
   },
   postHeaderFactCheckBadge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginRight: 8,
   },
   topMetadataContainer: {
@@ -712,9 +713,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   metadataRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
   },
   sourcesCompactContainer: {
     paddingHorizontal: 12,
@@ -724,20 +725,20 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   sourcesCompactRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   sourceIconsCompactContainer: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
   },
   sourceIconCompact: {
     marginLeft: 0,
   },
   sourcesCompactLabel: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   factualityWrapper: {},
   factualityBadge: {
@@ -747,15 +748,15 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: -8,
     borderWidth: 1.5,
     zIndex: 4,
   },
   moreSourcesText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   sourceIconImage: {
     width: 22,
@@ -768,7 +769,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   tabsRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 2,
   },
   tab: {
@@ -776,12 +777,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabText: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

@@ -1,16 +1,16 @@
-import { TouchableOpacity, StyleSheet, Pressable } from "react-native";
-import { useRouter } from "expo-router";
-import { XIcon } from "@/lib/icons";
-import { ArrowLeft, ChevronLeft } from "lucide-react-native";
-import { useTheme } from "@/lib/theme";
+import { TouchableOpacity, StyleSheet, Pressable } from 'react-native';
+import { useRouter } from 'expo-router';
+import { XIcon } from '@/lib/icons';
+import { ArrowLeft, ChevronLeft } from 'lucide-react-native';
+import { useTheme } from '@/lib/theme';
 
 export default function CloseButton({
   onClick,
-  variant = "x",
+  variant = 'x',
   style,
 }: {
   onClick?: () => void;
-  variant?: "x" | "back";
+  variant?: 'x' | 'back';
   style?: any;
 }) {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function CloseButton({
         }
       }}
     >
-      {variant === "x" ? (
+      {variant === 'x' ? (
         <XIcon color={iconColor} size={35} />
       ) : (
         <ChevronLeft color={iconColor} size={35} />

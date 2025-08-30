@@ -1,39 +1,39 @@
-import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../../lib/theme";
-import { t } from "../../../lib/i18n";
+import React from 'react';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../../../lib/theme';
+import { t } from '../../../lib/i18n';
 
 export default function FactChecksExplanation() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
 
   const translations = {
-    title: t("common.how_fact_checking_works"),
-    overviewTitle: t("common.overview"),
-    overviewText: t("common.overview_description"),
-    scoresTitle: t("common.how_we_score"),
-    scoresText1: t("common.how_we_score_description_1"),
-    scoresText2: t("common.how_we_score_description_2"),
-    processTitle: t("common.our_process"),
+    title: t('common.how_fact_checking_works'),
+    overviewTitle: t('common.overview'),
+    overviewText: t('common.overview_description'),
+    scoresTitle: t('common.how_we_score'),
+    scoresText1: t('common.how_we_score_description_1'),
+    scoresText2: t('common.how_we_score_description_2'),
+    processTitle: t('common.our_process'),
     processSteps: [
-      t("common.process_step_1"),
-      t("common.process_step_2"),
-      t("common.process_step_3"),
-      t("common.process_step_4"),
-      t("common.process_step_5"),
+      t('common.process_step_1'),
+      t('common.process_step_2'),
+      t('common.process_step_3'),
+      t('common.process_step_4'),
+      t('common.process_step_5'),
     ],
-    limitationsTitle: t("common.limitations"),
-    limitationsText: t("common.limitations_description"),
+    limitationsTitle: t('common.limitations'),
+    limitationsText: t('common.limitations_description'),
   };
 
   // Define icon names
   const icons = {
-    overview: "information-circle" as const,
-    scores: "stats-chart" as const,
-    process: "git-branch" as const,
-    limitations: "alert-circle" as const,
+    overview: 'information-circle' as const,
+    scores: 'stats-chart' as const,
+    process: 'git-branch' as const,
+    limitations: 'alert-circle' as const,
   };
 
   // Helper for section
@@ -143,9 +143,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 16,
-    textAlign: "center",
+    textAlign: 'center',
     letterSpacing: 0.1,
   },
   section: {
@@ -155,8 +155,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   sectionHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 6,
   },
   headerIcon: {
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     letterSpacing: 0.05,
   },
   paragraph: {

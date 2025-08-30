@@ -5,29 +5,29 @@ import React, {
   RefObject,
   useEffect,
   useRef,
-} from "react";
+} from 'react';
 import {
   Text,
   View,
   StyleSheet,
   useColorScheme,
   BackHandler,
-} from "react-native";
-import HorizontalAnonList from "../HorizontalAnonList";
+} from 'react-native';
+import HorizontalAnonList from '../HorizontalAnonList';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
-} from "@gorhom/bottom-sheet";
-import { useLocalSearchParams } from "expo-router";
-import { getBottomSheetBackgroundStyle } from "@/lib/styles";
-import { useTheme } from "@/lib/theme";
-import { useAtom } from "jotai";
+} from '@gorhom/bottom-sheet';
+import { useLocalSearchParams } from 'expo-router';
+import { getBottomSheetBackgroundStyle } from '@/lib/styles';
+import { useTheme } from '@/lib/theme';
+import { useAtom } from 'jotai';
 import {
   locationUserListSheetState,
   locationUserListfeedIdState,
-} from "@/lib/atoms/location";
-import { NativeEventSubscription } from "react-native";
-import { t } from "@/lib/i18n";
+} from '@/lib/atoms/location';
+import { NativeEventSubscription } from 'react-native';
+import { t } from '@/lib/i18n';
 
 interface LocationUserListSheetProps {
   bottomSheetRef: RefObject<BottomSheet>;
@@ -37,14 +37,14 @@ const LocationUserListSheet = ({
   bottomSheetRef,
 }: LocationUserListSheetProps) => {
   const theme = useTheme();
-  const snapPoints = useMemo(() => ["50%"], []);
+  const snapPoints = useMemo(() => ['50%'], []);
   const [visible, setVisible] = useState(false);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
-    locationUserListSheetState
+    locationUserListSheetState,
   );
   const [feedId] = useAtom(locationUserListfeedIdState);
   const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(
-    null
+    null,
   );
 
   const handleSheetChange = useCallback(
@@ -54,11 +54,11 @@ const LocationUserListSheet = ({
       // Handle back button
       if (isBottomSheetVisible && !backHandlerSubscriptionRef.current) {
         backHandlerSubscriptionRef.current = BackHandler.addEventListener(
-          "hardwareBackPress",
+          'hardwareBackPress',
           () => {
             bottomSheetRef.current?.close();
             return true;
-          }
+          },
         );
       } else if (!isBottomSheetVisible) {
         backHandlerSubscriptionRef.current?.remove();
@@ -74,7 +74,7 @@ const LocationUserListSheet = ({
         setIsBottomSheetOpen(false);
       }
     },
-    [setIsBottomSheetOpen, bottomSheetRef]
+    [setIsBottomSheetOpen, bottomSheetRef],
   );
 
   useEffect(() => {
@@ -103,7 +103,7 @@ const LocationUserListSheet = ({
         pressBehavior="close"
       />
     ),
-    [scheme]
+    [scheme],
   );
   return (
     <>
@@ -121,7 +121,7 @@ const LocationUserListSheet = ({
       >
         <View style={styles.headerContainer}>
           <Text style={[styles.headerText, { color: theme.colors.text }]}>
-            {t("common.active")}
+            {t('common.active')}
           </Text>
         </View>
         {visible && feedId && <HorizontalAnonList feedId={feedId} />}
@@ -132,18 +132,18 @@ const LocationUserListSheet = ({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 16,
-    position: "relative",
+    position: 'relative',
   },
   headerText: {
     fontSize: 24,
     height: 40,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 12,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });
 

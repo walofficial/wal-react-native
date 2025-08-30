@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -8,17 +8,17 @@ import {
   Platform,
   Keyboard,
   BackHandler,
-} from "react-native";
+} from 'react-native';
 import {
   Link,
   useLocalSearchParams,
   useRouter,
   useGlobalSearchParams,
   usePathname,
-} from "expo-router";
-import { TabBarIcon } from "../navigation/TabBarIcon";
-import { Text } from "../ui/text";
-import { atom, useAtom, useAtomValue, useSetAtom } from "jotai";
+} from 'expo-router';
+import { TabBarIcon } from '../navigation/TabBarIcon';
+import { Text } from '../ui/text';
+import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -26,28 +26,28 @@ import Animated, {
   Easing,
   withSpring,
   cancelAnimation,
-} from "react-native-reanimated";
-import { HEADER_HEIGHT, HEADER_HEIGHT_WITH_TABS } from "@/lib/constants";
-import { isWeb } from "@/lib/platform";
-import ProfileHeaderWeb from "./web";
-import { FontSizes, useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { scrollToTopState } from "@/lib/atoms/location";
-import { useMinimalShellHeaderTransform } from "@/hooks/useMinimalShellHeaderTransform";
+} from 'react-native-reanimated';
+import { HEADER_HEIGHT, HEADER_HEIGHT_WITH_TABS } from '@/lib/constants';
+import { isWeb } from '@/lib/platform';
+import ProfileHeaderWeb from './web';
+import { FontSizes, useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { scrollToTopState } from '@/lib/atoms/location';
+import { useMinimalShellHeaderTransform } from '@/hooks/useMinimalShellHeaderTransform';
 import {
   isSearchActiveAtom,
   searchInputValueAtom,
   setDebouncedSearchAtom,
   resetSearchAtom,
-} from "@/lib/state/search";
+} from '@/lib/state/search';
 // Location imports
-import useLocationsInfo from "@/hooks/useLocationsInfo";
-import useGoLive from "@/hooks/useGoLive";
+import useLocationsInfo from '@/hooks/useLocationsInfo';
+import useGoLive from '@/hooks/useGoLive';
 // Separated components
-import { SearchBar } from "./SearchBar";
-import { SearchOverlay } from "./SearchOverlay";
-import { TabBar } from "./TabBar";
-import { useUserFeedIds } from "@/hooks/useUserFeedIds";
+import { SearchBar } from './SearchBar';
+import { SearchOverlay } from './SearchOverlay';
+import { TabBar } from './TabBar';
+import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 
 function ProfileHeader({
   customTitle,
@@ -111,7 +111,7 @@ function ProfileHeader({
 
   const titleStyle = {
     ...styles.title,
-    color: isDarkColorScheme ? "#FFFFFF" : "#000000", // Force color with higher specificity
+    color: isDarkColorScheme ? '#FFFFFF' : '#000000', // Force color with higher specificity
   };
 
   const handleTabPress = (tabKey: string) => {
@@ -135,7 +135,7 @@ function ProfileHeader({
     if (locationData.feeds_at_location?.find((task) => task.id === tabKey)) {
       // Navigate to task at location
       router.navigate({
-        pathname: "/(tabs)/(home)/[feedId]",
+        pathname: '/(tabs)/(home)/[feedId]',
         params: {
           feedId: tabKey,
         },
@@ -151,14 +151,14 @@ function ProfileHeader({
     }
 
     // Handle nearest tasks tabs (nearTask_feedId format)
-    if (tabKey.startsWith("nearTask_")) {
-      const actualfeedId = tabKey.replace("nearTask_", "");
+    if (tabKey.startsWith('nearTask_')) {
+      const actualfeedId = tabKey.replace('nearTask_', '');
       const nearTask = locationData.nearest_feeds?.find(
-        (item) => item.feed.id === actualfeedId
+        (item) => item.feed.id === actualfeedId,
       );
       if (nearTask) {
         router.navigate({
-          pathname: "/(tabs)/(home)/[feedId]",
+          pathname: '/(tabs)/(home)/[feedId]',
           params: {
             feedId: actualfeedId,
           },
@@ -184,8 +184,8 @@ function ProfileHeader({
 
     // Reset search state immediately - animations will be handled by useEffect
     setIsSearchActive(false);
-    setSearchValue("");
-    setDebouncedSearch("");
+    setSearchValue('');
+    setDebouncedSearch('');
   };
 
   // Tab config for locations
@@ -203,7 +203,7 @@ function ProfileHeader({
           icon: null,
           isCurrentLocation: true,
           task,
-        }))
+        })),
       );
     }
 
@@ -217,7 +217,7 @@ function ProfileHeader({
           isCurrentLocation: false,
           feed,
           address: nearest_location?.address,
-        }))
+        })),
       );
     }
 
@@ -236,8 +236,8 @@ function ProfileHeader({
       if (isSearchActive) {
         // Immediately reset search state without animation when navigating away
         setIsSearchActive(false);
-        setSearchValue("");
-        setDebouncedSearch("");
+        setSearchValue('');
+        setDebouncedSearch('');
         Keyboard.dismiss();
       }
     };
@@ -258,8 +258,8 @@ function ProfileHeader({
         headerMinimalShellTransform,
         {
           backgroundColor: isDarkColorScheme
-            ? "rgba(0,0,0,0.3)"
-            : "rgba(255,255,255,0.3)",
+            ? 'rgba(0,0,0,0.3)'
+            : 'rgba(255,255,255,0.3)',
         },
       ]}
       onLayout={(event) => {
@@ -281,12 +281,12 @@ function ProfileHeader({
           {
             borderBottomWidth: showTabs ? 0 : 1,
             borderBottomColor: showTabs
-              ? "transparent"
+              ? 'transparent'
               : isAnimated
-              ? isDarkColorScheme
-                ? "rgba(255,255,255,0.1)"
-                : "rgba(0,0,0,0.1)"
-              : "transparent",
+                ? isDarkColorScheme
+                  ? 'rgba(255,255,255,0.1)'
+                  : 'rgba(0,0,0,0.1)'
+                : 'transparent',
           },
         ]}
       >
@@ -298,7 +298,7 @@ function ProfileHeader({
             customTitleComponent
           ) : (
             <Link href="/(home)/feed" asChild>
-              <Text style={titleStyle}>{customTitle || "WAL"}</Text>
+              <Text style={titleStyle}>{customTitle || 'WAL'}</Text>
             </Link>
           )}
           {!isWeb && (
@@ -316,11 +316,11 @@ function ProfileHeader({
                 <>
                   {customButtons}
                   {!customButtons && (
-                    <Link href={"/chatrooms"} asChild>
+                    <Link href={'/chatrooms'} asChild>
                       <TouchableOpacity style={styles.buttonWrapper}>
                         <Animated.View style={iconAnimatedStyle}>
                           <TabBarIcon
-                            color={isDarkColorScheme ? "white" : "black"}
+                            color={isDarkColorScheme ? 'white' : 'black'}
                             name="paper-plane-outline"
                           />
                         </Animated.View>
@@ -354,38 +354,38 @@ function ProfileHeader({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingRight: 20,
     paddingLeft: 8,
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "space-between",
-    position: "relative",
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
+    position: 'relative',
   },
   headerContent: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
   },
   title: {
     padding: 16,
     paddingLeft: 12,
     fontSize: FontSizes.xxlarge,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   buttonsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 16,
   },
   buttonWrapper: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   badge: {
-    backgroundColor: "#db2777", // pink-600
-    pointerEvents: "none",
+    backgroundColor: '#db2777', // pink-600
+    pointerEvents: 'none',
   },
 });
 

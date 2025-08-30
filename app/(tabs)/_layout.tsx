@@ -1,60 +1,60 @@
-import { Redirect, router, Tabs, usePathname, useRouter } from "expo-router";
-import React, { useEffect } from "react";
-import { Stack } from "expo-router";
+import { Redirect, router, Tabs, usePathname, useRouter } from 'expo-router';
+import React, { useEffect } from 'react';
+import { Stack } from 'expo-router';
 import {
   BottomSheetModal,
   BottomSheetModalProvider,
-} from "@gorhom/bottom-sheet";
-import { StyleSheet, View, BackHandler } from "react-native";
-import { BlurView } from "expo-blur";
+} from '@gorhom/bottom-sheet';
+import { StyleSheet, View, BackHandler } from 'react-native';
+import { BlurView } from 'expo-blur';
 
-import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { isUserRegistered, useSession } from "@/components/AuthLayer";
-import DbUserGetter from "@/components/DbUserGetter";
-import { useNotificationHandler } from "@/components/DbUserGetter/useNotficationHandler";
-import SidebarLayout from "@/components/SidebarLayout";
-import { isAndroid, isIOS, isWeb } from "@/lib/platform";
-import LocationProvider from "@/components/LocationProvider";
-import SpacesBottomSheet from "@/components/SpacesBottomSheet";
-import { Lightbox } from "@/components/Lightbox/Lightbox";
-import useFeeds from "@/hooks/useFeeds";
-import { useLightboxControls } from "@/lib/lightbox/lightbox";
-import { Georgia } from "@/lib/icons/Georgia";
-import { useShareIntentContext } from "expo-share-intent";
-import ErrorMessageCard from "@/components/ErrorMessageCard";
-import FullScreenLoader from "@/components/FullScreenLoader";
-import { useTheme } from "@/lib/theme";
-import { trackScreen, setUserProperties } from "@/lib/analytics";
-import { getCurrentLocale } from "@/lib/i18n";
-import { setAndroidNavigationBar } from "@/lib/android-navigation-bar";
-import { Provider as HeaderTransformProvider } from "@/lib/context/header-transform";
-import { Provider as ReactionsOverlayProvider } from "@/lib/reactionsOverlay/reactionsOverlay";
-import { ReactionsOverlay } from "@/components/ReactionsOverlay/ReactionsOverlay";
-import { PortalHost } from "@/components/primitives/portal";
-import { useAtom, useSetAtom } from "jotai";
-import { factCheckBottomSheetState } from "@/lib/atoms/news";
-import { locationUserListSheetState } from "@/lib/atoms/location";
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { isUserRegistered, useSession } from '@/components/AuthLayer';
+import DbUserGetter from '@/components/DbUserGetter';
+import { useNotificationHandler } from '@/components/DbUserGetter/useNotficationHandler';
+import SidebarLayout from '@/components/SidebarLayout';
+import { isAndroid, isIOS, isWeb } from '@/lib/platform';
+import LocationProvider from '@/components/LocationProvider';
+import SpacesBottomSheet from '@/components/SpacesBottomSheet';
+import { Lightbox } from '@/components/Lightbox/Lightbox';
+import useFeeds from '@/hooks/useFeeds';
+import { useLightboxControls } from '@/lib/lightbox/lightbox';
+import { Georgia } from '@/lib/icons/Georgia';
+import { useShareIntentContext } from 'expo-share-intent';
+import ErrorMessageCard from '@/components/ErrorMessageCard';
+import FullScreenLoader from '@/components/FullScreenLoader';
+import { useTheme } from '@/lib/theme';
+import { trackScreen, setUserProperties } from '@/lib/analytics';
+import { getCurrentLocale } from '@/lib/i18n';
+import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
+import { Provider as HeaderTransformProvider } from '@/lib/context/header-transform';
+import { Provider as ReactionsOverlayProvider } from '@/lib/reactionsOverlay/reactionsOverlay';
+import { ReactionsOverlay } from '@/components/ReactionsOverlay/ReactionsOverlay';
+import { PortalHost } from '@/components/primitives/portal';
+import { useAtom, useSetAtom } from 'jotai';
+import { factCheckBottomSheetState } from '@/lib/atoms/news';
+import { locationUserListSheetState } from '@/lib/atoms/location';
 
 export default function TabLayout() {
   const pathname = usePathname();
-  const isRecord = pathname.includes("record");
+  const isRecord = pathname.includes('record');
   const { factCheckFeedId, newsFeedId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
 
   // Track screen changes and update user properties
   useEffect(() => {
-    const screenName = pathname.replace("/", "").split("?")[0] || "root";
-    trackScreen(screenName, "TabsLayout");
+    const screenName = pathname.replace('/', '').split('?')[0] || 'root';
+    trackScreen(screenName, 'TabsLayout');
     setUserProperties({
-      app_language: getCurrentLocale?.() || "en",
+      app_language: getCurrentLocale?.() || 'en',
     });
   }, [pathname]);
   const theme = useTheme();
   // Theme-aware tab colors
   const TAB_COLORS = {
-    active: isDarkColorScheme ? "#FFFFFF" : "#121212", // White in dark mode, near black in light mode
-    inactive: isDarkColorScheme ? "#777777" : "#999999", // Dark gray in dark mode, lighter gray in light mode
+    active: isDarkColorScheme ? '#FFFFFF' : '#121212', // White in dark mode, near black in light mode
+    inactive: isDarkColorScheme ? '#777777' : '#999999', // Dark gray in dark mode, lighter gray in light mode
   };
 
   const recordingTabStyles = {
@@ -88,8 +88,8 @@ export default function TabLayout() {
         const imageFiles =
           shareIntent.files?.filter(
             (file) =>
-              file.mimeType?.startsWith("image/") ||
-              file.fileName?.match(/\.(jpg|jpeg|png|gif|webp)$/i)
+              file.mimeType?.startsWith('image/') ||
+              file.fileName?.match(/\.(jpg|jpeg|png|gif|webp)$/i),
           ) || [];
 
         // Convert share intent files to the format expected by create-post
@@ -98,9 +98,9 @@ export default function TabLayout() {
           width: file.width || 0,
           height: file.height || 0,
           fileSize: file.size,
-          type: "image" as const,
+          type: 'image' as const,
           fileName: file.fileName || `shared_image_${Date.now()}.jpg`,
-          mimeType: file.mimeType || "image/jpeg",
+          mimeType: file.mimeType || 'image/jpeg',
           exif: null,
           assetId: null,
           base64: null,
@@ -111,12 +111,12 @@ export default function TabLayout() {
         const encodedImages =
           convertedImages.length > 0
             ? encodeURIComponent(JSON.stringify(convertedImages))
-            : "";
+            : '';
 
         // Build navigation params
         const params: any = {
           feedId: factCheckFeedId,
-          disableRoomCreation: "true",
+          disableRoomCreation: 'true',
         };
 
         if (shareIntent.text) {
@@ -143,7 +143,7 @@ export default function TabLayout() {
 
   useEffect(() => {
     if (isAndroid) {
-      const listener = BackHandler.addEventListener("hardwareBackPress", () => {
+      const listener = BackHandler.addEventListener('hardwareBackPress', () => {
         return closeLightbox();
       });
 
@@ -163,10 +163,10 @@ export default function TabLayout() {
     ) {
       // Only navigate if we're not already on the news feed
       const isOnNewsFeed =
-        pathname.includes("(news)") && pathname.includes(newsFeedId);
+        pathname.includes('(news)') && pathname.includes(newsFeedId);
       if (!isOnNewsFeed) {
         router.navigate({
-          pathname: "/(tabs)/(news)/[feedId]",
+          pathname: '/(tabs)/(news)/[feedId]',
           params: {
             feedId: user.preferred_news_feed_id,
           },
@@ -222,7 +222,7 @@ export default function TabLayout() {
                 screenOptions={{
                   headerShown: false,
                   headerStyle: {
-                    backgroundColor: "transparent",
+                    backgroundColor: 'transparent',
                   },
                   contentStyle: {
                     backgroundColor: theme.colors.background,
@@ -270,7 +270,7 @@ export default function TabLayout() {
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
                       size={24}
-                      name={focused ? "location" : "location-outline"}
+                      name={focused ? 'location' : 'location-outline'}
                       color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
                       style={
                         focused ? { transform: [{ scale: 1.15 }] } : undefined
@@ -284,7 +284,7 @@ export default function TabLayout() {
                 options={{
                   href: newsFeedId
                     ? {
-                        pathname: "/(tabs)/(news)/[feedId]",
+                        pathname: '/(tabs)/(news)/[feedId]',
                         params: {
                           feedId: newsFeedId,
                         },
@@ -293,7 +293,7 @@ export default function TabLayout() {
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
                       size={24}
-                      name={focused ? "newspaper" : "newspaper-outline"}
+                      name={focused ? 'newspaper' : 'newspaper-outline'}
                       color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
                       // style={
                       //   focused ? { transform: [{ scale: 1.15 }] } : undefined
@@ -307,7 +307,7 @@ export default function TabLayout() {
                 options={{
                   href: factCheckFeedId
                     ? {
-                        pathname: "/(tabs)/(fact-check)/[feedId]",
+                        pathname: '/(tabs)/(fact-check)/[feedId]',
                         params: {
                           feedId: factCheckFeedId,
                         },
@@ -318,8 +318,8 @@ export default function TabLayout() {
                       size={24}
                       name={
                         focused
-                          ? "shield-checkmark"
-                          : "shield-checkmark-outline"
+                          ? 'shield-checkmark'
+                          : 'shield-checkmark-outline'
                       }
                       color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
                       // style={
@@ -333,11 +333,11 @@ export default function TabLayout() {
               <Tabs.Screen
                 name="(user)"
                 options={{
-                  title: "",
+                  title: '',
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
                       size={24}
-                      name={focused ? "person-circle" : "person-circle"}
+                      name={focused ? 'person-circle' : 'person-circle'}
                       color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
                       style={
                         focused ? { transform: [{ scale: 1.15 }] } : undefined

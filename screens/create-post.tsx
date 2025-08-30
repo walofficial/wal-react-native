@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from 'react';
 import {
   TextInput,
   ScrollView,
@@ -7,45 +7,45 @@ import {
   TouchableOpacity,
   StyleSheet,
   Platform,
-} from "react-native";
-import { useRouter, useLocalSearchParams, usePathname } from "expo-router";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { StatusBar } from "expo-status-bar";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+} from 'react-native';
+import { useRouter, useLocalSearchParams, usePathname } from 'expo-router';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   LinkPreviewData,
   LocationFeedPost,
   publishPost,
-} from "@/lib/api/generated";
-import { useToast } from "@/lib/context/ToastContext";
-import PostControls from "@/components/PostControls";
+} from '@/lib/api/generated';
+import { useToast } from '@/lib/context/ToastContext';
+import PostControls from '@/components/PostControls';
 import {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-} from "react-native-reanimated";
-import { KeyboardAvoidingView } from "react-native-keyboard-controller";
-import Animated from "react-native-reanimated";
-import { isAndroid, isIOS } from "@/lib/platform";
-import { compressIfNeeded } from "@/lib/media/manip";
-import CreatePostHeader from "@/components/CreatePost/CreatePostHeader";
-import ImagePickerGrid from "@/components/CreatePost/ImagePickerGrid";
-import { useImagePicker } from "@/components/CreatePost/useImagePicker";
-import { FontSizes, useTheme } from "@/lib/theme";
-import useAuth from "@/hooks/useAuth";
-import { useLinkPreview } from "@/hooks/useLinkPreview";
-import LinkPreview from "@/components/LinkPreview";
-import SourceInfoCard from "@/components/CreatePost/SourceInfoCard";
-import { useColorScheme } from "react-native";
-import { useMinimalShellMode } from "@/lib/context/header-transform";
-import * as Clipboard from "expo-clipboard";
+} from 'react-native-reanimated';
+import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
+import Animated from 'react-native-reanimated';
+import { isAndroid, isIOS } from '@/lib/platform';
+import { compressIfNeeded } from '@/lib/media/manip';
+import CreatePostHeader from '@/components/CreatePost/CreatePostHeader';
+import ImagePickerGrid from '@/components/CreatePost/ImagePickerGrid';
+import { useImagePicker } from '@/components/CreatePost/useImagePicker';
+import { FontSizes, useTheme } from '@/lib/theme';
+import useAuth from '@/hooks/useAuth';
+import { useLinkPreview } from '@/hooks/useLinkPreview';
+import LinkPreview from '@/components/LinkPreview';
+import SourceInfoCard from '@/components/CreatePost/SourceInfoCard';
+import { useColorScheme } from 'react-native';
+import { useMinimalShellMode } from '@/lib/context/header-transform';
+import * as Clipboard from 'expo-clipboard';
 import {
   getLocationFeedPaginatedInfiniteOptions,
   getLocationFeedPaginatedInfiniteQueryKey,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import { formDataBodySerializer } from "@/lib/utils/form-data";
-import { t } from "@/lib/i18n";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { formDataBodySerializer } from '@/lib/utils/form-data';
+import { t } from '@/lib/i18n';
 
 const MAX_CHARS = 1500;
 
@@ -53,34 +53,34 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    position: "relative",
+    position: 'relative',
   },
   scrollView: {
     flex: 1,
   },
   textInput: {
-    textAlign: "left",
+    textAlign: 'left',
     fontSize: FontSizes.medium,
     lineHeight: 24,
-    textAlignVertical: "top",
+    textAlignVertical: 'top',
     paddingTop: 8,
     paddingHorizontal: 0,
   },
   noticeContainer: {
-    backgroundColor: "rgba(59, 130, 246, 0.05)",
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
     borderRadius: 8,
     padding: 16,
-    position: "relative",
+    position: 'relative',
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 8,
     right: 8,
     zIndex: 10,
   },
   noticeContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   noticeText: {
     fontSize: 16,
@@ -88,15 +88,15 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   summaryNoticeContainer: {
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
-    alignSelf: "center",
-    shadowColor: "#000",
+    alignSelf: 'center',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   summaryNoticeText: {
-    color: "white",
+    color: 'white',
     fontSize: FontSizes.small,
-    fontWeight: "500",
+    fontWeight: '500',
   },
 });
 
@@ -127,7 +127,7 @@ export default function CreatePost() {
     sharedImages?: string;
   }>();
   const scrollViewRef = useRef<ScrollView>(null);
-  const [text, setText] = useState(sharedContent || "");
+  const [text, setText] = useState(sharedContent || '');
   useEffect(() => {
     if (sharedContent) {
       setText(sharedContent);
@@ -160,8 +160,8 @@ export default function CreatePost() {
           const validImages = decodedImages.filter(
             (img) =>
               img.uri &&
-              typeof img.width === "number" &&
-              typeof img.height === "number"
+              typeof img.width === 'number' &&
+              typeof img.height === 'number',
           );
 
           if (validImages.length > 0) {
@@ -169,8 +169,8 @@ export default function CreatePost() {
           }
         }
       } catch (error) {
-        console.error("Error parsing shared images:", error);
-        errorToast({ title: "Failed to load shared images" });
+        console.error('Error parsing shared images:', error);
+        errorToast({ title: 'Failed to load shared images' });
       }
     }
   }, [sharedImages, setSelectedImages]);
@@ -179,19 +179,19 @@ export default function CreatePost() {
 
   const router = useRouter();
   const pathname = usePathname();
-  const isShareIntent = pathname.includes("create-post-shareintent");
+  const isShareIntent = pathname.includes('create-post-shareintent');
   const { headerMode } = useMinimalShellMode();
 
   const setMode = React.useCallback(
     (v: boolean) => {
-      "worklet";
+      'worklet';
       headerMode.set(() =>
         withSpring(v ? 1 : 0, {
           overshootClamping: true,
-        })
+        }),
       );
     },
-    [headerMode]
+    [headerMode],
   );
 
   // Effect to scroll to the image gallery when images are added
@@ -205,14 +205,14 @@ export default function CreatePost() {
   }, [selectedImages.length]);
 
   const { content_type } = useLocalSearchParams<{
-    content_type: "last24h" | "youtube_only" | "social_media_only";
+    content_type: 'last24h' | 'youtube_only' | 'social_media_only';
   }>();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       const trimmedText = text.trim();
       if (!trimmedText && selectedImages.length === 0) {
-        throw new Error("Post cannot be empty");
+        throw new Error('Post cannot be empty');
       }
 
       const files = [];
@@ -221,8 +221,8 @@ export default function CreatePost() {
       for (const image of selectedImages) {
         // Extract the actual file path without file:// prefix for compressIfNeeded
         let imagePath = image.uri;
-        if (imagePath.startsWith("file://")) {
-          imagePath = imagePath.replace("file://", "");
+        if (imagePath.startsWith('file://')) {
+          imagePath = imagePath.replace('file://', '');
         }
 
         const compressedImage = await compressIfNeeded(
@@ -232,18 +232,18 @@ export default function CreatePost() {
             height: image.height,
             size: image.fileSize || 0,
           },
-          1000000 // 1MB max size
+          1000000, // 1MB max size
         );
 
         // Ensure proper file:// prefix for FormData
-        const finalUri = compressedImage.path.startsWith("file://")
+        const finalUri = compressedImage.path.startsWith('file://')
           ? compressedImage.path
-          : "file://" + compressedImage.path;
+          : 'file://' + compressedImage.path;
 
         files.push({
           uri: finalUri,
-          type: "image/jpeg",
-          name: compressedImage.path.split("/").pop(),
+          type: 'image/jpeg',
+          name: compressedImage.path.split('/').pop(),
         });
       }
 
@@ -259,33 +259,33 @@ export default function CreatePost() {
     },
     onSuccess: (publishedDoc) => {
       let navigationTargetContentType:
-        | "youtube_only"
-        | "social_media_only"
+        | 'youtube_only'
+        | 'social_media_only'
         | null = null;
       // Initialize cacheUpdateContentType with the content_type from local search params
       // content_type is guaranteed to be one of "last24h" | "youtube_only" | "social_media_only" by its type definition
       let cacheUpdateContentType:
-        | "last24h"
-        | "youtube_only"
-        | "social_media_only" = content_type;
+        | 'last24h'
+        | 'youtube_only'
+        | 'social_media_only' = content_type;
 
       if (previewData?.url) {
         if (
-          previewData.url.includes("youtube.com") ||
-          previewData.url.includes("youtu.be")
+          previewData.url.includes('youtube.com') ||
+          previewData.url.includes('youtu.be')
         ) {
-          navigationTargetContentType = "youtube_only";
-          cacheUpdateContentType = "youtube_only";
+          navigationTargetContentType = 'youtube_only';
+          cacheUpdateContentType = 'youtube_only';
         } else if (
-          previewData.url.includes("facebook.com") ||
-          previewData.url.includes("fb.com")
+          previewData.url.includes('facebook.com') ||
+          previewData.url.includes('fb.com')
         ) {
-          navigationTargetContentType = "social_media_only";
-          cacheUpdateContentType = "social_media_only";
+          navigationTargetContentType = 'social_media_only';
+          cacheUpdateContentType = 'social_media_only';
         }
       }
       if (!cacheUpdateContentType) {
-        cacheUpdateContentType = "last24h";
+        cacheUpdateContentType = 'last24h';
       }
 
       const queryOptions = getLocationFeedPaginatedInfiniteOptions({
@@ -335,7 +335,7 @@ export default function CreatePost() {
           pathname: `/(tabs)/(fact-check)/[feedId]`,
           params: {
             feedId,
-            content_type: "last24h",
+            content_type: 'last24h',
           },
         });
       } else if (isShareIntent) {
@@ -343,7 +343,7 @@ export default function CreatePost() {
           pathname: `/(tabs)/(fact-check)/[feedId]`,
           params: {
             feedId,
-            content_type: "social_media_only", // Default for share intent if no specific link
+            content_type: 'social_media_only', // Default for share intent if no specific link
           },
         });
       } else {
@@ -354,33 +354,33 @@ export default function CreatePost() {
         // For share intents, ensure all relevant feeds are refreshed
         // as the user might navigate between them.
         // The cacheUpdateContentType is already invalidated above.
-        if (cacheUpdateContentType !== "social_media_only") {
+        if (cacheUpdateContentType !== 'social_media_only') {
           queryClient.invalidateQueries({
             queryKey: getLocationFeedPaginatedInfiniteQueryKey({
               path: { feed_id: feedId },
               query: {
-                content_type_filter: "social_media_only",
+                content_type_filter: 'social_media_only',
               },
             }),
           });
         }
-        if (cacheUpdateContentType !== "youtube_only") {
+        if (cacheUpdateContentType !== 'youtube_only') {
           queryClient.invalidateQueries({
             queryKey: getLocationFeedPaginatedInfiniteQueryKey({
               path: { feed_id: feedId },
               query: {
-                content_type_filter: "youtube_only",
+                content_type_filter: 'youtube_only',
               },
             }),
           });
         }
         // Always invalidate last24h for share intents if it wasn't the primary updated one
-        if (cacheUpdateContentType !== "last24h") {
+        if (cacheUpdateContentType !== 'last24h') {
           queryClient.invalidateQueries({
             queryKey: getLocationFeedPaginatedInfiniteQueryKey({
               path: { feed_id: feedId },
               query: {
-                content_type_filter: "last24h",
+                content_type_filter: 'last24h',
               },
             }),
           });
@@ -391,11 +391,11 @@ export default function CreatePost() {
     onError: (error) => {
       console.error(JSON.stringify(error, null, 2));
       errorToast({
-        title: t("errors.post_publish_failed"),
+        title: t('errors.post_publish_failed'),
         description:
           error instanceof Error
             ? error.message
-            : t("errors.post_publish_failed"),
+            : t('errors.post_publish_failed'),
       });
     },
   });
@@ -406,8 +406,8 @@ export default function CreatePost() {
   const handlePublish = () => {
     if (text.trim().length === 0 && selectedImages.length === 0) {
       errorToast({
-        title: t("errors.post_empty"),
-        description: t("errors.post_empty"),
+        title: t('errors.post_empty'),
+        description: t('errors.post_empty'),
       });
       return;
     }
@@ -415,7 +415,7 @@ export default function CreatePost() {
   };
 
   const opacity = useSharedValue(0);
-  const isDarkMode = useColorScheme() === "dark";
+  const isDarkMode = useColorScheme() === 'dark';
 
   useEffect(() => {
     if (previewData) {
@@ -442,7 +442,7 @@ export default function CreatePost() {
 
   // Handle paste event for web
   const handlePaste = async (e: any) => {
-    if (Platform.OS === "web") {
+    if (Platform.OS === 'web') {
       // Check if clipboard has image
       const hasImage = await Clipboard.hasImageAsync();
       if (hasImage) {
@@ -456,7 +456,7 @@ export default function CreatePost() {
 
   // Handle focus/long-press for native
   const handleNativePasteCheck = async () => {
-    if (Platform.OS !== "web") {
+    if (Platform.OS !== 'web') {
       const hasImage = await Clipboard.hasImageAsync();
       if (hasImage) {
         // Optionally, prompt user before pasting
@@ -467,7 +467,7 @@ export default function CreatePost() {
 
   return (
     <>
-      <StatusBar style={isDarkMode ? "light" : "dark"} />
+      <StatusBar style={isDarkMode ? 'light' : 'dark'} />
       <KeyboardAvoidingView
         behavior="padding"
         keyboardVerticalOffset={isAndroid ? insets.top : insets.bottom + 10}
@@ -502,7 +502,7 @@ export default function CreatePost() {
                 color: theme.colors.text,
               },
             ]}
-            placeholder={t("common.recheck_description")}
+            placeholder={t('common.recheck_description')}
             placeholderTextColor={theme.colors.feedItem.secondaryText}
             multiline
             maxLength={MAX_CHARS}
@@ -515,7 +515,7 @@ export default function CreatePost() {
             enablesReturnKeyAutomatically
             blurOnSubmit={false}
             // Web: handle paste event
-            {...(Platform.OS === "web"
+            {...(Platform.OS === 'web'
               ? { onPaste: handlePaste }
               : {
                   // Native: check clipboard for image on focus/long-press
@@ -564,8 +564,8 @@ export default function CreatePost() {
           feedId={feedId}
           charactersLeft={charactersLeft}
           onImagePress={handleImagePick}
-          disableImagePicker={disableImagePicker === "true"}
-          disableRoomCreation={disableRoomCreation === "true"}
+          disableImagePicker={disableImagePicker === 'true'}
+          disableRoomCreation={disableRoomCreation === 'true'}
           showFactCheck={false}
           isFactCheckEnabled={false}
           onFactCheckToggle={() => {}}

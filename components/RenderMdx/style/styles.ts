@@ -1,4 +1,4 @@
-import { ViewStyle, TextStyle, ImageStyle } from "react-native";
+import { ViewStyle, TextStyle, ImageStyle } from 'react-native';
 
 // Define types for all possible markdown component styles
 export interface MarkdownStyles {
@@ -51,26 +51,26 @@ export const styles = (customStyles: MarkdownStyles = {}): MarkdownStyles => {
     },
     text: {
       fontSize: 16,
-      color: "#333",
+      color: '#333',
       ...customStyles.text,
     },
     inline: {
       ...customStyles.inline,
     },
     strong: {
-      fontWeight: "bold",
+      fontWeight: 'bold',
       ...customStyles.strong,
     },
     link: {
       ...customStyles.link,
     },
     linkLabel: {
-      color: "#0366d6",
-      textDecorationLine: "underline",
+      color: '#0366d6',
+      textDecorationLine: 'underline',
       ...customStyles.linkLabel,
     },
     em: {
-      fontStyle: "italic",
+      fontStyle: 'italic',
       ...customStyles.em,
     },
     headingContainer: {
@@ -80,13 +80,13 @@ export const styles = (customStyles: MarkdownStyles = {}): MarkdownStyles => {
     },
     headingBorder: {
       borderBottomWidth: 1,
-      borderBottomColor: "#eaecef",
+      borderBottomColor: '#eaecef',
       paddingBottom: 4,
       ...customStyles.headingBorder,
     },
     heading: {
-      fontWeight: "bold",
-      color: "#24292e",
+      fontWeight: 'bold',
+      color: '#24292e',
       ...customStyles.heading,
     },
     heading1: {
@@ -123,30 +123,30 @@ export const styles = (customStyles: MarkdownStyles = {}): MarkdownStyles => {
     },
     blockquote: {
       borderLeftWidth: 4,
-      borderLeftColor: "#dfe2e5",
+      borderLeftColor: '#dfe2e5',
       paddingLeft: 16,
       paddingVertical: 8,
       marginVertical: 16,
-      backgroundColor: "#f6f8fa",
+      backgroundColor: '#f6f8fa',
       ...customStyles.blockquote,
     },
     inlineCode: {
-      fontFamily: "monospace",
-      backgroundColor: "#f6f8fa",
+      fontFamily: 'monospace',
+      backgroundColor: '#f6f8fa',
       padding: 2,
       borderRadius: 3,
       ...customStyles.inlineCode,
     },
     codeBlock: {
-      fontFamily: "monospace",
+      fontFamily: 'monospace',
       ...customStyles.codeBlock,
     },
     pre: {
-      backgroundColor: "#f6f8fa",
+      backgroundColor: '#f6f8fa',
       padding: 16,
       marginVertical: 16,
       borderRadius: 6,
-      overflow: "scroll",
+      overflow: 'scroll',
       ...customStyles.pre,
     },
     list: {
@@ -161,7 +161,7 @@ export const styles = (customStyles: MarkdownStyles = {}): MarkdownStyles => {
       ...customStyles.listOrdered,
     },
     listUnorderedItem: {
-      flexDirection: "row",
+      flexDirection: 'row',
       marginBottom: 8,
       ...customStyles.listUnorderedItem,
     },
@@ -169,13 +169,13 @@ export const styles = (customStyles: MarkdownStyles = {}): MarkdownStyles => {
       width: 6,
       height: 6,
       borderRadius: 3,
-      backgroundColor: "#24292e",
+      backgroundColor: '#24292e',
       marginTop: 8,
       marginRight: 8,
       ...customStyles.listUnorderedItemIcon,
     },
     listOrderedItem: {
-      flexDirection: "row",
+      flexDirection: 'row',
       marginBottom: 8,
       ...customStyles.listOrderedItem,
     },
@@ -192,14 +192,14 @@ export const styles = (customStyles: MarkdownStyles = {}): MarkdownStyles => {
     },
     table: {
       borderWidth: 1,
-      borderColor: "#dfe2e5",
+      borderColor: '#dfe2e5',
       borderRadius: 6,
       marginVertical: 16,
-      overflow: "hidden",
+      overflow: 'hidden',
       ...customStyles.table,
     },
     tableHeader: {
-      backgroundColor: "#f6f8fa",
+      backgroundColor: '#f6f8fa',
       ...customStyles.tableHeader,
     },
     tableBody: {
@@ -209,29 +209,29 @@ export const styles = (customStyles: MarkdownStyles = {}): MarkdownStyles => {
       padding: 8,
       borderRightWidth: 1,
       borderBottomWidth: 1,
-      borderColor: "#dfe2e5",
+      borderColor: '#dfe2e5',
       ...customStyles.tableHeaderCell,
     },
     tableRow: {
-      flexDirection: "row",
+      flexDirection: 'row',
       borderBottomWidth: 1,
-      borderColor: "#dfe2e5",
+      borderColor: '#dfe2e5',
       ...customStyles.tableRow,
     },
     tableRowCell: {
       padding: 8,
       borderRightWidth: 1,
-      borderColor: "#dfe2e5",
+      borderColor: '#dfe2e5',
       ...customStyles.tableRowCell,
     },
     hr: {
       height: 1,
-      backgroundColor: "#e1e4e8",
+      backgroundColor: '#e1e4e8',
       marginVertical: 16,
       ...customStyles.hr,
     },
     img: {
-      width: "100%",
+      width: '100%',
       height: 200,
       borderRadius: 6,
       marginVertical: 16,

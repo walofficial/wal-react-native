@@ -8,10 +8,17 @@ type PortalMap = Map<string, React.ReactNode>;
 type PortalHostMap = Map<string, PortalMap>;
 
 const usePortal = create<{ map: PortalHostMap }>(() => ({
-  map: new Map<string, PortalMap>().set(DEFAULT_PORTAL_HOST, new Map<string, React.ReactNode>()),
+  map: new Map<string, PortalMap>().set(
+    DEFAULT_PORTAL_HOST,
+    new Map<string, React.ReactNode>(),
+  ),
 }));
 
-const updatePortal = (hostName: string, name: string, children: React.ReactNode) => {
+const updatePortal = (
+  hostName: string,
+  name: string,
+  children: React.ReactNode,
+) => {
   usePortal.setState((prev) => {
     const next = new Map(prev.map);
     const portal = next.get(hostName) ?? new Map<string, React.ReactNode>();
@@ -31,7 +38,9 @@ const removePortal = (hostName: string, name: string) => {
 };
 
 export function PortalHost({ name = DEFAULT_PORTAL_HOST }: { name?: string }) {
-  const portalMap = usePortal((state) => state.map).get(name) ?? new Map<string, React.ReactNode>();
+  const portalMap =
+    usePortal((state) => state.map).get(name) ??
+    new Map<string, React.ReactNode>();
   if (portalMap.size === 0) return null;
   return <>{Array.from(portalMap.values())}</>;
 }

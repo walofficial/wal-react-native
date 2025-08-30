@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom } from 'jotai';
 
 export const activeLivekitRoomState = atom<{
   livekit_room_name: string;
@@ -9,4 +9,4 @@ export const activeLivekitRoomState = atom<{
 
 export const openBottomSheetState = atom<boolean>(false);
 
-export const participantSearchState = atom<string>("");
+export const participantSearchState = atom<string>('');

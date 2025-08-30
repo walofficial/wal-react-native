@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, StyleSheet, ViewStyle, TextStyle } from "react-native";
-import { CheckCircle } from "lucide-react-native";
+import React from 'react';
+import { View, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { CheckCircle } from 'lucide-react-native';
 
 interface FactCheckBadgeProps {
   hideText?: boolean;
@@ -50,9 +50,9 @@ const FactCheckBadge = ({
   badgeStyle,
   hideText,
   textStyle,
-  text = "გადამოწმდა",
+  text = 'გადამოწმდა',
   iconSize = 16,
-  iconColor = "#22c55e",
+  iconColor = '#22c55e',
   iconStrokeWidth = 2.5,
   showShadow = true,
   positionStyle,
@@ -75,22 +75,22 @@ const FactCheckBadge = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   badgeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 6,
     borderRadius: 20,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   badgeShadow: {},
   badgeText: {
-    color: "#efefef",
+    color: '#efefef',
     fontSize: 14,
-    fontWeight: "600",
-    textTransform: "uppercase",
+    fontWeight: '600',
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
     marginLeft: 6,
   },

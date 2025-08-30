@@ -1,11 +1,11 @@
-import React from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
-import { Avatar, AvatarImage } from "../ui/avatar";
-import { formatDistanceToNow, differenceInMinutes } from "date-fns";
-import { ka } from "date-fns/locale";
-import useAuth from "@/hooks/useAuth";
-import { useRouter } from "expo-router";
-import { getCurrentLocale } from "@/lib/i18n";
+import React from 'react';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
+import { Avatar, AvatarImage } from '../ui/avatar';
+import { formatDistanceToNow, differenceInMinutes } from 'date-fns';
+import { ka } from 'date-fns/locale';
+import useAuth from '@/hooks/useAuth';
+import { useRouter } from 'expo-router';
+import { getCurrentLocale } from '@/lib/i18n';
 
 interface CommentItemProps {
   id: string;
@@ -38,13 +38,13 @@ const CommentItem = ({
 
   const handleProfilePress = () => {
     router.push({
-      pathname: "/(tabs)/(home)/profile",
+      pathname: '/(tabs)/(home)/profile',
       params: { userId: author.id },
     });
   };
 
   const handleDelete = () => {
-    if (window.confirm("ნამდვილად გსურთ კომენტარის წაშლა?")) {
+    if (window.confirm('ნამდვილად გსურთ კომენტარის წაშლა?')) {
       onDelete?.();
     }
   };
@@ -52,12 +52,12 @@ const CommentItem = ({
   const getTimeText = () => {
     const diffInMinutes = differenceInMinutes(new Date(), createdAt);
     if (diffInMinutes < 1) {
-      return "ახლა";
+      return 'ახლა';
     }
     const locale = getCurrentLocale();
     return formatDistanceToNow(createdAt, {
       addSuffix: true,
-      locale: locale === "ka" ? ka : undefined,
+      locale: locale === 'ka' ? ka : undefined,
     });
   };
 

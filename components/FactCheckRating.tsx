@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Pressable, Platform } from "react-native";
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Pressable, Platform } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -8,10 +8,10 @@ import Animated, {
   withDelay,
   withTiming,
   runOnJS,
-} from "react-native-reanimated";
-import { Ionicons } from "@expo/vector-icons";
-import useAuth from "@/hooks/useAuth";
-import { useFactCheckRating } from "@/hooks/useFactCheckRating";
+} from 'react-native-reanimated';
+import { Ionicons } from '@expo/vector-icons';
+import useAuth from '@/hooks/useAuth';
+import { useFactCheckRating } from '@/hooks/useFactCheckRating';
 
 interface FactCheckRatingProps {
   verificationId: string;
@@ -64,7 +64,7 @@ export const FactCheckRating: React.FC<FactCheckRatingProps> = ({
   const handleHelpfulPress = () => {
     helpfulScale.value = withSequence(
       withSpring(1.2, { damping: 20 }),
-      withSpring(1, { damping: 20 })
+      withSpring(1, { damping: 20 }),
     );
     handleRating();
     handleRatingComplete();
@@ -73,7 +73,7 @@ export const FactCheckRating: React.FC<FactCheckRatingProps> = ({
   const handleNotHelpfulPress = () => {
     notHelpfulScale.value = withSequence(
       withSpring(1.2, { damping: 20 }),
-      withSpring(1, { damping: 20 })
+      withSpring(1, { damping: 20 }),
     );
     handleRating();
     handleRatingComplete();
@@ -114,20 +114,20 @@ export const FactCheckRating: React.FC<FactCheckRatingProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 20,
     left: 0,
     right: 0,
     padding: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   buttonsContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 16,
   },
   button: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 48,
     height: 48,
     borderRadius: 24,
@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
     }),
   },
   helpfulButton: {
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
   notHelpfulButton: {
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
 });

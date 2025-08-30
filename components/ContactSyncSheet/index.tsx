@@ -5,45 +5,45 @@ import React, {
   useMemo,
   useCallback,
   RefObject,
-} from "react";
+} from 'react';
 import {
   View,
   TouchableOpacity,
   Platform,
   Linking,
   StyleSheet,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import * as Contacts from "expo-contacts";
-import { Text } from "@/components/ui/text";
-import { Contact } from "expo-contacts";
-import RegisteredContactsList from "./RegisteredContactsList";
-import ContactItem from "./ContactItem";
-import ContactListHeader from "./ContactListHeader";
-import FriendRequests from "./FriendRequests";
-import FriendsList from "./FriendsList";
-import AddUserFromOtherApps from "./AddUserFromOtherApps";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Contacts from 'expo-contacts';
+import { Text } from '@/components/ui/text';
+import { Contact } from 'expo-contacts';
+import RegisteredContactsList from './RegisteredContactsList';
+import ContactItem from './ContactItem';
+import ContactListHeader from './ContactListHeader';
+import FriendRequests from './FriendRequests';
+import FriendsList from './FriendsList';
+import AddUserFromOtherApps from './AddUserFromOtherApps';
 import BottomSheet, {
   BottomSheetScrollView,
   BottomSheetTextInput,
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
-} from "@gorhom/bottom-sheet";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getBottomSheetBackgroundStyle } from "@/lib/styles";
-import { FontSizes } from "@/lib/theme";
-import useSheetCloseOnNavigation from "@/hooks/sheetCloseOnNavigation";
-import { useQuery } from "@tanstack/react-query";
-import { User } from "@/lib/api/generated";
-import { useFriendRequest } from "@/lib/hooks/useFriendRequest";
-import { useTheme } from "@/lib/theme";
-import { useAtom } from "jotai";
-import { contactSyncSheetState } from "@/lib/atoms/contactSync";
-import { Portal } from "@/components/primitives/portal";
-import { useOnboarding } from "../../hooks/useOnboardingContext";
-import { getUserProfileByUsernameOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { t } from "@/lib/i18n";
+} from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getBottomSheetBackgroundStyle } from '@/lib/styles';
+import { FontSizes } from '@/lib/theme';
+import useSheetCloseOnNavigation from '@/hooks/sheetCloseOnNavigation';
+import { useQuery } from '@tanstack/react-query';
+import { User } from '@/lib/api/generated';
+import { useFriendRequest } from '@/lib/hooks/useFriendRequest';
+import { useTheme } from '@/lib/theme';
+import { useAtom } from 'jotai';
+import { contactSyncSheetState } from '@/lib/atoms/contactSync';
+import { Portal } from '@/components/primitives/portal';
+import { useOnboarding } from '../../hooks/useOnboardingContext';
+import { getUserProfileByUsernameOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { t } from '@/lib/i18n';
 
 interface ContactSyncSheetProps {
   bottomSheetRef: RefObject<BottomSheet>;
@@ -51,21 +51,21 @@ interface ContactSyncSheetProps {
 
 const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
   const [contacts, setContacts] = useState<Contact[]>([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
   const [filteredContacts, setFilteredContacts] = useState<Contact[]>([]);
   const [pageOffset, setPageOffset] = useState(0);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [sentRequests, setSentRequests] = useState<Set<string>>(new Set());
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
-    contactSyncSheetState
+    contactSyncSheetState,
   );
   const pageSize = 30;
   const insets = useSafeAreaInsets();
-  const snapPoints = useMemo(() => ["85%"], []);
+  const snapPoints = useMemo(() => ['85%'], []);
   const [contactsPermissionGranted, setContactsPermissionGranted] =
     useState(false);
   const { handleSheetPositionChange } = useSheetCloseOnNavigation(
-    bottomSheetRef as React.RefObject<BottomSheetModal>
+    bottomSheetRef as React.RefObject<BottomSheetModal>,
   );
   const { mutate: sendFriendRequest, isPending: isSendingRequest } =
     useFriendRequest();
@@ -92,7 +92,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
         pressBehavior="close"
       />
     ),
-    []
+    [],
   );
 
   useEffect(() => {
@@ -117,14 +117,14 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
     // On first mount, if onboarding for contact sync not seen, open sheet and mark as seen
     if (!onboardingState.hasSeenContactSync) {
       setIsBottomSheetOpen(true);
-      markTutorialAsSeen("hasSeenContactSync");
+      markTutorialAsSeen('hasSeenContactSync');
     }
   }, []);
 
   const fetchContacts = async () => {
     const { status } = await Contacts.requestPermissionsAsync();
-    setContactsPermissionGranted(status === "granted");
-    if (status === "granted") {
+    setContactsPermissionGranted(status === 'granted');
+    if (status === 'granted') {
       const { data, hasNextPage } = await Contacts.getContactsAsync({
         fields: [
           Contacts.Fields.Name,
@@ -147,7 +147,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
 
         // Get unique phone numbers by removing any formatting/spaces
         const uniqueNumbers = new Set(
-          contact.phoneNumbers.map((p) => p.number?.replace(/\D/g, ""))
+          contact.phoneNumbers.map((p) => p.number?.replace(/\D/g, '')),
         );
 
         // Only keep contacts where number of unique numbers matches total numbers
@@ -192,7 +192,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
 
   const handleAddFriend = (contact: Contact) => {
     // Add friend logic here
-    console.log("Adding friend:", contact.name);
+    console.log('Adding friend:', contact.name);
   };
 
   const handleAddSearchedUser = async (userId: string) => {
@@ -203,14 +203,14 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
         },
       });
     } catch (error) {
-      console.error("Failed to send friend request:", error);
+      console.error('Failed to send friend request:', error);
     }
   };
 
   const openAppSettings = () => {
-    if (Platform.OS === "ios") {
-      Linking.openURL("app-settings:");
-    } else if (Platform.OS === "android") {
+    if (Platform.OS === 'ios') {
+      Linking.openURL('app-settings:');
+    } else if (Platform.OS === 'android') {
       Linking.openSettings();
     }
   };
@@ -225,7 +225,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
           setIsBottomSheetOpen(index !== -1);
         }}
         snapPoints={snapPoints}
-        topInset={insets.top + (Platform.OS === "android" ? 50 : 50)}
+        topInset={insets.top + (Platform.OS === 'android' ? 50 : 50)}
         enableDynamicSizing={false}
         enablePanDownToClose={true}
         backdropComponent={renderBackdrop}
@@ -242,8 +242,8 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
             styles.searchContainer,
             {
               backgroundColor:
-                theme.colors.card.background === "#F2F2F7"
-                  ? "rgba(0, 0, 0, 0.05)"
+                theme.colors.card.background === '#F2F2F7'
+                  ? 'rgba(0, 0, 0, 0.05)'
                   : theme.colors.card.background,
             },
           ]}
@@ -259,7 +259,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
             onChangeText={handleSearch}
             style={[styles.searchInput, { color: theme.colors.text }]}
             placeholderTextColor={theme.colors.feedItem.secondaryText}
-            placeholder={t("common.search_by_name_or_number")}
+            placeholder={t('common.search_by_name_or_number')}
           />
         </BottomSheetView>
         <BottomSheetScrollView style={{ paddingHorizontal: 10 }}>
@@ -275,24 +275,24 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
           {!searchQuery && (
             <ContactListHeader
               icon="people-outline"
-              title={t("common.add_friends_from_contacts")}
+              title={t('common.add_friends_from_contacts')}
             />
           )}
           {searchQuery && filteredContacts.length > 0 && (
             <ContactListHeader
               icon="people-outline"
-              title={t("common.from_searched_contacts")}
+              title={t('common.from_searched_contacts')}
             />
           )}
           {filteredContacts.map((item, index) => (
             <ContactItem
-              key={`contact-${index}-${item.id || ""}`}
-              buttonText={t("common.add")}
-              id={item.id || item.firstName || item.lastName || ""}
+              key={`contact-${index}-${item.id || ''}`}
+              buttonText={t('common.add')}
+              id={item.id || item.firstName || item.lastName || ''}
               alreadyOnApp={false}
-              name={item.name || item.firstName || item.lastName || ""}
-              phone_number={item.phoneNumbers?.[0]?.number || ""}
-              image={item.image?.uri || ""}
+              name={item.name || item.firstName || item.lastName || ''}
+              phone_number={item.phoneNumbers?.[0]?.number || ''}
+              image={item.image?.uri || ''}
               onAddPress={() => handleAddFriend(item)}
             />
           ))}
@@ -302,16 +302,16 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
             <>
               <ContactListHeader
                 icon="search-outline"
-                title={t("common.searched_users")}
+                title={t('common.searched_users')}
               />
               <ContactItem
                 key={searchedUsers.id}
-                buttonText={t("common.add")}
+                buttonText={t('common.add')}
                 id={searchedUsers.id}
                 alreadyOnApp={true}
-                name={searchedUsers.username || ""}
+                name={searchedUsers.username || ''}
                 phone_number=""
-                image={searchedUsers.photos?.[0]?.image_url?.[0] || ""}
+                image={searchedUsers.photos?.[0]?.image_url?.[0] || ''}
                 onAddPress={() => handleAddSearchedUser(searchedUsers.id)}
                 friendRequestSent={sentRequests.has(searchedUsers.id)}
                 isLoading={isSendingRequest}
@@ -327,7 +327,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
                   { color: theme.colors.feedItem.secondaryText },
                 ]}
               >
-                {t("common.no_contacts_found")}
+                {t('common.no_contacts_found')}
               </Text>
               <TouchableOpacity
                 style={[
@@ -337,7 +337,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
                 onPress={openAppSettings}
               >
                 <Text style={styles.permissionButtonText}>
-                  {t("common.enable_access")}
+                  {t('common.enable_access')}
                 </Text>
               </TouchableOpacity>
             </>
@@ -351,7 +351,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
               onPress={loadMoreContacts}
             >
               <Text style={styles.loadMoreButtonText}>
-                {t("common.load_more")}
+                {t('common.load_more')}
               </Text>
             </TouchableOpacity>
           )}
@@ -372,8 +372,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -386,16 +386,16 @@ const styles = StyleSheet.create({
     height: 36,
     fontSize: 17,
     padding: 0,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   headerText: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 24,
-    textAlign: "center",
+    textAlign: 'center',
   },
   noContactsText: {
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: FontSizes.medium,
     marginTop: 24,
   },
@@ -404,11 +404,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 9999,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   permissionButtonText: {
-    color: "white",
-    fontWeight: "600",
+    color: 'white',
+    fontWeight: '600',
   },
   loadMoreButton: {
     paddingHorizontal: 16,
@@ -416,11 +416,11 @@ const styles = StyleSheet.create({
     borderRadius: 9999,
     marginTop: 24,
     marginBottom: 16,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   loadMoreButtonText: {
-    color: "white",
-    fontWeight: "600",
+    color: 'white',
+    fontWeight: '600',
   },
   bottomPadding: {
     paddingBottom: 40,

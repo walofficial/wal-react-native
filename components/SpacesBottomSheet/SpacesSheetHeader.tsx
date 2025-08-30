@@ -1,14 +1,14 @@
 // @ts-nocheck
-import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { activeLivekitRoomState } from "./atom";
-import { useAtomValue, useSetAtom } from "jotai";
-import { useQuery } from "@tanstack/react-query";
-import ShareButton from "../FeedItem/ShareButton";
-import { useHaptics } from "@/lib/haptics";
-import { getRoomPreviewDataOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import React from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import { activeLivekitRoomState } from './atom';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useQuery } from '@tanstack/react-query';
+import ShareButton from '../FeedItem/ShareButton';
+import { useHaptics } from '@/lib/haptics';
+import { getRoomPreviewDataOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 interface SpacesSheetHeaderProps {
   bottomSheetRef: React.RefObject<BottomSheetModal>;
@@ -30,7 +30,7 @@ const SpacesSheetHeader: React.FC<SpacesSheetHeaderProps> = ({
   });
 
   const handleClose = async () => {
-    haptic("Medium");
+    haptic('Medium');
     bottomSheetRef.current?.close();
     setTimeout(() => {
       setActiveLivekitRoom(null);
@@ -45,7 +45,7 @@ const SpacesSheetHeader: React.FC<SpacesSheetHeaderProps> = ({
         </Pressable>
 
         <View style={styles.rightButtons}>
-          <ShareButton verificationId={livekitRoom?.verification_id ?? ""} />
+          <ShareButton verificationId={livekitRoom?.verification_id ?? ''} />
 
           <Pressable style={styles.exitButton} onPress={handleClose}>
             <Text style={styles.exitText}>გამოსვლა</Text>
@@ -74,46 +74,46 @@ const SpacesSheetHeader: React.FC<SpacesSheetHeaderProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "column",
+    flexDirection: 'column',
   },
   headerRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 0,
     marginBottom: 8,
   },
   rightButtons: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 16,
   },
   exitButton: {
     marginLeft: 20,
   },
   exitText: {
-    color: "#ef4444",
-    fontWeight: "500",
+    color: '#ef4444',
+    fontWeight: '500',
   },
   statusRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
   liveContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 0,
   },
   liveText: {
-    color: "#ef4444",
-    fontWeight: "500",
+    color: '#ef4444',
+    fontWeight: '500',
   },
   listenersContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 0,
   },
@@ -121,23 +121,23 @@ const styles = StyleSheet.create({
     width: 4,
     height: 4,
     borderRadius: 2,
-    backgroundColor: "#9ca3af",
+    backgroundColor: '#9ca3af',
     marginRight: 8,
   },
   listenersText: {
-    color: "#d1d5db",
+    color: '#d1d5db',
   },
   titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 0,
     marginBottom: 8,
   },
   titleText: {
-    color: "#efefef",
-    fontWeight: "600",
+    color: '#efefef',
+    fontWeight: '600',
     fontSize: 24,
   },
 });

@@ -23,7 +23,7 @@ export function useAugmentedRef<T>({
         ...methods,
       };
     },
-    deps
+    deps,
   );
   return augmentedRef;
 }

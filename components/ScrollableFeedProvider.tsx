@@ -1,13 +1,13 @@
-import React, { useCallback, useEffect, useRef } from "react";
-import { NativeScrollEvent } from "react-native";
-import { useAtomValue } from "jotai";
-import { clamp, interpolate, withSpring } from "react-native-reanimated";
-import { useSharedValue } from "react-native-reanimated";
-import { useMinimalShellMode } from "@/lib/context/header-transform";
-import { isNative } from "@/lib/platform";
-import { ScrollProvider } from "@/components/List/ScrollContext";
-import { usePathname } from "expo-router";
-import useFeeds from "@/hooks/useFeeds";
+import React, { useCallback, useEffect, useRef } from 'react';
+import { NativeScrollEvent } from 'react-native';
+import { useAtomValue } from 'jotai';
+import { clamp, interpolate, withSpring } from 'react-native-reanimated';
+import { useSharedValue } from 'react-native-reanimated';
+import { useMinimalShellMode } from '@/lib/context/header-transform';
+import { isNative } from '@/lib/platform';
+import { ScrollProvider } from '@/components/List/ScrollContext';
+import { usePathname } from 'expo-router';
+import useFeeds from '@/hooks/useFeeds';
 
 interface ScrollableFeedProviderProps {
   children: React.ReactNode;
@@ -24,25 +24,25 @@ export default function ScrollableFeedProvider({
 
   const pathname = usePathname();
   const previousTabDetails = useRef({
-    pathname: "",
+    pathname: '',
     headerMode: 0,
   });
 
   const setMode = React.useCallback(
     (v: boolean) => {
-      "worklet";
+      'worklet';
       headerMode.set(() =>
         withSpring(v ? 1 : 0, {
           overshootClamping: true,
-        })
+        }),
       );
     },
-    [headerMode]
+    [headerMode],
   );
 
   // Simulate scroll behavior after navigation because sometimes the onScroll event fires wrongly with incorrect onctentOffset after target page navigation and it uses previous scroll offset which amkes header hide
   const simulateScrollAfterNavigation = useCallback(() => {
-    "worklet";
+    'worklet';
     // Reset scroll state
     startDragOffset.set(0);
     startMode.set(headerMode.get());
@@ -86,7 +86,7 @@ export default function ScrollableFeedProvider({
   useEffect(() => {
     if (
       previousTabDetails.current.pathname !== pathname &&
-      previousTabDetails.current.pathname !== ""
+      previousTabDetails.current.pathname !== ''
     ) {
       // Navigation detected, simulate scroll behavior
       simulateScrollAfterNavigation();
@@ -101,7 +101,7 @@ export default function ScrollableFeedProvider({
 
   const snapToClosestState = useCallback(
     (e: NativeScrollEvent) => {
-      "worklet";
+      'worklet';
       const offsetY = Math.max(0, e.contentOffset.y);
       if (isNative) {
         const startDragOffsetValue = startDragOffset.get();
@@ -123,24 +123,24 @@ export default function ScrollableFeedProvider({
         }
       }
     },
-    [startDragOffset, startMode, setMode, headerMode, headerHeight]
+    [startDragOffset, startMode, setMode, headerMode, headerHeight],
   );
 
   const onBeginDrag = useCallback(
     (e: NativeScrollEvent) => {
-      "worklet";
+      'worklet';
       const offsetY = Math.max(0, e.contentOffset.y);
       if (isNative) {
         startDragOffset.set(offsetY);
         startMode.set(headerMode.get());
       }
     },
-    [headerMode, startDragOffset, startMode]
+    [headerMode, startDragOffset, startMode],
   );
 
   const onEndDrag = useCallback(
     (e: NativeScrollEvent) => {
-      "worklet";
+      'worklet';
       if (isNative) {
         if (e.velocity && e.velocity.y !== 0) {
           // If we detect a velocity, wait for onMomentumEnd to snap.
@@ -149,22 +149,22 @@ export default function ScrollableFeedProvider({
         snapToClosestState(e);
       }
     },
-    [snapToClosestState]
+    [snapToClosestState],
   );
 
   const onMomentumEnd = useCallback(
     (e: NativeScrollEvent) => {
-      "worklet";
+      'worklet';
       if (isNative) {
         snapToClosestState(e);
       }
     },
-    [snapToClosestState]
+    [snapToClosestState],
   );
 
   const onScroll = useCallback(
     (e: NativeScrollEvent) => {
-      "worklet";
+      'worklet';
       const offsetY = Math.max(0, e.contentOffset.y);
       if (isNative) {
         const startDragOffsetValue = startDragOffset.get();
@@ -184,7 +184,7 @@ export default function ScrollableFeedProvider({
         const dProgress = interpolate(
           dy,
           [-headerHeight, headerHeight],
-          [-1, 1]
+          [-1, 1],
         );
         const newValue = clamp(startModeValue + dProgress, 0, 1);
         if (newValue !== headerMode.value) {
@@ -218,7 +218,7 @@ export default function ScrollableFeedProvider({
       startMode,
       didJustRestoreScroll,
       pathname,
-    ]
+    ],
   );
 
   return (

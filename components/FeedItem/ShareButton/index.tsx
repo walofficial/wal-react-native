@@ -1,16 +1,16 @@
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   useAnimatedStyle,
   withSpring,
   withSequence,
   withTiming,
   useSharedValue,
-} from "react-native-reanimated";
-import { shareUrl } from "@/lib/share";
-import { app_name_slug } from "@/app.config";
-import { useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
+} from 'react-native-reanimated';
+import { shareUrl } from '@/lib/share';
+import { app_name_slug } from '@/app.config';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 interface ShareButtonProps {
   verificationId: string;
@@ -32,7 +32,7 @@ function ShareButton({ verificationId, bright }: ShareButtonProps) {
     scale.value = withSequence(
       withSpring(1.1, { damping: 2 }),
       withSpring(0.9),
-      withTiming(1, { duration: 200 })
+      withTiming(1, { duration: 200 }),
     );
 
     shareUrl(`https://${app_name_slug}.ge/status/${verificationId}`);
@@ -41,7 +41,7 @@ function ShareButton({ verificationId, bright }: ShareButtonProps) {
   // Get icon color based on theme and bright prop
   const getIconColor = () => {
     if (bright) {
-      return isDarkColorScheme ? "#ffffff" : theme.colors.text;
+      return isDarkColorScheme ? '#ffffff' : theme.colors.text;
     }
     return theme.colors.feedItem.secondaryText;
   };

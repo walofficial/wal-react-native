@@ -1,13 +1,13 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Link } from "expo-router";
-import { H1 } from "../ui/typography";
-import { Badge } from "../ui/badge";
-import { Text } from "../ui/text";
-import { useAtom } from "jotai";
-import { statusBadgeTextState } from "@/lib/state/custom-status";
-import { FontSizes } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import { H1 } from '../ui/typography';
+import { Badge } from '../ui/badge';
+import { Text } from '../ui/text';
+import { useAtom } from 'jotai';
+import { statusBadgeTextState } from '@/lib/state/custom-status';
+import { FontSizes } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 export default function ProfileHeaderWeb({
   customTitle,
@@ -25,20 +25,20 @@ export default function ProfileHeaderWeb({
   const headerStyle = {
     ...styles.header,
     backgroundColor: isDarkColorScheme
-      ? "rgba(0,0,0,0.8)"
-      : "rgba(255,255,255,0.8)",
+      ? 'rgba(0,0,0,0.8)'
+      : 'rgba(255,255,255,0.8)',
   };
 
   const navStyle = {
     ...styles.nav,
     borderBottomColor: isDarkColorScheme
-      ? "rgba(255,255,255,0.1)"
-      : "rgba(0,0,0,0.1)",
+      ? 'rgba(255,255,255,0.1)'
+      : 'rgba(0,0,0,0.1)',
   };
 
   const titleStyle = {
     ...styles.title,
-    color: isDarkColorScheme ? "#FFFFFF" : "#000000",
+    color: isDarkColorScheme ? '#FFFFFF' : '#000000',
   };
 
   return (
@@ -48,7 +48,7 @@ export default function ProfileHeaderWeb({
           customTitleComponent
         ) : (
           <Link href="/(home)/feed" style={styles.link}>
-            <H1 style={titleStyle}>{customTitle || "WAL"}</H1>
+            <H1 style={titleStyle}>{customTitle || 'WAL'}</H1>
           </Link>
         )}
 
@@ -69,12 +69,12 @@ export function AnimatedStatusBadge() {
 
   const badgeStyle = {
     ...styles.badge,
-    backgroundColor: isDarkColorScheme ? "#be185d" : "#f472b6",
+    backgroundColor: isDarkColorScheme ? '#be185d' : '#f472b6',
   };
 
   const textStyle = {
     ...styles.badgeText,
-    color: "white",
+    color: 'white',
   };
 
   return (
@@ -88,35 +88,35 @@ export function AnimatedStatusBadge() {
 
 const styles = StyleSheet.create({
   header: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     zIndex: 50,
   },
   nav: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingRight: 20,
     paddingLeft: 8,
-    alignItems: "center",
-    width: "100%",
-    justifyContent: "space-between",
+    alignItems: 'center',
+    width: '100%',
+    justifyContent: 'space-between',
     borderBottomWidth: 1,
   },
   link: {
-    textDecorationLine: "none",
+    textDecorationLine: 'none',
   },
   title: {
     padding: 16,
     paddingLeft: 12,
   },
   buttonContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 16,
   },
   badgeContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 16,
     right: 16,
   },

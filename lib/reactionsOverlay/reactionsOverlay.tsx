@@ -1,8 +1,8 @@
-import React from "react";
-import { nanoid } from "nanoid/non-secure";
+import React from 'react';
+import { nanoid } from 'nanoid/non-secure';
 
-import { useNonReactiveCallback } from "@/lib/hooks/useNonReactiveCallback";
-import { ReactionType } from "@/lib/api/generated";
+import { useNonReactiveCallback } from '@/lib/hooks/useNonReactiveCallback';
+import { ReactionType } from '@/lib/api/generated';
 
 export type ReactionsOverlay = {
   id: string;
@@ -64,7 +64,7 @@ export function Provider({ children }: React.PropsWithChildren<{}>) {
           };
         }
       });
-    }
+    },
   );
 
   const hideOverlay = useNonReactiveCallback(() => {
@@ -80,7 +80,7 @@ export function Provider({ children }: React.PropsWithChildren<{}>) {
     () => ({
       activeOverlay,
     }),
-    [activeOverlay]
+    [activeOverlay],
   );
 
   const methods = React.useMemo(
@@ -88,7 +88,7 @@ export function Provider({ children }: React.PropsWithChildren<{}>) {
       showOverlay,
       hideOverlay,
     }),
-    [showOverlay, hideOverlay]
+    [showOverlay, hideOverlay],
   );
 
   return (

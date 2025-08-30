@@ -1,6 +1,6 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Text } from "../ui/text";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text } from '../ui/text';
 
 function ViewMessageText({ message }: { message: string }) {
   return (
@@ -13,16 +13,16 @@ function ViewMessageText({ message }: { message: string }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
     padding: 20,
     paddingTop: 0,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
-    textAlign: "center",
-    fontWeight: "600",
+    textAlign: 'center',
+    fontWeight: '600',
     fontSize: 20,
   },
 });

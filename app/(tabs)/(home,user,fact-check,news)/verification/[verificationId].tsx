@@ -1,23 +1,23 @@
-import React from "react";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import { View, Text, ActivityIndicator } from "react-native";
-import useVerificationById from "@/hooks/useVerificationById";
-import CommentsView from "@/components/VerificationView/CommentsView";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import React from 'react';
+import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { View, Text, ActivityIndicator } from 'react-native';
+import useVerificationById from '@/hooks/useVerificationById';
+import CommentsView from '@/components/VerificationView/CommentsView';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 function VerificationView() {
   const params = useLocalSearchParams<{
     verificationId: string;
   }>();
-  const color = useThemeColor({}, "text");
+  const color = useThemeColor({}, 'text');
 
   // Runtime check and type assertion
-  const verificationId = params.verificationId || "";
+  const verificationId = params.verificationId || '';
 
   // Early return if verificationId is empty
   if (!verificationId) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ color: color }}>Invalid verification ID</Text>
       </View>
     );
@@ -32,14 +32,14 @@ function VerificationView() {
   });
   if (isError) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <Text style={{ color: color }}>ფოსტი წაშლილია ან არ მოიძებნა</Text>
       </View>
     );
   }
   if (!verification || isLoading) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={color} />
       </View>
     );

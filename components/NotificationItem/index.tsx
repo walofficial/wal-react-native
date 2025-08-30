@@ -1,15 +1,15 @@
 // @ts-nocheck
-import React from "react";
-import { View, Pressable, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import { NotificationResponse } from "@/lib/api/generated";
-import { Text } from "../ui/text";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Ionicons } from "@expo/vector-icons";
-import useLiveUser from "@/hooks/useLiveUser";
-import ImageLoader from "../ImageLoader";
-import { formatRelativeTime } from "@/lib/utils/date";
-import { t } from "@/lib/i18n";
+import React from 'react';
+import { View, Pressable, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import { NotificationResponse } from '@/lib/api/generated';
+import { Text } from '../ui/text';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { Ionicons } from '@expo/vector-icons';
+import useLiveUser from '@/hooks/useLiveUser';
+import ImageLoader from '../ImageLoader';
+import { formatRelativeTime } from '@/lib/utils/date';
+import { t } from '@/lib/i18n';
 
 function NotificationItem({
   item,
@@ -25,8 +25,8 @@ function NotificationItem({
     <TouchableOpacity
       onPress={() => {
         if (
-          item.notification.type === "verification_like" ||
-          item.notification.type === "impression"
+          item.notification.type === 'verification_like' ||
+          item.notification.type === 'impression'
         ) {
           router.navigate({
             pathname: `/verification/[verificationId]`,
@@ -34,7 +34,7 @@ function NotificationItem({
               verificationId: item.notification.verification_id,
             },
           });
-        } else if (item.notification.type === "poke") {
+        } else if (item.notification.type === 'poke') {
           joinChatFromNotification.mutate({
             targetUserId: item.from_user.id,
           });
@@ -43,13 +43,13 @@ function NotificationItem({
       style={styles.touchable}
     >
       <View style={styles.container}>
-        {item.notification.type !== "impression" && (
+        {item.notification.type !== 'impression' && (
           <View style={styles.imageContainer}>
             <View style={styles.imageWrapper}>
               <Pressable
                 onPress={(e) => {
                   e.stopPropagation();
-                  if (item.notification.type === "verification_like") {
+                  if (item.notification.type === 'verification_like') {
                     router.navigate({
                       pathname: `/profile-picture`,
                       params: {
@@ -79,7 +79,7 @@ function NotificationItem({
             </Text>
           </View>
           <View style={styles.notificationContent}>
-            {item.notification.type === "verification_like" && (
+            {item.notification.type === 'verification_like' && (
               <View style={styles.iconContainer}>
                 <Ionicons name="heart" size={20} color="#ff3b30" />
               </View>
@@ -89,13 +89,13 @@ function NotificationItem({
               ellipsizeMode="tail"
               numberOfLines={1}
             >
-              {item.notification.type === "poke"
-                ? t("common.poked_you")
-                : item.notification.type === "impression"
-                ? t("common.accumulated_views", {
-                    count: item.notification.count,
-                  })
-                : t("common.likes_your_post")}
+              {item.notification.type === 'poke'
+                ? t('common.poked_you')
+                : item.notification.type === 'impression'
+                  ? t('common.accumulated_views', {
+                      count: item.notification.count,
+                    })
+                  : t('common.likes_your_post')}
             </Text>
           </View>
         </View>
@@ -106,37 +106,37 @@ function NotificationItem({
 
 const styles = StyleSheet.create({
   touchable: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
     paddingVertical: 16,
     paddingHorizontal: 8,
     borderRadius: 8,
   },
   container: {
     flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: "#111827",
+    borderBottomColor: '#111827',
     paddingHorizontal: 8,
     paddingVertical: 20,
-    width: "100%",
+    width: '100%',
   },
   imageContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   imageWrapper: {
-    position: "relative",
+    position: 'relative',
   },
   avatarContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   avatar: {
     width: 48,
@@ -148,27 +148,27 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   title: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
     fontSize: 20,
   },
   timestamp: {
-    color: "#9CA3AF",
+    color: '#9CA3AF',
     fontSize: 14,
   },
   notificationContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 4,
   },
   iconContainer: {
     marginRight: 4,
   },
   notificationText: {
-    color: "#9CA3AF",
+    color: '#9CA3AF',
   },
 });
 

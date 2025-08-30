@@ -1,4 +1,3 @@
-
 import { CATEGORY_ID } from '@/lib/constants';
 import useAuth from './useAuth';
 
@@ -7,13 +6,13 @@ import useAuth from './useAuth';
  * This replaces the hardcoded constants with user-specific preferences
  */
 export const useUserFeedIds = () => {
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   return {
     // Individual feed IDs
-    newsFeedId: user?.preferred_news_feed_id || "",
-    factCheckFeedId: user?.preferred_fact_check_feed_id || "",
-    categoryId: CATEGORY_ID
+    newsFeedId: user?.preferred_news_feed_id || '',
+    factCheckFeedId: user?.preferred_fact_check_feed_id || '',
+    categoryId: CATEGORY_ID,
   };
 };
 

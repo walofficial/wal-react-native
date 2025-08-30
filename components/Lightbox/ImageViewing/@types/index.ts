@@ -6,30 +6,30 @@
  *
  */
 
-import {TransformsStyle} from 'react-native'
-import {MeasuredDimensions} from 'react-native-reanimated'
+import { TransformsStyle } from 'react-native';
+import { MeasuredDimensions } from 'react-native-reanimated';
 
 export type Dimensions = {
-  width: number
-  height: number
-}
+  width: number;
+  height: number;
+};
 
 export type Position = {
-  x: number
-  y: number
-}
+  x: number;
+  y: number;
+};
 
 export type ImageSource = {
-  uri: string
-  dimensions: Dimensions | null
-  thumbUri: string
-  thumbDimensions: Dimensions | null
-  thumbRect: MeasuredDimensions | null
-  alt?: string
-  type: 'image' | 'circle-avi' | 'rect-avi'
-}
+  uri: string;
+  dimensions: Dimensions | null;
+  thumbUri: string;
+  thumbDimensions: Dimensions | null;
+  thumbRect: MeasuredDimensions | null;
+  alt?: string;
+  type: 'image' | 'circle-avi' | 'rect-avi';
+};
 
 export type Transform = Exclude<
   TransformsStyle['transform'],
   string | undefined
->
+>;

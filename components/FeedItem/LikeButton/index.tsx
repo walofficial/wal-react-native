@@ -1,15 +1,15 @@
-import { Pressable, Platform } from "react-native";
-import { useLikeButton } from "./useLikeButton";
+import { Pressable, Platform } from 'react-native';
+import { useLikeButton } from './useLikeButton';
 import Animated, {
   useAnimatedStyle,
   withSpring,
   withSequence,
   withTiming,
   useSharedValue,
-} from "react-native-reanimated";
-import { isWeb } from "@/lib/platform";
-import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/lib/theme";
+} from 'react-native-reanimated';
+import { isWeb } from '@/lib/platform';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@/lib/theme';
 
 interface LikeButtonProps {
   verificationId: string;
@@ -35,7 +35,7 @@ function LikeButton({ verificationId, large, bright }: LikeButtonProps) {
     scale.value = withSequence(
       withSpring(1.1, { damping: 2 }),
       withSpring(0.9),
-      withTiming(1, { duration: 200 })
+      withTiming(1, { duration: 200 }),
     );
     handleLike();
   };
@@ -43,11 +43,11 @@ function LikeButton({ verificationId, large, bright }: LikeButtonProps) {
   // Determine icon color based on theme and like state
   const getIconColor = () => {
     if (isLiked) {
-      return "#ff3b30"; // Heart is always red when liked
+      return '#ff3b30'; // Heart is always red when liked
     }
 
     if (bright) {
-      return "#ffffff"; // Always use white for bright mode (on dark backgrounds)
+      return '#ffffff'; // Always use white for bright mode (on dark backgrounds)
     }
 
     return theme.colors.feedItem.secondaryText; // Use secondary text color otherwise
@@ -65,7 +65,7 @@ function LikeButton({ verificationId, large, bright }: LikeButtonProps) {
     >
       <Animated.View style={animatedStyle}>
         <Ionicons
-          name={isLiked ? "heart" : "heart-outline"}
+          name={isLiked ? 'heart' : 'heart-outline'}
           size={large ? 30 : 27}
           color={getIconColor()}
         />

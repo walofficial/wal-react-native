@@ -1,16 +1,16 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   ScrollView,
   View,
   RefreshControl,
   ActivityIndicator,
   StyleSheet,
-} from "react-native";
-import { useQueryClient } from "@tanstack/react-query";
+} from 'react-native';
+import { useQueryClient } from '@tanstack/react-query';
 
-import useUserChats from "@/hooks/useUserChats";
-import ChatItem from "../ChatItem";
-import useAuth from "@/hooks/useAuth";
+import useUserChats from '@/hooks/useUserChats';
+import ChatItem from '../ChatItem';
+import useAuth from '@/hooks/useAuth';
 
 export default function ChatRoomList() {
   const queryClient = useQueryClient();
@@ -20,7 +20,7 @@ export default function ChatRoomList() {
 
   const onRefresh = useCallback(() => {
     queryClient.invalidateQueries({
-      queryKey: ["user-chat-rooms"],
+      queryKey: ['user-chat-rooms'],
     });
     refetch();
   }, [queryClient, refetch]);
@@ -36,7 +36,7 @@ export default function ChatRoomList() {
         }
 
         const recipientId =
-          chat.participants.find((p) => p.id !== user.id)?.id || "";
+          chat.participants.find((p) => p.id !== user.id)?.id || '';
 
         // // Prefetch message room data
         // queryClient.prefetchQuery({

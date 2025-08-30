@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   StyleSheet,
   useColorScheme,
   Dimensions,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,18 +14,18 @@ import Animated, {
   withSequence,
   withTiming,
   runOnJS,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
-import { Comment, ReactionType } from "@/lib/api/generated/types.gen";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { useAddReaction, useRemoveReaction } from "@/hooks/useCommentReactions";
-import { useAtomValue } from "jotai";
-import { activeTabAtom } from "@/atoms/comments";
-import { SmilePlus } from "lucide-react-native";
+import { Comment, ReactionType } from '@/lib/api/generated/types.gen';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { useAddReaction, useRemoveReaction } from '@/hooks/useCommentReactions';
+import { useAtomValue } from 'jotai';
+import { activeTabAtom } from '@/atoms/comments';
+import { SmilePlus } from 'lucide-react-native';
 import {
   useReactionsOverlay,
   useReactionsOverlayControls,
-} from "@/lib/reactionsOverlay/reactionsOverlay";
+} from '@/lib/reactionsOverlay/reactionsOverlay';
 
 interface CommentReactionsProps {
   comment: Comment;
@@ -35,13 +35,13 @@ interface CommentReactionsProps {
 
 const getReactionEmoji = (reactionType: ReactionType): string => {
   const emojiMap: Record<ReactionType, string> = {
-    like: "👍",
-    love: "❤️",
-    laugh: "😂",
-    angry: "😠",
-    sad: "😢",
-    wow: "😮",
-    dislike: "👎",
+    like: '👍',
+    love: '❤️',
+    laugh: '😂',
+    angry: '😠',
+    sad: '😢',
+    wow: '😮',
+    dislike: '👎',
   };
   return emojiMap[reactionType];
 };
@@ -51,9 +51,9 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
   verificationId,
   onPageTilt,
 }) => {
-  const colorScheme = useColorScheme() ?? "light";
-  const textColor = useThemeColor({}, "text");
-  const iconColor = useThemeColor({}, "icon");
+  const colorScheme = useColorScheme() ?? 'light';
+  const textColor = useThemeColor({}, 'text');
+  const iconColor = useThemeColor({}, 'icon');
   const activeTab = useAtomValue(activeTabAtom);
   const addReactionMutation = useAddReaction(verificationId, activeTab);
   const removeReactionMutation = useRemoveReaction(verificationId, activeTab);
@@ -86,21 +86,21 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
 
   // Get the top reactions with counts > 0, filtered to only allowed types
   const allowedReactionTypes: ReactionType[] = [
-    "love",
-    "laugh",
-    "wow",
-    "sad",
-    "dislike",
+    'love',
+    'laugh',
+    'wow',
+    'sad',
+    'dislike',
   ];
 
   const topReactionsWithCounts = allowedReactionTypes.filter(
-    (reactionType) => reactions[reactionType]?.count > 0
+    (reactionType) => reactions[reactionType]?.count > 0,
   );
 
   // Calculate total reactions only from allowed types
   const totalReactions = allowedReactionTypes.reduce(
     (sum, reactionType) => sum + (reactions[reactionType]?.count || 0),
-    0
+    0,
   );
 
   const hasExistingReactions = totalReactions > 0;
@@ -126,7 +126,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
     // Gentle button press animation
     scale.value = withSequence(
       withTiming(0.95, { duration: 80 }),
-      withSpring(1, { damping: 15, stiffness: 300 })
+      withSpring(1, { damping: 15, stiffness: 300 }),
     );
     if (currentUserReaction === reactionType) {
       // Remove reaction if same type is pressed
@@ -157,7 +157,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
 
   const showReactionPicker = () => {
     if (!addButtonRef.current) {
-      console.warn("Add button ref not available");
+      console.warn('Add button ref not available');
       // Try again after a small delay
       setTimeout(() => {
         if (addButtonRef.current) {
@@ -176,7 +176,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
         width: number,
         height: number,
         pageX: number,
-        pageY: number
+        pageY: number,
       ) => {
         // Add validation for measurement values
         if (
@@ -189,15 +189,15 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
           isNaN(width) ||
           isNaN(height)
         ) {
-          console.warn("Invalid measurement values", {
+          console.warn('Invalid measurement values', {
             pageX,
             pageY,
             width,
             height,
           });
           // Fallback to center screen positioning
-          const screenWidth = Dimensions.get("window").width;
-          const screenHeight = Dimensions.get("window").height;
+          const screenWidth = Dimensions.get('window').width;
+          const screenHeight = Dimensions.get('window').height;
 
           setShowReactionOverlay(true);
           if (onPageTilt) {
@@ -227,7 +227,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
         }
 
         // Get screen width for consistent positioning
-        const screenWidth = Dimensions.get("window").width;
+        const screenWidth = Dimensions.get('window').width;
 
         showOverlay({
           buttonPosition: {
@@ -240,7 +240,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
           onReactionPress: handleReactionPress,
           onClose: handleCloseOverlay,
         });
-      }
+      },
     );
   };
 
@@ -250,7 +250,7 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
     } else {
       // Check if button is mounted before showing picker
       if (!isButtonMounted) {
-        console.warn("Button not mounted yet, waiting...");
+        console.warn('Button not mounted yet, waiting...');
         return;
       }
       // Add a small delay to ensure the ref is available
@@ -275,9 +275,9 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
               styles.addReactionButton,
               {
                 backgroundColor:
-                  colorScheme === "dark"
-                    ? "rgba(255, 255, 255, 0.1)"
-                    : "rgba(0, 0, 0, 0.05)",
+                  colorScheme === 'dark'
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : 'rgba(0, 0, 0, 0.05)',
               },
             ]}
             onPress={handleAddReactionPress}
@@ -300,12 +300,12 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
               styles.reactionsBadge,
               {
                 backgroundColor: currentUserReaction
-                  ? colorScheme === "dark"
-                    ? "rgba(255, 255, 255, 0.2)"
-                    : "rgba(0, 0, 0, 0.1)"
-                  : colorScheme === "dark"
-                  ? "rgba(255, 255, 255, 0.1)"
-                  : "rgba(0, 0, 0, 0.05)",
+                  ? colorScheme === 'dark'
+                    ? 'rgba(255, 255, 255, 0.2)'
+                    : 'rgba(0, 0, 0, 0.1)'
+                  : colorScheme === 'dark'
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : 'rgba(0, 0, 0, 0.05)',
               },
             ]}
             activeOpacity={0.7}
@@ -334,9 +334,9 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
             styles.addReactionButton,
             {
               backgroundColor:
-                colorScheme === "dark"
-                  ? "rgba(255, 255, 255, 0.1)"
-                  : "rgba(0, 0, 0, 0.05)",
+                colorScheme === 'dark'
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(0, 0, 0, 0.05)',
             },
           ]}
           onPress={handleAddReactionPress}
@@ -351,11 +351,11 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
 
 const styles = StyleSheet.create({
   reactionsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 8,
-    flexWrap: "wrap",
-    position: "relative",
+    flexWrap: 'wrap',
+    position: 'relative',
   },
   reactionsBadge: {
     borderRadius: 16,
@@ -363,12 +363,12 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     marginRight: 8,
     minHeight: 32,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badgeContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
   },
   badgeEmoji: {
@@ -376,23 +376,23 @@ const styles = StyleSheet.create({
   },
   badgeCountText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
     marginLeft: 4,
   },
   addReactionButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 6,
   },
   reactionButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 6,
   },
   reactionEmoji: {
@@ -404,12 +404,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginRight: 8,
     height: 32,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   totalCountText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

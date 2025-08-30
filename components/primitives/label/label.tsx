@@ -11,7 +11,8 @@ import type { LabelRootProps, LabelTextProps } from './types';
 
 const Root = React.forwardRef<
   PressableRef,
-  Omit<SlottablePressableProps, 'children' | 'hitSlop' | 'style'> & LabelRootProps
+  Omit<SlottablePressableProps, 'children' | 'hitSlop' | 'style'> &
+    LabelRootProps
 >(({ asChild, ...props }, ref) => {
   const Component = asChild ? Slot.Pressable : Pressable;
   return <Component ref={ref} {...props} />;
@@ -23,7 +24,7 @@ const Text = React.forwardRef<TextRef, SlottableTextProps & LabelTextProps>(
   ({ asChild, ...props }, ref) => {
     const Component = asChild ? Slot.Text : RNText;
     return <Component ref={ref} {...props} />;
-  }
+  },
 );
 
 Text.displayName = 'TextNativeLabel';

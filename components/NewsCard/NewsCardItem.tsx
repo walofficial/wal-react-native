@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,23 +6,23 @@ import {
   Text,
   TouchableOpacity,
   Pressable,
-} from "react-native";
-import { Image } from "expo-image";
-import { ThemedText } from "../ThemedText";
-import { getFaviconUrl } from "@/utils/urlUtils";
-import * as Haptics from "expo-haptics";
+} from 'react-native';
+import { Image } from 'expo-image';
+import { ThemedText } from '../ThemedText';
+import { getFaviconUrl } from '@/utils/urlUtils';
+import * as Haptics from 'expo-haptics';
 // timestamp/date removed from UI
-import { useTheme } from "@/lib/theme";
-import { useColorScheme } from "react-native";
-import FactualityBadge, { FactualityBadgeType } from "../ui/FactualityBadge";
-import { t } from "@/lib/i18n";
-import { FeedPost } from "@/lib/api/generated";
-import { SourceIcon } from "../SourceIcon";
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from 'react-native';
+import FactualityBadge, { FactualityBadgeType } from '../ui/FactualityBadge';
+import { t } from '@/lib/i18n';
+import { FeedPost } from '@/lib/api/generated';
+import { SourceIcon } from '../SourceIcon';
 
 const MAX_SOURCES = 5;
 
 // Helper function to get unique favicon URLs from sources
-const getUniqueSourceIcons = (sources?: FeedPost["sources"]) => {
+const getUniqueSourceIcons = (sources?: FeedPost['sources']) => {
   if (!sources || sources.length === 0) return [];
 
   const uniqueUrls = new Map();
@@ -46,12 +46,12 @@ interface NewsCardItemProps {
 
 const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
   const theme = useTheme();
-  const colorScheme = useColorScheme() || "dark";
-  const isDark = colorScheme === "dark";
+  const colorScheme = useColorScheme() || 'dark';
+  const isDark = colorScheme === 'dark';
 
   // Memoize the press handler to prevent recreation on every render
   const handlePress = useCallback(() => {
-    if (Platform.OS !== "web") {
+    if (Platform.OS !== 'web') {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
     onPress(item.id);
@@ -60,7 +60,7 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
   // Memoize the fact check badge info calculation
   const badgeInfo = useMemo((): {
     text: string;
-    type: "truth" | "misleading" | "neutral";
+    type: 'truth' | 'misleading' | 'neutral';
   } | null => {
     const score = item.fact_check_data?.factuality;
 
@@ -68,15 +68,15 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
       return null;
     }
 
-    let badgeText = "";
-    let badgeType: "truth" | "misleading" | "neutral" = "neutral";
+    let badgeText = '';
+    let badgeType: 'truth' | 'misleading' | 'neutral' = 'neutral';
 
     if (score >= 0.5) {
-      badgeText = `${Math.round(score * 100)}% ${t("common.truth")}`;
-      badgeType = "truth";
+      badgeText = `${Math.round(score * 100)}% ${t('common.truth')}`;
+      badgeType = 'truth';
     } else {
-      badgeText = `${Math.round((1 - score) * 100)}% ${t("common.falsehood")}`;
-      badgeType = "misleading";
+      badgeText = `${Math.round((1 - score) * 100)}% ${t('common.falsehood')}`;
+      badgeType = 'misleading';
     }
 
     return { text: badgeText, type: badgeType };
@@ -86,8 +86,8 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
   const sharedBadgeType: FactualityBadgeType | undefined = useMemo(() => {
     if (!badgeInfo) return undefined;
 
-    if (badgeInfo.type === "neutral") {
-      return "needs-context";
+    if (badgeInfo.type === 'neutral') {
+      return 'needs-context';
     } else {
       return badgeInfo.type as FactualityBadgeType; // "truth" or "misleading"
     }
@@ -120,11 +120,11 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
           styles.newsItem,
           {
             borderColor: isDark
-              ? "rgba(255, 255, 255, 0.1)"
-              : "rgba(0, 0, 0, 0.08)",
+              ? 'rgba(255, 255, 255, 0.1)'
+              : 'rgba(0, 0, 0, 0.08)',
             ...Platform.select({
               ios: {
-                shadowColor: "#000000",
+                shadowColor: '#000000',
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: isDark ? 0.3 : 0.1,
                 shadowRadius: 8,
@@ -141,7 +141,7 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                 source={{ uri: imageUrl }}
                 transition={300}
                 contentFit="cover"
-                style={{ width: "100%", aspectRatio }}
+                style={{ width: '100%', aspectRatio }}
               />
             </View>
           )}
@@ -157,7 +157,7 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                     type={sharedBadgeType}
                     style={[
                       styles.newsCardBadgeStyles,
-                      Platform.OS === "ios" && styles.iosBadgeShadow,
+                      Platform.OS === 'ios' && styles.iosBadgeShadow,
                       {
                         backgroundColor: theme.colors.card.background,
                       },
@@ -196,7 +196,7 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                     style={[
                       styles.moreSourcesIndicator,
                       {
-                        backgroundColor: isDark ? "#e0e0e0" : "#808080",
+                        backgroundColor: isDark ? '#e0e0e0' : '#808080',
                         borderColor: theme.colors.card.background,
                         marginLeft:
                           uniqueSourceIcons.slice(0, MAX_SOURCES).length > 0
@@ -209,7 +209,7 @@ const NewsCardItem: React.FC<NewsCardItemProps> = ({ item, onPress }) => {
                     <Text
                       style={[
                         styles.moreSourcesText,
-                        { color: isDark ? "#333333" : "#ffffff" },
+                        { color: isDark ? '#333333' : '#ffffff' },
                       ]}
                     >
                       +{uniqueSourceIcons.length - MAX_SOURCES}
@@ -229,8 +229,8 @@ const styles = StyleSheet.create({
   pressableItem: {
     ...Platform.select({
       web: {
-        cursor: "pointer",
-        transition: "transform 0.2s ease, opacity 0.2s ease",
+        cursor: 'pointer',
+        transition: 'transform 0.2s ease, opacity 0.2s ease',
       },
       default: {
         // Android and iOS will use the native feedback
@@ -244,32 +244,32 @@ const styles = StyleSheet.create({
     transform: [{ scale: 0.98 }],
   },
   newsItem: {
-    flexDirection: "column",
-    justifyContent: "space-between",
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     borderRadius: 12,
     borderWidth: 1,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   lastNewsItem: {
     marginBottom: 12,
   },
   sourceIconsContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sourceIcon: {
     marginLeft: 0,
   },
   newsContent: {
     flex: 1,
-    justifyContent: "space-between",
-    display: "flex",
-    flexDirection: "column",
+    justifyContent: 'space-between',
+    display: 'flex',
+    flexDirection: 'column',
   },
   imageWrapper: {
-    position: "relative",
-    width: "100%",
-    overflow: "hidden",
+    position: 'relative',
+    width: '100%',
+    overflow: 'hidden',
   },
   textSection: {
     marginTop: 0,
@@ -278,24 +278,24 @@ const styles = StyleSheet.create({
   titleBelowText: {
     fontSize: 18,
     lineHeight: 24,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   footerLeftSection: {
-    flexDirection: "column",
-    alignItems: "flex-start",
+    flexDirection: 'column',
+    alignItems: 'flex-start',
     flex: 1,
     gap: 6,
   },
   footerRightSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginLeft: 12,
   },
   navIcon: {
     marginLeft: 0,
   },
   timestampText: {
-    display: "none",
+    display: 'none',
   },
   singleNewsItem: {
     borderWidth: 1,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   iosBadgeShadow: {
-    shadowColor: "#00000040",
+    shadowColor: '#00000040',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 1,
@@ -321,15 +321,15 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginLeft: 3,
     borderWidth: 2,
     zIndex: 4,
   },
   moreSourcesText: {
     fontSize: 9,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   descriptionText: {
     fontSize: 13,
@@ -338,8 +338,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   badgeAndSourcesRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     marginTop: 12,
   },

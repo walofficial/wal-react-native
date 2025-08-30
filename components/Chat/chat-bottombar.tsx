@@ -1,5 +1,5 @@
-import { Link } from "expo-router";
-import React, { useEffect, useRef, useState } from "react";
+import { Link } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -9,18 +9,18 @@ import {
   StyleSheet,
   Platform,
   useColorScheme,
-} from "react-native";
-import { FileImage, Paperclip, Mic, ArrowUp } from "@/lib/icons";
-import { Audio } from "expo-av";
-import { useAtomValue, useSetAtom } from "jotai";
-import { hasMessageAtom, messageAtom } from "@/lib/state/chat";
+} from 'react-native';
+import { FileImage, Paperclip, Mic, ArrowUp } from '@/lib/icons';
+import { Audio } from 'expo-av';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { hasMessageAtom, messageAtom } from '@/lib/state/chat';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import { isIOS } from "@/lib/platform";
-import { useTheme } from "@/lib/theme";
+} from 'react-native-reanimated';
+import { isIOS } from '@/lib/platform';
+import { useTheme } from '@/lib/theme';
 
 const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
@@ -49,9 +49,9 @@ export default function ChatBottombar({
   const theme = useTheme();
 
   // Signal/Messenger-like colors
-  const isLightMode = useColorScheme() === "light";
-  const inputBackground = isLightMode ? "#e0e0e0" : "#1E1E1E"; // Slightly darker gray for light mode
-  const placeholderColor = isLightMode ? "#8E8E93" : "#8A8A8E"; // Subtle placeholder color
+  const isLightMode = useColorScheme() === 'light';
+  const inputBackground = isLightMode ? '#e0e0e0' : '#1E1E1E'; // Slightly darker gray for light mode
+  const placeholderColor = isLightMode ? '#8E8E93' : '#8A8A8E'; // Subtle placeholder color
   const inputTextColor = theme.colors.text;
 
   useEffect(() => {
@@ -139,9 +139,9 @@ export function SendButton({
 
   // Signal-like send button - blue for light mode, green for dark mode
   const sendButtonColor =
-    theme.colors.background === "#FFFFFF"
-      ? "#3478F6" // Signal blue for light mode
-      : "#22c55e"; // Keep green for dark mode
+    theme.colors.background === '#FFFFFF'
+      ? '#3478F6' // Signal blue for light mode
+      : '#22c55e'; // Keep green for dark mode
 
   const handleSend = () => {
     if (message.trim()) {
@@ -169,9 +169,9 @@ const ChatInputAnimatedWrapper = React.memo(
   ({ children }: { children: React.ReactNode }) => {
     const theme = useTheme();
     const wrapperBorderColor =
-      theme.colors.background === "#FFFFFF"
-        ? "#D1D1D6" // Light gray for light mode
-        : "#4B5563"; // Dark gray for dark mode
+      theme.colors.background === '#FFFFFF'
+        ? '#D1D1D6' // Light gray for light mode
+        : '#4B5563'; // Dark gray for dark mode
 
     return (
       <View style={[styles.wrapper, { borderColor: wrapperBorderColor }]}>
@@ -181,24 +181,24 @@ const ChatInputAnimatedWrapper = React.memo(
   },
   (prevProps, nextProps) => {
     return prevProps.children === nextProps.children;
-  }
+  },
 );
 
-ChatInputAnimatedWrapper.displayName = "ChatInputAnimatedWrapper";
+ChatInputAnimatedWrapper.displayName = 'ChatInputAnimatedWrapper';
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     padding: 8,
-    justifyContent: "space-between",
-    width: "100%",
+    justifyContent: 'space-between',
+    width: '100%',
   },
   disabledContainer: {
     opacity: 0.5,
   },
   inputContainer: {
-    flexDirection: "row",
-    width: "100%",
+    flexDirection: 'row',
+    width: '100%',
     paddingTop: 6,
   },
   textInput: {
@@ -211,16 +211,16 @@ const styles = StyleSheet.create({
     borderWidth: 0,
   },
   sendButtonContainer: {
-    justifyContent: "flex-end",
-    alignSelf: "flex-end",
+    justifyContent: 'flex-end',
+    alignSelf: 'flex-end',
   },
   sendButton: {
     height: 40,
     width: 40,
     borderRadius: 20,
     marginLeft: 6,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   sendButtonDisabled: {
     opacity: 0.55,
@@ -228,15 +228,15 @@ const styles = StyleSheet.create({
   disabledInputContainer: {
     minHeight: 48,
     paddingLeft: 16,
-    borderColor: "transparent",
+    borderColor: 'transparent',
     borderWidth: 0,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   disabledText: {
-    color: "#ffffff",
+    color: '#ffffff',
   },
   wrapper: {
     flex: 1,

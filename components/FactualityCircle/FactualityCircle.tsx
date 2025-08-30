@@ -1,7 +1,7 @@
-import { FontSizes } from "@/lib/theme";
-import { View, Text, StyleSheet } from "react-native";
-import Svg from "react-native-svg";
-import { Circle } from "react-native-svg";
+import { FontSizes } from '@/lib/theme';
+import { View, Text, StyleSheet } from 'react-native';
+import Svg from 'react-native-svg';
+import { Circle } from 'react-native-svg';
 
 function FactualityCircle({
   factuality,
@@ -15,16 +15,16 @@ function FactualityCircle({
 
   // Calculate color based on factuality score
   const getScoreColor = () => {
-    if (score >= 0.7) return "#22c55e"; // Green for high factuality
-    if (score >= 0.4) return "#f59e0b"; // Amber for medium factuality
-    return "#ef4444"; // Red for low factuality
+    if (score >= 0.7) return '#22c55e'; // Green for high factuality
+    if (score >= 0.4) return '#f59e0b'; // Amber for medium factuality
+    return '#ef4444'; // Red for low factuality
   };
 
   // Get factuality label based on score
   const getFactualityLabel = () => {
-    if (score >= 0.7) return "სანდოა"; // Trustworthy
-    if (score >= 0.4) return "საეჭვოა"; // Questionable
-    return "სიცრუეში შეგიყვანთ"; // Misleading
+    if (score >= 0.7) return 'სანდოა'; // Trustworthy
+    if (score >= 0.4) return 'საეჭვოა'; // Questionable
+    return 'სიცრუეში შეგიყვანთ'; // Misleading
   };
 
   const scoreColor = getScoreColor();
@@ -80,20 +80,20 @@ function FactualityCircle({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingRight: 12,
   },
   label: {
     marginRight: 12,
-    fontWeight: "600",
+    fontWeight: '600',
     fontSize: FontSizes.medium,
-    color: "#ffffff",
+    color: '#ffffff',
   },
   percentage: {
     marginLeft: 8,
-    fontWeight: "600",
+    fontWeight: '600',
     fontSize: FontSizes.large,
   },
 });

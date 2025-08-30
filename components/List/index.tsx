@@ -1,11 +1,11 @@
 // @ts-nocheck
-import React, { memo, useRef, useCallback, useEffect } from "react";
+import React, { memo, useRef, useCallback, useEffect } from 'react';
 import {
   NativeScrollEvent,
   Platform,
   RefreshControl,
   ViewToken,
-} from "react-native";
+} from 'react-native';
 import {
   FlatListPropsWithLayout,
   runOnJS,
@@ -13,13 +13,13 @@ import {
   useAnimatedScrollHandler,
   SharedValue,
   withTiming,
-} from "react-native-reanimated";
-import { updateActiveVideoViewAsync } from "@haileyok/bluesky-video";
+} from 'react-native-reanimated';
+import { updateActiveVideoViewAsync } from '@haileyok/bluesky-video';
 
-import { useScrollHandlers } from "@/components/List/ScrollContext";
-import { addStyle } from "@/lib/styles";
-import { isAndroid, isIOS, isNative } from "@/lib/platform";
-import { FlatList_INTERNAL } from "./Views";
+import { useScrollHandlers } from '@/components/List/ScrollContext';
+import { addStyle } from '@/lib/styles';
+import { isAndroid, isIOS, isNative } from '@/lib/platform';
+import { FlatList_INTERNAL } from './Views';
 
 // Simple utility hook to deduplicate frequent calls
 function useDedupe(timeout = 250) {
@@ -37,21 +37,21 @@ function useDedupe(timeout = 250) {
       }
       return false;
     },
-    [timeout]
+    [timeout],
   );
 }
 
 export type ListMethods = FlatList_INTERNAL;
 export type ListProps<ItemT = any> = Omit<
   FlatListPropsWithLayout<ItemT>,
-  | "onMomentumScrollBegin" // Use ScrollContext instead.
-  | "onMomentumScrollEnd" // Use ScrollContext instead.
-  | "onScroll" // Use ScrollContext instead.
-  | "onScrollBeginDrag" // Use ScrollContext instead.
-  | "onScrollEndDrag" // Use ScrollContext instead.
-  | "refreshControl" // Pass refreshing and/or onRefresh instead.
-  | "contentOffset" // Pass headerOffset instead.
-  | "progressViewOffset" // Can't be an animated value
+  | 'onMomentumScrollBegin' // Use ScrollContext instead.
+  | 'onMomentumScrollEnd' // Use ScrollContext instead.
+  | 'onScroll' // Use ScrollContext instead.
+  | 'onScrollBeginDrag' // Use ScrollContext instead.
+  | 'onScrollEndDrag' // Use ScrollContext instead.
+  | 'refreshControl' // Pass refreshing and/or onRefresh instead.
+  | 'contentOffset' // Pass headerOffset instead.
+  | 'progressViewOffset' // Can't be an animated value
 > & {
   onScrolledDownChange?: (isScrolledDown: boolean) => void;
   headerOffset?: number;
@@ -79,7 +79,7 @@ let List = React.forwardRef<ListMethods, ListProps>(
       automaticallyAdjustsScrollIndicatorInsets = false,
       ...props
     },
-    ref
+    ref,
   ): React.ReactElement => {
     const dedupe = useDedupe(400);
 
@@ -136,7 +136,7 @@ let List = React.forwardRef<ListMethods, ListProps>(
     if (refreshing !== undefined || onRefresh !== undefined) {
       refreshControl = (
         <RefreshControl
-          key={"green"}
+          key={'green'}
           refreshing={refreshing ?? false}
           onRefresh={onRefresh}
           progressViewOffset={progressViewOffset ?? headerOffset}
@@ -166,7 +166,7 @@ let List = React.forwardRef<ListMethods, ListProps>(
           right: 1,
           ...props.scrollIndicatorInsets,
         }}
-        indicatorStyle={"white"}
+        indicatorStyle={'white'}
         contentOffset={contentOffset}
         refreshControl={refreshControl}
         onScroll={scrollHandler}
@@ -176,9 +176,9 @@ let List = React.forwardRef<ListMethods, ListProps>(
         ref={ref}
       />
     );
-  }
+  },
 );
-List.displayName = "List";
+List.displayName = 'List';
 
 List = memo(List);
 export { List };

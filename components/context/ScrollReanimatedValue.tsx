@@ -1,5 +1,5 @@
-import React, { createContext, useContext } from "react";
-import { SharedValue, useSharedValue } from "react-native-reanimated";
+import React, { createContext, useContext } from 'react';
+import { SharedValue, useSharedValue } from 'react-native-reanimated';
 
 const ScrollReanimatedValueContext = createContext<{
   scrollY: SharedValue<number>;

@@ -1,9 +1,9 @@
-import useCountAnonList from "./useCountAnonList";
-import { Text } from "../ui/text";
-import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, View, StyleSheet } from "react-native";
-import { useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
+import useCountAnonList from './useCountAnonList';
+import { Text } from '../ui/text';
+import { Ionicons } from '@expo/vector-icons';
+import { ActivityIndicator, View, StyleSheet } from 'react-native';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 function LiveUserCountIndicator({ feedId }: { feedId: string }) {
   const { data, isFetching, isRefetching, isSuccess, isError } =
@@ -15,7 +15,7 @@ function LiveUserCountIndicator({ feedId }: { feedId: string }) {
     <Ionicons name="people-circle-outline" size={25} color="deeppink" />
   );
   if (isFetching && !isRefetching)
-    return <ActivityIndicator color={isDarkColorScheme ? "white" : "black"} />;
+    return <ActivityIndicator color={isDarkColorScheme ? 'white' : 'black'} />;
   if (!isSuccess) return standardIcon;
   return (
     <View style={styles.container}>
@@ -31,19 +31,19 @@ function LiveUserCountIndicator({ feedId }: { feedId: string }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   badge: {
     marginLeft: 8,
     paddingHorizontal: 4,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   text: {
     fontSize: 15,
-    fontWeight: "500", // Medium weight for better legibility
+    fontWeight: '500', // Medium weight for better legibility
     letterSpacing: 0.24, // Subtle letter spacing for improved readability
   },
 });

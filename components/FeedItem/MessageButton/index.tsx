@@ -1,8 +1,8 @@
-import React from "react";
-import { ActivityIndicator, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import useLiveUser from "@/hooks/useLiveUser";
-import { StyleSheet } from "react-native";
+import React from 'react';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import useLiveUser from '@/hooks/useLiveUser';
+import { StyleSheet } from 'react-native';
 
 interface MessageButtonProps {
   friendId: string;
@@ -29,9 +29,9 @@ const styles = StyleSheet.create({
   container: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: "#333",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: '#333',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 
