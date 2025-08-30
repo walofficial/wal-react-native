@@ -14,6 +14,8 @@
     "lint": "expo lint",
     "clean": "rm -rf .expo node_modules",
     "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "plugin:build": "tsc -p ./plugin/tsconfig.json",
     "plugin:watch": "expo-module build plugin",
     "plugin:test": "expo-module test plugin",
@@ -143,6 +145,7 @@
     "@types/react": "~18.3.12",
     "@types/uuid": "^10.0.0",
     "jest": "^29.2.1",
+    "prettier": "^3.3.3",
     "tailwindcss": "^3.3.5",
     "typescript": "^5.9.2"
   },

@@ -1,0 +1,30 @@
+name: EAS OTA Update
+
+on:
+  push:
+    branches: [dev, staging, main]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps
+        run: |
+          npm ci
+          npm i -g eas-cli@latest
+      - name: Determine channel
+        id: ch
+        run: |
+          branch="${GITHUB_REF_NAME}"
+          if [ "$branch" = "dev" ]; then echo "channel=development" >> $GITHUB_OUTPUT; fi
+          if [ "$branch" = "staging" ]; then echo "channel=preview" >> $GITHUB_OUTPUT; fi
+          if [ "$branch" = "main" ]; then echo "channel=production" >> $GITHUB_OUTPUT; fi
+      - name: EAS update
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          eas update --channel ${{ steps.ch.outputs.channel }} --non-interactive --message "Auto OTA: ${GITHUB_SHA::7} (${GITHUB_REF_NAME})"

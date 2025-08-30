@@ -1,0 +1,18 @@
+area:app:
+  - app/**
+area:components:
+  - components/**
+area:hooks:
+  - hooks/**
+area:lib:
+  - lib/**
+area:screens:
+  - screens/**
+area:workflows:
+  - .github/workflows/**
+type:docs:
+  - "**/*.md"
+type:tests:
+  - components/__tests__/**
+
+
