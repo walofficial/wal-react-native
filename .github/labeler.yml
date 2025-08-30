@@ -1,32 +1,16 @@
 area:app:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: ["app/**"]
+  - app/**
 area:components:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: ["components/**"]
+  - components/**
 area:hooks:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: ["hooks/**"]
+  - hooks/**
 area:lib:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: ["lib/**"]
+  - lib/**
 area:screens:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: ["screens/**"]
+  - screens/**
 area:workflows:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: [".github/workflows/**"]
+  - .github/workflows/**
 type:docs:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: ["**/*.md"]
+  - "**/*.md"
 type:tests:
-  - any:
-      - changed-files:
-          - any-glob-to-any-file: ["components/__tests__/**"]
+  - components/__tests__/**
