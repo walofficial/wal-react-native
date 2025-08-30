@@ -1,5 +1,3 @@
-"area:app":
-  - app/**
 "area:components":
   - components/**
 "area:hooks":
