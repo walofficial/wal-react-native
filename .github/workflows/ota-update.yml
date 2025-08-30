@@ -2,7 +2,7 @@ name: EAS OTA Update
 
 on:
   push:
-    branches: [dev, staging, main]
+    branches: [dev, preview, main]
 
 jobs:
   detect-native-change:
@@ -45,7 +45,7 @@ jobs:
         run: |
           branch="${GITHUB_REF_NAME}"
           if [ "$branch" = "dev" ]; then echo "channel=development" >> $GITHUB_OUTPUT; fi
-          if [ "$branch" = "staging" ]; then echo "channel=preview" >> $GITHUB_OUTPUT; fi
+          if [ "$branch" = "preview" ]; then echo "channel=preview" >> $GITHUB_OUTPUT; fi
           if [ "$branch" = "main" ]; then echo "channel=production" >> $GITHUB_OUTPUT; fi
       - name: EAS update
         env:

@@ -1,4 +1,7 @@
 const IS_DEV = process.env.EXPO_PUBLIC_IS_DEV === "true";
+// Keep app version in sync with package.json
+// Expo config is executed in Node; requiring JSON here is safe and supported
+const pkg = require("./package.json");
 
 export const app_name_slug = "wal";
 export const app_name = IS_DEV ? "WAL DEV" : "WAL";
@@ -8,7 +11,7 @@ export default {
     name: app_name,
     slug: "mnt-app",
     owner: "nshelia",
-    version: "1.0.22",
+    version: pkg.version,
     orientation: "portrait",
     icon: "./assets/images/logo-big.png",
     scheme: app_name_slug,
