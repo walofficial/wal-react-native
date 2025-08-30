@@ -7,6 +7,7 @@ export default {
     platforms: ["ios", "android", "web"],
     name: app_name,
     slug: "mnt-app",
+    owner: "nshelia",
     version: "1.0.22",
     orientation: "portrait",
     icon: "./assets/images/logo-big.png",
@@ -26,12 +27,9 @@ export default {
     ios: {
       associatedDomains: [`applinks:${app_name_slug}.ge`],
       infoPlist: {
-        NSCameraUsageDescription:
-          "This app uses the camera to capture photos and videos.",
-        NSPhotoLibraryUsageDescription:
-          "This app accesses your photos to let you share them.",
-        NSMicrophoneUsageDescription:
-          "This app accesses your microphone to let you share them.",
+        NSCameraUsageDescription: "This app uses the camera to capture photos and videos.",
+        NSPhotoLibraryUsageDescription: "This app accesses your photos to let you share them.",
+        NSMicrophoneUsageDescription: "This app accesses your microphone to let you share them.",
         NSContactsUsageDescription:
           "WAL uses your contacts to help you find and connect with friends who are already using the app. Your contact data is only used for finding friends and is never stored or used for any other purpose.",
         NSLocationWhenInUseUsageDescription:
@@ -40,9 +38,7 @@ export default {
       },
       supportsTablet: false,
       bundleIdentifier: IS_DEV ? "com.greetai.mentdev" : "com.greetai.ment",
-      googleServicesFile: IS_DEV
-        ? "./GoogleService-Info.plist"
-        : "./GoogleService-Info-Prod.plist",
+      googleServicesFile: IS_DEV ? "./GoogleService-Info.plist" : "./GoogleService-Info-Prod.plist",
     },
     assetBundlePatterns: ["**/*"],
     android: {
@@ -161,14 +157,7 @@ export default {
       [
         "react-native-share",
         {
-          ios: [
-            "fb",
-            "instagram",
-            "whatsapp",
-            "tg",
-            "twitter",
-            "tiktoksharesdk",
-          ],
+          ios: ["fb", "instagram", "whatsapp", "tg", "twitter", "tiktoksharesdk"],
           android: [
             "com.whatsapp",
             "org.telegram.messenger",
@@ -184,8 +173,7 @@ export default {
       [
         "expo-image-picker",
         {
-          photosPermission:
-            "$(PRODUCT_NAME) needs access to your photos to set profile image.",
+          photosPermission: "$(PRODUCT_NAME) needs access to your photos to set profile image.",
           cameraPermission:
             "$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live on locations.",
         },

@@ -5,7 +5,31 @@ on:
     branches: [dev, staging, main]
 
 jobs:
+  detect-native-change:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect native-impacting changes
+        id: detect
+        run: |
+          set -e
+          base_ref=$(git rev-parse HEAD~1)
+          echo "Comparing against $base_ref"
+          CHANGED=$(git diff --name-only "$base_ref" HEAD)
+          echo "$CHANGED" | sed 's/^/changed: /'
+          NATIVE_MATCHES=$(echo "$CHANGED" | grep -E '^(package.json|yarn.lock|pnpm-lock.yaml|package-lock.json|android/|ios/|app\.plugin\.(js|ts)|app\.config\.(js|ts|json)|eas\.json|plugins?/|patches/|babel\.config\.(js|ts)|metro\.config\.(js|ts))' || true)
+          if [ -n "$NATIVE_MATCHES" ]; then
+            echo "native_changed=true" >> $GITHUB_OUTPUT
+            echo "Native-impacting changes detected:" && echo "$NATIVE_MATCHES"
+          else
+            echo "native_changed=false" >> $GITHUB_OUTPUT
+            echo "No native-impacting changes detected."
+          fi
   update:
+    needs: detect-native-change
+    if: needs.detect-native-change.outputs.native_changed == 'false'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,3 +52,46 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           eas update --channel ${{ steps.ch.outputs.channel }} --non-interactive --message "Auto OTA: ${GITHUB_SHA::7} (${GITHUB_REF_NAME})"
+
+  build-dev-android:
+    needs: detect-native-change
+    if: needs.detect-native-change.outputs.native_changed == 'true' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install deps and EAS CLI
+        run: |
+          npm ci
+          npm i -g eas-cli@latest
+      - name: Build Development APK (Android only)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          eas build --platform android --profile development-local --local --non-interactive --output=./app-dev.apk
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dev-apk-${{ github.sha }}
+          path: ./app-dev.apk
+          retention-days: 7
+      - name: Create/Update GitHub Release (dev)
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          name: "Dev APK ${{ github.sha }}"
+          tag_name: dev-${{ github.sha }}
+          files: |
+            ./app-dev.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  notify-skip:
+    needs: detect-native-change
+    if: needs.detect-native-change.outputs.native_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip notice
+        run: echo "Native-impacting changes detected; skipping OTA. Run a full EAS build instead."
