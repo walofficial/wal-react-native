@@ -53,6 +53,14 @@ jobs:
         run: |
           eas update --channel ${{ steps.ch.outputs.channel }} --non-interactive --message "Auto OTA: ${GITHUB_SHA::7} (${GITHUB_REF_NAME})"
 
+  notify-skip:
+    needs: detect-native-change
+    if: needs.detect-native-change.outputs.native_changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Skip notice
+        run: echo "Native-impacting changes detected; skipping OTA. Run a full EAS build instead."
+
   build-dev-android:
     needs: detect-native-change
     if: needs.detect-native-change.outputs.native_changed == 'true' && github.ref == 'refs/heads/dev'
@@ -62,36 +70,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install deps and EAS CLI
+      - name: Install deps and EAS
         run: |
           npm ci
-          npm i -g eas-cli@latest
-      - name: Build Development APK (Android only)
+          npm i -g eas-cli@latest jq
+      - name: Build Android (development-local)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile development-local --local --non-interactive --output=./app-dev.apk
+          eas build --profile development-local --platform android --non-interactive --wait --json > build.json
+          echo "Build JSON:" && cat build.json
+      - name: Download APK
+        id: dl
+        run: |
+          url=$(jq -r '.[0].artifacts.buildUrl' build.json)
+          name="app-dev-${GITHUB_SHA::7}.apk"
+          echo "url=$url" >> $GITHUB_OUTPUT
+          echo "name=$name" >> $GITHUB_OUTPUT
+          curl -L "$url" -o "$name"
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dev-apk-${{ github.sha }}
-          path: ./app-dev.apk
-          retention-days: 7
-      - name: Create/Update GitHub Release (dev)
-        uses: softprops/action-gh-release@v1
-        with:
-          prerelease: true
-          name: "Dev APK ${{ github.sha }}"
-          tag_name: dev-${{ github.sha }}
-          files: |
-            ./app-dev.apk
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  notify-skip:
-    needs: detect-native-change
-    if: needs.detect-native-change.outputs.native_changed == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Skip notice
-        run: echo "Native-impacting changes detected; skipping OTA. Run a full EAS build instead."
+          name: ${{ steps.dl.outputs.name }}
+          path: ${{ steps.dl.outputs.name }}
