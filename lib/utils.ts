@@ -6,6 +6,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { LocationFeedPost, Task, UserVerification } from './interfaces';
+import * as Sentry from '@sentry/react-native';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -44,7 +45,6 @@ export async function sendPushNotification(expoPushToken: string) {
 }
 
 function handleRegistrationError(errorMessage: string) {
-  alert(errorMessage);
   throw new Error(errorMessage);
 }
 
@@ -80,10 +80,10 @@ export async function registerForPushNotificationsAsync() {
       const pushTokenString = (
         await Notifications.getExpoPushTokenAsync({ projectId })
       ).data;
-      console.log(pushTokenString);
       return pushTokenString;
     } catch (e: unknown) {
       handleRegistrationError(`${e}`);
+      Sentry.captureException(e);
     }
   } else {
     // handleRegistrationError("Must use physical device for push notifications");
