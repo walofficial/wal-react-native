@@ -157,9 +157,9 @@ export const useUploadVideo = ({
                 ) => {
                   return index === 0
                     ? {
-                        ...page,
-                        data: [optimisticVerification, ...page.data],
-                      }
+                      ...page,
+                      data: [optimisticVerification, ...page.data],
+                    }
                     : page;
                 },
               ),

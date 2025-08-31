@@ -12,7 +12,6 @@ on:
       - '**.md'
       - 'LICENSE'
       - 'docs/**'
-
   workflow_dispatch:
     inputs:
       buildType:
