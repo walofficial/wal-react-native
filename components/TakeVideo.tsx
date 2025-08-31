@@ -3,19 +3,19 @@ import { View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Button } from './ui/button';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { useTheme } from '@/lib/theme';
 import { useColorScheme } from '@/lib/useColorScheme';
+import { useToast } from './ToastUsage';
 
 export default function TakeVideo({ disabled }: { disabled: boolean }) {
   const router = useRouter();
   const { feedId } = useLocalSearchParams();
   const theme = useTheme();
   const { isDarkColorScheme } = useColorScheme();
-
+  const { dismiss } = useToast();
   const onTakeVideoClick = async () => {
     // Dismiss previous toasts if any
-    toast.dismiss();
+    dismiss('all');
 
     try {
       const cachedVideoPath = await AsyncStorage.getItem(
