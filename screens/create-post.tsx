@@ -46,6 +46,7 @@ import {
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { formDataBodySerializer } from '@/lib/utils/form-data';
 import { t } from '@/lib/i18n';
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 const MAX_CHARS = 1500;
 
@@ -290,7 +291,7 @@ export default function CreatePost() {
 
       const queryOptions = getLocationFeedPaginatedInfiniteOptions({
         query: {
-          page_size: 10,
+          page_size: LOCATION_FEED_PAGE_SIZE,
           content_type_filter: cacheUpdateContentType,
         },
         path: {

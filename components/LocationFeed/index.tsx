@@ -13,7 +13,7 @@ import type { ViewabilityConfig } from 'react-native';
 import { ListEmptyComponent } from './ListEmptyComponent';
 import BottomSheet from '@gorhom/bottom-sheet';
 import type { Feed, LocationFeedPost } from '@/lib/api/generated';
-import { queryOptions, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { isWeb } from '@/lib/platform';
 import BottomLocationActions from '../BottomLocationActions';
 import FeedItem from '../FeedItem';
@@ -129,6 +129,7 @@ export default function LocationFeed({
   ]);
 
   const loadMore = () => {
+    console.log('loadMore', hasNextPage, isFetchingNextPage);
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }

@@ -8,6 +8,7 @@ import { useLocalSearchParams } from 'expo-router';
 import useAuth from './useAuth';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 export function useMakePublicMutation() {
   const { feedId } = useLocalSearchParams<{ feedId: string }>();
@@ -38,7 +39,7 @@ export function useMakePublicMutation() {
         queryKey: getVerificationsInfiniteOptions({
           query: {
             target_user_id: user.external_user_id,
-            page_size: 10,
+            page_size: LOCATION_FEED_PAGE_SIZE,
           },
         }).queryKey,
         exact: false,

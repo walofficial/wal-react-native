@@ -21,7 +21,8 @@ import {
   removeFriendMutation,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { t } from '@/lib/i18n';
-const PAGE_SIZE = 10;
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
+const PAGE_SIZE = LOCATION_FEED_PAGE_SIZE;
 
 const FriendsList: React.FC = () => {
   const queryClient = useQueryClient();

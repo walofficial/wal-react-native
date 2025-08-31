@@ -24,6 +24,7 @@ import {
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { formDataBodySerializer } from '@/lib/utils/form-data';
 import { t } from '@/lib/i18n';
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 const formSchema = z.object({
   photo: z
@@ -82,7 +83,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
         queryKey: getVerificationsInfiniteQueryKey({
           query: {
             target_user_id: user?.id || '',
-            page_size: 10,
+            page_size: LOCATION_FEED_PAGE_SIZE,
           },
         }),
       });

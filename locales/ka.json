@@ -15,7 +15,7 @@
   },
   "regions": {
     "georgia": "საქართველო",
-    "united_states": "ამერიკის შეერთებული შტატები",
+    "united_states": "აშშ",
     "france": "საფრანგეთი"
   },
   "languages": {
@@ -49,6 +49,7 @@
     "go_back": "უკან",
     "was_live": "იყო ლაივში",
     "loading": "იტვირთება...",
+    "fact_check_loading": "ვამოწმებთ...",
     "error_colon": "შეცდომა: ",
     "live_stream_disconnected": "ლაივ სტრიმი გაითიშა",
     "live_stream_unavailable": "პირდაპირი ეთერი დასრულდა ან არ არის ხელმისაწვდომი",
@@ -180,7 +181,12 @@
     "uploading": "იტვირთება...",
     "enter_name": "შეიყვანეთ სახელი",
     "continue": "გაგრძელება",
-    "only_latin_letters": "მხოლოდ ლათინური ასოები."
+    "only_latin_letters": "მხოლოდ ლათინური ასოები.",
+    "supports": "ადასტურებს",
+    "contradicts": "უარყოფს",
+    "no_contradicts": "არავინ უარყოფს",
+    "analysis": "ანალიზი",
+    "based_on_sources": "წყაროს მიხედვით"
   },
   "errors": {
     "post_publish_failed": "პოსტი ვერ გამოქვეყნდა",
@@ -196,6 +202,7 @@
     "camera_permission_required": "კამერის ნება საჭიროა",
     "camera_permission_denied": "კამერის ნება უარყოფილია. გთხოვთ ჩართოთ სისტემის პარამეტრებში",
     "failed_save_image": "სურათის შენახვა ვერ მოხერხდა",
-    "failed_paste_content": "კონტენტის ჩასმა ვერ მოხერხდა"
+    "failed_paste_content": "კონტენტის ჩასმა ვერ მოხერხდა",
+    "finalize_user_details": "გთხოვთ დაიცადოთ..."
   }
 }

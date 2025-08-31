@@ -1,10 +1,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { getVerificationsInfiniteOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 export function useUserVerificationsPaginated({
   targetUserId,
   enabled = true,
-  pageSize = 10,
+  pageSize = LOCATION_FEED_PAGE_SIZE,
 }: {
   targetUserId: string;
   enabled?: boolean;
