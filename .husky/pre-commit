@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+
+lint-staged
+node node_modules/.bin/tsc --noEmit
