@@ -88,6 +88,23 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     [isDarkColorScheme],
   );
 
+  const info = useCallback(
+    ({ title, description }: { title: string; description?: string }) =>
+      show(
+        toastMainStyle({
+          icon: 'information-circle-outline',
+          title: title,
+          description: description,
+          color: '#3B82F6',
+          dark: isDarkColorScheme,
+        }),
+        {
+          position: 'top',
+        },
+      ),
+    [isDarkColorScheme],
+  );
+
   const update = useCallback(
     (id: string, content: React.ReactNode | string, options?: ToastOptions) => {
       setToasts((prevToasts) =>
@@ -144,6 +161,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     dismissAll,
     error,
     success,
+    info,
   };
 
   return (
