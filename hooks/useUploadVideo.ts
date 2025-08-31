@@ -157,9 +157,9 @@ export const useUploadVideo = ({
                 ) => {
                   return index === 0
                     ? {
-                      ...page,
-                      data: [optimisticVerification, ...page.data],
-                    }
+                        ...page,
+                        data: [optimisticVerification, ...page.data],
+                      }
                     : page;
                 },
               ),
@@ -191,7 +191,7 @@ export const useUploadVideo = ({
       }
     },
     onError: (error) => {
-      dismiss("all")
+      dismiss('all');
       if (error) {
         console.log('error', error);
         Alert.alert(isPhoto ? 'ფოტო ვერ აიტვირთა' : 'ვიდეო ვერ აიტვირთა');

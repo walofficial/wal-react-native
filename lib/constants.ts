@@ -48,4 +48,4 @@ export const FACT_CHECK_FEED_ID = '67bb256786841cb3e7074bcd';
 export const NEWS_FEED_ID = '687960db5051460a7afd6e63';
 export const CATEGORY_ID = '669e9a03dd31644abb767337';
 
-export const LOCATION_FEED_PAGE_SIZE = 10
+export const LOCATION_FEED_PAGE_SIZE = 10;

@@ -41,6 +41,5 @@ export async function shareText(text: string) {
     await Share.share({ message: text });
   } else {
     await setStringAsync(text);
-
   }
 }
