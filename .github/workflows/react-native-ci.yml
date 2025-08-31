@@ -193,17 +193,17 @@ jobs:
         env:
           NODE_ENV: development
 
-      - name: 📱 Build iOS Preview
-        if: github.event_name == 'push' && (
-          github.ref == 'refs/heads/preview' ||
-          startsWith(github.ref, 'refs/heads/release/') ||
-          startsWith(github.ref, 'refs/heads/hotfix/')
-          ) && matrix.platform == 'ios'
-        run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform ios --profile preview --local --non-interactive --output=./app-ios-preview.ipa
-        env:
-          NODE_ENV: production
+      # - name: 📱 Build iOS Preview
+      #   if: github.event_name == 'push' && (
+      #     github.ref == 'refs/heads/preview' ||
+      #     startsWith(github.ref, 'refs/heads/release/') ||
+      #     startsWith(github.ref, 'refs/heads/hotfix/')
+      #     ) && matrix.platform == 'ios'
+      #   run: |
+      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+      #     eas build --platform ios --profile preview --local --non-interactive --output=./app-ios-preview.ipa
+      #   env:
+      #     NODE_ENV: production
 
       - name: 📱 Build iOS Production
         if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-prod') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && matrix.platform == 'ios')
