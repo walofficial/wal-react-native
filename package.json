@@ -157,8 +157,9 @@
     "typescript": "^5.9.2"
   },
   "lint-staged": {
-    "*.{ts,tsx,js,jsx,css,md,json}": [
-      "prettier --write"
+    "*.{ts,tsx,js,jsx,css,md,mdx,json,yml,yaml,mjs,cjs}": [
+      "prettier --write",
+      "prettier --check"
     ]
   },
   "private": true
