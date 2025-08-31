@@ -1,5 +1,4 @@
 import React, { RefObject, useCallback } from 'react';
-import React, { useCallback } from 'react';
 import { BottomSheetFooter, BottomSheetModal } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import SpacesSheetHeader from './SpacesSheetHeader';
