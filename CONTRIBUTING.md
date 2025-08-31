@@ -35,3 +35,4 @@ Thank you for your interest in contributing!
 
 - Version comes from `app.config.js`
 - Android APKs are uploaded to GitHub Releases; AAB to Play Store
+- Check git flow scripts in package.json file

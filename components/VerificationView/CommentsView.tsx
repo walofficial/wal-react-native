@@ -18,7 +18,7 @@ import CommentsList from '@/components/Comments/CommentsList';
 import useAuth from '@/hooks/useAuth';
 import LiveStreamViewer from '@/components/LiveStreamViewer';
 import SpaceView from '@/components/FeedItem/SpaceView';
-import { LocationFeedPost, Source, User } from '@/lib/api/generated';
+import { FeedPost, LocationFeedPost, Source, User } from '@/lib/api/generated';
 import { getVideoSrc } from '@/lib/utils';
 import { useAtom } from 'jotai';
 import FeedActions from '../FeedItem/FeedActions';
@@ -485,7 +485,7 @@ const CommentsView = ({
   verification: initialVerification,
   verificationId,
 }: {
-  verification: LocationFeedPost;
+  verification: FeedPost;
   verificationId: string;
 }) => {
   const { user } = useAuth();

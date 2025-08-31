@@ -60,7 +60,7 @@ jobs:
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: 📦 Install dependencies
@@ -95,7 +95,7 @@ jobs:
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: 📦 Install dependencies
@@ -141,19 +141,6 @@ jobs:
           if ! command -v jq &> /dev/null; then
             echo "Installing jq..."
             sudo apt-get update && sudo apt-get install -y jq
-          fi
-
-          # Fix the main entry in package.json
-          if [ -f ./package.json ]; then
-            # Create a backup
-            cp package.json package.json.bak
-            # Update the package.json
-            jq '.main = "node_modules/expo/AppEntry.js"' package.json > package.json.tmp && mv package.json.tmp package.json
-            echo "Updated package.json main entry"
-            cat package.json | grep "main"
-          else
-            echo "package.json not found"
-            exit 1
           fi
 
       - name: 📱 Build Development APK
