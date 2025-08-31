@@ -15,7 +15,6 @@ import {
 import { useSession } from '@/components/AuthLayer';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useFeeds from '@/hooks/useFeeds';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { useToast } from '@/components/ToastUsage';
 
 export default function ShareIntent() {

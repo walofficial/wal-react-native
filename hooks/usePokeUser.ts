@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { pokeUserLiveActionsPokeTargetUserIdPostMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { useToast } from '@/components/ToastUsage';
 

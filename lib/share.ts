@@ -1,7 +1,6 @@
 import { Platform, Share } from 'react-native';
 import { setStringAsync } from 'expo-clipboard';
 import { isAndroid, isIOS } from '@/lib/platform';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { ShareOptions } from 'react-native-share';
 /**
  * This function shares a URL using the native Share API if available, or copies it to the clipboard
@@ -42,8 +41,6 @@ export async function shareText(text: string) {
     await Share.share({ message: text });
   } else {
     await setStringAsync(text);
-    toast('Copied to clipboard', {
-      id: 'clipboard-check',
-    });
+
   }
 }
