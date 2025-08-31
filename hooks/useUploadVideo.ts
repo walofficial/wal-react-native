@@ -6,7 +6,6 @@ import { useAtom, useAtomValue } from 'jotai';
 import { verificationRefetchIntervalState } from '@/lib/state/chat';
 import { useRef } from 'react';
 import { Alert } from 'react-native';
-import { toast } from '@backpackapp-io/react-native-toast';
 import useAuth from './useAuth';
 import {
   LocationFeedPost,
@@ -23,6 +22,7 @@ import {
 import { formDataBodySerializer } from '@/lib/utils/form-data';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
+import { dismiss } from 'expo-router/build/global-state/routing';
 
 export const useUploadVideo = ({
   feedId,
@@ -48,7 +48,7 @@ export const useUploadVideo = ({
 
   const { user } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { success } = useToast();
+  const { success, dismiss } = useToast();
 
   const uploadBlob = useMutation({
     mutationKey: ['upload-blob', feedId, isPhoto],
@@ -157,9 +157,9 @@ export const useUploadVideo = ({
                 ) => {
                   return index === 0
                     ? {
-                        ...page,
-                        data: [optimisticVerification, ...page.data],
-                      }
+                      ...page,
+                      data: [optimisticVerification, ...page.data],
+                    }
                     : page;
                 },
               ),
@@ -191,7 +191,7 @@ export const useUploadVideo = ({
       }
     },
     onError: (error) => {
-      toast.dismiss('upload-blob');
+      dismiss("all")
       if (error) {
         console.log('error', error);
         Alert.alert(isPhoto ? 'ფოტო ვერ აიტვირთა' : 'ვიდეო ვერ აიტვირთა');

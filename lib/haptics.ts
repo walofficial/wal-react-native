@@ -3,7 +3,6 @@ import * as Device from 'expo-device';
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
 import { isIOS, isWeb } from './platform';
-import { toast } from '@backpackapp-io/react-native-toast';
 
 export function useHaptics() {
   return React.useCallback(

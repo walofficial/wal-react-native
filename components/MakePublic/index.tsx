@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useMakePublicMutation } from '@/hooks/useMakePublicMutation';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { useToast } from '../ToastUsage';
 import { t } from '@/lib/i18n';
 

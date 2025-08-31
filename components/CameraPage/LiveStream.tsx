@@ -10,7 +10,6 @@ import {
   useRoom,
   useRoomContext,
 } from '@livekit/react-native';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { Track, LocalVideoTrack } from 'livekit-client';
 import { RoomControls } from './RoomControls';
 // @ts-ignore

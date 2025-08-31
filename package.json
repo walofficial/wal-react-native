@@ -34,7 +34,6 @@
     }
   },
   "dependencies": {
-    "@backpackapp-io/react-native-toast": "^0.13.0",
     "@bacons/apple-targets": "^0.2.1",
     "@config-plugins/react-native-webrtc": "^10.0.0",
     "@expo/config-plugins": "^9.0.0",
