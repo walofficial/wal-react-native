@@ -129,7 +129,6 @@ export default function LocationFeed({
   ]);
 
   const loadMore = () => {
-    console.log('loadMore', hasNextPage, isFetchingNextPage);
     if (hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
