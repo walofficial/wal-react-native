@@ -22,7 +22,3 @@ This project uses push notifications for both Android and iOS platforms. The req
 - `GoogleService-Info.plist`: Required for iOS push notifications (development and production)
 
 These files should be properly configured for each environment (development and production).
-
-## Web Support
-
-There is experimental support for web using the `npx expo start --web` flag. However, this is not ready for production as we are waiting for server-side rendering support. Currently, Expo only supports static file generation during build time, with SSR support being blocked by Expo's current limitations.
