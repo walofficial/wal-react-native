@@ -2,13 +2,20 @@ name: React Native CI/CD
 
 on:
   push:
-    branches: [dev, preview, main, master]
+    branches:
+      - dev
+      - preview
+      - main
+      - 'release/**'
+      - 'hotfix/**'
     paths-ignore:
       - '**.md'
       - 'LICENSE'
       - 'docs/**'
   pull_request:
-    branches: [main, master]
+    branches:
+      - main
+      - dev
   workflow_dispatch:
     inputs:
       buildType:
@@ -74,7 +81,13 @@ jobs:
 
   build-and-release:
     needs: test
-    if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/preview')) || github.event_name == 'workflow_dispatch'
+    if: (github.event_name == 'push' && (
+      startsWith(github.ref, 'refs/heads/release/') ||
+      startsWith(github.ref, 'refs/heads/hotfix/') ||
+      github.ref == 'refs/heads/dev' ||
+      github.ref == 'refs/heads/preview' ||
+      github.ref == 'refs/heads/main' ||
+      )) || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
         platform: [android]
@@ -151,7 +164,12 @@ jobs:
           fi
 
       - name: 📱 Build Development APK
-        if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'dev' || (github.event_name == 'push' && github.ref == 'refs/heads/dev' && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
+        if:
+          github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'dev' || (
+          github.event_name == 'push' && (
+          github.ref == 'refs/heads/dev'
+          ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
+          )
         run: |
           # Build with increased memory limit
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
@@ -160,7 +178,11 @@ jobs:
           NODE_ENV: development
 
       - name: 📱 Build Preview APK
-        if: github.event_name == 'push' && github.ref == 'refs/heads/preview' && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
+        if: github.event_name == 'push' && (
+          github.ref == 'refs/heads/preview' ||
+          startsWith(github.ref, 'refs/heads/release/') ||
+          startsWith(github.ref, 'refs/heads/hotfix/')
+          ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           eas build --platform android --profile preview --local --non-interactive --output=./app-preview.apk
@@ -184,7 +206,7 @@ jobs:
           NODE_ENV: production
 
       - name: 📱 Build iOS Development
-        if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-dev') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && github.ref == 'refs/heads/dev' && matrix.platform == 'ios')
+        if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-dev') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop') && matrix.platform == 'ios')
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           eas build --platform ios --profile development --local --non-interactive --output=./app-ios-dev.app
@@ -192,7 +214,11 @@ jobs:
           NODE_ENV: development
 
       - name: 📱 Build iOS Preview
-        if: github.event_name == 'push' && github.ref == 'refs/heads/preview' && matrix.platform == 'ios'
+        if: github.event_name == 'push' && (
+          github.ref == 'refs/heads/preview' ||
+          startsWith(github.ref, 'refs/heads/release/') ||
+          startsWith(github.ref, 'refs/heads/hotfix/')
+          ) && matrix.platform == 'ios'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           eas build --platform ios --profile preview --local --non-interactive --output=./app-ios-preview.ipa
