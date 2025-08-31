@@ -44,9 +44,7 @@ export async function sendPushNotification(expoPushToken: string) {
   console.log(response.statusText);
 }
 
-function handleRegistrationError(errorMessage: string) {
-  throw new Error(errorMessage);
-}
+function handleRegistrationError(errorMessage: string) {}
 
 export async function registerForPushNotificationsAsync() {
   if (Platform.OS === 'android') {

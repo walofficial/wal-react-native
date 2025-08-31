@@ -232,8 +232,8 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   });
 
   useEffect(() => {
-    // Basically this reset the the phone input to be visible after user presses the back button on the registration screen
-    setShowPhoneInput(true);
+    // Reset phone input visibility after returning, but don't interfere with OTP flow
+    if (!isAuthenticating) setShowPhoneInput((prev) => (prev ? prev : true));
   }, [isAuthenticating]);
 
   const handleTimerStart = useCallback((duration: number) => {
