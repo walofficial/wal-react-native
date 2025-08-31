@@ -1,5 +1,8 @@
 name: React Native CI/CD
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -110,17 +113,18 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           # Bump local version (patch) without tagging to keep repo/version in sync
+          export HUSKY=0
           npm version patch --no-git-tag-version
           VERSION=$(node -p "require('./package.json').version")
           echo "Bumped version to $VERSION"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json package-lock.json || true
-          git commit -m "chore(release): $VERSION [skip ci]" || echo "No version change to commit"
+          git commit -m "chore(release): $VERSION [skip ci]" --no-verify || echo "No version change to commit"
           git push || echo "Skip push (no changes)"
           # Sync remote app version (EAS) so builds use this version
-          eas project:version:set "$VERSION" --non-interactive
-          eas project:version:get
+          npx eas-cli@latest project:version:set "$VERSION" --non-interactive
+          npx eas-cli@latest project:version:get
 
       - name: 🔖 Bump version and sync EAS (release branches)
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
@@ -129,17 +133,18 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
         run: |
           # Bump local version (patch) without tagging to keep repo/version in sync
+          export HUSKY=0
           npm version patch --no-git-tag-version
           VERSION=$(node -p "require('./package.json').version")
           echo "Bumped version to $VERSION"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add package.json package-lock.json || true
-          git commit -m "chore(release): $VERSION [skip ci]" || echo "No version change to commit"
+          git commit -m "chore(release): $VERSION [skip ci]" --no-verify || echo "No version change to commit"
           git push || echo "Skip push (no changes)"
           # Sync remote app version (EAS) so builds use this version
-          eas project:version:set "$VERSION" --non-interactive
-          eas project:version:get
+          npx eas-cli@latest project:version:set "$VERSION" --non-interactive
+          npx eas-cli@latest project:version:get
 
       - name: 🚀 EAS OTA Update (hotfix branches)
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/hotfix/')
@@ -199,7 +204,7 @@ jobs:
         if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-apk' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile production-apk --local --non-interactive --output=./app-prod.apk
+          eas build --platform android --profile production-apk --non-interactive --output=./app-prod.apk
         env:
           NODE_ENV: production
 
@@ -207,7 +212,7 @@ jobs:
         if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-aab' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile production --local --non-interactive --output=./app-prod.aab
+          eas build --platform android --profile production --non-interactive --output=./app-prod.aab
         env:
           NODE_ENV: production
 
@@ -219,23 +224,23 @@ jobs:
         env:
           NODE_ENV: development
 
-      # - name: 📱 Build iOS Preview
-      #   if: github.event_name == 'push' && (
-      #     github.ref == 'refs/heads/preview' ||
-      #     startsWith(github.ref, 'refs/heads/release/') ||
-      #     startsWith(github.ref, 'refs/heads/hotfix/')
-      #     ) && matrix.platform == 'ios'
-      #   run: |
-      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-      #     eas build --platform ios --profile preview --local --non-interactive --output=./app-ios-preview.ipa
-      #   env:
-      #     NODE_ENV: production
+      - name: 📱 Build iOS Preview
+        if: github.event_name == 'push' && (
+          github.ref == 'refs/heads/preview' ||
+          startsWith(github.ref, 'refs/heads/release/') ||
+          startsWith(github.ref, 'refs/heads/hotfix/')
+          ) && matrix.platform == 'ios'
+        run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          eas build --platform ios --profile preview --non-interactive --output=./app-ios-preview.ipa
+        env:
+          NODE_ENV: production
 
       - name: 📱 Build iOS Production
         if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-prod') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && matrix.platform == 'ios')
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform ios --profile production --local --non-interactive --output=./app-ios-prod.ipa
+          eas build --platform ios --profile production --non-interactive --output=./app-ios-prod.ipa
         env:
           NODE_ENV: production
 
