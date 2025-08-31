@@ -11,7 +11,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useQueryClient } from '@tanstack/react-query';
 import SpacesBottomControls from './SpacesBottomControls';
 import { isWeb } from '@/lib/platform';
-import useSheetCloseOnNavigation from '@/hooks/sheetCloseOnNavigation';
 import { getBottomSheetBackgroundStyle } from '@/lib/styles';
 interface SpacesBottomSheetProps {
   isVisible?: boolean;
@@ -28,7 +27,7 @@ const SpacesBottomSheet = React.forwardRef<
   const queryClient = useQueryClient();
   const insets = useSafeAreaInsets();
   const snapPoints = React.useMemo(() => ['74%', '90%'], []);
-  useSheetCloseOnNavigation(ref as RefObject<BottomSheetModal>);
+  ref as RefObject<BottomSheetModal>;
 
   const renderBackdrop = useCallback(
     (props: any) => (
