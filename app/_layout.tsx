@@ -10,7 +10,7 @@ import AuthLayer, { useSession } from '@/components/AuthLayer';
 import * as Notifications from 'expo-notifications';
 import * as Sentry from '@sentry/react-native';
 import { createStore, Provider, useAtom } from 'jotai';
-import { isDev } from '@/lib/api/config';
+import { isDev, SENTRY_DSN } from '@/lib/api/config';
 import AppStateHandler from '../components/AppStateHandler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useState, useEffect } from 'react';
@@ -95,7 +95,7 @@ SplashScreen.setOptions({
 });
 Sentry.init({
   enabled: !isDev,
-  dsn: 'https://8e8adf1963b62dfff57f9484ba1028f9@o4506526616453120.ingest.us.sentry.io/4507883615092736',
+  dsn: SENTRY_DSN,
 
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for tracing.
