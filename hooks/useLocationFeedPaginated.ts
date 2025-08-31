@@ -140,7 +140,6 @@ export function useLocationFeedPaginated({
     // subscribed: isFocused,
   });
   const items = data?.pages.flatMap((page) => page) || [];
-  console.log('items', items.length, hasNextPage, isFetchingNextPage);
   return {
     items,
     fetchNextPage,
