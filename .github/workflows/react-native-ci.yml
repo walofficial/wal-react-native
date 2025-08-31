@@ -12,7 +12,6 @@ on:
       - '**.md'
       - 'LICENSE'
       - 'docs/**'
-  pull_request:
 
   workflow_dispatch:
     inputs:
