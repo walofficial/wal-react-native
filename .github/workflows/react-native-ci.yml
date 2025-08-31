@@ -13,9 +13,7 @@ on:
       - 'LICENSE'
       - 'docs/**'
   pull_request:
-    branches:
-      - main
-      - dev
+
   workflow_dispatch:
     inputs:
       buildType:
@@ -73,8 +71,8 @@ jobs:
       - name: 🧪 Run TypeScript check
         run: npm run typecheck
 
-      # - name: 🧹 Run ESLint
-      #   run: npm run lint
+      - name: 🧹 Run ESLint
+        run: npm run lint
 
       - name: 🎨 Run Prettier check
         run: npm run format:check
