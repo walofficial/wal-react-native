@@ -39,6 +39,13 @@ export interface ToastContextValue {
     title: string;
     description?: string;
   }) => string;
+  info: ({
+    title,
+    description,
+  }: {
+    title: string;
+    description?: string;
+  }) => string;
   update: (
     id: string,
     content: React.ReactNode | string,

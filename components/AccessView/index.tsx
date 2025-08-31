@@ -504,18 +504,37 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
       </Text>
     </View>
   );
-
   if (locale === 'ka') {
     termsSection = (
-      <View style={{ marginTop: 24, opacity: 0.7 }}>
-        <Text style={[styles.termsText, { color: theme.colors.text }]}>
+      <View
+        style={{
+          marginTop: 24,
+          opacity: 0.7,
+          width: '100%',
+          alignItems: 'center',
+        }}
+      >
+        <Text
+          style={[
+            styles.termsText,
+            { fontSize: 14, color: theme.colors.text, opacity: 0.6 },
+          ]}
+        >
           გაგრძელებით თქვენ ეთანხმებით
         </Text>
         <Text
-          style={[styles.termsText, { marginTop: 4, color: '#007AFF' }]}
+          style={[
+            styles.termsText,
+            {
+              marginTop: 4,
+              fontSize: 14,
+              color: theme.colors.text,
+              opacity: 0.6,
+            },
+          ]}
           onPress={openPrivacyPolicy}
         >
-          მომსახურების პირობებსა და კონფიდენციალურობის პოლიტიკას
+          კონფიდენციალურობის პოლიტიკას
         </Text>
       </View>
     );

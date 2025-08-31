@@ -9,6 +9,7 @@ import {
 import { useAtomValue } from 'jotai';
 import { debouncedSearchValueAtom } from '@/lib/state/search';
 import useUserFeedIds from './useUserFeedIds';
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 function useVerificationById(
   verificationId: string,
@@ -22,13 +23,13 @@ function useVerificationById(
   const queryClient = useQueryClient();
   const globalSearchTerm = useAtomValue(debouncedSearchValueAtom);
   const { factCheckFeedId } = useUserFeedIds();
-
+  const queryOptions = getUserVerificationOptions({
+    query: {
+      verification_id: verificationId,
+    },
+  });
   const { data, isLoading, isSuccess, isError } = useQuery({
-    ...getUserVerificationOptions({
-      query: {
-        verification_id: verificationId,
-      },
-    }),
+    ...queryOptions,
     queryFn: async (): Promise<FeedPost> => {
       const response = await getUserVerification({
         query: {
@@ -95,7 +96,7 @@ function feedQueryOptionsByContentType(
   return [
     getLocationFeedPaginatedInfiniteOptions({
       query: {
-        page_size: 10,
+        page_size: LOCATION_FEED_PAGE_SIZE,
         search_term: globalSearchTerm,
         content_type_filter: 'last24h',
       },
@@ -105,7 +106,7 @@ function feedQueryOptionsByContentType(
     }),
     getLocationFeedPaginatedInfiniteOptions({
       query: {
-        page_size: 10,
+        page_size: LOCATION_FEED_PAGE_SIZE,
         search_term: globalSearchTerm,
         content_type_filter: 'youtube_only',
       },
@@ -115,7 +116,7 @@ function feedQueryOptionsByContentType(
     }),
     getLocationFeedPaginatedInfiniteOptions({
       query: {
-        page_size: 10,
+        page_size: LOCATION_FEED_PAGE_SIZE,
         search_term: globalSearchTerm,
         content_type_filter: 'social_media_only',
       },

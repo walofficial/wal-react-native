@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { isWeb } from '@/lib/platform';
 import { useIsFocused } from '@react-navigation/native';
 import { useLocalSearchParams } from 'expo-router';
@@ -10,12 +10,12 @@ import {
   getUserVerificationOptions,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { getLocationFeedPaginated } from '@/lib/api/generated/sdk.gen';
-import { queryClient } from '@/lib/queryClient';
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 export function useLocationFeedPaginated({
   enabled = true,
   feedId,
-  pageSize = 10,
+  pageSize = LOCATION_FEED_PAGE_SIZE,
   content_type,
   searchTerm: externalSearchTerm,
   debounceDelay = 500,
@@ -27,6 +27,7 @@ export function useLocationFeedPaginated({
   searchTerm?: string;
   debounceDelay?: number;
 }) {
+  const queryClient = useQueryClient();
   // Global search state from ProfileHeader
   const globalSearchTerm = useAtomValue(debouncedSearchValueAtom);
 
@@ -108,7 +109,6 @@ export function useLocationFeedPaginated({
             verification_id: item.id,
           },
         });
-
         queryClient.setQueryData(queryOptions.queryKey, {
           ...item,
         });
@@ -140,7 +140,6 @@ export function useLocationFeedPaginated({
     // subscribed: isFocused,
   });
   const items = data?.pages.flatMap((page) => page) || [];
-
   return {
     items,
     fetchNextPage,

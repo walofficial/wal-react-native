@@ -16,10 +16,9 @@ import { useTheme } from '@/lib/theme';
 import { useRouter, usePathname } from 'expo-router';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import FactualityBadge from '../ui/FactualityBadge';
-import { toast } from '@backpackapp-io/react-native-toast';
-import useVerificationById from '@/hooks/useVerificationById';
 import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
 import { t } from '@/lib/i18n';
+import { useToast } from '../ToastUsage';
 
 interface FeedActionsProps {
   verificationId: string;
@@ -86,33 +85,24 @@ const FactualityLoader = ({ style }: { style?: any }) => {
   const colorScheme = useColorScheme();
   const isDarkColorScheme = colorScheme === 'dark';
 
-  const handlePress = () => {
-    toast(t('common.post_checking_time'), {
-      duration: 3000,
-      id: 'factuality-loader',
-    });
-  };
-
   return (
-    <Pressable onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.loaderContainer,
-          {
-            backgroundColor: isDarkColorScheme
-              ? 'rgba(60, 60, 60, 0.3)'
-              : 'rgba(240, 240, 240, 0.5)',
-            // Opacity will be controlled by the parent component via the style prop
-          },
-          style,
-        ]}
-      >
-        <LoadingCircle color="#34C759" size={16} />
-        <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          {t('common.fact_check_loading')}
-        </Text>
-      </Animated.View>
-    </Pressable>
+    <Animated.View
+      style={[
+        styles.loaderContainer,
+        {
+          backgroundColor: isDarkColorScheme
+            ? 'rgba(60, 60, 60, 0.3)'
+            : 'rgba(240, 240, 240, 0.5)',
+          // Opacity will be controlled by the parent component via the style prop
+        },
+        style,
+      ]}
+    >
+      <LoadingCircle color="#34C759" size={16} />
+      <Text style={[styles.loaderText, { color: theme.colors.text }]}>
+        {t('common.fact_check_loading')}
+      </Text>
+    </Animated.View>
   );
 };
 
@@ -122,32 +112,23 @@ const SummaryLoader = ({ style }: { style?: any }) => {
   const colorScheme = useColorScheme();
   const isDarkColorScheme = colorScheme === 'dark';
 
-  const handlePress = () => {
-    toast(t('common.text_analysis_in_progress'), {
-      duration: 3000,
-      id: 'summary-loader',
-    });
-  };
-
   return (
-    <Pressable onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.loaderContainer,
-          {
-            backgroundColor: isDarkColorScheme
-              ? 'rgba(60, 60, 60, 0.3)'
-              : 'rgba(240, 240, 240, 0.5)',
-          },
-          style,
-        ]}
-      >
-        <LoadingCircle color="#007AFF" size={16} />
-        <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          {t('common.analyzing_post')}
-        </Text>
-      </Animated.View>
-    </Pressable>
+    <Animated.View
+      style={[
+        styles.loaderContainer,
+        {
+          backgroundColor: isDarkColorScheme
+            ? 'rgba(60, 60, 60, 0.3)'
+            : 'rgba(240, 240, 240, 0.5)',
+        },
+        style,
+      ]}
+    >
+      <LoadingCircle color="#007AFF" size={16} />
+      <Text style={[styles.loaderText, { color: theme.colors.text }]}>
+        {t('common.analyzing_post')}
+      </Text>
+    </Animated.View>
   );
 };
 
@@ -157,32 +138,23 @@ const MetadataLoader = ({ style }: { style?: any }) => {
   const colorScheme = useColorScheme();
   const isDarkColorScheme = colorScheme === 'dark';
 
-  const handlePress = () => {
-    toast(t('common.please_wait'), {
-      duration: 3000,
-      id: 'metadata-loader',
-    });
-  };
-
   return (
-    <Pressable onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.loaderContainer,
-          {
-            backgroundColor: isDarkColorScheme
-              ? 'rgba(60, 60, 60, 0.3)'
-              : 'rgba(240, 240, 240, 0.5)',
-          },
-          style,
-        ]}
-      >
-        <LoadingCircle color="#34C759" size={16} />
-        <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          {t('common.analyzing_post')}
-        </Text>
-      </Animated.View>
-    </Pressable>
+    <Animated.View
+      style={[
+        styles.loaderContainer,
+        {
+          backgroundColor: isDarkColorScheme
+            ? 'rgba(60, 60, 60, 0.3)'
+            : 'rgba(240, 240, 240, 0.5)',
+        },
+        style,
+      ]}
+    >
+      <LoadingCircle color="#34C759" size={16} />
+      <Text style={[styles.loaderText, { color: theme.colors.text }]}>
+        {t('common.analyzing_post')}
+      </Text>
+    </Animated.View>
   );
 };
 
@@ -193,10 +165,19 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   showFactualityBadge,
   isOwner,
 }) => {
+  const { info } = useToast();
+
   // Use the same hook as CommentsView to ensure consistent data
-  const { data: verification } = useVerificationById(verificationId, isOwner, {
-    refetchInterval: 5000, // Same interval as CommentsView uses
-  });
+  const { data: verification } = {
+    data: {
+      fact_check_data: {
+        factuality: 'TRUE',
+      },
+      fact_check_status: 'PENDING',
+      ai_video_summary_status: 'PENDING',
+      metadata_status: 'PENDING',
+    },
+  };
   // Extract the data from verification object
   const factuality = verification?.fact_check_data?.factuality;
   const isFactualityLoading = verification?.fact_check_status === 'PENDING';
@@ -272,6 +253,12 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   }, [metadataLoading]);
 
   const handleFactualityPress = () => {
+    if (isFactualityLoading || isSummaryLoading || metadataLoading) {
+      info({
+        title: t('common.please_wait'),
+      });
+      return;
+    }
     const wasLightboxActive = closeLightbox();
 
     // Check if we're already on the verification page
