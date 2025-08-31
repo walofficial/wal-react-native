@@ -30,7 +30,7 @@ FILES=$(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g')
 
 # Run prettier on staged files
 if [ -f "./node_modules/.bin/prettier" ]; then
-  echo "$FILES" | xargs ./node_modules/.bin/prettier --ignore-unknown --write
+  echo "$FILES" | xargs ./node_modules/.bin/prettier --ignore-unknown . --write
   echo "$FILES" | xargs git add
 fi
 
