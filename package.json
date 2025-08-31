@@ -19,7 +19,12 @@
     "plugin:build": "tsc -p ./plugin/tsconfig.json",
     "plugin:watch": "expo-module build plugin",
     "plugin:test": "expo-module test plugin",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "feature:start": "bash ./scripts/gitflow-feature-start.sh",
+    "feature:finish": "bash ./scripts/gitflow-feature-finish.sh",
+    "release:start": "bash ./scripts/gitflow-release-start.sh",
+    "release:staging": "bash ./scripts/gitflow-release-to-staging.sh",
+    "release:promote": "bash ./scripts/gitflow-promote-to-main.sh"
   },
   "expo": {
     "doctor": {
