@@ -87,9 +87,6 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
   // Handle user registration status
   useEffect(() => {
     if (user) {
-      if (!isUserRegistered(user)) {
-        router.navigate('/(auth)/register');
-      }
       // Send public key when we have a user
       sendPublicKey({ userId: user.id });
     }
@@ -115,7 +112,6 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
           }
 
           try {
-            successToast({ title: t('common.finalize_user_details') });
             const newUser = await handleUserNotFound(supabaseUser.data.user);
             setUser(newUser.data);
             dismissAll();

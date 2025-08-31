@@ -19,6 +19,7 @@ import FactualityBadge from '../ui/FactualityBadge';
 import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
 import { t } from '@/lib/i18n';
 import { useToast } from '../ToastUsage';
+import useVerificationById from '@/hooks/useVerificationById';
 
 interface FeedActionsProps {
   verificationId: string;
@@ -168,16 +169,9 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   const { info } = useToast();
 
   // Use the same hook as CommentsView to ensure consistent data
-  const { data: verification } = {
-    data: {
-      fact_check_data: {
-        factuality: 'TRUE',
-      },
-      fact_check_status: 'PENDING',
-      ai_video_summary_status: 'PENDING',
-      metadata_status: 'PENDING',
-    },
-  };
+  const { data: verification } = useVerificationById(verificationId, isOwner, {
+    refetchInterval: 5000, // Same interval as CommentsView uses
+  });
   // Extract the data from verification object
   const factuality = verification?.fact_check_data?.factuality;
   const isFactualityLoading = verification?.fact_check_status === 'PENDING';

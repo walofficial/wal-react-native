@@ -231,6 +231,11 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
     },
   });
 
+  useEffect(() => {
+    // Basically this reset the the phone input to be visible after user presses the back button on the registration screen
+    setShowPhoneInput(true);
+  }, [isAuthenticating]);
+
   const handleTimerStart = useCallback((duration: number) => {
     // This callback is called when timer starts in TimerButton
   }, []);

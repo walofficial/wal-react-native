@@ -18,7 +18,7 @@ import CommentsList from '@/components/Comments/CommentsList';
 import useAuth from '@/hooks/useAuth';
 import LiveStreamViewer from '@/components/LiveStreamViewer';
 import SpaceView from '@/components/FeedItem/SpaceView';
-import { LocationFeedPost, Source } from '@/lib/api/generated';
+import { LocationFeedPost, Source, User } from '@/lib/api/generated';
 import { getVideoSrc } from '@/lib/utils';
 import { useAtom } from 'jotai';
 import FeedActions from '../FeedItem/FeedActions';
@@ -236,7 +236,7 @@ const PostContent = memo(
   }: {
     verification: LocationFeedPost;
     verificationId: string;
-    user: any;
+    user?: User;
   }) => {
     const theme = useTheme();
 
@@ -302,7 +302,7 @@ const PostContent = memo(
             <SpaceView
               description={verification.text_content || ''}
               roomName={verification.livekit_room_name}
-              isHost={verification.assignee_user?.id === user.id}
+              isHost={!!user && verification.assignee_user?.id === user.id}
               scheduledAt={verification.scheduled_at || undefined}
             />
           </View>
@@ -310,7 +310,7 @@ const PostContent = memo(
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
-              isOwner={verification.assignee_user?.id === user.id}
+              isOwner={!!user && verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -345,7 +345,7 @@ const PostContent = memo(
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
-              isOwner={verification.assignee_user?.id === user.id}
+              isOwner={!!user && verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -407,11 +407,10 @@ const PostContent = memo(
             isLive={isLive}
             isVisible={true}
             verificationId={verificationId}
-            name={verification.assignee_user?.username || user.username}
+            name={verification.assignee_user?.username || ''}
             time={verification.last_modified_date}
             avatarUrl={
-              verification.assignee_user?.photos[0]?.image_url[0] ||
-              user.photos[0]?.image_url[0]
+              verification.assignee_user?.photos[0]?.image_url[0] || ''
             }
             livekitRoomName={verification.livekit_room_name || undefined}
             isSpace={isSpace}
@@ -471,7 +470,7 @@ const PostContent = memo(
           <FeedActions
             verificationId={verificationId}
             sourceComponent={null}
-            isOwner={verification.assignee_user?.id === user.id}
+            isOwner={!!user && verification.assignee_user?.id === user.id}
           />
         </View>
       </View>
@@ -519,13 +518,12 @@ const CommentsView = ({
           {/* Header Section */}
           {!verification.title ? (
             <PostHeader
-              name={verification.assignee_user?.username || user.username || ''}
+              name={verification.assignee_user?.username || ''}
               time={verification.last_modified_date}
               avatarUrl={
-                verification.assignee_user?.photos[0]?.image_url[0] ||
-                user.photos[0]?.image_url[0]
+                verification.assignee_user?.photos[0]?.image_url[0] || ''
               }
-              posterId={verification.assignee_user?.id || user.id}
+              posterId={verification.assignee_user?.id || ''}
               headerHeight={headerHeight}
               hasFactCheck={!!verification.fact_check_data}
               isLive={verification.is_live}
@@ -545,15 +543,17 @@ const CommentsView = ({
           <CommentsList postId={verificationId} />
         </View>
       </ScrollView>
-      <KeyboardAvoidingView
-        keyboardVerticalOffset={keyboardVerticalOffset}
-        behavior={isIOS ? 'padding' : 'padding'}
-        style={{
-          backgroundColor: 'transparent',
-        }}
-      >
-        <CommentInput postId={verificationId} />
-      </KeyboardAvoidingView>
+      {user && (
+        <KeyboardAvoidingView
+          keyboardVerticalOffset={keyboardVerticalOffset}
+          behavior={isIOS ? 'padding' : 'padding'}
+          style={{
+            backgroundColor: 'transparent',
+          }}
+        >
+          <CommentInput postId={verificationId} />
+        </KeyboardAvoidingView>
+      )}
     </View>
   );
 };
