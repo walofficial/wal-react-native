@@ -25,20 +25,35 @@ fi
 echo "Fetching latest refs..."
 git fetch --all --prune
 
-echo "Updating ${RELEASE_BRANCH}..."
+echo "Ensuring ${RELEASE_BRANCH} is up to date and pushed..."
 git checkout "${RELEASE_BRANCH}"
 git pull --rebase --autostash || git pull --rebase
+git push -u origin "${RELEASE_BRANCH}"
 
-echo "Updating ${STAGING_BRANCH}..."
-git checkout "${STAGING_BRANCH}"
-git pull --rebase --autostash || git pull --rebase
+echo "Preparing PR ${RELEASE_BRANCH} -> ${STAGING_BRANCH}..."
+if command -v gh >/dev/null 2>&1; then
+  gh pr create \
+    --base "${STAGING_BRANCH}" \
+    --head "${RELEASE_BRANCH}" \
+    --title "chore(release): ${RELEASE_NAME} to preview" \
+    --body "This PR merges release ${RELEASE_NAME} into preview for validation." \
+    --draft || true
+  echo "Opened draft PR to preview (or it already exists)."
+else
+  ORIGIN_URL=$(git remote get-url origin)
+  if [[ "${ORIGIN_URL}" =~ ^git@github.com:(.*)\.git$ ]]; then
+    REPO_PATH="${BASH_REMATCH[1]}"
+    REPO_URL="https://github.com/${REPO_PATH}"
+  elif [[ "${ORIGIN_URL}" =~ ^https://github.com/(.*)\.git$ ]]; then
+    REPO_PATH="${BASH_REMATCH[1]}"
+    REPO_URL="https://github.com/${REPO_PATH}"
+  else
+    echo "Could not parse origin URL ${ORIGIN_URL}. Please open PR manually." >&2
+    exit 1
+  fi
+  echo "Open PR: ${REPO_URL}/compare/${STAGING_BRANCH}...${RELEASE_BRANCH}?expand=1"
+fi
 
-echo "Merging ${RELEASE_BRANCH} -> ${STAGING_BRANCH}..."
-git merge --no-ff "${RELEASE_BRANCH}"
-
-echo "Pushing ${STAGING_BRANCH} to origin..."
-git push origin "${STAGING_BRANCH}"
-
-echo "Release merged to preview. Validate on preview before promoting to main."
+echo "Validate on preview after PR merge."
 
 
