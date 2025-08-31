@@ -3,14 +3,13 @@ import { Camera } from 'react-native-vision-camera';
 import { useRouter } from 'expo-router';
 import CameraPage from '@/components/CameraPage';
 import { Text, View, StyleSheet } from 'react-native';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
 
 export default function RecordPage() {
   const router = useRouter();
   const [permissionsGranted, setPermissionsGranted] = useState(false);
-  const { error } = useToast();
+  const { error, dismiss } = useToast();
 
   useEffect(() => {
     const requestPermissions = async () => {
@@ -27,6 +26,7 @@ export default function RecordPage() {
         error({
           title: t('common.permission_needed_for_photo_and_video'),
         });
+        dismiss('all');
         router.back();
       }
     };

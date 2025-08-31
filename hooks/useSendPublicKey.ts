@@ -2,8 +2,6 @@ import { useMutation } from '@tanstack/react-query';
 import ProtocolService from '@/lib/services/ProtocolService';
 import { publicKeyState } from '@/lib/state/auth';
 import { useAtom } from 'jotai';
-import { toast } from '@backpackapp-io/react-native-toast';
-import { sendPublicKeyChatSendPublicKeyPostMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { sendPublicKeyChatSendPublicKeyPost } from '@/lib/api/generated';
 
 export default function useSendPublicKey() {
@@ -24,7 +22,6 @@ export default function useSendPublicKey() {
         },
       });
 
-      toast.dismiss('sending-public-key');
       setPublicKey(identityKeyPair.publicKey);
     },
   });

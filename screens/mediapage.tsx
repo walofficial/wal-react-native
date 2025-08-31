@@ -34,7 +34,6 @@ import SubmitButton from '@/components/SubmitButton';
 import RetryButton from '@/components/RetryButton';
 import Button from '@/components/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
@@ -76,7 +75,7 @@ export default function MediaPage(): React.ReactElement {
     'none',
   );
 
-  const { success } = useToast();
+  const { success, dismiss } = useToast();
 
   const [mediaPath, setMediaPath] = useState<string | null>(null);
   const videoRef = useRef<Video>(null);
@@ -183,7 +182,7 @@ export default function MediaPage(): React.ReactElement {
   const recordingSource = useMemo(() => ({ uri: mediaPath }), [mediaPath]);
 
   useEffect(() => {
-    toast.dismiss();
+    dismiss('all');
   }, []);
 
   const togglePlayPause = useCallback(async () => {

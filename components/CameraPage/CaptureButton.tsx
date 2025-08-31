@@ -16,7 +16,6 @@ import Reanimated, {
 import type { Camera, VideoFile } from 'react-native-vision-camera';
 import { CAPTURE_BUTTON_SIZE } from './Constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { useHaptics } from '@/lib/haptics';
 import { useToast } from '../ToastUsage';
 import { t } from '@/lib/i18n';
@@ -53,6 +52,7 @@ const _CaptureButton: React.FC<Props> = ({
   const recordingProgress = useSharedValue(0);
   const recordingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const haptic = useHaptics();
+  const { dismiss } = useToast();
   useEffect(() => {
     setRecordingTimeView(isRecording);
 
