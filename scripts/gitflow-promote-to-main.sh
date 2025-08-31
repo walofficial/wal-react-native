@@ -3,7 +3,7 @@
 set -euo pipefail
 
 MAIN_BRANCH="main"
-STAGING_BRANCH="staging"
+STAGING_BRANCH="preview"
 
 if [[ ${1-} == "" ]]; then
   echo "Usage: $0 <release-name-or-version>" >&2
@@ -26,7 +26,7 @@ fi
 echo "Fetching latest refs..."
 git fetch --all --prune
 
-echo "Ensure staging contains ${RELEASE_BRANCH}..."
+echo "Ensure preview contains ${RELEASE_BRANCH}..."
 git checkout "${STAGING_BRANCH}"
 git pull --rebase --autostash || git pull --rebase
 git merge --no-ff "${RELEASE_BRANCH}" || true

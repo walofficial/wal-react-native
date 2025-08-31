@@ -13,7 +13,7 @@ Thank you for your interest in contributing!
 
 - Create feature branches from `dev`
 - Open PRs into `dev`
-- `staging` is for pre-release; `main` is production
+- `preview` is for pre-release; `main` is production
 
 ## Checks
 

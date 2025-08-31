@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-STAGING_BRANCH="staging"
+STAGING_BRANCH="preview"
 
 if [[ ${1-} == "" ]]; then
   echo "Usage: $0 <release-name-or-version>" >&2
@@ -39,6 +39,6 @@ git merge --no-ff "${RELEASE_BRANCH}"
 echo "Pushing ${STAGING_BRANCH} to origin..."
 git push origin "${STAGING_BRANCH}"
 
-echo "Release merged to staging. Validate on staging before promoting to main."
+echo "Release merged to preview. Validate on preview before promoting to main."
 
 

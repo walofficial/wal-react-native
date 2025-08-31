@@ -36,6 +36,6 @@ echo "Pushing ${RELEASE_BRANCH} to origin..."
 git push -u origin "${RELEASE_BRANCH}"
 
 echo "Release branch created: ${RELEASE_BRANCH}"
-echo "Next: run 'npm run release:staging -- ${RELEASE_NAME}' to merge it into staging."
+echo "Next: run 'npm run release:preview -- ${RELEASE_NAME}' to merge it into preview."
 
 
