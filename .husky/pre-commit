@@ -1,4 +1,16 @@
 #!/usr/bin/env sh
 
-lint-staged
-node node_modules/.bin/tsc --noEmit
+# Resolve Node binary in environments where PATH doesn't include Node (e.g., GUI apps)
+if command -v node >/dev/null 2>&1; then
+  NODE_BIN="$(command -v node)"
+elif [ -x "/opt/homebrew/bin/node" ]; then
+  NODE_BIN="/opt/homebrew/bin/node"
+elif [ -x "/usr/local/bin/node" ]; then
+  NODE_BIN="/usr/local/bin/node"
+else
+  echo "Node.js not found. Ensure Node is installed and available to GUI apps (e.g., configure VSCode to inherit shell env)." 1>&2
+  exit 127
+fi
+
+"$NODE_BIN" ./node_modules/lint-staged/bin/lint-staged.js
+"$NODE_BIN" ./node_modules/typescript/bin/tsc --noEmit
