@@ -122,6 +122,33 @@ jobs:
           eas project:version:set "$VERSION" --non-interactive
           eas project:version:get
 
+      - name: 🔖 Bump version and sync EAS (release branches)
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          # Bump local version (patch) without tagging to keep repo/version in sync
+          npm version patch --no-git-tag-version
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Bumped version to $VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json || true
+          git commit -m "chore(release): $VERSION [skip ci]" || echo "No version change to commit"
+          git push || echo "Skip push (no changes)"
+          # Sync remote app version (EAS) so builds use this version
+          eas project:version:set "$VERSION" --non-interactive
+          eas project:version:get
+
+      - name: 🚀 EAS OTA Update (hotfix branches)
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/hotfix/')
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          # Publish OTA to preview channel for validation
+          eas update --channel preview --non-interactive --message "Hotfix OTA: ${GITHUB_SHA::7} (${GITHUB_REF_NAME})"
+
       - name: 📱 Setup EAS build cache
         uses: actions/cache@v3
         with:
@@ -160,12 +187,11 @@ jobs:
       - name: 📱 Build Preview APK
         if: github.event_name == 'push' && (
           github.ref == 'refs/heads/preview' ||
-          startsWith(github.ref, 'refs/heads/release/') ||
-          startsWith(github.ref, 'refs/heads/hotfix/')
+          startsWith(github.ref, 'refs/heads/release/')
           ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile preview --local --non-interactive --output=./app-preview.apk
+          eas build --platform android --profile preview --non-interactive --output=./app-preview.apk
         env:
           NODE_ENV: production
 
@@ -267,6 +293,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 📦 Upload build artifacts to GitHub
+        if: ${{ !startsWith(github.ref, 'refs/heads/hotfix/') }}
         uses: actions/upload-artifact@v4
         with:
           name: app-builds
