@@ -86,7 +86,7 @@ jobs:
       startsWith(github.ref, 'refs/heads/hotfix/') ||
       github.ref == 'refs/heads/dev' ||
       github.ref == 'refs/heads/preview' ||
-      github.ref == 'refs/heads/main' ||
+      github.ref == 'refs/heads/main'
       )) || github.event_name == 'workflow_dispatch'
     strategy:
       matrix:
