@@ -22,24 +22,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Text } from '@/components/ui/text';
 import Button from '@/components/Button';
-// import { Button } from "@/components/ui/button";
 import { OtpInput } from 'react-native-otp-entry';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { authenticatingState } from '@/lib/state/auth';
 import { useAtom, useAtomValue } from 'jotai';
 import { supabase } from '@/lib/supabase';
-import { colors } from '@/lib/colors';
-import { Redirect, useRouter } from 'expo-router';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { AndroidAutoSMSRef } from './AndroidAutoSMS';
 import { LogBox } from 'react-native';
-import { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
+import { BottomSheetView } from '@gorhom/bottom-sheet';
 import { RefObject } from 'react';
-import {
-  showPhoneInputState,
-  showCountrySelectorState,
-  selectedCountryState,
-} from './atom';
+import { showPhoneInputState, showCountrySelectorState } from './atom';
 import { FontSizes, useTheme } from '@/lib/theme';
 import { BlurView } from 'expo-blur';
 import CountrySelector from '@/components/CountrySelector';

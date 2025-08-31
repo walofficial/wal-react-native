@@ -1,4 +1,3 @@
-import { toast } from '@backpackapp-io/react-native-toast';
 import { ThumbsDown, X } from 'lucide-react-native';
 import { Heart } from 'lucide-react-native';
 import { TouchableOpacity, StyleSheet } from 'react-native';

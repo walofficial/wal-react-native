@@ -55,9 +55,9 @@ import { usePreferredCameraDevice } from '../../hooks/usePreferredCameraDevice';
 import { CaptureButton } from './CaptureButton';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { CaptureButtonPhoto } from './CaptureButtonPhoto';
-import { toast } from '@backpackapp-io/react-native-toast';
 import { LiveButton } from './LiveButton';
 import { t } from '@/lib/i18n';
+import { useToast } from '../ToastUsage';
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
@@ -89,7 +89,7 @@ const CameraOverlay = Reanimated.createAnimatedComponent(View);
 export default function CameraPage(): React.ReactElement {
   const navigation = useNavigation();
   const { feedId } = useLocalSearchParams();
-
+  const { dismiss } = useToast();
   const [liveDescription, setLiveDescription] = useState('');
 
   const shouldShowMediaTypeSwitch = true;
@@ -501,7 +501,7 @@ export default function CameraPage(): React.ReactElement {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            toast.remove();
+            dismiss('all');
             router.navigate({
               pathname: '/(tabs)/(home)/[feedId]',
               params: {
