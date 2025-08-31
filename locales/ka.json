@@ -202,7 +202,6 @@
     "camera_permission_required": "კამერის ნება საჭიროა",
     "camera_permission_denied": "კამერის ნება უარყოფილია. გთხოვთ ჩართოთ სისტემის პარამეტრებში",
     "failed_save_image": "სურათის შენახვა ვერ მოხერხდა",
-    "failed_paste_content": "კონტენტის ჩასმა ვერ მოხერხდა",
-    "finalize_user_details": "გთხოვთ დაიცადოთ..."
+    "failed_paste_content": "კონტენტის ჩასმა ვერ მოხერხდა"
   }
 }
