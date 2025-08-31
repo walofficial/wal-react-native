@@ -13,12 +13,3 @@ Example: To deploy an update to a preview environment, use: eas update --channel
 ## Local Development
 
 For local backend development, it is recommended to use `pnpm start` to run the app without tunneling. This provides a direct connection to your local backend services.
-
-## Push Notifications
-
-This project uses push notifications for both Android and iOS platforms. The required configuration files are:
-
-- `google-services.json`: Required for Android push notifications (development and production)
-- `GoogleService-Info.plist`: Required for iOS push notifications (development and production)
-
-These files should be properly configured for each environment (development and production).
