@@ -40,6 +40,7 @@ import Animated, {
   interpolate,
 } from 'react-native-reanimated';
 import CustomAnimatedButton from '@/components/ui/AnimatedButton';
+import UsernameProgressBar from '@/components/ui/UsernameProgressBar';
 import { useDebounce } from '@uidotdev/usehooks';
 import { FACT_CHECK_FEED_ID } from '@/lib/constants';
 import { updateUser } from '@/lib/api/generated';
@@ -84,7 +85,6 @@ export default function RegisterView() {
         gender,
         username,
       });
-      router.replace(`/(tabs)/(fact-check)/${FACT_CHECK_FEED_ID}`);
     },
     mutationFn: (values: FormValues) =>
       updateUser({
@@ -188,6 +188,9 @@ export default function RegisterView() {
 
   // Get input border color based on validation state
   const getInputBorderColor = () => {
+    if (updateUserMutation.isPending || usernameQuery.isFetching) {
+      return '#737373';
+    }
     if (!username || username.length === 0) {
       return isDark ? '#737373' : '#d1d5db'; // Default
     }
@@ -205,7 +208,7 @@ export default function RegisterView() {
     }
 
     if (isUsernameValid && usernameQuery.data?.username !== null) {
-      return '#22c55e'; // Green for valid and available
+      return '#737373';
     }
     if (!isUsernameValid) {
       return '#ef4444'; // Red for invalid username
@@ -220,18 +223,6 @@ export default function RegisterView() {
 
   // Get input background color for subtle validation feedback
   const getInputBackgroundColor = () => {
-    if (isUsernameValid && usernameQuery.data?.username !== null) {
-      return isDark ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.05)';
-    }
-
-    if (
-      hasNonLatinChars ||
-      errors.username ||
-      usernameQuery.data?.username === null
-    ) {
-      return isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)';
-    }
-
     return isDark ? 'rgba(38, 38, 38, 0.8)' : 'rgba(249, 250, 251, 0.8)';
   };
 
@@ -299,19 +290,12 @@ export default function RegisterView() {
                       )}
                   </View>
 
-                  <Text
-                    style={[
-                      styles.charCounter,
-                      {
-                        color:
-                          username.length >= MAX_USERNAME_LENGTH
-                            ? '#ef4444'
-                            : '#9ca3af',
-                      },
-                    ]}
-                  >
-                    {username.length}/{MAX_USERNAME_LENGTH}
-                  </Text>
+                  <UsernameProgressBar
+                    current={username.length}
+                    max={MAX_USERNAME_LENGTH}
+                    width={40}
+                    height={3}
+                  />
                 </View>
               </View>
             )}

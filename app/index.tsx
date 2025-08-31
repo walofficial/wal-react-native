@@ -24,6 +24,7 @@ export default function Index() {
   }, [session]);
 
   if (session && !userIsLoading && user && user.preferred_news_feed_id) {
+    // This fires when user is signed in the application and app was fully closed.
     return <Redirect href={`/(tabs)/(news)/${user.preferred_news_feed_id}`} />;
   }
   if (isLoading || userIsLoading) {

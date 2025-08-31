@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { RefObject, useCallback } from 'react';
 import { BottomSheetFooter, BottomSheetModal } from '@gorhom/bottom-sheet';
 import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import SpacesSheetHeader from './SpacesSheetHeader';
@@ -27,7 +27,7 @@ const SpacesBottomSheet = React.forwardRef<
   const queryClient = useQueryClient();
   const insets = useSafeAreaInsets();
   const snapPoints = React.useMemo(() => ['74%', '90%'], []);
-  useSheetCloseOnNavigation(ref);
+  useSheetCloseOnNavigation(ref as RefObject<BottomSheetModal>);
 
   const renderBackdrop = useCallback(
     (props: any) => (

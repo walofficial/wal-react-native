@@ -205,8 +205,7 @@
     "process_step_4": "Sources are evaluated as supporting or non-supporting",
     "process_step_5": "We provide a summary, a factual accuracy score, and original sources",
     "limitations": "Limitations",
-    "limitations_description": "While our fact-checking system is comprehensive, it has limitations. Results depend on available online information, and some topics may have limited or conflicting sources. We recommend reviewing the provided sources to make your own assessment.",
-    "finalize_user_details": "Finalizing..."
+    "limitations_description": "While our fact-checking system is comprehensive, it has limitations. Results depend on available online information, and some topics may have limited or conflicting sources. We recommend reviewing the provided sources to make your own assessment."
   },
   "errors": {
     "post_publish_failed": "Failed to publish post",
