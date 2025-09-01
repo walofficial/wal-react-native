@@ -40,3 +40,7 @@ build-android.sh
 build-ios-development.sh
 build-ios-preview.sh
 build-ios.sh
+ 
+# Firebase config files (kept locally, generated in CI from secrets)
+GoogleService-Info*.plist
+google-services.json

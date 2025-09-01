@@ -6,7 +6,7 @@ import { AppState, AppStateStatus, Platform } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { PortalHost } from '@/components/primitives/portal';
-import AuthLayer, { useSession } from '@/components/AuthLayer';
+import AuthLayer from '@/components/AuthLayer';
 import * as Notifications from 'expo-notifications';
 import * as Sentry from '@sentry/react-native';
 import { createStore, Provider, useAtom } from 'jotai';
