@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import {
   View,
@@ -6,12 +5,11 @@ import {
   Pressable,
   useWindowDimensions,
   StyleSheet,
-  TextStyle,
 } from 'react-native';
-import { Link, usePathname, Href } from 'expo-router';
+import { Link, usePathname } from 'expo-router';
+import type { Href } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { H1 } from './ui/typography';
-import { useTheme } from '@/lib/theme';
 /**
  * This is an example SidebarLayout component for web.
  * You can style this however you like by adjusting the flexbox styling,
@@ -22,7 +20,7 @@ import { useTheme } from '@/lib/theme';
  */
 
 interface NavItemProps {
-  href: Href<string>;
+  href: Href;
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
 }
@@ -36,7 +34,6 @@ const NavItem = ({
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const isActive = pathname === href;
-  const theme = useTheme();
 
   if (isMobile) {
     return (
@@ -110,7 +107,6 @@ export default function SidebarLayout({
 }) {
   const { width } = useWindowDimensions();
   const isMobileWidth = width < 768; // Standard tablet breakpoint
-  const theme = useTheme();
 
   const navigationItems: NavItemProps[] = [
     {
