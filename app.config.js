@@ -5,25 +5,6 @@ const pkg = require('./package.json');
 
 export const app_name_slug = 'wal';
 export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
-// Print all environment variables
-console.log('Environment Variables:', {
-  ...process.env,
-  // Redact any sensitive values
-  EXPO_TOKEN: process.env.EXPO_TOKEN ? '[REDACTED]' : undefined,
-  EXPO_APPLE_PASSWORD: process.env.EXPO_APPLE_PASSWORD
-    ? '[REDACTED]'
-    : undefined,
-  GOOGLE_PLAY_SERVICE_ACCOUNT: process.env.GOOGLE_PLAY_SERVICE_ACCOUNT
-    ? '[REDACTED]'
-    : undefined,
-  SENTRY_AUTH_TOKEN: process.env.SENTRY_AUTH_TOKEN ? '[REDACTED]' : undefined,
-  GOOGLE_SERVICES_JSON: process.env.GOOGLE_SERVICES_JSON
-    ? '[REDACTED]'
-    : undefined,
-  GOOGLESERVICE_INFO_PROD_PLIST: process.env.GOOGLESERVICE_INFO_PROD_PLIST
-    ? '[REDACTED]'
-    : undefined,
-});
 
 export default {
   expo: {
@@ -64,11 +45,9 @@ export default {
       },
       supportsTablet: false,
       bundleIdentifier: IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment',
-      googleServicesFile: !!process.env.GOOGLESERVICE_INFO_PROD_PLIST
-        ? process.env.GOOGLESERVICE_INFO_PROD_PLIST
-        : IS_DEV
-          ? './GoogleService-Info.plist'
-          : './GoogleService-Info-Prod.plist',
+      googleServicesFile: IS_DEV
+        ? './GoogleService-Info.plist'
+        : './GoogleService-Info-Prod.plist',
     },
     assetBundlePatterns: ['**/*'],
     android: {
