@@ -146,8 +146,8 @@ jobs:
       - name: ✅ Verify iOS Firebase plist exists
         if: matrix.platform == 'ios'
         run: |
-          if [ ! -s GoogleService-Info-Prod.plist ]; then
-            echo "GoogleService-Info-Prod.plist is missing or empty. Ensure GOOGLESERVICE_INFO_PROD_PLIST secret is set." >&2
+          if [ ! -s GoogleService-Info.plist ]; then
+            echo "GoogleService-Info.plist is missing or empty. Ensure GOOGLESERVICE_INFO_PROD_PLIST secret is set." >&2
             exit 1
           fi
 
