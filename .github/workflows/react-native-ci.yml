@@ -7,7 +7,6 @@ on:
   push:
     branches:
       - dev
-      - preview
       - main
       - 'release/**'
       - 'hotfix/**'
@@ -81,7 +80,6 @@ jobs:
       startsWith(github.ref, 'refs/heads/release/') ||
       startsWith(github.ref, 'refs/heads/hotfix/') ||
       github.ref == 'refs/heads/dev' ||
-      github.ref == 'refs/heads/preview' ||
       github.ref == 'refs/heads/main'
       )) || github.event_name == 'workflow_dispatch'
     strategy:
@@ -106,54 +104,6 @@ jobs:
           npm ci
           npm i -g eas-cli@latest
 
-      - name: 🔖 Bump version and sync EAS (preview only)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/preview'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          # Bump local version (patch) without tagging to keep repo/version in sync
-          export HUSKY=0
-          npm version patch --no-git-tag-version
-          VERSION=$(node -p "require('./package.json').version")
-          echo "Bumped version to $VERSION"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json || true
-          git commit -m "chore(release): $VERSION [skip ci]" --no-verify || echo "No version change to commit"
-          git push || echo "Skip push (no changes)"
-          # Sync remote app version (EAS) so builds use this version
-          npx eas-cli@latest project:version:set "$VERSION" --non-interactive
-          npx eas-cli@latest project:version:get
-
-      - name: 🔖 Bump version and sync EAS (release branches)
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/release/')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          # Bump local version (patch) without tagging to keep repo/version in sync
-          export HUSKY=0
-          npm version patch --no-git-tag-version
-          VERSION=$(node -p "require('./package.json').version")
-          echo "Bumped version to $VERSION"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package.json package-lock.json || true
-          git commit -m "chore(release): $VERSION [skip ci]" --no-verify || echo "No version change to commit"
-          git push || echo "Skip push (no changes)"
-          # Sync remote app version (EAS) so builds use this version
-          npx eas-cli@latest project:version:set "$VERSION" --non-interactive
-          npx eas-cli@latest project:version:get
-
-      - name: 🚀 EAS OTA Update (hotfix branches)
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/heads/hotfix/')
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: |
-          # Publish OTA to preview channel for validation
-          eas update --channel preview --non-interactive --message "Hotfix OTA: ${GITHUB_SHA::7} (${GITHUB_REF_NAME})"
-
       - name: 📱 Setup EAS build cache
         uses: actions/cache@v3
         with:
@@ -175,92 +125,69 @@ jobs:
             sudo apt-get update && sudo apt-get install -y jq
           fi
 
-      - name: 📱 Build Development APK
-        if:
-          github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'dev' || (
-          github.event_name == 'push' && (
-          github.ref == 'refs/heads/dev'
-          ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
-          )
-        run: |
-          # Build with increased memory limit
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile development --local --non-interactive --output=./app-dev.apk
-        env:
-          NODE_ENV: development
+      # - name: 📱 Build Development APK
+      #   if:
+      #     github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'dev' || (
+      #     github.event_name == 'push' && (
+      #     github.ref == 'refs/heads/dev'
+      #     ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
+      #     )
+      #   run: |
+      #     # Build with increased memory limit
+      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+      #     eas build --platform android --profile development --local --non-interactive --output=./app-dev.apk
+      #   env:
+      #     NODE_ENV: development
 
       - name: 📱 Build Preview APK
         if: github.event_name == 'push' && (
-          github.ref == 'refs/heads/preview' ||
           startsWith(github.ref, 'refs/heads/release/')
           ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile preview --non-interactive --output=./app-preview.apk
+          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+          eas build --platform android --profile preview --local --non-interactive --output=./app-preview.apk
         env:
           NODE_ENV: production
 
-      - name: 📱 Build Production APK
-        if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-apk' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
-        run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile production-apk --non-interactive --output=./app-prod.apk
-        env:
-          NODE_ENV: production
+      # - name: 📱 Build Production APK
+      #   if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-apk' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
+      #   run: |
+      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     eas build --platform android --profile production-apk --non-interactive --output=./app-prod.apk
+      #   env:
+      #     NODE_ENV: production
 
-      - name: 📱 Build Production AAB
-        if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-aab' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
-        run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform android --profile production --non-interactive --output=./app-prod.aab
-        env:
-          NODE_ENV: production
+      # - name: 📱 Build Production AAB
+      #   if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-aab' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
+      #   run: |
+      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     eas build --platform android --profile production --non-interactive --output=./app-prod.aab
+      #   env:
+      #     NODE_ENV: production
 
-      - name: 📱 Build iOS Development
-        if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-dev') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop') && matrix.platform == 'ios')
-        run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform ios --profile development --local --non-interactive --output=./app-ios-dev.app
-        env:
-          NODE_ENV: development
+      # - name: 📱 Build iOS Development
+      #   if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-dev') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop') && matrix.platform == 'ios')
+      #   run: |
+      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     eas build --platform ios --profile development --local --non-interactive --output=./app-ios-dev.app
+      #   env:
+      #     NODE_ENV: development
 
       - name: 📱 Build iOS Preview
         if: github.event_name == 'push' && (
-          github.ref == 'refs/heads/preview' ||
           startsWith(github.ref, 'refs/heads/release/') ||
           startsWith(github.ref, 'refs/heads/hotfix/')
           ) && matrix.platform == 'ios'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform ios --profile preview --non-interactive --output=./app-ios-preview.ipa
+          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+          eas build --platform ios --profile preview --non-interactive
         env:
           NODE_ENV: production
-
-      - name: 📱 Build iOS Production
-        if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-prod') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && matrix.platform == 'ios')
-        run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          eas build --platform ios --profile production --non-interactive --output=./app-ios-prod.ipa
-        env:
-          NODE_ENV: production
-
-      - name: 🚀 Submit to Play Store
-        if: (github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'publish-stores') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
-        run: |
-          eas submit -p android --path ./app-prod.aab --non-interactive
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
-
-      - name: 🚀 Submit to App Store
-        if: (github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'publish-stores') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')
-        run: |
-          eas submit -p ios --path ./app-ios-prod.ipa --non-interactive
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-          EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
-          EXPO_APPLE_PASSWORD: ${{ secrets.EXPO_APPLE_PASSWORD }}
-          EXPO_TEAM_ID: ${{ secrets.EXPO_TEAM_ID }}
 
       - name: 🏷️ Generate build information
         id: build-info
@@ -280,34 +207,32 @@ jobs:
             git log --pretty=format:"- %s" -n 20 > changelog.md
           fi
 
-      - name: 📝 Create GitHub Release
-        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
-        uses: softprops/action-gh-release@v1
-        with:
-          draft: true
-          name: 'Release v${{ steps.build-info.outputs.version }}-${{ steps.build-info.outputs.build_number }}'
-          tag_name: 'v${{ steps.build-info.outputs.version }}-${{ steps.build-info.outputs.build_number }}'
-          files: |
-            ./app-dev.apk
-            ./app-prod.apk
-            ./app-prod.aab
-            ./app-ios-dev.app
-            ./app-ios-prod.ipa
-          body_path: changelog.md
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: 📝 Create GitHub Release
+      #   if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     draft: true
+      #     name: 'Release v${{ steps.build-info.outputs.version }}-${{ steps.build-info.outputs.build_number }}'
+      #     tag_name: 'v${{ steps.build-info.outputs.version }}-${{ steps.build-info.outputs.build_number }}'
+      #     files: |
+      #       ./app-dev.apk
+      #       ./app-prod.apk
+      #       ./app-prod.aab
+      #       ./app-ios-dev.app
+      #       ./app-ios-prod.ipa
+      #     body_path: changelog.md
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: 📦 Upload build artifacts to GitHub
-        if: ${{ !startsWith(github.ref, 'refs/heads/hotfix/') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-builds
-          path: |
-            ./app-dev.apk
-            ./app-preview.apk
-            ./app-prod.apk
-            ./app-prod.aab
-            ./app-ios-dev.app
-            ./app-ios-preview.ipa
-            ./app-ios-prod.ipa
-          retention-days: 7
+      # - name: 📦 Upload build artifacts to GitHub
+      #   if: ${{ !startsWith(github.ref, 'refs/heads/hotfix/') }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: app-builds
+      #     path: |
+      #       ./app-dev.apk
+      #       ./app-prod.apk
+      #       ./app-prod.aab
+      #       ./app-ios-dev.app
+      #       ./app-ios-prod.ipa
+      #     retention-days: 7

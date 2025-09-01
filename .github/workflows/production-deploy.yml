@@ -1,0 +1,79 @@
+name: Production Deploy
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        type: choice
+        description: 'Platform to deploy'
+        default: 'all'
+        options:
+          - android
+          - ios
+          - all
+
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+  EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
+  EXPO_APPLE_PASSWORD: ${{ secrets.EXPO_APPLE_PASSWORD }}
+  EXPO_TEAM_ID: ${{ secrets.EXPO_TEAM_ID }}
+  GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+  NODE_OPTIONS: --openssl-legacy-provider
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          npm i -g eas-cli@latest
+
+      - name: 🔧 Show EAS CLI version
+        run: eas --version
+
+      - name: 📱 Build Android (Production AAB)
+        if: github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'
+        run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          eas build --platform android --profile production --non-interactive
+        env:
+          NODE_ENV: production
+
+      - name: 🚀 Submit Android to Play Store
+        if: github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'
+        run: |
+          eas submit -p android --latest --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+
+      - name: 📱 Build iOS (Production IPA)
+        if: github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'
+        run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          eas build --platform ios --profile production --non-interactive
+        env:
+          NODE_ENV: production
+
+      - name: 🚀 Submit iOS to App Store
+        if: github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios'
+        run: |
+          eas submit -p ios --latest --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
+          EXPO_APPLE_PASSWORD: ${{ secrets.EXPO_APPLE_PASSWORD }}
+          EXPO_TEAM_ID: ${{ secrets.EXPO_TEAM_ID }}

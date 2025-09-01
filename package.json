@@ -1,7 +1,7 @@
 {
   "name": "ment-app",
   "main": "index.js",
-  "version": "1.0.22",
+  "version": "1.0.23",
   "scripts": {
     "start": "node ./scripts/start-with-local-ip.js",
     "reset-project": "node ./scripts/reset-project.js",
@@ -23,7 +23,6 @@
     "feature:start": "bash ./scripts/gitflow-feature-start.sh",
     "feature:finish": "bash ./scripts/gitflow-feature-finish.sh",
     "release:start": "bash ./scripts/gitflow-release-start.sh",
-    "release:preview": "bash ./scripts/gitflow-release-to-preview.sh",
     "release:promote": "bash ./scripts/gitflow-promote-to-main.sh",
     "prepare": "husky"
   },

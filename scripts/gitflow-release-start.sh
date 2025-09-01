@@ -35,7 +35,25 @@ fi
 echo "Pushing ${RELEASE_BRANCH} to origin..."
 git push -u origin "${RELEASE_BRANCH}"
 
-echo "Release branch created: ${RELEASE_BRANCH}"
-echo "Next: run 'npm run release:preview -- ${RELEASE_NAME}' to merge it into preview."
+echo "Checking out ${RELEASE_BRANCH}..."
+git checkout "${RELEASE_BRANCH}"
+
+echo "Bumping version in package.json..."
+# If the provided name looks like a semver, set it explicitly; otherwise bump patch
+if [[ "${RELEASE_NAME}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([-.][0-9A-Za-z.+]+)?$ ]]; then
+  export HUSKY=0
+  npm version "${RELEASE_NAME}" --no-git-tag-version
+else
+  export HUSKY=0
+  npm version patch --no-git-tag-version
+fi
+
+VERSION=$(node -p "require('./package.json').version")
+echo "Version is now ${VERSION}. Committing change..."
+git add package.json package-lock.json || true
+git commit -m "chore(release): bump version to ${VERSION}"
+git push
+
+echo "Release branch ready: ${RELEASE_BRANCH} (version ${VERSION})"
 
 
