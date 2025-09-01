@@ -45,6 +45,10 @@ env:
   GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
   GOOGLESERVICE_INFO_PROD_PLIST: ${{ secrets.GOOGLESERVICE_INFO_PROD_PLIST }}
   NODE_OPTIONS: --openssl-legacy-provider
+  EXPO_PUBLIC_API_URL: ${{ secrets.EXPO_PUBLIC_API_URL }}
+  EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+  EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+  EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
 
 jobs:
   check-skip:
@@ -102,6 +106,17 @@ jobs:
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
+
+      - name: 🔐 Prepare Firebase config files from secrets (build job)
+        run: |
+          printf "%s" "$GOOGLE_SERVICES_JSON" > google-services.json
+          printf "%s" "$GOOGLESERVICE_INFO_PROD_PLIST" > GoogleService-Info-Prod.plist
+          # Override env vars to point to file paths so Expo config reads paths, not raw content
+          echo "GOOGLE_SERVICES_JSON=./google-services.json" >> $GITHUB_ENV
+          echo "GOOGLESERVICE_INFO_PROD_PLIST=./GoogleService-Info-Prod.plist" >> $GITHUB_ENV
+        env:
+          GOOGLE_SERVICES_JSON: ${{ env.GOOGLE_SERVICES_JSON }}
+          GOOGLESERVICE_INFO_PROD_PLIST: ${{ env.GOOGLESERVICE_INFO_PROD_PLIST }}
 
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v4
