@@ -151,16 +151,16 @@ jobs:
             exit 1
           fi
 
-      - name: 📱 Build Preview APK
-        if: github.event_name == 'push' && (
-          startsWith(github.ref, 'refs/heads/release/')
-          ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
-        run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-          eas build --platform android --profile preview --non-interactive
-        env:
-          NODE_ENV: production
+      # - name: 📱 Build Preview APK
+      #   if: github.event_name == 'push' && (
+      #     startsWith(github.ref, 'refs/heads/release/')
+      #     ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
+      #   run: |
+      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     eas build --platform android --profile preview --non-interactive
+      #   env:
+      #     NODE_ENV: production
 
       - name: 📱 Build iOS Preview
         if: github.event_name == 'push' && (
