@@ -177,17 +177,17 @@ jobs:
       #   env:
       #     NODE_ENV: development
 
-      - name: 📱 Build iOS Preview
-        if: github.event_name == 'push' && (
-          startsWith(github.ref, 'refs/heads/release/') ||
-          startsWith(github.ref, 'refs/heads/hotfix/')
-          ) && matrix.platform == 'ios'
-        run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-          eas build --platform ios --profile preview --non-interactive
-        env:
-          NODE_ENV: production
+      # - name: 📱 Build iOS Preview
+      #   if: github.event_name == 'push' && (
+      #     startsWith(github.ref, 'refs/heads/release/') ||
+      #     startsWith(github.ref, 'refs/heads/hotfix/')
+      #     ) && matrix.platform == 'ios'
+      #   run: |
+      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+      #     eas build --platform ios --profile preview --non-interactive
+      #   env:
+      #     NODE_ENV: production
 
       - name: 🏷️ Generate build information
         id: build-info
