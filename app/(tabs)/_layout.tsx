@@ -25,6 +25,7 @@ import { ReactionsOverlay } from '@/components/ReactionsOverlay/ReactionsOverlay
 import { useSetAtom } from 'jotai';
 import { factCheckBottomSheetState } from '@/lib/atoms/news';
 import { locationUserListSheetState } from '@/lib/atoms/location';
+
 export default function TabLayout() {
   const pathname = usePathname();
   const isRecord = pathname.includes('record');
