@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom } from 'jotai';
 
 export const isSubscribedAtom = atom(false);
-export const expoPushTokenAtom = atom("");
+export const expoPushTokenAtom = atom('');

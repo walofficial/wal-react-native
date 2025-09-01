@@ -1,19 +1,19 @@
-import React, { useRef, useMemo } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useAtom } from "jotai";
-import { Image } from "expo-image";
-import useVerificationById from "@/hooks/useVerificationById";
-import { formatRelativeTime } from "@/lib/utils/date";
-import SimpleGoBackHeader from "../SimpleGoBackHeader";
-import { activeSourcesState, newsBottomSheetState } from "@/lib/atoms/news";
-import { useUniqueSources } from "@/utils/sourceUtils";
-import { useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { getFaviconUrl } from "@/utils/urlUtils";
-import NewsSourcesBottomSheet from "../FeedItem/NewsSourcesBottomSheet";
-import BottomSheet from "@gorhom/bottom-sheet";
-import PostLanguageSwitcher from "./PostLanguageSwitcher";
-import { trackEvent } from "@/lib/analytics";
+import React, { useRef, useMemo } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useAtom } from 'jotai';
+import { Image } from 'expo-image';
+import useVerificationById from '@/hooks/useVerificationById';
+import { formatRelativeTime } from '@/lib/utils/date';
+import SimpleGoBackHeader from '../SimpleGoBackHeader';
+import { activeSourcesState, newsBottomSheetState } from '@/lib/atoms/news';
+import { useUniqueSources } from '@/utils/sourceUtils';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { getFaviconUrl } from '@/utils/urlUtils';
+import NewsSourcesBottomSheet from '../FeedItem/NewsSourcesBottomSheet';
+import BottomSheet from '@gorhom/bottom-sheet';
+import PostLanguageSwitcher from './PostLanguageSwitcher';
+import { trackEvent } from '@/lib/analytics';
 
 function SimpleGoBackHeaderPost({
   verificationId,
@@ -24,7 +24,7 @@ function SimpleGoBackHeaderPost({
   const isGeneratedNews = data?.is_generated_news;
   const timestamp = data?.last_modified_date
     ? formatRelativeTime(data?.last_modified_date)
-    : "";
+    : '';
   const [, setActiveSources] = useAtom(activeSourcesState);
   const [, setIsBottomSheetOpen] = useAtom(newsBottomSheetState);
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -42,7 +42,7 @@ function SimpleGoBackHeaderPost({
 
     const handleSourcePress = () => {
       if (data?.sources && data.sources.length > 0) {
-        trackEvent("news_sources_bottom_sheet_opened", {});
+        trackEvent('news_sources_bottom_sheet_opened', {});
 
         setActiveSources(data.sources);
         setIsBottomSheetOpen(true);
@@ -55,8 +55,8 @@ function SimpleGoBackHeaderPost({
           styles.sourcesContainer,
           {
             borderColor: isDarkColorScheme
-              ? "rgba(255, 255, 255, 0.08)"
-              : "rgba(0, 0, 0, 0.06)",
+              ? 'rgba(255, 255, 255, 0.08)'
+              : 'rgba(0, 0, 0, 0.06)',
           },
         ]}
         onPress={handleSourcePress}
@@ -68,7 +68,7 @@ function SimpleGoBackHeaderPost({
                 style={[
                   styles.moreSourcesIndicator,
                   {
-                    backgroundColor: isDarkColorScheme ? "#e0e0e0" : "#808080",
+                    backgroundColor: isDarkColorScheme ? '#e0e0e0' : '#808080',
                     borderColor: theme.colors.background,
                   },
                 ]}
@@ -76,7 +76,7 @@ function SimpleGoBackHeaderPost({
                 <Text
                   style={[
                     styles.moreSourcesText,
-                    { color: isDarkColorScheme ? "#333333" : "#ffffff" },
+                    { color: isDarkColorScheme ? '#333333' : '#ffffff' },
                   ]}
                 >
                   +{uniqueSources.length - maxSources}
@@ -99,7 +99,7 @@ function SimpleGoBackHeaderPost({
                 >
                   <Image
                     source={{
-                      uri: getFaviconUrl(source.uri || source.url || ""),
+                      uri: getFaviconUrl(source.uri || ''),
                     }}
                     style={[
                       styles.sourceIconImage,
@@ -149,9 +149,9 @@ function SimpleGoBackHeaderPost({
             <View
               style={{
                 flex: 1,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "flex-end",
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
               }}
             >
               {sourcesComponent}
@@ -173,39 +173,39 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderWidth: 1,
     borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginRight: 12,
   },
   sourcesRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   sourceIconsContainer: {
-    flexDirection: "row-reverse",
-    alignItems: "center",
+    flexDirection: 'row-reverse',
+    alignItems: 'center',
   },
   sourceIconCompact: {
     marginLeft: 0,
   },
   sourcesLabel: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   moreSourcesIndicator: {
     width: 18,
     height: 18,
     borderRadius: 9,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: -6,
     borderWidth: 1.5,
     zIndex: 4,
   },
   moreSourcesText: {
     fontSize: 8,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   sourceIconImage: {
     width: 18,

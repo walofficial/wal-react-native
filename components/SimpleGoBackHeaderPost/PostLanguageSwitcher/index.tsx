@@ -1,14 +1,13 @@
-import React from "react";
-import { Platform, Alert } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { ContentLanguage } from "@/atoms/localization";
-import { t } from "@/lib/i18n";
-import { useTheme } from "@/lib/theme";
-import AnimatedPressable from "@/components/AnimatedPressable";
-import { updateUserMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import useAuth from "@/hooks/useAuth";
-import { queryClient } from "@/lib/queryClient";
+import React from 'react';
+import { Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { ContentLanguage } from '@/atoms/localization';
+import { t } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
+import AnimatedPressable from '@/components/AnimatedPressable';
+import { updateUserMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import useAuth from '@/hooks/useAuth';
 
 interface PostLanguageSwitcherProps {
   onLanguageChange?: (language: ContentLanguage) => void;
@@ -31,15 +30,15 @@ function PostLanguageSwitcher({ onLanguageChange }: PostLanguageSwitcherProps) {
     onSuccess: () => {
       queryClient.resetQueries();
     },
-    onError: (error) => {
-      Alert.alert(t("common.profile_update_failed"));
+    onError: () => {
+      Alert.alert(t('common.profile_update_failed'));
     },
   });
 
   const handleLanguageToggle = () => {
-    const currentLanguage = user?.preferred_content_language || "english";
-    const languages: ContentLanguage[] = ["english", "french", "georgian"];
-    const currentIndex = languages.indexOf(currentLanguage);
+    const currentLanguage = user?.preferred_content_language || 'english';
+    const languages: ContentLanguage[] = ['english', 'french', 'georgian'];
+    const currentIndex = languages.indexOf(currentLanguage as ContentLanguage);
     const nextLanguage = languages[(currentIndex + 1) % languages.length];
 
     onLanguageChange?.(nextLanguage);

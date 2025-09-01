@@ -9,10 +9,10 @@ import {
   crypto_box_PUBLICKEYBYTES,
   crypto_box_SECRETKEYBYTES,
   crypto_box_NONCEBYTES,
-} from "react-native-libsodium";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from 'react-native-libsodium';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const KEYS_STORAGE = "user_keys";
+const KEYS_STORAGE = 'user_keys';
 
 interface KeyPair {
   publicKey: Uint8Array;
@@ -56,7 +56,7 @@ class SignalProtocolService {
         publicKey: to_base64(keyPair.publicKey),
         privateKey: to_base64(keyPair.privateKey),
         registrationId,
-      })
+      }),
     );
 
     return {
@@ -72,7 +72,7 @@ class SignalProtocolService {
   public async getPreKeyBundle(): Promise<{ publicKey: string }> {
     const keyPair = await this.getKeyPair();
     if (!keyPair) {
-      throw new Error("No keys available");
+      throw new Error('No keys available');
     }
 
     return {
@@ -82,18 +82,18 @@ class SignalProtocolService {
 
   public async encryptMessage(
     userId: string,
-    message: string
+    message: string,
   ): Promise<{ encrypted_content: string; nonce: string }> {
     const nonce = randombytes_buf(crypto_box_NONCEBYTES);
     const keyPair = await this.getKeyPair();
 
     if (!keyPair) {
-      throw new Error("No key pair available");
+      throw new Error('No key pair available');
     }
 
     const remoteKeyBundle = await AsyncStorage.getItem(`remote_key_${userId}`);
     if (!remoteKeyBundle) {
-      throw new Error("Remote key bundle not found");
+      throw new Error('Remote key bundle not found');
     }
 
     const recipientPublicKey = JSON.parse(remoteKeyBundle).publicKey;
@@ -102,7 +102,7 @@ class SignalProtocolService {
       message,
       nonce,
       from_base64(recipientPublicKey),
-      keyPair.privateKey
+      keyPair.privateKey,
     );
 
     return {
@@ -113,16 +113,16 @@ class SignalProtocolService {
 
   public async decryptMessage(
     senderId: string,
-    encryptedData: { encryptedMessage: string; nonce: string }
+    encryptedData: { encryptedMessage: string; nonce: string },
   ): Promise<string> {
     const keyPair = await this.getKeyPair();
 
     if (!keyPair) {
-      throw new Error("No key pair available");
+      throw new Error('No key pair available');
     }
 
     const remoteKeyBundle = await AsyncStorage.getItem(
-      `remote_key_${senderId}`
+      `remote_key_${senderId}`,
     );
     if (!remoteKeyBundle) {
       throw new Error("Sender's key bundle not found");
@@ -133,7 +133,7 @@ class SignalProtocolService {
       from_base64(encryptedData.encryptedMessage),
       from_base64(encryptedData.nonce),
       from_base64(senderPublicKey),
-      keyPair.privateKey
+      keyPair.privateKey,
     );
 
     return to_string(decryptedMessage);
@@ -159,7 +159,7 @@ class SignalProtocolService {
   async storeRemotePublicKey(userId: string, publicKey: string): Promise<void> {
     await AsyncStorage.setItem(
       `remote_key_${userId}`,
-      JSON.stringify({ publicKey })
+      JSON.stringify({ publicKey }),
     );
   }
 }

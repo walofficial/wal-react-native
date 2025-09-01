@@ -1,15 +1,15 @@
-import React, { useEffect } from "react";
-import { Text } from "@/components/ui/text";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
-import { useRouter } from "expo-router";
-import useLocationsInfo from "@/hooks/useLocationsInfo";
-import useGoLive from "@/hooks/useGoLive";
-import { FontSizes, useTheme } from "@/lib/theme";
-import { isWeb } from "@/lib/platform";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import useFeeds from "@/hooks/useFeeds";
-import { useUserFeedIds } from "@/hooks/useUserFeedIds";
-import { useTranslation } from "@/hooks/useTranslation";
+import React, { useEffect } from 'react';
+import { Text } from '@/components/ui/text';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import useLocationsInfo from '@/hooks/useLocationsInfo';
+import useGoLive from '@/hooks/useGoLive';
+import { FontSizes, useTheme } from '@/lib/theme';
+import { isWeb } from '@/lib/platform';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useFeeds from '@/hooks/useFeeds';
+import { useUserFeedIds } from '@/hooks/useUserFeedIds';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function TaskScrollableView() {
   const { t } = useTranslation();
@@ -33,7 +33,7 @@ export default function TaskScrollableView() {
       if (data.feeds_at_location && data.feeds_at_location.length > 0) {
         const firstTask = data.feeds_at_location[0];
         router.replace({
-          pathname: "/(tabs)/(home)/[feedId]",
+          pathname: '/(tabs)/(home)/[feedId]',
           params: {
             feedId: firstTask.id,
           },
@@ -52,7 +52,7 @@ export default function TaskScrollableView() {
       if (data.nearest_feeds && data.nearest_feeds.length > 0) {
         const firstNearTask = data.nearest_feeds[0];
         router.replace({
-          pathname: "/(tabs)/(home)/[feedId]",
+          pathname: '/(tabs)/(home)/[feedId]',
           params: {
             feedId: firstNearTask.feed.id,
           },
@@ -84,19 +84,19 @@ export default function TaskScrollableView() {
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.text} />
           <Text style={[styles.loadingText, { color: theme.colors.text }]}>
-            {t("common.checking_location")}...
+            {t('common.checking_location')}...
           </Text>
         </View>
       ) : errorMsg ? (
         <View style={styles.statusContainer}>
           <Text style={[styles.errorText, { color: theme.colors.text }]}>
-            {t("common.location_check_failed_gps_description")}
+            {t('common.location_check_failed_gps_description')}
           </Text>
         </View>
       ) : !data?.feeds_at_location?.length && !data?.nearest_feeds?.length ? (
         <View style={styles.statusContainer}>
           <Text style={[styles.emptyText, { color: theme.colors.text }]}>
-            {t("common.no_locations_found_description")}
+            {t('common.no_locations_found_description')}
           </Text>
         </View>
       ) : null}
@@ -107,32 +107,32 @@ export default function TaskScrollableView() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 24,
   },
   loadingContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     gap: 20,
   },
   statusContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     maxWidth: 280,
   },
   loadingText: {
     fontSize: FontSizes.medium,
-    textAlign: "center",
-    fontWeight: "500",
+    textAlign: 'center',
+    fontWeight: '500',
   },
   errorText: {
     fontSize: FontSizes.medium,
-    textAlign: "center",
+    textAlign: 'center',
     lineHeight: 22,
-    fontWeight: "400",
+    fontWeight: '400',
   },
   emptyText: {
     fontSize: FontSizes.medium,
-    textAlign: "center",
-    fontWeight: "400",
+    textAlign: 'center',
+    fontWeight: '400',
   },
 });

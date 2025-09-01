@@ -1,8 +1,8 @@
 // @ts-nocheck
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { CheckLocationResponse } from "@/lib/api/generated";
-import { checkLocationOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { CheckLocationResponse } from '@/lib/api/generated';
+import { checkLocationOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 function useCheckLocation(feedId: string, latitude: number, longitude: number) {
   const { data, isFetching, isSuccess, isError } =

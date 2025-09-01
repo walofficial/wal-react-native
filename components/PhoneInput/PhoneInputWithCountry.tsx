@@ -1,6 +1,6 @@
-import React, { forwardRef } from "react";
-import PhoneInput from "./index";
-import { Country } from "@/lib/countries";
+import React, { forwardRef } from 'react';
+import PhoneInput from './index';
+import { Country } from '@/lib/countries';
 
 interface PhoneInputWithCountryProps {
   value: string;
@@ -25,7 +25,7 @@ const PhoneInputWithCountry = forwardRef<any, PhoneInputWithCountryProps>(
       editable = true,
       selectedCountry, // New prop for user-selected country
     },
-    ref
+    ref,
   ) => {
     return (
       <PhoneInput
@@ -35,11 +35,11 @@ const PhoneInputWithCountry = forwardRef<any, PhoneInputWithCountryProps>(
         onBlur={onBlur}
         country={
           selectedCountry || {
-            name: "Georgia",
-            nameGeo: "საქართველო",
-            code: "GE",
-            callingCode: "+995",
-            flag: "ge",
+            name: 'Georgia',
+            nameGeo: 'საქართველო',
+            code: 'GE',
+            callingCode: '+995',
+            flag: 'ge',
           }
         }
         onCountryPress={onCountryPress}
@@ -49,9 +49,9 @@ const PhoneInputWithCountry = forwardRef<any, PhoneInputWithCountryProps>(
         isCountryLoading={!selectedCountry}
       />
     );
-  }
+  },
 );
 
-PhoneInputWithCountry.displayName = "PhoneInputWithCountry";
+PhoneInputWithCountry.displayName = 'PhoneInputWithCountry';
 
 export default PhoneInputWithCountry;

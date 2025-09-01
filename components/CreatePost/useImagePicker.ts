@@ -1,13 +1,13 @@
-import { useState, useEffect } from "react";
-import * as ImagePicker from "expo-image-picker";
+import { useState, useEffect } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import {
   hasClipboardImage,
   pasteImageFromClipboard,
   copyImageToClipboard,
-  addClipboardListener
-} from "@/lib/clipboard";
-import { useToast } from "@/components/ToastUsage";
-import { t } from "@/lib/i18n";
+  addClipboardListener,
+} from '@/lib/clipboard';
+import { useToast } from '@/components/ToastUsage';
+import { t } from '@/lib/i18n';
 
 const MAX_IMAGES = 3;
 
@@ -15,7 +15,8 @@ export function useImagePicker() {
   const [selectedImages, setSelectedImages] = useState<
     ImagePicker.ImagePickerAsset[]
   >([]);
-  const [hasClipboardImageAvailable, setHasClipboardImageAvailable] = useState(false);
+  const [hasClipboardImageAvailable, setHasClipboardImageAvailable] =
+    useState(false);
   const [isPastingImage, setIsPastingImage] = useState(false);
   const { error: errorToast } = useToast();
 
@@ -38,15 +39,15 @@ export function useImagePicker() {
       const hasImage = await hasClipboardImage();
       setHasClipboardImageAvailable(hasImage);
     } catch (error) {
-      console.warn("Error checking clipboard:", error);
+      console.warn('Error checking clipboard:', error);
     }
   };
 
   const handleImagePick = async () => {
     if (selectedImages.length >= MAX_IMAGES) {
       errorToast({
-        title: t("errors.max_images_reached", { count: MAX_IMAGES }),
-        description: t("errors.max_images_reached", { count: MAX_IMAGES })
+        title: t('errors.max_images_reached', { count: MAX_IMAGES }),
+        description: t('errors.max_images_reached', { count: MAX_IMAGES }),
       });
       return;
     }
@@ -63,8 +64,8 @@ export function useImagePicker() {
       const newImages = result.assets;
       if (selectedImages.length + newImages.length > MAX_IMAGES) {
         errorToast({
-          title: t("errors.max_images_reached", { count: MAX_IMAGES }),
-          description: t("errors.max_images_reached", { count: MAX_IMAGES })
+          title: t('errors.max_images_reached', { count: MAX_IMAGES }),
+          description: t('errors.max_images_reached', { count: MAX_IMAGES }),
         });
         return;
       }
@@ -75,8 +76,8 @@ export function useImagePicker() {
   const handlePasteImage = async () => {
     if (selectedImages.length >= MAX_IMAGES) {
       errorToast({
-        title: t("errors.max_images_reached", { count: MAX_IMAGES }),
-        description: t("errors.max_images_reached", { count: MAX_IMAGES })
+        title: t('errors.max_images_reached', { count: MAX_IMAGES }),
+        description: t('errors.max_images_reached', { count: MAX_IMAGES }),
       });
       return;
     }
@@ -86,7 +87,7 @@ export function useImagePicker() {
       const pastedImage = await pasteImageFromClipboard((message) => {
         errorToast({
           title: message,
-          description: message
+          description: message,
         });
       });
       if (pastedImage) {
@@ -95,7 +96,7 @@ export function useImagePicker() {
         await checkClipboardImage();
       }
     } catch (error) {
-      console.error("Error pasting image:", error);
+      console.error('Error pasting image:', error);
     } finally {
       setIsPastingImage(false);
     }
@@ -105,7 +106,7 @@ export function useImagePicker() {
     try {
       await copyImageToClipboard(imageUri);
     } catch (error) {
-      console.error("Error copying image:", error);
+      console.error('Error copying image:', error);
     }
   };
 

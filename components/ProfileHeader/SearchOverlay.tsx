@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -7,22 +7,22 @@ import {
   Platform,
   Keyboard,
   BackHandler,
-} from "react-native";
-import { useAtom, useSetAtom } from "jotai";
+} from 'react-native';
+import { useAtom, useSetAtom } from 'jotai';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   withSpring,
-} from "react-native-reanimated";
-import { TabBarIcon } from "../navigation/TabBarIcon";
-import { Text } from "../ui/text";
-import { useColorScheme } from "@/lib/useColorScheme";
+} from 'react-native-reanimated';
+import { TabBarIcon } from '../navigation/TabBarIcon';
+import { Text } from '../ui/text';
+import { useColorScheme } from '@/lib/useColorScheme';
 import {
   searchInputValueAtom,
   setDebouncedSearchAtom,
-} from "@/lib/state/search";
-import { t } from "@/lib/i18n";
+} from '@/lib/state/search';
+import { t } from '@/lib/i18n';
 
 interface SearchOverlayProps {
   isSearchActive: boolean;
@@ -53,17 +53,17 @@ export function SearchOverlay({
 
   // Handle Android back button when search is active
   useEffect(() => {
-    if (!isSearchActive || Platform.OS !== "android") return;
+    if (!isSearchActive || Platform.OS !== 'android') return;
 
     const backHandler = BackHandler.addEventListener(
-      "hardwareBackPress",
+      'hardwareBackPress',
       () => {
         if (isSearchActive) {
           onSearchCancel();
           return true; // Prevent default back behavior
         }
         return false;
-      }
+      },
     );
 
     return () => backHandler.remove();
@@ -92,10 +92,10 @@ export function SearchOverlay({
     if (!isSearchActive) return;
 
     const keyboardDidHideListener = Keyboard.addListener(
-      "keyboardDidHide",
+      'keyboardDidHide',
       () => {
         // Optional: You can add logic here if needed when keyboard hides
-      }
+      },
     );
 
     return () => {
@@ -113,7 +113,7 @@ export function SearchOverlay({
   return (
     <Animated.View
       style={[styles.searchBarOverlay, searchBarAnimatedStyle]}
-      pointerEvents={isSearchActive ? "auto" : "none"}
+      pointerEvents={isSearchActive ? 'auto' : 'none'}
     >
       <View
         style={[
@@ -121,14 +121,14 @@ export function SearchOverlay({
           isDarkColorScheme
             ? styles.searchBarContainerDark
             : styles.searchBarContainerLight,
-          Platform.OS === "android"
+          Platform.OS === 'android'
             ? styles.searchBarContainerAndroid
             : styles.searchBarContainerIOS,
         ]}
       >
         <TabBarIcon
           name="search"
-          color={isDarkColorScheme ? "#8E8E93" : "#8E8E93"}
+          color={isDarkColorScheme ? '#8E8E93' : '#8E8E93'}
           size={20}
           style={styles.searchIcon}
         />
@@ -140,15 +140,15 @@ export function SearchOverlay({
               isDarkColorScheme
                 ? styles.searchInputDark
                 : styles.searchInputLight,
-              Platform.OS === "ios"
+              Platform.OS === 'ios'
                 ? styles.searchInputIOS
                 : styles.searchInputAndroid,
             ]}
             value={searchValue}
             onChangeText={handleSearchChange}
             onSubmitEditing={handleSearchSubmit}
-            placeholder={t("common.search")}
-            placeholderTextColor={isDarkColorScheme ? "#8E8E93" : "#8E8E93"}
+            placeholder={t('common.search')}
+            placeholderTextColor={isDarkColorScheme ? '#8E8E93' : '#8E8E93'}
             returnKeyType="search"
             autoCorrect={false}
             autoCapitalize="none"
@@ -172,7 +172,7 @@ export function SearchOverlay({
                 : styles.cancelTextLight,
             ]}
           >
-            {t("common.cancel")}
+            {t('common.cancel')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -182,24 +182,24 @@ export function SearchOverlay({
 
 const styles = StyleSheet.create({
   searchBarOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 16,
     zIndex: 1000,
     elevation: 1000, // For Android
   },
   searchBarContainer: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 12,
     height: 36,
-    borderRadius: Platform.OS === "ios" ? 10 : 20,
+    borderRadius: Platform.OS === 'ios' ? 10 : 20,
     zIndex: 1001,
     elevation: 1001, // For Android
   },
@@ -211,10 +211,10 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   searchBarContainerLight: {
-    backgroundColor: "#F2F2F7",
+    backgroundColor: '#F2F2F7',
   },
   searchBarContainerDark: {
-    backgroundColor: "#1C1C1E",
+    backgroundColor: '#1C1C1E',
   },
   searchIcon: {
     marginRight: 8,
@@ -223,7 +223,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     paddingVertical: 0,
-    paddingRight: Platform.OS === "ios" ? 8 : 10, // Reduced padding to avoid clear button conflicts
+    paddingRight: Platform.OS === 'ios' ? 8 : 10, // Reduced padding to avoid clear button conflicts
   },
   searchInputIOS: {
     height: 36,
@@ -235,10 +235,10 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   searchInputLight: {
-    color: "#000000",
+    color: '#000000',
   },
   searchInputDark: {
-    color: "#FFFFFF",
+    color: '#FFFFFF',
   },
   cancelButton: {
     marginLeft: 12,
@@ -246,13 +246,13 @@ const styles = StyleSheet.create({
   },
   cancelText: {
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   cancelTextLight: {
-    color: "#007AFF",
+    color: '#007AFF',
   },
   cancelTextDark: {
-    color: "#0A84FF",
+    color: '#0A84FF',
   },
   searchInputWrapper: {
     flex: 1,

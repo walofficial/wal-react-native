@@ -1,5 +1,5 @@
 // @ts-nocheck
-import LocationContext from "@/hooks/context";
+import LocationContext from '@/hooks/context';
 
 function LocationProvider({ children }: { children: React.ReactNode }) {
   return (

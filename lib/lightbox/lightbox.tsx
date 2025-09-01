@@ -1,8 +1,8 @@
-import React from "react";
-import { nanoid } from "nanoid/non-secure";
+import React from 'react';
+import { nanoid } from 'nanoid/non-secure';
 
-import { useNonReactiveCallback } from "@/lib/hooks/useNonReactiveCallback";
-import { ImageSource } from "@/components/Lightbox/ImageViewing/@types";
+import { useNonReactiveCallback } from '@/lib/hooks/useNonReactiveCallback';
+import { ImageSource } from '@/components/Lightbox/ImageViewing/@types';
 
 export type Lightbox = {
   id: string;
@@ -17,7 +17,7 @@ const LightboxContext = React.createContext<{
 });
 
 const LightboxControlContext = React.createContext<{
-  openLightbox: (lightbox: Omit<Lightbox, "id">) => void;
+  openLightbox: (lightbox: Omit<Lightbox, 'id'>) => void;
   closeLightbox: () => boolean;
 }>({
   openLightbox: () => {},
@@ -26,11 +26,11 @@ const LightboxControlContext = React.createContext<{
 
 export function Provider({ children }: React.PropsWithChildren<{}>) {
   const [activeLightbox, setActiveLightbox] = React.useState<Lightbox | null>(
-    null
+    null,
   );
 
   const openLightbox = useNonReactiveCallback(
-    (lightbox: Omit<Lightbox, "id">) => {
+    (lightbox: Omit<Lightbox, 'id'>) => {
       setActiveLightbox((prevLightbox) => {
         if (prevLightbox) {
           // Ignore duplicate open requests. If it's already open,
@@ -40,7 +40,7 @@ export function Provider({ children }: React.PropsWithChildren<{}>) {
           return { ...lightbox, id: nanoid() };
         }
       });
-    }
+    },
   );
 
   const closeLightbox = useNonReactiveCallback(() => {
@@ -53,7 +53,7 @@ export function Provider({ children }: React.PropsWithChildren<{}>) {
     () => ({
       activeLightbox,
     }),
-    [activeLightbox]
+    [activeLightbox],
   );
 
   const methods = React.useMemo(
@@ -61,7 +61,7 @@ export function Provider({ children }: React.PropsWithChildren<{}>) {
       openLightbox,
       closeLightbox,
     }),
-    [openLightbox, closeLightbox]
+    [openLightbox, closeLightbox],
   );
 
   return (

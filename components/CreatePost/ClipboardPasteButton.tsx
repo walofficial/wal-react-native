@@ -1,12 +1,12 @@
-import React from "react";
-import { View, Platform, StyleSheet } from "react-native";
-import * as Clipboard from "expo-clipboard";
-import { useTheme } from "@/lib/theme";
+import React from 'react';
+import { View, Platform, StyleSheet } from 'react-native';
+import * as Clipboard from 'expo-clipboard';
+import { useTheme } from '@/lib/theme';
 
-import { ImagePickerAsset } from "expo-image-picker";
-import { pasteImageFromClipboard } from "@/lib/clipboard";
-import { useToast } from "@/components/ToastUsage";
-import { t } from "@/lib/i18n";
+import { ImagePickerAsset } from 'expo-image-picker';
+import { pasteImageFromClipboard } from '@/lib/clipboard';
+import { useToast } from '@/components/ToastUsage';
+import { t } from '@/lib/i18n';
 
 interface ClipboardPasteButtonProps {
   onImagePasted: (image: ImagePickerAsset) => void;
@@ -26,19 +26,19 @@ export default function ClipboardPasteButton({
 
   // Check if iOS 16+ native paste button is available
   const isNativePasteButtonAvailable =
-    Platform.OS === "ios" && Clipboard.isPasteButtonAvailable;
+    Platform.OS === 'ios' && Clipboard.isPasteButtonAvailable;
 
   const handlePasteData = async (data: any) => {
     try {
       if (currentImageCount >= maxImages) {
         errorToast({
-          title: t("errors.max_images_reached", { count: maxImages }),
-          description: t("errors.max_images_reached", { count: maxImages }),
+          title: t('errors.max_images_reached', { count: maxImages }),
+          description: t('errors.max_images_reached', { count: maxImages }),
         });
         return;
       }
 
-      if (data.type === "image") {
+      if (data.type === 'image') {
         // Convert native paste data to ImagePickerAsset format
         const timestamp = Date.now();
         const asset: ImagePickerAsset = {
@@ -46,9 +46,9 @@ export default function ClipboardPasteButton({
           width: data.size?.width || 0,
           height: data.size?.height || 0,
           fileSize: undefined,
-          type: "image",
+          type: 'image',
           fileName: `pasted_image_${timestamp}.jpg`,
-          mimeType: "image/jpeg",
+          mimeType: 'image/jpeg',
           exif: null,
           assetId: null,
           base64: null,
@@ -56,15 +56,15 @@ export default function ClipboardPasteButton({
         };
 
         onImagePasted(asset);
-      } else if (data.type === "text") {
+      } else if (data.type === 'text') {
         // Handle text paste if needed
-        console.log("Text pasted:", data.text);
+        console.log('Text pasted:', data.text);
       }
     } catch (error) {
-      console.error("Error handling paste data:", error);
+      console.error('Error handling paste data:', error);
       errorToast({
-        title: t("errors.failed_paste_content"),
-        description: t("errors.failed_paste_content"),
+        title: t('errors.failed_paste_content'),
+        description: t('errors.failed_paste_content'),
       });
     }
   };
@@ -77,15 +77,15 @@ export default function ClipboardPasteButton({
           style={[
             styles.nativePasteButton,
             {
-              backgroundColor: theme.colors.primary + "10",
-              borderColor: theme.colors.primary + "20",
+              backgroundColor: theme.colors.primary + '10',
+              borderColor: theme.colors.primary + '20',
             },
           ]}
-          acceptedContentTypes={["image", "plain-text"]}
+          acceptedContentTypes={['image', 'plain-text']}
           onPress={handlePasteData}
           displayMode="iconAndLabel"
           cornerStyle="medium"
-          backgroundColor={theme.colors.primary + "10"}
+          backgroundColor={theme.colors.primary + '10'}
           foregroundColor={theme.colors.primary}
         />
       </View>
@@ -98,8 +98,8 @@ export default function ClipboardPasteButton({
 
 const styles = StyleSheet.create({
   nativePasteContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   nativePasteButton: {
     height: 44,

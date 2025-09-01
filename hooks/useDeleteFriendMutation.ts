@@ -1,5 +1,8 @@
-import { getFriendsListQueryKey, removeFriendMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  getFriendsListQueryKey,
+  removeFriendMutation,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 function useDeleteFriendMutation() {
   const queryClient = useQueryClient();

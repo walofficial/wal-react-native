@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { View, StyleSheet, Text } from "react-native";
+import React, { useEffect, useState, useCallback } from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 import {
   AudioSession,
   LiveKitRoom,
@@ -9,15 +9,14 @@ import {
   useTracks,
   useRoom,
   useRoomContext,
-} from "@livekit/react-native";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { Track, LocalVideoTrack } from "livekit-client";
-import { RoomControls } from "./RoomControls";
+} from '@livekit/react-native';
+import { Track, LocalVideoTrack } from 'livekit-client';
+import { RoomControls } from './RoomControls';
 // @ts-ignore
-import { mediaDevices } from "@livekit/react-native-webrtc";
-import useAuth from "@/hooks/useAuth";
-import { BlurView } from "expo-blur";
-import { t } from "@/lib/i18n";
+import { mediaDevices } from '@livekit/react-native-webrtc';
+import useAuth from '@/hooks/useAuth';
+import { BlurView } from 'expo-blur';
+import { t } from '@/lib/i18n';
 
 registerGlobals();
 
@@ -37,14 +36,14 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
 
   return (
     <LiveKitRoom
-      serverUrl={"wss://ment-6gg5tj49.livekit.cloud"}
+      serverUrl={'wss://ment-6gg5tj49.livekit.cloud'}
       token={token}
       onError={(error: Error) => {
         // toast(error.message);
       }}
       connect={true}
       options={{
-        adaptiveStream: { pixelDensity: "screen" },
+        adaptiveStream: { pixelDensity: 'screen' },
       }}
       audio={true}
       video={true}
@@ -72,7 +71,7 @@ function RoomView({ onDisconnect }: RoomViewProps) {
   // Get all camera tracks.
   const tracks = useTracks([Track.Source.Camera]);
   const cameraTrack = localParticipant?.getTrackPublication(
-    Track.Source.Camera
+    Track.Source.Camera,
   );
 
   // Handle disconnection with complete reset
@@ -114,12 +113,12 @@ function RoomView({ onDisconnect }: RoomViewProps) {
       }
     };
 
-    localParticipant.on("trackMuted", handleTrackMuted);
-    localParticipant.on("trackUnmuted", handleTrackUnmuted);
+    localParticipant.on('trackMuted', handleTrackMuted);
+    localParticipant.on('trackUnmuted', handleTrackUnmuted);
 
     return () => {
-      localParticipant.off("trackMuted", handleTrackMuted);
-      localParticipant.off("trackUnmuted", handleTrackUnmuted);
+      localParticipant.off('trackMuted', handleTrackMuted);
+      localParticipant.off('trackUnmuted', handleTrackUnmuted);
     };
   }, [localParticipant]);
 
@@ -134,9 +133,11 @@ function RoomView({ onDisconnect }: RoomViewProps) {
       <BlurView intensity={15} tint="dark" style={styles.blurBackground}>
         {/* {user && <ProfileView userId={user.id} />} */}
         <View style={styles.messageContainer}>
-          <Text style={styles.disabledMessage}>{t("common.video_disabled")}</Text>
+          <Text style={styles.disabledMessage}>
+            {t('common.video_disabled')}
+          </Text>
           <Text style={styles.disabledSubMessage}>
-            {t("common.enable_video_to_be_seen")}
+            {t('common.enable_video_to_be_seen')}
           </Text>
         </View>
       </BlurView>
@@ -180,14 +181,14 @@ function RoomView({ onDisconnect }: RoomViewProps) {
       return;
     }
 
-    let facingModeStr = !isCameraFrontFacing ? "front" : "environment";
+    let facingModeStr = !isCameraFrontFacing ? 'front' : 'environment';
     setCameraFrontFacing(!isCameraFrontFacing);
     let devices = await mediaDevices.enumerateDevices();
     var newDevice;
     //@ts-ignore
     for (const device of devices) {
       //@ts-ignore
-      if (device.kind === "videoinput" && device.facing === facingModeStr) {
+      if (device.kind === 'videoinput' && device.facing === facingModeStr) {
         newDevice = device;
         break;
       }
@@ -202,10 +203,10 @@ function RoomView({ onDisconnect }: RoomViewProps) {
       localCameraTrack.restartTrack({
         deviceId: newDevice.deviceId,
         facingMode: facingModeStr as
-          | "environment"
-          | "user"
-          | "left"
-          | "right"
+          | 'environment'
+          | 'user'
+          | 'left'
+          | 'right'
           | undefined,
       });
     }
@@ -235,44 +236,44 @@ function RoomView({ onDisconnect }: RoomViewProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "stretch",
-    justifyContent: "center",
-    backgroundColor: "black",
+    alignItems: 'stretch',
+    justifyContent: 'center',
+    backgroundColor: 'black',
   },
   videoTrack: {
     flex: 1,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   disabledCameraContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   blurBackground: {
     flex: 1,
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 20,
   },
   messageContainer: {
     marginTop: 20,
-    alignItems: "center",
+    alignItems: 'center',
     padding: 16,
     borderRadius: 12,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
   disabledMessage: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 8,
-    textAlign: "center",
+    textAlign: 'center',
   },
   disabledSubMessage: {
-    color: "rgba(255,255,255,0.8)",
+    color: 'rgba(255,255,255,0.8)',
     fontSize: 14,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });

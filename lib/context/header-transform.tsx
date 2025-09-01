@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 import {
   SharedValue,
   useSharedValue,
   withSpring,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
 type StateContext = {
   headerMode: SharedValue<number>;
@@ -29,20 +29,20 @@ export function Provider({ children }: React.PropsWithChildren<{}>) {
   const headerMode = useSharedValue(0);
   const setMode = React.useCallback(
     (v: boolean) => {
-      "worklet";
+      'worklet';
       headerMode.set(() =>
         withSpring(v ? 1 : 0, {
           overshootClamping: true,
-        })
+        }),
       );
     },
-    [headerMode]
+    [headerMode],
   );
   const value = React.useMemo(
     () => ({
       headerMode,
     }),
-    [headerMode]
+    [headerMode],
   );
   return (
     <StateContext.Provider value={value}>

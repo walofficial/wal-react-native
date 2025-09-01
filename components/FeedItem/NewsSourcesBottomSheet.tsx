@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,21 +7,21 @@ import {
   Linking,
   StyleSheet,
   Platform,
-} from "react-native";
+} from 'react-native';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetScrollView,
-} from "@gorhom/bottom-sheet";
-import { useAtom } from "jotai";
-import { activeSourcesState, newsBottomSheetState } from "@/lib/atoms/news";
-import { SourceIcon } from "@/components/SourceIcon";
-import useSheetCloseOnNavigation from "@/hooks/sheetCloseOnNavigation";
-import { getBottomSheetBackgroundStyle } from "@/lib/styles";
-import { useTheme } from "@/lib/theme";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { isAndroid } from "@/lib/platform";
-import { Portal } from "@/components/primitives/portal";
+} from '@gorhom/bottom-sheet';
+import { useAtom } from 'jotai';
+import { activeSourcesState, newsBottomSheetState } from '@/lib/atoms/news';
+import { SourceIcon } from '@/components/SourceIcon';
+import useSheetCloseOnNavigation from '@/hooks/sheetCloseOnNavigation';
+import { getBottomSheetBackgroundStyle } from '@/lib/styles';
+import { useTheme } from '@/lib/theme';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { isAndroid } from '@/lib/platform';
+import { Portal } from '@/components/primitives/portal';
 interface NewsSourcesBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheet>;
 }
@@ -33,9 +33,9 @@ export default function NewsSourcesBottomSheet({
   const [activeSources, setActiveSources] = useAtom(activeSourcesState);
   const [isBottomSheetOpen, setIsBottomSheetOpen] =
     useAtom(newsBottomSheetState);
-  const snapPoints = React.useMemo(() => ["50%"], []);
+  const snapPoints = React.useMemo(() => ['50%'], []);
   const { handleSheetPositionChange } = useSheetCloseOnNavigation(
-    bottomSheetRef as React.RefObject<BottomSheetModal>
+    bottomSheetRef as React.RefObject<BottomSheetModal>,
   );
   const insets = useSafeAreaInsets();
 
@@ -57,7 +57,7 @@ export default function NewsSourcesBottomSheet({
         pressBehavior="close"
       />
     ),
-    []
+    [],
   );
   const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
 
@@ -122,12 +122,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 16,
   },
   sourceItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 16,
   },
   sourceIcon: {

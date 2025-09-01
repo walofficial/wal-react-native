@@ -1,8 +1,8 @@
-import MessageConnectionWrapper from "../Chat/socket/MessageConnectionWrapper";
-import { useAtomValue } from "jotai";
-import { publicKeyState } from "@/lib/state/auth";
-import { isWeb } from "@/lib/platform";
-import { useNotificationHandler } from "./useNotficationHandler";
+import MessageConnectionWrapper from '../Chat/socket/MessageConnectionWrapper';
+import { useAtomValue } from 'jotai';
+import { publicKeyState } from '@/lib/state/auth';
+import { isWeb } from '@/lib/platform';
+import { useNotificationHandler } from './useNotficationHandler';
 
 function DbUserGetter({ children }: { children: React.ReactNode }) {
   const publicKey = useAtomValue(publicKeyState);

@@ -1,15 +1,15 @@
-import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import ProfileHeader from "@/components/ProfileHeader";
-import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
-import useAuth from "@/hooks/useAuth";
-import { Link, Stack, useRouter } from "expo-router";
-import { TouchableOpacity, View, ActivityIndicator } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "@/lib/theme";
-import SimpleGoBackHeaderPost from "@/components/SimpleGoBackHeaderPost";
-import React from "react";
-import { CustomTitle } from "@/components/CustomTitle";
-import { t } from "@/lib/i18n";
+import { TabBarIcon } from '@/components/navigation/TabBarIcon';
+import ProfileHeader from '@/components/ProfileHeader';
+import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
+import useAuth from '@/hooks/useAuth';
+import { Link, Stack } from 'expo-router';
+import { TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '@/lib/theme';
+import SimpleGoBackHeaderPost from '@/components/SimpleGoBackHeaderPost';
+import React from 'react';
+import { CustomTitle } from '@/components/CustomTitle';
+import { t } from '@/lib/i18n';
 
 export default function Layout() {
   const { user } = useAuth();
@@ -36,17 +36,17 @@ export default function Layout() {
         <Stack.Screen
           name="index"
           options={{
-            title: "პროფილი",
+            title: 'პროფილი',
             headerTransparent: true,
             header: () => (
               <ProfileHeader
                 customTitleComponent={
-                  <CustomTitle text={user?.username || "..."} />
+                  <CustomTitle text={user?.username || '...'} />
                 }
                 customButtons={
-                  <Link href={"/(tabs)/(user)/settings"} asChild>
+                  <Link href={'/(tabs)/(user)/settings'} asChild>
                     <TouchableOpacity
-                      style={{ flexDirection: "row", alignItems: "center" }}
+                      style={{ flexDirection: 'row', alignItems: 'center' }}
                     >
                       <View>
                         <TabBarIcon
@@ -81,10 +81,10 @@ export default function Layout() {
         <Stack.Screen
           name="change-photo"
           options={{
-            title: "",
+            title: '',
             headerTransparent: true,
             header: () => (
-              <SimpleGoBackHeader title={t("common.change_photo")} />
+              <SimpleGoBackHeader title={t('common.change_photo')} />
             ),
             headerStyle: {
               backgroundColor: theme.colors.background,
@@ -96,7 +96,7 @@ export default function Layout() {
         <Stack.Screen
           name="profile-settings"
           options={{
-            title: "",
+            title: '',
             headerShown: false,
             headerStyle: {
               backgroundColor: theme.colors.background,
@@ -107,7 +107,7 @@ export default function Layout() {
         <Stack.Screen
           name="blocked-users"
           options={{
-            title: "დაბლოკილი",
+            title: 'დაბლოკილი',
             headerStyle: {
               backgroundColor: theme.colors.background,
             },
@@ -117,9 +117,9 @@ export default function Layout() {
         <Stack.Screen
           name="settings"
           options={{
-            title: "",
+            title: '',
             headerTransparent: true,
-            header: () => <SimpleGoBackHeader title={t("common.settings")} />,
+            header: () => <SimpleGoBackHeader title={t('common.settings')} />,
             headerStyle: {
               backgroundColor: theme.colors.background,
             },
@@ -129,10 +129,10 @@ export default function Layout() {
         <Stack.Screen
           name="language-region"
           options={{
-            title: "",
+            title: '',
             headerTransparent: true,
             header: () => (
-              <SimpleGoBackHeader title={t("settings.language_and_region")} />
+              <SimpleGoBackHeader title={t('settings.language_and_region')} />
             ),
             headerStyle: {
               backgroundColor: theme.colors.background,

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, useColorScheme } from "react-native";
+import { StyleSheet, Text, useColorScheme } from 'react-native';
 
 export default function MessageItemText({
   text,
@@ -8,7 +8,7 @@ export default function MessageItemText({
   isAuthor?: boolean;
 }) {
   const colorScheme = useColorScheme();
-  const isDark = colorScheme === "dark";
+  const isDark = colorScheme === 'dark';
 
   return (
     <Text
@@ -19,8 +19,8 @@ export default function MessageItemText({
             ? styles.authorTextDark
             : styles.authorTextLight
           : isDark
-          ? styles.nonAuthorTextDark
-          : styles.nonAuthorTextLight,
+            ? styles.nonAuthorTextDark
+            : styles.nonAuthorTextLight,
       ]}
     >
       {text}
@@ -35,16 +35,16 @@ const styles = StyleSheet.create({
   },
   // Dark mode text styles
   authorTextDark: {
-    color: "#FFFFFF", // White text for dark mode author messages
+    color: '#FFFFFF', // White text for dark mode author messages
   },
   nonAuthorTextDark: {
-    color: "#FFFFFF", // White text for dark mode non-author messages
+    color: '#FFFFFF', // White text for dark mode non-author messages
   },
   // Light mode text styles
   authorTextLight: {
-    color: "#FFFFFF", // White text for light mode author messages
+    color: '#FFFFFF', // White text for light mode author messages
   },
   nonAuthorTextLight: {
-    color: "#000000", // Black text for light mode non-author messages (Messenger/Signal style)
+    color: '#000000', // Black text for light mode non-author messages (Messenger/Signal style)
   },
 });

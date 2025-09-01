@@ -1,15 +1,15 @@
-import { Link, Stack, useLocalSearchParams } from "expo-router";
-import ProfileHeader from "@/components/ProfileHeader";
-import { TaskTitle } from "@/components/CustomTitle";
-import { ScrollReanimatedValueProvider } from "@/components/context/ScrollReanimatedValue";
-import { View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { ProfilePageUsername } from "@/components/ProfilePageUsername";
-import ChatTopbar from "@/components/Chat/chat-topbar";
-import { isIOS, isWeb } from "@/lib/platform";
-import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
-import SimpleGoBackHeaderPost from "@/components/SimpleGoBackHeaderPost";
-import LocationProvider from "@/components/LocationProvider";
+import { Stack } from 'expo-router';
+import ProfileHeader from '@/components/ProfileHeader';
+import { TaskTitle } from '@/components/CustomTitle';
+import { ScrollReanimatedValueProvider } from '@/components/context/ScrollReanimatedValue';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ProfilePageUsername } from '@/components/ProfilePageUsername';
+import ChatTopbar from '@/components/Chat/chat-topbar';
+import { isIOS, isWeb } from '@/lib/platform';
+import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
+import SimpleGoBackHeaderPost from '@/components/SimpleGoBackHeaderPost';
+import LocationProvider from '@/components/LocationProvider';
 
 export default function Layout() {
   const insets = useSafeAreaInsets();
@@ -21,7 +21,7 @@ export default function Layout() {
           <Stack
             screenOptions={{
               headerBackVisible: true,
-              headerBackTitle: isWeb ? "უკან" : "უკან",
+              headerBackTitle: isWeb ? 'უკან' : 'უკან',
             }}
           >
             {/* Optionally configure static options outside the route.*/}
@@ -67,7 +67,7 @@ export default function Layout() {
               name="verification/[verificationId]"
               options={({ route }) => {
                 const params = route.params as { verificationId?: string };
-                const verificationId = params?.verificationId || "";
+                const verificationId = params?.verificationId || '';
 
                 return {
                   headerTransparent: true,
@@ -83,7 +83,7 @@ export default function Layout() {
               name="[feedId]/index"
               options={{
                 headerTransparent: !isWeb,
-                animation: "fade",
+                animation: 'fade',
                 header: () => (
                   <ProfileHeader
                     customTitleComponent={<TaskTitle />}
@@ -104,8 +104,8 @@ export default function Layout() {
             <Stack.Screen
               name="[feedId]/create-post"
               options={{
-                presentation: isIOS ? "modal" : "card",
-                animation: isIOS ? "slide_from_bottom" : "fade_from_bottom",
+                presentation: isIOS ? 'modal' : 'card',
+                animation: isIOS ? 'slide_from_bottom' : 'fade_from_bottom',
                 animationDuration: 200,
                 header: () => null,
                 headerShown: false,
@@ -114,18 +114,18 @@ export default function Layout() {
             <Stack.Screen
               name="[feedId]/create-space/index"
               options={{
-                title: "ოთახის შექმნა",
+                title: 'ოთახის შექმნა',
                 headerStyle: {
-                  backgroundColor: "black",
+                  backgroundColor: 'black',
                 },
               }}
             />
             <Stack.Screen
               name="[feedId]/create-space/schedule-space"
               options={{
-                title: "ოთახის დაწყების დრო",
+                title: 'ოთახის დაწყების დრო',
                 headerStyle: {
-                  backgroundColor: "black",
+                  backgroundColor: 'black',
                 },
               }}
             />

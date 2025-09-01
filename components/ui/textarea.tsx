@@ -1,19 +1,19 @@
-import * as React from "react";
-import { TextInput, StyleSheet } from "react-native";
+import * as React from 'react';
+import { TextInput, StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   textarea: {
     minHeight: 80,
-    width: "100%",
+    width: '100%',
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#e5e5e5",
-    backgroundColor: "#fff",
+    borderColor: '#e5e5e5',
+    backgroundColor: '#fff',
     paddingHorizontal: 12,
     paddingVertical: 8,
     fontSize: 16,
     lineHeight: 20,
-    color: "#000",
+    color: '#000',
   },
   disabled: {
     opacity: 0.5,
@@ -41,6 +41,6 @@ const Textarea = React.forwardRef<
   );
 });
 
-Textarea.displayName = "Textarea";
+Textarea.displayName = 'Textarea';
 
 export { Textarea };

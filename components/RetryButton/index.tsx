@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Button from "@/components/Button";
-import { useNavigation, useLocalSearchParams } from "expo-router";
-import { Alert, StyleSheet } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { t } from "@/lib/i18n";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Button from '@/components/Button';
+import { useNavigation, useLocalSearchParams } from 'expo-router';
+import { Alert, StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { t } from '@/lib/i18n';
 
 export default function RetryButton() {
   const insets = useSafeAreaInsets();
@@ -15,26 +15,26 @@ export default function RetryButton() {
   // Note: Using feedId from params
   const handleRetry = async () => {
     Alert.alert(
-      "თავიდან გადაღება",
-      "გუსრთ თავიდან ცდა? ეს წაშლის თავდაპირველ ჩანაწერს",
+      'თავიდან გადაღება',
+      'გუსრთ თავიდან ცდა? ეს წაშლის თავდაპირველ ჩანაწერს',
       [
         {
-          text: t("common.cancel"),
-          style: "cancel",
+          text: t('common.cancel'),
+          style: 'cancel',
         },
         {
-          style: "destructive",
-          text: t("common.retry"),
+          style: 'destructive',
+          text: t('common.retry'),
           onPress: async () => {
             if (feedId) {
               await AsyncStorage.removeItem(`lastRecordedVideoPath_${feedId}`);
             } else {
-              await AsyncStorage.removeItem("lastRecordedVideoPath");
+              await AsyncStorage.removeItem('lastRecordedVideoPath');
             }
             navigation.goBack();
           },
         },
-      ]
+      ],
     );
   };
 

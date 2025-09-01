@@ -1,7 +1,7 @@
-import { View, StyleSheet } from "react-native";
-import { H3 } from "../ui/typography";
-import { FontSizes, useTheme } from "@/lib/theme";
-import React from "react";
+import { View, StyleSheet } from 'react-native';
+import { H3 } from '../ui/typography';
+import { FontSizes, useTheme } from '@/lib/theme';
+import React from 'react';
 
 export const SectionHeader = ({
   icon: Icon,
@@ -22,9 +22,9 @@ export const SectionHeader = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     marginBottom: 24,
   },
   text: {

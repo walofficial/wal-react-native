@@ -1,4 +1,4 @@
-import { Image as RNImage, Share as RNShare, Share } from "react-native";
+import { Image as RNImage, Share as RNShare, Share } from 'react-native';
 import {
   cacheDirectory,
   copyAsync,
@@ -8,14 +8,14 @@ import {
   makeDirectoryAsync,
   StorageAccessFramework,
   writeAsStringAsync,
-} from "expo-file-system";
-import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
-import { Buffer } from "buffer";
-import { v4 as uuidv4 } from "uuid";
+} from 'expo-file-system';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { Buffer } from 'buffer';
+import { v4 as uuidv4 } from 'uuid';
 
-import { POST_IMG_MAX } from "@/lib/constants";
-import { isAndroid, isIOS } from "@/lib/platform";
-import { Dimensions } from "./types";
+import { POST_IMG_MAX } from '@/lib/constants';
+import { isAndroid, isIOS } from '@/lib/platform';
+import { Dimensions } from './types';
 
 export async function compressIfNeeded(img: any, maxSize: number = 1000000) {
   const origUri = `file://${img.path}`;
@@ -25,12 +25,12 @@ export async function compressIfNeeded(img: any, maxSize: number = 1000000) {
   const resizedImage = await doResize(origUri, {
     width: img.width,
     height: img.height,
-    mode: "stretch",
+    mode: 'stretch',
     maxSize,
   });
   const finalImageMovedPath = await moveToPermanentPath(
     resizedImage.path,
-    ".jpg"
+    '.jpg',
   );
   const finalImg = {
     ...resizedImage,
@@ -46,7 +46,7 @@ export function getImageDim(path: string): Promise<Dimensions> {
       (width, height) => {
         resolve({ width, height });
       },
-      reject
+      reject,
     );
   });
 }
@@ -57,13 +57,13 @@ export function getImageDim(path: string): Promise<Dimensions> {
 interface DoResizeOpts {
   width: number;
   height: number;
-  mode: "contain" | "cover" | "stretch";
+  mode: 'contain' | 'cover' | 'stretch';
   maxSize: number;
 }
 
 async function doResize(
   localUri: string,
-  opts: DoResizeOpts
+  opts: DoResizeOpts,
 ): Promise<{
   path: string;
   mime: string;
@@ -91,13 +91,13 @@ async function doResize(
       {
         format: SaveFormat.JPEG,
         compress: quality,
-      }
+      },
     );
 
     const fileInfo = await getInfoAsync(resizeRes.uri);
     if (!fileInfo.exists) {
       throw new Error(
-        "The image manipulation library failed to create a new image."
+        'The image manipulation library failed to create a new image.',
       );
     }
 
@@ -105,7 +105,7 @@ async function doResize(
       safeDeleteAsync(imageRes.uri);
       return {
         path: normalizePath(resizeRes.uri),
-        mime: "image/jpeg",
+        mime: 'image/jpeg',
         size: fileInfo.size,
         width: resizeRes.width,
         height: resizeRes.height,
@@ -115,7 +115,7 @@ async function doResize(
     }
   }
   throw new Error(
-    `This image is too big! We couldn't compress it down to ${opts.maxSize} bytes`
+    `This image is too big! We couldn't compress it down to ${opts.maxSize} bytes`,
   );
 }
 
@@ -140,25 +140,25 @@ export async function safeDeleteAsync(path: string) {
   try {
     await deleteAsync(normalizedPath, { idempotent: true });
   } catch (e) {
-    console.error("Failed to delete file", e);
+    console.error('Failed to delete file', e);
   }
 }
 
 function joinPath(a: string, b: string) {
-  if (a.endsWith("/")) {
-    if (b.startsWith("/")) {
+  if (a.endsWith('/')) {
+    if (b.startsWith('/')) {
       return a.slice(0, -1) + b;
     }
     return a + b;
-  } else if (b.startsWith("/")) {
+  } else if (b.startsWith('/')) {
     return a + b;
   }
-  return a + "/" + b;
+  return a + '/' + b;
 }
 
 function normalizePath(str: string, allPlatforms = false): string {
   if (isAndroid || allPlatforms) {
-    if (!str.startsWith("file://")) {
+    if (!str.startsWith('file://')) {
       return `file://${str}`;
     }
   }
@@ -168,16 +168,16 @@ function normalizePath(str: string, allPlatforms = false): string {
 export async function saveBytesToDisk(
   filename: string,
   bytes: Uint8Array,
-  type: string
+  type: string,
 ) {
-  const encoded = Buffer.from(bytes).toString("base64");
+  const encoded = Buffer.from(bytes).toString('base64');
   return await saveToDevice(filename, encoded, type);
 }
 
 export async function saveToDevice(
   filename: string,
   encoded: string,
-  type: string
+  type: string,
 ) {
   try {
     if (isIOS) {
@@ -196,7 +196,7 @@ export async function saveToDevice(
       const fileUrl = await StorageAccessFramework.createFileAsync(
         permissions.directoryUri,
         filename,
-        type
+        type,
       );
 
       await writeAsStringAsync(fileUrl, encoded, {
@@ -212,7 +212,7 @@ export async function saveToDevice(
 async function withTempFile<T>(
   filename: string,
   encoded: string,
-  cb: (url: string) => T | Promise<T>
+  cb: (url: string) => T | Promise<T>,
 ): Promise<T> {
   // cacheDirectory will not ever be null so we assert as a string.
   // Using a directory so that the file name is not a random string
@@ -244,7 +244,7 @@ export function getResizedDimensions(originalDims: {
 
   const ratio = Math.min(
     POST_IMG_MAX.width / originalDims.width,
-    POST_IMG_MAX.height / originalDims.height
+    POST_IMG_MAX.height / originalDims.height,
   );
 
   return {

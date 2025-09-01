@@ -7,10 +7,7 @@ import type {
 } from 'axios';
 
 import type { Auth } from '../core/auth';
-import type {
-  Client as CoreClient,
-  Config as CoreConfig,
-} from '../core/types';
+import type { Client as CoreClient, Config as CoreConfig } from '../core/types';
 
 export interface Config<T extends ClientOptions = ClientOptions>
   extends Omit<CreateAxiosDefaults, 'auth' | 'baseURL' | 'headers' | 'method'>,

@@ -1,6 +1,6 @@
-import React from "react";
-import { StyleSheet, Text, View } from "react-native";
-import { User, ChatMessage } from "@/lib/api/generated";
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { User, ChatMessage } from '@/lib/api/generated';
 
 interface MessageItemStatusMarkProps {
   item: ChatMessage;
@@ -29,7 +29,7 @@ const MessageItemStatusMark: React.FC<MessageItemStatusMarkProps> = ({
 const styles = StyleSheet.create({
   statusText: {
     fontSize: 12,
-    color: "#6B7280",
+    color: '#6B7280',
   },
 });
 

@@ -1,5 +1,5 @@
-import { io } from "socket.io-client";
-import { API_BASE_URL } from "@/lib/api/config";
+import { io } from 'socket.io-client';
+import { API_BASE_URL } from '@/lib/api/config';
 // "undefined" means the URL will be computed from the `window.location` object
 
 export const getSocket = (userId: string, publicKey: string) => {
@@ -12,6 +12,6 @@ export const getSocket = (userId: string, publicKey: string) => {
       userId: userId,
       publicKey: publicKey,
     },
-    transports: ["websocket"],
+    transports: ['websocket'],
   });
 };

@@ -1,24 +1,24 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
-} from "react-native";
-import { Controller } from "react-hook-form";
-import { Text } from "@/components/ui/text";
-import DatePicker from "react-native-date-picker";
-import { parse, format } from "date-fns";
+} from 'react-native';
+import { Controller } from 'react-hook-form';
+import { Text } from '@/components/ui/text';
+import DatePicker from 'react-native-date-picker';
+import { parse, format } from 'date-fns';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   interpolateColor,
   Easing,
-} from "react-native-reanimated";
-import { FontSizes, useTheme } from "@/lib/theme";
-import { Calendar } from "lucide-react-native";
-import { getCurrentLocale, t } from "@/lib/i18n";
+} from 'react-native-reanimated';
+import { FontSizes, useTheme } from '@/lib/theme';
+import { Calendar } from 'lucide-react-native';
+import { getCurrentLocale, t } from '@/lib/i18n';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -30,16 +30,16 @@ export default function DateOfBirth({ control }: { control: any }) {
   const locale = getCurrentLocale();
 
   const formatDate = (dateString: string) => {
-    return parse(dateString, "dd/MM/yyyy", new Date());
+    return parse(dateString, 'dd/MM/yyyy', new Date());
   };
 
   const formatDateToString = (date: Date) => {
-    return format(date, "dd/MM/yyyy");
+    return format(date, 'dd/MM/yyyy');
   };
 
   const currentDate = new Date();
   const pastDate = new Date(
-    currentDate.setFullYear(currentDate.getFullYear() - 12)
+    currentDate.setFullYear(currentDate.getFullYear() - 12),
   );
 
   const animatedStyle = useAnimatedStyle(() => {
@@ -51,9 +51,9 @@ export default function DateOfBirth({ control }: { control: any }) {
         pressed.value,
         [0, 1],
         [
-          colorScheme === "dark" ? "#1e1e1e" : theme.colors.card.background,
-          colorScheme === "dark" ? "#2a2a2a" : theme.colors.border,
-        ]
+          colorScheme === 'dark' ? '#1e1e1e' : theme.colors.card.background,
+          colorScheme === 'dark' ? '#2a2a2a' : theme.colors.border,
+        ],
       ),
     };
   });
@@ -71,11 +71,11 @@ export default function DateOfBirth({ control }: { control: any }) {
                 animatedStyle,
                 {
                   backgroundColor:
-                    colorScheme === "dark"
-                      ? "#1e1e1e"
+                    colorScheme === 'dark'
+                      ? '#1e1e1e'
                       : theme.colors.card.background,
                   shadowColor:
-                    colorScheme === "dark" ? "#000" : "rgba(0,0,0,0.2)",
+                    colorScheme === 'dark' ? '#000' : 'rgba(0,0,0,0.2)',
                 },
               ]}
               onPress={() => setOpen(true)}
@@ -95,7 +95,7 @@ export default function DateOfBirth({ control }: { control: any }) {
               <View style={styles.innerContainer}>
                 <Calendar
                   size={20}
-                  color={colorScheme === "dark" ? "#d1d5db" : theme.colors.text}
+                  color={colorScheme === 'dark' ? '#d1d5db' : theme.colors.text}
                   style={styles.icon}
                 />
                 <Text
@@ -103,13 +103,13 @@ export default function DateOfBirth({ control }: { control: any }) {
                     styles.dateText,
                     {
                       color:
-                        colorScheme === "dark" ? "#d1d5db" : theme.colors.text,
+                        colorScheme === 'dark' ? '#d1d5db' : theme.colors.text,
                     },
                   ]}
                 >
                   {value
                     ? `${formatDateToString(formatDate(value))}`
-                    : t("common.date_of_birth")}
+                    : t('common.date_of_birth')}
                 </Text>
               </View>
               <Text
@@ -117,24 +117,24 @@ export default function DateOfBirth({ control }: { control: any }) {
                   styles.actionText,
                   {
                     color:
-                      colorScheme === "dark" ? "#a1a1aa" : theme.colors.primary,
+                      colorScheme === 'dark' ? '#a1a1aa' : theme.colors.primary,
                   },
                 ]}
               >
-                {value ? t("common.change") : t("common.select")}
+                {value ? t('common.change') : t('common.select')}
               </Text>
             </AnimatedTouchable>
             <DatePicker
               modal
-              title={t("common.date_of_birth")}
+              title={t('common.date_of_birth')}
               buttonColor={
-                colorScheme === "dark" ? "white" : theme.colors.primary
+                colorScheme === 'dark' ? 'white' : theme.colors.primary
               }
               mode="date"
               locale={locale}
-              theme={colorScheme === "dark" ? "dark" : "light"}
-              confirmText={t("common.confirm")}
-              cancelText={t("common.cancel")}
+              theme={colorScheme === 'dark' ? 'dark' : 'light'}
+              confirmText={t('common.confirm')}
+              cancelText={t('common.cancel')}
               open={open}
               minimumDate={new Date(1940, 1, 1)}
               maximumDate={pastDate}
@@ -156,32 +156,32 @@ export default function DateOfBirth({ control }: { control: any }) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginTop: 4,
   },
   button: {
-    width: "100%",
+    width: '100%',
     height: 58,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     borderRadius: 10,
-    boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.5)",
+    boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.5)',
   },
   innerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   icon: {
     marginRight: 10,
   },
   dateText: {
     fontSize: FontSizes.medium,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   actionText: {
     fontSize: FontSizes.medium,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

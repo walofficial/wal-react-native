@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,32 +7,32 @@ import {
   Platform,
   BackHandler,
   useColorScheme,
-} from "react-native";
-import { BlurView } from "expo-blur";
+} from 'react-native';
+import { BlurView } from 'expo-blur';
 import BottomSheet, {
   BottomSheetBackdrop,
   BottomSheetScrollView,
   BottomSheetBackgroundProps,
   BottomSheetModal,
-} from "@gorhom/bottom-sheet";
-import { useAtom } from "jotai";
+} from '@gorhom/bottom-sheet';
+import { useAtom } from 'jotai';
 import {
   activeFactCheckData,
   factCheckBottomSheetState,
-} from "@/lib/atoms/news";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
-import SourceIcon from "./SourceIcon";
-import { router, useGlobalSearchParams } from "expo-router";
-import { isAndroid } from "@/lib/platform";
-import { FactCheckRating } from "./FactCheckRating";
-import { User } from "@/lib/api/generated";
-import { NativeEventSubscription } from "react-native";
-import { useTheme } from "@/lib/theme";
-import { Portal } from "@/components/primitives/portal";
-import RenderMdx from "./RenderMdx";
-import { t } from "@/lib/i18n";
+} from '@/lib/atoms/news';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import SourceIcon from './SourceIcon';
+import { router, useGlobalSearchParams } from 'expo-router';
+import { isAndroid } from '@/lib/platform';
+import { FactCheckRating } from './FactCheckRating';
+import { User } from '@/lib/api/generated';
+import { NativeEventSubscription } from 'react-native';
+import { useTheme } from '@/lib/theme';
+import { Portal } from '@/components/primitives/portal';
+import RenderMdx from './RenderMdx';
+import { t } from '@/lib/i18n';
 interface FactCheckBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheetModal>;
 }
@@ -41,18 +41,18 @@ const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({ style }) => {
   const colorScheme = useColorScheme();
   const theme = useTheme();
 
-  if (Platform.OS === "ios") {
+  if (Platform.OS === 'ios') {
     return (
       <BlurView
         intensity={60}
-        tint={colorScheme === "dark" ? "dark" : "light"}
+        tint={colorScheme === 'dark' ? 'dark' : 'light'}
         style={[
           style,
           {
             backgroundColor:
-              colorScheme === "dark"
-                ? "rgba(0, 0, 0, 0.5)"
-                : "rgba(255, 255, 255, 0.65)",
+              colorScheme === 'dark'
+                ? 'rgba(0, 0, 0, 0.5)'
+                : 'rgba(255, 255, 255, 0.65)',
           },
         ]}
       />
@@ -65,9 +65,9 @@ const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({ style }) => {
         style,
         {
           backgroundColor:
-            colorScheme === "dark"
-              ? "rgba(20, 20, 20, 1)"
-              : "rgba(242, 242, 247, 1)",
+            colorScheme === 'dark'
+              ? 'rgba(20, 20, 20, 1)'
+              : 'rgba(242, 242, 247, 1)',
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
         },
@@ -78,10 +78,10 @@ const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({ style }) => {
 
 // Add these constants at the top level
 const STATUS_COLORS = {
-  VERIFIED: "#10b981", // More saturated green
-  NEEDS_CONTEXT: "#1877F2", // Blue
-  MISLEADING: "#ff6666", // Light red
-  FALSE_HARMFUL: "#FF0000", // Red
+  VERIFIED: '#10b981', // More saturated green
+  NEEDS_CONTEXT: '#1877F2', // Blue
+  MISLEADING: '#ff6666', // Light red
+  FALSE_HARMFUL: '#FF0000', // Red
 };
 
 export default function FactCheckBottomSheet({
@@ -94,11 +94,11 @@ export default function FactCheckBottomSheet({
 
   const [factCheckData, setFactCheckData] = useAtom(activeFactCheckData);
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
-    factCheckBottomSheetState
+    factCheckBottomSheetState,
   );
-  const snapPoints = React.useMemo(() => ["70%"], []);
+  const snapPoints = React.useMemo(() => ['70%'], []);
   const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function FactCheckBottomSheet({
         pressBehavior="close"
       />
     ),
-    []
+    [],
   );
 
   const handleClose = () => {
@@ -138,7 +138,7 @@ export default function FactCheckBottomSheet({
   const handleInfoPress = () => {
     handleClose();
     router.push({
-      pathname: "/fact-checks",
+      pathname: '/fact-checks',
     });
   };
 
@@ -149,11 +149,11 @@ export default function FactCheckBottomSheet({
       // Handle back button
       if (isBottomSheetVisible && !backHandlerSubscriptionRef.current) {
         backHandlerSubscriptionRef.current = BackHandler.addEventListener(
-          "hardwareBackPress",
+          'hardwareBackPress',
           () => {
             bottomSheetRef.current?.close();
             return true;
-          }
+          },
         );
       } else if (!isBottomSheetVisible) {
         backHandlerSubscriptionRef.current?.remove();
@@ -166,13 +166,13 @@ export default function FactCheckBottomSheet({
         setFactCheckData(null);
       }
     },
-    [bottomSheetRef, setIsBottomSheetOpen, setFactCheckData]
+    [bottomSheetRef, setIsBottomSheetOpen, setFactCheckData],
   );
 
   const handleRate = (isHelpful: boolean) => {
     // Mock function for now - will be replaced with actual API call
     console.log(
-      `User rated fact check as ${isHelpful ? "helpful" : "not helpful"}`
+      `User rated fact check as ${isHelpful ? 'helpful' : 'not helpful'}`,
     );
   };
 
@@ -203,7 +203,7 @@ export default function FactCheckBottomSheet({
         <BottomSheetScrollView style={{ paddingHorizontal: 16 }}>
           <View style={styles.headerContainer}>
             <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-              {t("common.fact_check")}
+              {t('common.fact_check')}
             </Text>
             <TouchableOpacity
               style={styles.infoButton}
@@ -228,18 +228,18 @@ export default function FactCheckBottomSheet({
                   >
                     {(factCheckData.factuality ?? 0) >= 0.5
                       ? `${Math.round(
-                          (factCheckData.factuality ?? 0) * 100
-                        )}% ${t("common.truth")}`
+                          (factCheckData.factuality ?? 0) * 100,
+                        )}% ${t('common.truth')}`
                       : `${Math.round(
-                          100 - (factCheckData.factuality ?? 0) * 100
-                        )}% ${t("common.falsehood")}`}
+                          100 - (factCheckData.factuality ?? 0) * 100,
+                        )}% ${t('common.falsehood')}`}
                   </Text>
                 </View>
               </View>
 
               <View style={styles.section}>
                 <RenderMdx
-                  content={factCheckData.reason || "No explanation provided"}
+                  content={factCheckData.reason || 'No explanation provided'}
                 />
               </View>
 
@@ -258,7 +258,7 @@ export default function FactCheckBottomSheet({
                       <View style={styles.supportStats}>
                         {(() => {
                           const counts = getSupportCounts(
-                            factCheckData.references
+                            factCheckData.references,
                           );
                           return (
                             <>
@@ -266,7 +266,7 @@ export default function FactCheckBottomSheet({
                                 style={[
                                   styles.statBadge,
                                   {
-                                    backgroundColor: "rgba(34, 197, 94, 0.15)",
+                                    backgroundColor: 'rgba(34, 197, 94, 0.15)',
                                   },
                                 ]}
                               >
@@ -278,10 +278,10 @@ export default function FactCheckBottomSheet({
                                 <Text
                                   style={[
                                     styles.statText,
-                                    { color: "#22c55e" },
+                                    { color: '#22c55e' },
                                   ]}
                                 >
-                                  {counts.supportive} {t("common.supports")}
+                                  {counts.supportive} {t('common.supports')}
                                 </Text>
                               </View>
                               <View
@@ -290,22 +290,22 @@ export default function FactCheckBottomSheet({
                                   {
                                     backgroundColor:
                                       counts.contradictory > 0
-                                        ? "rgba(239, 68, 68, 0.15)"
-                                        : "rgba(107, 114, 128, 0.15)",
+                                        ? 'rgba(239, 68, 68, 0.15)'
+                                        : 'rgba(107, 114, 128, 0.15)',
                                   },
                                 ]}
                               >
                                 <Ionicons
                                   name={
                                     counts.contradictory > 0
-                                      ? "close-circle"
-                                      : "information-circle"
+                                      ? 'close-circle'
+                                      : 'information-circle'
                                   }
                                   size={18}
                                   color={
                                     counts.contradictory > 0
-                                      ? "#ef4444"
-                                      : "#6b7280"
+                                      ? '#ef4444'
+                                      : '#6b7280'
                                   }
                                 />
                                 <Text
@@ -314,16 +314,16 @@ export default function FactCheckBottomSheet({
                                     {
                                       color:
                                         counts.contradictory > 0
-                                          ? "#ef4444"
-                                          : "#6b7280",
+                                          ? '#ef4444'
+                                          : '#6b7280',
                                     },
                                   ]}
                                 >
                                   {counts.contradictory > 0
                                     ? `${counts.contradictory} ${t(
-                                        "common.contradicts"
+                                        'common.contradicts',
                                       )}`
-                                    : `${t("common.no_contradicts")}`}
+                                    : `${t('common.no_contradicts')}`}
                                 </Text>
                               </View>
                             </>
@@ -364,14 +364,14 @@ export default function FactCheckBottomSheet({
                                 styles.supportText,
                                 {
                                   color: ref.is_supportive
-                                    ? "#22c55e"
-                                    : "#ef4444",
+                                    ? '#22c55e'
+                                    : '#ef4444',
                                 },
                               ]}
                             >
                               {ref.is_supportive
-                                ? t("common.supports")
-                                : t("common.contradicts")}
+                                ? t('common.supports')
+                                : t('common.contradicts')}
                             </Text>
                           </View>
                           <Ionicons
@@ -395,20 +395,20 @@ export default function FactCheckBottomSheet({
 const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 20,
-    fontWeight: "bold",
-    textTransform: "uppercase",
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   scoreSection: {
-    alignItems: "center",
+    alignItems: 'center',
     marginBottom: 32,
   },
   percentageContainer: {
     marginTop: 16,
-    alignItems: "center",
+    alignItems: 'center',
   },
   percentageText: {
     fontSize: 24,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   section: {
     marginBottom: 24,
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   supportStats: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     marginTop: 12,
   },
@@ -425,18 +425,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 100,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   statText: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   sectionTitle: {
     fontSize: 14,
     marginBottom: 12,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
   reasonText: {
     fontSize: 16,
@@ -447,47 +447,47 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     borderLeftWidth: 3,
-    position: "relative",
+    position: 'relative',
   },
   quoteText: {
     fontSize: 15,
     lineHeight: 22,
     marginBottom: 12,
-    fontWeight: "400",
-    fontStyle: "italic",
+    fontWeight: '400',
+    fontStyle: 'italic',
   },
   supportBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingTop: 8,
     borderTopWidth: 1,
   },
   supportInfo: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   supportText: {
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 24,
   },
   infoButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
     padding: 8,
     borderRadius: 8,
   },
   infoButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

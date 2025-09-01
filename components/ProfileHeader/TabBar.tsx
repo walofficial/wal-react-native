@@ -1,22 +1,22 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
   Image,
-} from "react-native";
+} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-} from "react-native-reanimated";
-import { Text } from "../ui/text";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { FontSizes } from "@/lib/theme";
-import SourceIcon from "../SourceIcon";
-import { isWeb } from "@/lib/platform";
-import { t } from "@/lib/i18n";
+} from 'react-native-reanimated';
+import { Text } from '../ui/text';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { FontSizes } from '@/lib/theme';
+import SourceIcon from '../SourceIcon';
+import { isWeb } from '@/lib/platform';
+import { t } from '@/lib/i18n';
 
 // Define layout type
 type TabLayout = { x: number; width: number };
@@ -93,13 +93,13 @@ export function TabBar({
   // Content tab items configuration
   const contentTabItems = [
     {
-      key: "last24h",
-      label: t("common.all"),
+      key: 'last24h',
+      label: t('common.all'),
       icon: null,
     },
     {
-      key: "social_media_only",
-      label: "",
+      key: 'social_media_only',
+      label: '',
       icon: (
         <SourceIcon
           sourceUrl="facebook.com"
@@ -110,8 +110,8 @@ export function TabBar({
       ),
     },
     {
-      key: "youtube_only",
-      label: "",
+      key: 'youtube_only',
+      label: '',
       icon: (
         <SourceIcon
           sourceUrl="youtube.com"
@@ -140,7 +140,7 @@ export function TabBar({
       <ScrollView
         ref={scrollViewRef}
         decelerationRate={0.9}
-        style={{ width: "100%" }}
+        style={{ width: '100%' }}
         contentContainerStyle={styles.tabBarScroll}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -153,23 +153,23 @@ export function TabBar({
         {displayTabItems.map((tab: TabItem) => {
           const isActive = showLocationTabs
             ? feedId ===
-              (tab.key.startsWith("nearTask_")
-                ? tab.key.replace("nearTask_", "")
+              (tab.key.startsWith('nearTask_')
+                ? tab.key.replace('nearTask_', '')
                 : tab.key)
             : activeTab === tab.key;
 
           // Define colors based on tab type with new styling
           const getActiveColors = () => {
             return {
-              backgroundColor: isDarkColorScheme ? "#333" : "#f0f0f0", // Light gray for active
-              borderColor: isDarkColorScheme ? "#555" : "#e0e0e0",
+              backgroundColor: isDarkColorScheme ? '#333' : '#f0f0f0', // Light gray for active
+              borderColor: isDarkColorScheme ? '#555' : '#e0e0e0',
             };
           };
 
           const getInactiveColors = () => {
             return isDarkColorScheme
-              ? { backgroundColor: "#111", borderColor: "#333" }
-              : { backgroundColor: "#f9f9f9", borderColor: "#e5e7eb" };
+              ? { backgroundColor: '#111', borderColor: '#333' }
+              : { backgroundColor: '#f9f9f9', borderColor: '#e5e7eb' };
           };
 
           return (
@@ -209,11 +209,11 @@ export function TabBar({
                 <Text
                   style={[
                     styles.tabButtonText,
-                    isDarkColorScheme ? { color: "#ccc" } : { color: "#222" },
+                    isDarkColorScheme ? { color: '#ccc' } : { color: '#222' },
                     isActive
                       ? {
-                          color: isDarkColorScheme ? "#fff" : "#000",
-                          fontWeight: "700",
+                          color: isDarkColorScheme ? '#fff' : '#000',
+                          fontWeight: '700',
                         }
                       : {},
                   ]}
@@ -233,32 +233,32 @@ export function TabBar({
 
 const styles = StyleSheet.create({
   tabBarContainer: {
-    width: "100%",
+    width: '100%',
     paddingVertical: 8,
-    backgroundColor: "transparent",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabBarScroll: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
     paddingHorizontal: 12,
-    alignItems: "center",
+    alignItems: 'center',
   },
   tabButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.06)",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.06)',
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 14,
     marginHorizontal: 2,
     minHeight: 40,
     borderWidth: 1,
-    borderColor: "#e5e7eb",
+    borderColor: '#e5e7eb',
   },
   activeTabShadow: {
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -270,19 +270,19 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     borderRadius: 12,
-    overflow: "hidden",
+    overflow: 'hidden',
     marginRight: 8,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: '#f0f0f0',
   },
   tabImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   tabIcon: {},
   tabButtonText: {
     fontSize: FontSizes.medium, // Same size as content tabs
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });

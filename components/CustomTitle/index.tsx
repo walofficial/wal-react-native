@@ -1,15 +1,15 @@
-import useFeed from "@/hooks/useFeed";
-import { useGlobalSearchParams } from "expo-router";
+import useFeed from '@/hooks/useFeed';
+import { useGlobalSearchParams } from 'expo-router';
 import Animated, {
   useAnimatedStyle,
   withSpring,
-} from "react-native-reanimated";
-import { isWeb } from "@/lib/platform";
-import { StyleSheet } from "react-native";
-import { FontSizes, useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
-import { Text } from "react-native";
-import { H1, H2 } from "../ui/typography";
+} from 'react-native-reanimated';
+import { isWeb } from '@/lib/platform';
+import { StyleSheet } from 'react-native';
+import { FontSizes, useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { Text } from 'react-native';
+import { H1, H2 } from '../ui/typography';
 
 function TaskTitle() {
   const { feedId } = useGlobalSearchParams<{ feedId: string }>();
@@ -29,13 +29,13 @@ function TaskTitle() {
 
   const headingStyle = {
     ...styles.heading,
-    color: isDarkColorScheme ? "#FFFFFF" : "#000000",
+    color: isDarkColorScheme ? '#FFFFFF' : '#000000',
   };
 
   const heading = isWeb ? (
-    <Text style={headingStyle}>{task?.display_name || "WAL"}</Text>
+    <Text style={headingStyle}>{task?.display_name || 'WAL'}</Text>
   ) : (
-    <H1 style={headingStyle}>{task?.display_name || "WAL"}</H1>
+    <H1 style={headingStyle}>{task?.display_name || 'WAL'}</H1>
   );
 
   return <Animated.View style={animatedStyle}>{heading}</Animated.View>;
@@ -61,7 +61,7 @@ function CustomTitle({ text }: CustomTitleWithTextProps) {
 
   const headingStyle = {
     ...styles.heading,
-    color: isDarkColorScheme ? "#FFFFFF" : "#000000",
+    color: isDarkColorScheme ? '#FFFFFF' : '#000000',
   };
 
   const heading = isWeb ? (
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingLeft: 12,
     fontSize: FontSizes.xxlarge,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
 });
 

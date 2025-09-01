@@ -1,39 +1,39 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Slot } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import * as React from "react";
-import { AppState, AppStateStatus, Platform } from "react-native";
-import { NAV_THEME } from "~/lib/constants";
-import { useColorScheme } from "~/lib/useColorScheme";
-import { PortalHost } from "@/components/primitives/portal";
-import AuthLayer, { useSession } from "@/components/AuthLayer";
-import * as Notifications from "expo-notifications";
-import * as Sentry from "@sentry/react-native";
-import { createStore, Provider, useAtom } from "jotai";
-import { isDev } from "@/lib/api/config";
-import AppStateHandler from "../components/AppStateHandler";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useState, useEffect } from "react";
-import { useOTAUpdates } from "@/hooks/useOTAUpdates";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Slot } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import * as React from 'react';
+import { AppState, AppStateStatus, Platform } from 'react-native';
+import { NAV_THEME } from '~/lib/constants';
+import { useColorScheme } from '~/lib/useColorScheme';
+import { PortalHost } from '@/components/primitives/portal';
+import AuthLayer from '@/components/AuthLayer';
+import * as Notifications from 'expo-notifications';
+import * as Sentry from '@sentry/react-native';
+import { createStore, Provider, useAtom } from 'jotai';
+import { isDev, SENTRY_DSN } from '@/lib/api/config';
+import AppStateHandler from '../components/AppStateHandler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useEffect } from 'react';
+import { useOTAUpdates } from '@/hooks/useOTAUpdates';
 import {
   focusManager,
   QueryClient,
   QueryClientProvider,
-} from "@tanstack/react-query";
-import { OnboardingProvider } from "@/hooks/useOnboardingContext";
-import { KeyboardProvider } from "react-native-keyboard-controller";
-import { Provider as LightboxStateProvider } from "@/lib/lightbox/lightbox";
-import "@/lib/init_livekit";
-import { ShareIntentProvider } from "expo-share-intent";
-import * as SplashScreen from "expo-splash-screen";
-import { ThemeProvider, useTheme } from "@/lib/theme";
+} from '@tanstack/react-query';
+import { OnboardingProvider } from '@/hooks/useOnboardingContext';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { Provider as LightboxStateProvider } from '@/lib/lightbox/lightbox';
+import '@/lib/init_livekit';
+import { ShareIntentProvider } from 'expo-share-intent';
+import * as SplashScreen from 'expo-splash-screen';
+import { ThemeProvider, useTheme } from '@/lib/theme';
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider as NavigationThemeProvider,
-} from "@react-navigation/native";
-import { appLocaleAtom } from "@/hooks/useAppLocalization";
-import { getCurrentLocale, setLocale } from "@/lib/i18n";
+} from '@react-navigation/native';
+import { appLocaleAtom } from '@/hooks/useAppLocalization';
+import { getCurrentLocale, setLocale } from '@/lib/i18n';
 
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
   const [appLocale, setAppLocale] = useAtom(appLocaleAtom);
@@ -41,7 +41,7 @@ function AppLocaleGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       try {
-        const storedLocale = await AsyncStorage.getItem("app-locale");
+        const storedLocale = await AsyncStorage.getItem('app-locale');
         const initialLocale = storedLocale || getCurrentLocale();
         if (!appLocale) {
           setAppLocale(initialLocale);
@@ -62,17 +62,17 @@ function AppLocaleGate({ children }: { children: React.ReactNode }) {
   }, [appLocale]);
 
   return (
-    <React.Fragment key={appLocale || "default"}>{children}</React.Fragment>
+    <React.Fragment key={appLocale || 'default'}>{children}</React.Fragment>
   );
 }
 
 export const myStore = createStore();
-import "react-native-get-random-values";
-import { appIsReadyState } from "@/lib/state/app";
+import 'react-native-get-random-values';
+import { appIsReadyState } from '@/lib/state/app';
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
-} from "expo-router";
+} from 'expo-router';
 
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
@@ -95,7 +95,7 @@ SplashScreen.setOptions({
 });
 Sentry.init({
   enabled: !isDev,
-  dsn: "https://8e8adf1963b62dfff57f9484ba1028f9@o4506526616453120.ingest.us.sentry.io/4507883615092736",
+  dsn: SENTRY_DSN,
 
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for tracing.
@@ -124,10 +124,10 @@ const queryClient = new QueryClient({
   },
 });
 
-import NetInfo from "@react-native-community/netinfo";
-import { onlineManager } from "@tanstack/react-query";
-import { Lightbox } from "@/components/Lightbox/Lightbox";
-import { ToastProviderWithViewport } from "@/components/ToastUsage";
+import NetInfo from '@react-native-community/netinfo';
+import { onlineManager } from '@tanstack/react-query';
+import { Lightbox } from '@/components/Lightbox/Lightbox';
+import { ToastProviderWithViewport } from '@/components/ToastUsage';
 
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
@@ -153,7 +153,7 @@ export default function RootLayout() {
   useEffect(() => {
     (async () => {
       try {
-        const storedLocale = await AsyncStorage.getItem("app-locale");
+        const storedLocale = await AsyncStorage.getItem('app-locale');
         const initialLocale = storedLocale || getCurrentLocale();
         if (!appLocale) {
           setAppLocale(initialLocale);
@@ -175,13 +175,13 @@ export default function RootLayout() {
   }, [appLocale]);
 
   function onAppStateChange(status: AppStateStatus) {
-    if (Platform.OS !== "web") {
-      focusManager.setFocused(status === "active");
+    if (Platform.OS !== 'web') {
+      focusManager.setFocused(status === 'active');
     }
   }
 
   useEffect(() => {
-    const subscription = AppState.addEventListener("change", onAppStateChange);
+    const subscription = AppState.addEventListener('change', onAppStateChange);
 
     return () => subscription.remove();
   }, []);
@@ -193,16 +193,16 @@ export default function RootLayout() {
           <LightboxStateProvider>
             <NavigationThemeProvider
               value={
-                colorScheme === "dark"
+                colorScheme === 'dark'
                   ? {
                       ...DarkTheme,
-                      colors: { ...NAV_THEME.dark, background: "#000" },
+                      colors: { ...NAV_THEME.dark, background: '#000' },
                     }
                   : {
                       ...DefaultTheme,
                       colors: {
                         ...DefaultTheme.colors,
-                        background: "#efefef",
+                        background: '#efefef',
                       },
                     }
               }
@@ -213,7 +213,7 @@ export default function RootLayout() {
                     <AppLocaleGate>
                       <AuthLayer>
                         <GestureHandlerRootView
-                          key={appLocale || "default"}
+                          key={appLocale || 'default'}
                           style={{
                             flex: 1,
                             backgroundColor: theme.colors.background,
@@ -228,12 +228,12 @@ export default function RootLayout() {
                             <Slot />
                             <AppStateHandler />
                           </ShareIntentProvider>
-                          {Platform.OS === "android" && (
+                          {Platform.OS === 'android' && (
                             <StatusBar
                               backgroundColor={
-                                colorScheme === "dark" ? "black" : "#efefef"
+                                colorScheme === 'dark' ? 'black' : '#efefef'
                               }
-                              style={colorScheme === "dark" ? "light" : "dark"}
+                              style={colorScheme === 'dark' ? 'light' : 'dark'}
                             />
                           )}
                           <Lightbox />

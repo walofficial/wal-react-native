@@ -1,28 +1,59 @@
-## Environment Variables
+## WAL (Expo React Native)
 
-This project uses Expo's environment variable system in two different contexts:
+### Platform support
 
-1. **Building the app**: Environment variables for building are specified in the `eas.json` file.
+- This React Native app is tested on macOS only. Development on other OSes may work but is not supported at the moment.
+- The backend server can be run easily on any platform via Docker.
 
-Example: to build a preview build, use: eas build --profile preview
+### Requirements
 
-2. **EAS Updates**: When updating the app (not building), environment variables are pulled from the Expo EAS service. These are public environment variables configured on the EAS service.
+- Docker
+- Node.js (18+ recommended)
+- A good Mac; 16GB RAM recommended for smooth development
 
-Example: To deploy an update to a preview environment, use: eas update --channel preview --message "MESSAGE" --environment preview
+### Backend
 
-## Local Development
+- Backend repository: [WAL Server](https://github.com/wallofficial/wal-server)
+- By default, the backend listens at `http://localhost:5500`. Make sure you run the backend on that port.
 
-For local backend development, it is recommended to use `pnpm start` to run the app without tunneling. This provides a direct connection to your local backend services.
+### Setup
 
-## Push Notifications
+```bash
+git clone <repo-url>
+cd wal-react-native
+pnpm install
+```
 
-This project uses push notifications for both Android and iOS platforms. The required configuration files are:
+### Environment variables
 
-- `google-services.json`: Required for Android push notifications (development and production)
-- `GoogleService-Info.plist`: Required for iOS push notifications (development and production)
+You only need your Supabase URL and Anon Key. Create a new Supabase project to obtain them.
 
-These files should be properly configured for each environment (development and production).
+Create a `.env` file in the project root:
 
-## Web Support
+```bash
+EXPO_PUBLIC_SUPABASE_URL=<your-supabase-url>
+EXPO_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+```
 
-There is experimental support for web using the `npx expo start --web` flag. However, this is not ready for production as we are waiting for server-side rendering support. Currently, Expo only supports static file generation during build time, with SSR support being blocked by Expo's current limitations.
+Notes:
+
+- These correspond to the typical "supabase_url" and "supabase_anon_key" from your Supabase project.
+- `pnpm start` writes a temporary `.env.local` and sets `EXPO_PUBLIC_API_URL` to your LAN IP on port 5500 so that local devices can talk to your backend.
+
+### Run
+
+```bash
+# Start Expo dev server
+pnpm start
+```
+
+That’s it. With the backend on `http://localhost:5500` and the Supabase env set, the frontend and backend are connected.
+
+### Additional notes
+
+- The new architecture from Expo/React Native has performance issues on Android, and LiveKit does not support the new architecture yet. There are no plans to migrate at this time.
+- You will need to add a test phone number in Supabase and set up phone number authentication with Twilio to log into the app. Twilio’s test setup is free.
+
+### Contributing
+
+This is a new project and we want to keep the startup effort minimal. We welcome PRs that improve the developer onboarding and experience.

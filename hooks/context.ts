@@ -1,5 +1,5 @@
-import { createContext } from "react";
-import * as Location from "expo-location";
+import { createContext } from 'react';
+import * as Location from 'expo-location';
 
 const LocationContext = createContext<{
   location: Location.LocationObject | null;

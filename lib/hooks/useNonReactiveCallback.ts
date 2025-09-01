@@ -1,4 +1,4 @@
-import {useCallback, useInsertionEffect, useRef} from 'react'
+import { useCallback, useInsertionEffect, useRef } from 'react';
 
 // This should be used sparingly. It erases reactivity, i.e. when the inputs
 // change, the function itself will remain the same. This means that if you
@@ -9,15 +9,15 @@ import {useCallback, useInsertionEffect, useRef} from 'react'
 // Also, you should avoid calling the returned function during rendering
 // since the values captured by it are going to lag behind.
 export function useNonReactiveCallback<T extends Function>(fn: T): T {
-  const ref = useRef(fn)
+  const ref = useRef(fn);
   useInsertionEffect(() => {
-    ref.current = fn
-  }, [fn])
+    ref.current = fn;
+  }, [fn]);
   return useCallback(
     (...args: any) => {
-      const latestFn = ref.current
-      return latestFn(...args)
+      const latestFn = ref.current;
+      return latestFn(...args);
     },
     [ref],
-  ) as unknown as T
+  ) as unknown as T;
 }

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -8,24 +8,24 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-} from "react-native";
-import { router, useLocalSearchParams } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { useCreateSpace } from "@/hooks/useCreateSpace";
-import { useOnboarding } from "@/hooks/useOnboardingContext";
-import { useHaptics } from "@/lib/haptics";
-import { FontSizes } from "@/lib/theme";
-import CustomAnimatedButton from "@/components/ui/AnimatedButton";
+} from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { useCreateSpace } from '@/hooks/useCreateSpace';
+import { useOnboarding } from '@/hooks/useOnboardingContext';
+import { useHaptics } from '@/lib/haptics';
+import { FontSizes } from '@/lib/theme';
+import CustomAnimatedButton from '@/components/ui/AnimatedButton';
 
 export default function CreateSpace() {
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState('');
   const { feedId } = useLocalSearchParams<{ feedId: string }>();
   const { onboardingState, markTutorialAsSeen } = useOnboarding();
   const { mutate: createSpace, isPending } = useCreateSpace();
   const haptic = useHaptics();
   const handleUnderstand = async () => {
-    await haptic("Medium");
-    await markTutorialAsSeen("hasSeenSpaceInfo");
+    await haptic('Medium');
+    await markTutorialAsSeen('hasSeenSpaceInfo');
   };
 
   return (
@@ -92,30 +92,30 @@ export default function CreateSpace() {
           </View>
 
           <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           >
             <View style={styles.buttonContainer}>
               <CustomAnimatedButton
                 style={{
-                  backgroundColor: "white",
+                  backgroundColor: 'white',
                   paddingHorizontal: 32,
                   paddingVertical: 12,
                   borderRadius: 9999,
-                  width: "auto",
+                  width: 'auto',
                   height: 44,
                 }}
                 variant="default"
                 size="default"
                 onPress={async () => {
-                  await haptic("Medium");
+                  await haptic('Medium');
                   createSpace({ description, feedId });
                 }}
                 disabled={isPending}
                 isLoading={isPending}
                 loadingColor="#2563EB"
               >
-                <Text style={{ color: "#2563EB", fontWeight: "600" }}>
-                  {isPending ? "მუშავდება..." : "დაწყება"}
+                <Text style={{ color: '#2563EB', fontWeight: '600' }}>
+                  {isPending ? 'მუშავდება...' : 'დაწყება'}
                 </Text>
               </CustomAnimatedButton>
 
@@ -125,7 +125,7 @@ export default function CreateSpace() {
                   isPending && styles.disabledButton,
                 ]}
                 onPress={async () => {
-                  await haptic("Light");
+                  await haptic('Light');
                   router.push({
                     pathname: `/(tabs)/(home)/[feedId]/create-space/schedule-space`,
                     params: { feedId, description },
@@ -146,23 +146,23 @@ export default function CreateSpace() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: 'black',
     padding: 16,
   },
   contentContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   title: {
-    color: "white",
-    textAlign: "center",
+    color: 'white',
+    textAlign: 'center',
     fontSize: 30,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 16,
   },
   subtitle: {
-    color: "#D1D5DB",
-    textAlign: "center",
+    color: '#D1D5DB',
+    textAlign: 'center',
     fontSize: FontSizes.medium,
     marginBottom: 40,
   },
@@ -170,54 +170,54 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   infoRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     marginTop: 12,
   },
   icon: {
     marginTop: 4,
   },
   infoText: {
-    color: "#D1D5DB",
+    color: '#D1D5DB',
     fontSize: FontSizes.medium,
     marginLeft: 16,
   },
   understandButton: {
-    backgroundColor: "#2563EB",
+    backgroundColor: '#2563EB',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 9999,
     marginTop: 32,
-    alignSelf: "center",
+    alignSelf: 'center',
   },
   buttonText: {
-    color: "white",
-    fontWeight: "600",
+    color: 'white',
+    fontWeight: '600',
   },
   inputContainer: {
     marginBottom: 16,
   },
   input: {
-    color: "white",
+    color: 'white',
     fontSize: 18,
-    backgroundColor: "#27272A",
+    backgroundColor: '#27272A',
     borderRadius: 16,
     padding: 16,
     maxHeight: 100,
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   startButton: {
-    backgroundColor: "#2563EB",
+    backgroundColor: '#2563EB',
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 9999,
   },
   scheduleButton: {
-    backgroundColor: "#27272A",
+    backgroundColor: '#27272A',
     padding: 12,
     borderRadius: 9999,
   },

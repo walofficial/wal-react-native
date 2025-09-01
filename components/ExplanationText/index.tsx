@@ -1,7 +1,7 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { useTheme } from "@/lib/theme";
-import { ThemedText } from "../ThemedText";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { useTheme } from '@/lib/theme';
+import { ThemedText } from '../ThemedText';
 
 interface ExplanationTextProps {
   text: string;

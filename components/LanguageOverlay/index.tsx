@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Pressable } from "react-native";
-import { useAtom } from "jotai";
-import { Text } from "@/components/ui/text";
-import { useTheme } from "@/lib/theme";
-import { appLocaleAtom } from "@/hooks/useAppLocalization";
-import { getCurrentLocale, setLocale } from "@/lib/i18n";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, Pressable } from 'react-native';
+import { useAtom } from 'jotai';
+import { Text } from '@/components/ui/text';
+import { useTheme } from '@/lib/theme';
+import { appLocaleAtom } from '@/hooks/useAppLocalization';
+import { getCurrentLocale, setLocale } from '@/lib/i18n';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LanguageSelectionOverlay: React.FC = () => {
   const theme = useTheme();
@@ -16,7 +16,7 @@ const LanguageSelectionOverlay: React.FC = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        const storedLocale = await AsyncStorage.getItem("app-locale");
+        const storedLocale = await AsyncStorage.getItem('app-locale');
         if (!storedLocale) {
           setShowLanguageSelector(true);
         }
@@ -33,9 +33,9 @@ const LanguageSelectionOverlay: React.FC = () => {
     setIsInitialized(true);
   }, []);
 
-  const onSelect = (locale: "en" | "ka") => {
+  const onSelect = (locale: 'en' | 'ka') => {
     setAppLocaleState(locale);
-    AsyncStorage.setItem("app-locale", locale).then(() => {
+    AsyncStorage.setItem('app-locale', locale).then(() => {
       setLocale(locale);
       setShowLanguageSelector(false);
     });
@@ -62,7 +62,7 @@ const LanguageSelectionOverlay: React.FC = () => {
               borderColor: theme.colors.border,
             },
           ]}
-          onPress={() => onSelect("en")}
+          onPress={() => onSelect('en')}
         >
           <Text style={styles.flag}>🇺🇸</Text>
           <Text style={[styles.optionLabel, { color: theme.colors.text }]}>
@@ -78,7 +78,7 @@ const LanguageSelectionOverlay: React.FC = () => {
               borderColor: theme.colors.border,
             },
           ]}
-          onPress={() => onSelect("ka")}
+          onPress={() => onSelect('ka')}
         >
           <Text style={styles.flag}>🇬🇪</Text>
           <Text style={[styles.optionLabel, { color: theme.colors.text }]}>
@@ -92,32 +92,32 @@ const LanguageSelectionOverlay: React.FC = () => {
 
 const styles = StyleSheet.create({
   overlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     zIndex: 9999,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 24,
     gap: 24,
   },
   title: {
     fontSize: 22,
-    fontWeight: "700",
-    textAlign: "center",
+    fontWeight: '700',
+    textAlign: 'center',
   },
   optionsRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 16,
   },
   option: {
     width: 160,
     height: 160,
     borderRadius: 16,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
   },
   flag: {
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   optionLabel: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

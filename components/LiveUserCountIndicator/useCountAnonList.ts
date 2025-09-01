@@ -1,6 +1,6 @@
-import { countLiveUsersOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useIsFocused } from "@react-navigation/native";
-import { useQuery } from "@tanstack/react-query";
+import { countLiveUsersOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useIsFocused } from '@react-navigation/native';
+import { useQuery } from '@tanstack/react-query';
 
 function useCountAnonList(feedId: string) {
   const isFocused = useIsFocused();

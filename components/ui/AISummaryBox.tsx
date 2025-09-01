@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,36 +7,36 @@ import {
   ViewStyle,
   Linking,
   ScrollView,
-} from "react-native";
-import { Image } from "expo-image";
-import { AiVideoSummary, ExternalVideo } from "@/lib/api/generated";
-import { Ionicons } from "@expo/vector-icons";
-import { renderFormattedText } from "@/lib/utils/text";
-import { useTheme } from "@/lib/theme";
+} from 'react-native';
+import { Image } from 'expo-image';
+import { AiVideoSummary, ExternalVideo } from '@/lib/api/generated';
+import { Ionicons } from '@expo/vector-icons';
+import { renderFormattedText } from '@/lib/utils/text';
+import { useTheme } from '@/lib/theme';
 
 // Modern colors that will be overridden by theme
 const COLORS = {
-  primary: "#007AFF", // iOS blue
-  summary: "#007AFF",
-  relevant: "#5856D6", // iOS purple
-  facts: "#FF9500", // iOS orange
-  didYouKnow: "#34C759", // iOS green
-  dark: "#121212",
-  darkCard: "#1E1E1E",
-  light: "#FFFFFF",
-  lightGray: "#E0E0E0",
-  lightText: "#FAFAFA",
-  inactive: "#8E8E93", // iOS gray
+  primary: '#007AFF', // iOS blue
+  summary: '#007AFF',
+  relevant: '#5856D6', // iOS purple
+  facts: '#FF9500', // iOS orange
+  didYouKnow: '#34C759', // iOS green
+  dark: '#121212',
+  darkCard: '#1E1E1E',
+  light: '#FFFFFF',
+  lightGray: '#E0E0E0',
+  lightText: '#FAFAFA',
+  inactive: '#8E8E93', // iOS gray
 };
 
 interface AISummaryBoxProps {
   aiSummary?: AiVideoSummary;
   videoData: ExternalVideo;
   style?: ViewStyle;
-  status?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+  status?: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
 }
 
-type TabType = "summary" | "clips" | "facts" | "did-you-know";
+type TabType = 'summary' | 'clips' | 'facts' | 'did-you-know';
 
 // Helper type for available tabs
 type AvailableTab = {
@@ -48,9 +48,9 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
   aiSummary,
   videoData,
   style,
-  status = "COMPLETED",
+  status = 'COMPLETED',
 }) => {
-  const [activeTab, setActiveTab] = useState<TabType>("summary");
+  const [activeTab, setActiveTab] = useState<TabType>('summary');
   const [availableTabs, setAvailableTabs] = useState<AvailableTab[]>([]);
   const theme = useTheme();
 
@@ -75,17 +75,17 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
   useEffect(() => {
     const tabs: AvailableTab[] = [];
     if (aiSummary?.title || aiSummary?.short_summary) {
-      tabs.push({ id: "summary", title: "მოკლედ" });
+      tabs.push({ id: 'summary', title: 'მოკლედ' });
     }
     if (
       aiSummary?.relevant_statements &&
       aiSummary.relevant_statements.length > 0
     ) {
-      tabs.push({ id: "clips", title: "კლიპები" });
+      tabs.push({ id: 'clips', title: 'კლიპები' });
     }
 
     if (aiSummary?.did_you_know && aiSummary.did_you_know.length > 0) {
-      tabs.push({ id: "did-you-know", title: "იცოდით?" });
+      tabs.push({ id: 'did-you-know', title: 'იცოდით?' });
     }
     setAvailableTabs(tabs);
 
@@ -108,7 +108,7 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
     if (videoData?.url && timestamp) {
       const videoUrl = videoData.url;
       const isYouTube =
-        videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be");
+        videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be');
 
       if (isYouTube) {
         const timestampUrl = generateYouTubeTimestampUrl(videoUrl, timestamp);
@@ -120,31 +120,31 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
   };
 
   // Don't render anything if the status is FAILED
-  if (status === "FAILED") {
+  if (status === 'FAILED') {
     return null;
   }
 
   const getTabColors = (tab: TabType) => {
     switch (tab) {
-      case "summary":
+      case 'summary':
         return {
           activeColor: themeColors.summary,
           textColor:
             activeTab === tab ? themeColors.summary : themeColors.inactive,
         };
-      case "clips":
+      case 'clips':
         return {
           activeColor: themeColors.relevant,
           textColor:
             activeTab === tab ? themeColors.relevant : themeColors.inactive,
         };
-      case "facts":
+      case 'facts':
         return {
           activeColor: themeColors.facts,
           textColor:
             activeTab === tab ? themeColors.facts : themeColors.inactive,
         };
-      case "did-you-know":
+      case 'did-you-know':
         return {
           activeColor: themeColors.didYouKnow,
           textColor:
@@ -167,7 +167,7 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
     const { activeColor } = getTabColors(currentTab);
 
     switch (currentTab) {
-      case "summary":
+      case 'summary':
         return (
           <View style={[styles.tabContent, { padding: 8 }]}>
             <Text style={[styles.summaryTitle, { color: themeColors.text }]}>
@@ -183,7 +183,7 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
             </Text>
           </View>
         );
-      case "clips":
+      case 'clips':
         return (
           <>
             {aiSummary?.relevant_statements?.map((statement, index) => (
@@ -207,7 +207,7 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
                         { backgroundColor: themeColors.relevant },
                       ]}
                       onPress={() =>
-                        handleTimestampClick(statement.timestamp || "")
+                        handleTimestampClick(statement.timestamp || '')
                       }
                     >
                       <Ionicons
@@ -226,7 +226,7 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
             ))}
           </>
         );
-      case "facts":
+      case 'facts':
         return (
           <>
             {aiSummary?.interesting_facts?.map((fact, index) => (
@@ -244,7 +244,7 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
             ))}
           </>
         );
-      case "did-you-know":
+      case 'did-you-know':
         return (
           <>
             {aiSummary?.did_you_know?.map((fact, index) => (
@@ -329,7 +329,7 @@ const AISummaryBox: React.FC<AISummaryBoxProps> = ({
 
 // Utility function to convert timestamp (MM:SS) to seconds
 const convertTimestampToSeconds = (timestamp: string): number => {
-  const parts = timestamp.split(":");
+  const parts = timestamp.split(':');
   if (parts.length === 2) {
     const minutes = parseInt(parts[0], 10);
     const seconds = parseInt(parts[1], 10);
@@ -347,10 +347,10 @@ const convertTimestampToSeconds = (timestamp: string): number => {
 // Utility function to generate YouTube URL with timestamp
 const generateYouTubeTimestampUrl = (
   url: string,
-  timestamp: string
+  timestamp: string,
 ): string => {
   const videoIdMatch = url.match(
-    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+    /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/,
   );
   const videoId = videoIdMatch ? videoIdMatch[1] : null;
 
@@ -362,11 +362,11 @@ const generateYouTubeTimestampUrl = (
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderRadius: 16,
-    overflow: "hidden",
+    overflow: 'hidden',
     marginVertical: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 6,
@@ -375,67 +375,67 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   thumbnailContainer: {
-    width: "100%",
+    width: '100%',
     height: 200,
-    position: "relative",
+    position: 'relative',
   },
   thumbnail: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   playButton: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
     transform: [{ translateX: -24 }, { translateY: -24 }],
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
     borderWidth: 2,
-    borderColor: "white",
+    borderColor: 'white',
   },
   durationBadge: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 10,
     right: 10,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 6,
   },
   durationText: {
-    color: "white",
+    color: 'white',
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   titleContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   videoTitle: {
-    color: "white",
+    color: 'white',
     fontSize: 17,
-    fontWeight: "600",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    fontWeight: '600',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
   },
   tabsContainer: {
     borderBottomWidth: 1,
-    borderBottomColor: "rgba(255, 255, 255, 0.1)",
-    backgroundColor: "transparent",
+    borderBottomColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'transparent',
     paddingTop: 12,
   },
   tabsWrapper: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingHorizontal: 8,
   },
   tabButton: {
@@ -446,19 +446,19 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   activeTabButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   tabButtonText: {
     fontSize: 15,
-    fontWeight: "500",
-    textAlign: "center",
+    fontWeight: '500',
+    textAlign: 'center',
   },
   activeTabText: {
-    fontWeight: "600",
+    fontWeight: '600',
   },
   contentContainer: {
     paddingTop: 8,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   tabContent: {
     minHeight: 100,
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   },
   summaryTitle: {
     fontSize: 17,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 12,
   },
   summaryText: {
@@ -478,22 +478,22 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 12,
     marginBottom: 12,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   statementText: {
     fontSize: 15,
     lineHeight: 22,
   },
   clipActionButtons: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginTop: 8,
     gap: 10,
   },
   clipButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
@@ -501,23 +501,23 @@ const styles = StyleSheet.create({
   timestampText: {
     color: COLORS.light,
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   factContainer: {
     borderRadius: 16,
     padding: 12,
     marginBottom: 12,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   didYouKnowContainer: {
     borderRadius: 16,
     padding: 12,
     marginBottom: 12,
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   factText: {
     fontSize: 15,

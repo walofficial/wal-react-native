@@ -1,13 +1,13 @@
-import { Volume2, VolumeX } from "@/lib/icons";
-import { Button } from "@/components/ui/button";
-import { ViewStyle } from "react-native";
+import { Volume2, VolumeX } from '@/lib/icons';
+import { Button } from '@/components/ui/button';
+import { ViewStyle } from 'react-native';
 
 export default function MuteButton({
   muted,
   onChange,
   className,
   style,
-  iconColor = "black",
+  iconColor = 'black',
 }: {
   muted: boolean;
   onChange: () => void;
@@ -19,7 +19,7 @@ export default function MuteButton({
     <Button
       style={style}
       className={className}
-      variant={"default"}
+      variant={'default'}
       onPress={() => {
         onChange();
       }}

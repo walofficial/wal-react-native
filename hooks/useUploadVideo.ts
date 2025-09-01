@@ -1,25 +1,28 @@
-"use client";
+'use client';
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { useAtom, useAtomValue } from "jotai";
-import { verificationRefetchIntervalState } from "@/lib/state/chat";
-import { useRef } from "react";
-import { Alert } from "react-native";
-import { toast } from "@backpackapp-io/react-native-toast";
-import useAuth from "./useAuth";
-import { LocationFeedPost, UploadToLocationResponse } from "@/lib/api/generated";
-import { CompressedVideo } from "@/lib/media/video/types";
-import { uploadVideo } from "@/lib/media/video/upload";
-import { useLocalSearchParams } from "expo-router";
-import { debouncedSearchValueAtom } from "@/lib/state/search";
+import { useAtom, useAtomValue } from 'jotai';
+import { verificationRefetchIntervalState } from '@/lib/state/chat';
+import { useRef } from 'react';
+import { Alert } from 'react-native';
+import useAuth from './useAuth';
+import {
+  LocationFeedPost,
+  UploadToLocationResponse,
+} from '@/lib/api/generated';
+import { CompressedVideo } from '@/lib/media/video/types';
+import { uploadVideo } from '@/lib/media/video/upload';
+import { useLocalSearchParams } from 'expo-router';
+import { debouncedSearchValueAtom } from '@/lib/state/search';
 import {
   uploadPhotoToLocationVerifyPhotosUploadToLocationPostMutation,
-  getLocationFeedPaginatedInfiniteOptions
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import { formDataBodySerializer } from "@/lib/utils/form-data";
-import { useToast } from "@/components/ToastUsage";
-import { t } from "@/lib/i18n";
+  getLocationFeedPaginatedInfiniteOptions,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { formDataBodySerializer } from '@/lib/utils/form-data';
+import { useToast } from '@/components/ToastUsage';
+import { t } from '@/lib/i18n';
+import { dismiss } from 'expo-router/build/global-state/routing';
 
 export const useUploadVideo = ({
   feedId,
@@ -34,10 +37,10 @@ export const useUploadVideo = ({
 
   const queryClient = useQueryClient();
   const [refetchInterval, setRefetchInterval] = useAtom(
-    verificationRefetchIntervalState
+    verificationRefetchIntervalState,
   );
   const { content_type } = useLocalSearchParams<{
-    content_type: "last24h" | "youtube_only" | "social_media_only";
+    content_type: 'last24h' | 'youtube_only' | 'social_media_only';
   }>();
 
   // Get the current search term to match the query key
@@ -45,12 +48,12 @@ export const useUploadVideo = ({
 
   const { user } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { success } = useToast()
+  const { success, dismiss } = useToast();
 
   const uploadBlob = useMutation({
-    mutationKey: ["upload-blob", feedId, isPhoto],
+    mutationKey: ['upload-blob', feedId, isPhoto],
     onMutate: () => {
-      success({ title: t("common.uploading") })
+      success({ title: t('common.uploading') });
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -73,7 +76,10 @@ export const useUploadVideo = ({
       if (isPhoto) {
         // Two flows exist in generated API: batch upload `/upload-photos` and upload-to-location
         // Here we assume single photo to location
-        return (uploadPhotoToLocationVerifyPhotosUploadToLocationPostMutation().mutationFn as any)({
+        return (
+          uploadPhotoToLocationVerifyPhotosUploadToLocationPostMutation()
+            .mutationFn as any
+        )({
           ...formDataBodySerializer,
           body: {
             // formData contains file under key `photo_file` already
@@ -84,16 +90,18 @@ export const useUploadVideo = ({
             feed_id: feedId,
           },
         });
-
       }
       if (!video || !params) {
-        throw new Error("Video is required");
+        throw new Error('Video is required');
       }
 
       return uploadVideo({
         video,
         setProgress: (progress) => {
-          success({ title: t("common.uploading") + " " + Math.round(progress * 100) + "%" })
+          success({
+            title:
+              t('common.uploading') + ' ' + Math.round(progress * 100) + '%',
+          });
         },
         signal: abortController.current.signal,
         params,
@@ -107,7 +115,7 @@ export const useUploadVideo = ({
       // });
 
       setRefetchInterval(1000);
-      success({ title: "გამოქვეყნდა" })
+      success({ title: 'გამოქვეყნდა' });
 
       if (isLocationUpload) {
         const optimisticVerification = {
@@ -125,44 +133,40 @@ export const useUploadVideo = ({
           path: {
             feed_id: feedId,
           },
-        })
+        });
 
-        const queryKey = queryOptions.queryKey
-
+        const queryKey = queryOptions.queryKey;
 
         try {
-          queryClient.setQueryData(
-            queryKey,
-            (data: any) => {
-              if (!data) {
-                data = {
-                  pages: [],
-                  index: 0
-                };
-              }
-              return {
-                ...data,
-                pages: data.pages.map(
-                  (
-                    page: {
-                      data: LocationFeedPost[];
-                      page: number;
-                    },
-                    index: number
-                  ) => {
-                    return index === 0
-                      ? {
+          queryClient.setQueryData(queryKey, (data: any) => {
+            if (!data) {
+              data = {
+                pages: [],
+                index: 0,
+              };
+            }
+            return {
+              ...data,
+              pages: data.pages.map(
+                (
+                  page: {
+                    data: LocationFeedPost[];
+                    page: number;
+                  },
+                  index: number,
+                ) => {
+                  return index === 0
+                    ? {
                         ...page,
                         data: [optimisticVerification, ...page.data],
                       }
-                      : page;
-                  }
-                ),
-              };
-            }
-          );
+                    : page;
+                },
+              ),
+            };
+          });
         } catch (error) {
-          console.error("Optimistic update error:", error);
+          console.error('Optimistic update error:', error);
         }
 
         // Invalidate all related queries to trigger proper refetch with animations
@@ -177,17 +181,20 @@ export const useUploadVideo = ({
             path: {
               feed_id: feedId,
             },
-          })
+          });
 
-          queryClient.invalidateQueries({ queryKey: queryOptions.queryKey, exact: false });
+          queryClient.invalidateQueries({
+            queryKey: queryOptions.queryKey,
+            exact: false,
+          });
         }, 100);
       }
     },
     onError: (error) => {
-      toast.dismiss("upload-blob");
+      dismiss('all');
       if (error) {
-        console.log("error", error);
-        Alert.alert(isPhoto ? "ფოტო ვერ აიტვირთა" : "ვიდეო ვერ აიტვირთა");
+        console.log('error', error);
+        Alert.alert(isPhoto ? 'ფოტო ვერ აიტვირთა' : 'ვიდეო ვერ აიტვირთა');
       }
       console.error(error);
     },

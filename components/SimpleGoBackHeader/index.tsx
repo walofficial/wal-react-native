@@ -1,20 +1,20 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   Platform,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { ChevronLeft } from "lucide-react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { isWeb } from "@/lib/platform";
-import ShareButton from "../FeedItem/ShareButton";
-import CloseButton from "../CloseButton";
-import { useTheme } from "@/lib/theme";
-import useAuth from "@/hooks/useAuth";
-import { FACT_CHECK_FEED_ID, NEWS_FEED_ID } from "@/lib/constants";
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { ChevronLeft } from 'lucide-react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { isWeb } from '@/lib/platform';
+import ShareButton from '../FeedItem/ShareButton';
+import CloseButton from '../CloseButton';
+import { useTheme } from '@/lib/theme';
+import useAuth from '@/hooks/useAuth';
+import { FACT_CHECK_FEED_ID, NEWS_FEED_ID } from '@/lib/constants';
 
 interface SimpleGoBackHeaderProps {
   title?: string;
@@ -56,7 +56,7 @@ const SimpleGoBackHeader = ({
             if (user) {
               router.replace(`/(tabs)/(news)/${NEWS_FEED_ID}`);
             } else {
-              router.navigate("/(auth)/sign-in");
+              router.navigate('/(auth)/sign-in');
             }
           }}
           style={{ color: theme.colors.text }}
@@ -79,28 +79,28 @@ const SimpleGoBackHeader = ({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
     zIndex: 10,
-    alignItems: "center",
-    justifyContent: "space-between",
+    alignItems: 'center',
+    justifyContent: 'space-between',
     height: 56,
     paddingHorizontal: 5,
   },
   backButton: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 17,
-    fontWeight: "600",
-    textAlign: "center",
-    position: "absolute",
+    fontWeight: '600',
+    textAlign: 'center',
+    position: 'absolute',
     left: 60,
     right: 60,
   },
   rightSection: {
     minWidth: 40,
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
     padding: 5,
   },
 });

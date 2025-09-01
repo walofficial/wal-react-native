@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   StyleSheet,
@@ -8,18 +8,18 @@ import {
   Animated,
   Pressable,
   TouchableOpacity,
-} from "react-native";
-import Svg, { Circle } from "react-native-svg";
-import CommentButton from "./CommentButton";
-import ShareButton from "./ShareButton";
-import { useTheme } from "@/lib/theme";
-import { useRouter, usePathname } from "expo-router";
-import { useLightboxControls } from "@/lib/lightbox/lightbox";
-import FactualityBadge from "../ui/FactualityBadge";
-import { toast } from "@backpackapp-io/react-native-toast";
-import useVerificationById from "@/hooks/useVerificationById";
-import { getFactCheckBadgeInfo } from "@/utils/factualityUtils";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
+import CommentButton from './CommentButton';
+import ShareButton from './ShareButton';
+import { useTheme } from '@/lib/theme';
+import { useRouter, usePathname } from 'expo-router';
+import { useLightboxControls } from '@/lib/lightbox/lightbox';
+import FactualityBadge from '../ui/FactualityBadge';
+import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
+import { t } from '@/lib/i18n';
+import { useToast } from '../ToastUsage';
+import useVerificationById from '@/hooks/useVerificationById';
 
 interface FeedActionsProps {
   verificationId: string;
@@ -45,7 +45,7 @@ const LoadingCircle = ({
         toValue: 1,
         duration: 1000,
         useNativeDriver: false, // SVG animations need useNativeDriver: false
-      })
+      }),
     );
     animation.start();
     return () => animation.stop();
@@ -53,7 +53,7 @@ const LoadingCircle = ({
 
   const rotate = rotateValue.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"],
+    outputRange: ['0deg', '360deg'],
   });
 
   const radius = size / 2 - 1;
@@ -84,35 +84,26 @@ const LoadingCircle = ({
 const FactualityLoader = ({ style }: { style?: any }) => {
   const theme = useTheme();
   const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === "dark";
-
-  const handlePress = () => {
-    toast(t("common.post_checking_time"), {
-      duration: 3000,
-      id: "factuality-loader",
-    });
-  };
+  const isDarkColorScheme = colorScheme === 'dark';
 
   return (
-    <Pressable onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.loaderContainer,
-          {
-            backgroundColor: isDarkColorScheme
-              ? "rgba(60, 60, 60, 0.3)"
-              : "rgba(240, 240, 240, 0.5)",
-            // Opacity will be controlled by the parent component via the style prop
-          },
-          style,
-        ]}
-      >
-        <LoadingCircle color="#34C759" size={16} />
-        <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          {t("common.fact_check_loading")}
-        </Text>
-      </Animated.View>
-    </Pressable>
+    <Animated.View
+      style={[
+        styles.loaderContainer,
+        {
+          backgroundColor: isDarkColorScheme
+            ? 'rgba(60, 60, 60, 0.3)'
+            : 'rgba(240, 240, 240, 0.5)',
+          // Opacity will be controlled by the parent component via the style prop
+        },
+        style,
+      ]}
+    >
+      <LoadingCircle color="#34C759" size={16} />
+      <Text style={[styles.loaderText, { color: theme.colors.text }]}>
+        {t('common.fact_check_loading')}
+      </Text>
+    </Animated.View>
   );
 };
 
@@ -120,34 +111,25 @@ const FactualityLoader = ({ style }: { style?: any }) => {
 const SummaryLoader = ({ style }: { style?: any }) => {
   const theme = useTheme();
   const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === "dark";
-
-  const handlePress = () => {
-    toast(t("common.text_analysis_in_progress"), {
-      duration: 3000,
-      id: "summary-loader",
-    });
-  };
+  const isDarkColorScheme = colorScheme === 'dark';
 
   return (
-    <Pressable onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.loaderContainer,
-          {
-            backgroundColor: isDarkColorScheme
-              ? "rgba(60, 60, 60, 0.3)"
-              : "rgba(240, 240, 240, 0.5)",
-          },
-          style,
-        ]}
-      >
-        <LoadingCircle color="#007AFF" size={16} />
-        <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          {t("common.analyzing_post")}
-        </Text>
-      </Animated.View>
-    </Pressable>
+    <Animated.View
+      style={[
+        styles.loaderContainer,
+        {
+          backgroundColor: isDarkColorScheme
+            ? 'rgba(60, 60, 60, 0.3)'
+            : 'rgba(240, 240, 240, 0.5)',
+        },
+        style,
+      ]}
+    >
+      <LoadingCircle color="#007AFF" size={16} />
+      <Text style={[styles.loaderText, { color: theme.colors.text }]}>
+        {t('common.analyzing_post')}
+      </Text>
+    </Animated.View>
   );
 };
 
@@ -155,34 +137,25 @@ const SummaryLoader = ({ style }: { style?: any }) => {
 const MetadataLoader = ({ style }: { style?: any }) => {
   const theme = useTheme();
   const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === "dark";
-
-  const handlePress = () => {
-    toast(t("common.please_wait"), {
-      duration: 3000,
-      id: "metadata-loader",
-    });
-  };
+  const isDarkColorScheme = colorScheme === 'dark';
 
   return (
-    <Pressable onPress={handlePress}>
-      <Animated.View
-        style={[
-          styles.loaderContainer,
-          {
-            backgroundColor: isDarkColorScheme
-              ? "rgba(60, 60, 60, 0.3)"
-              : "rgba(240, 240, 240, 0.5)",
-          },
-          style,
-        ]}
-      >
-        <LoadingCircle color="#34C759" size={16} />
-        <Text style={[styles.loaderText, { color: theme.colors.text }]}>
-          {t("common.analyzing_post")}
-        </Text>
-      </Animated.View>
-    </Pressable>
+    <Animated.View
+      style={[
+        styles.loaderContainer,
+        {
+          backgroundColor: isDarkColorScheme
+            ? 'rgba(60, 60, 60, 0.3)'
+            : 'rgba(240, 240, 240, 0.5)',
+        },
+        style,
+      ]}
+    >
+      <LoadingCircle color="#34C759" size={16} />
+      <Text style={[styles.loaderText, { color: theme.colors.text }]}>
+        {t('common.analyzing_post')}
+      </Text>
+    </Animated.View>
   );
 };
 
@@ -193,27 +166,29 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   showFactualityBadge,
   isOwner,
 }) => {
+  const { info } = useToast();
+
   // Use the same hook as CommentsView to ensure consistent data
   const { data: verification } = useVerificationById(verificationId, isOwner, {
     refetchInterval: 5000, // Same interval as CommentsView uses
   });
   // Extract the data from verification object
   const factuality = verification?.fact_check_data?.factuality;
-  const isFactualityLoading = verification?.fact_check_status === "PENDING";
-  const isSummaryLoading = verification?.ai_video_summary_status === "PENDING";
-  const metadataLoading = verification?.metadata_status === "PENDING";
+  const isFactualityLoading = verification?.fact_check_status === 'PENDING';
+  const isSummaryLoading = verification?.ai_video_summary_status === 'PENDING';
+  const metadataLoading = verification?.metadata_status === 'PENDING';
 
   const loaderOpacity = useRef(
-    new Animated.Value(isFactualityLoading ? 1 : 0)
+    new Animated.Value(isFactualityLoading ? 1 : 0),
   ).current;
   const badgeOpacity = useRef(
-    new Animated.Value(isFactualityLoading ? 0 : 1)
+    new Animated.Value(isFactualityLoading ? 0 : 1),
   ).current;
   const summaryLoaderOpacity = useRef(
-    new Animated.Value(isSummaryLoading ? 1 : 0)
+    new Animated.Value(isSummaryLoading ? 1 : 0),
   ).current;
   const metadataLoaderOpacity = useRef(
-    new Animated.Value(metadataLoading ? 1 : 0)
+    new Animated.Value(metadataLoading ? 1 : 0),
   ).current;
   const router = useRouter();
   const pathname = usePathname();
@@ -272,6 +247,12 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   }, [metadataLoading]);
 
   const handleFactualityPress = () => {
+    if (isFactualityLoading || isSummaryLoading || metadataLoading) {
+      info({
+        title: t('common.please_wait'),
+      });
+      return;
+    }
     const wasLightboxActive = closeLightbox();
 
     // Check if we're already on the verification page
@@ -286,7 +267,7 @@ const FeedActions: React.FC<FeedActionsProps> = ({
     if (wasLightboxActive) {
       setTimeout(() => {
         router.navigate({
-          pathname: "/verification/[verificationId]",
+          pathname: '/verification/[verificationId]',
           params: {
             verificationId,
           },
@@ -294,7 +275,7 @@ const FeedActions: React.FC<FeedActionsProps> = ({
       }, 300);
     } else {
       router.navigate({
-        pathname: "/verification/[verificationId]",
+        pathname: '/verification/[verificationId]',
         params: {
           verificationId,
         },
@@ -369,47 +350,47 @@ const FeedActions: React.FC<FeedActionsProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
+    width: '100%',
   },
   actionsCard: {
     borderRadius: 10,
     paddingVertical: 6,
   },
   actionsWrapper: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   actionGroup: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   sourceComponentContainer: {
     marginTop: 10,
-    width: "100%",
+    width: '100%',
   },
   // Factuality loader styles
   loaderContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
     height: 28,
-    justifyContent: "center",
+    justifyContent: 'center',
     gap: 8,
   },
   loaderText: {
     fontSize: 13,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   factualityContainer: {
     marginLeft: 12,
     height: 28,
     maxWidth: 200,
-    justifyContent: "center",
-    alignItems: "flex-start",
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
 });
 

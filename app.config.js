@@ -1,81 +1,88 @@
-const IS_DEV = process.env.EXPO_PUBLIC_IS_DEV === "true";
+const IS_DEV = process.env.EXPO_PUBLIC_IS_DEV === 'true';
+// Keep app version in sync with package.json
+// Expo config is executed in Node; requiring JSON here is safe and supported
+const pkg = require('./package.json');
 
-export const app_name_slug = "wal";
-export const app_name = IS_DEV ? "WAL DEV" : "WAL";
+export const app_name_slug = 'wal';
+export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
+
 export default {
   expo: {
-    platforms: ["ios", "android", "web"],
+    platforms: ['ios', 'android', 'web'],
     name: app_name,
-    slug: "mnt-app",
-    owner: "nshelia",
-    version: "1.0.22",
-    orientation: "portrait",
-    icon: "./assets/images/logo-big.png",
+    slug: 'mnt-app',
+    owner: 'nshelia',
+    version: pkg.version,
+    orientation: 'portrait',
+    icon: './assets/images/logo-big.png',
     scheme: app_name_slug,
-    userInterfaceStyle: "automatic",
-    backgroundColor: "#000000",
+    userInterfaceStyle: 'automatic',
+    backgroundColor: '#000000',
     updates: {
-      url: "https://u.expo.dev/a9de94ea-576e-4767-ae3f-085bfe155f96",
+      url: 'https://u.expo.dev/a9de94ea-576e-4767-ae3f-085bfe155f96',
       enabled: true,
       fallbackToCacheTimeout: 30000,
-      checkAutomatically: "NEVER",
+      checkAutomatically: 'NEVER',
     },
     runtimeVersion: {
-      policy: "appVersion",
+      policy: 'appVersion',
     },
     newArchEnabled: false,
     ios: {
       associatedDomains: [`applinks:${app_name_slug}.ge`],
       infoPlist: {
-        NSCameraUsageDescription: "This app uses the camera to capture photos and videos.",
-        NSPhotoLibraryUsageDescription: "This app accesses your photos to let you share them.",
-        NSMicrophoneUsageDescription: "This app accesses your microphone to let you share them.",
+        NSCameraUsageDescription:
+          'This app uses the camera to capture photos and videos.',
+        NSPhotoLibraryUsageDescription:
+          'This app accesses your photos to let you share them.',
+        NSMicrophoneUsageDescription:
+          'This app accesses your microphone to let you share them.',
         NSContactsUsageDescription:
-          "WAL uses your contacts to help you find and connect with friends who are already using the app. Your contact data is only used for finding friends and is never stored or used for any other purpose.",
+          'WAL uses your contacts to help you find and connect with friends who are already using the app. Your contact data is only used for finding friends and is never stored or used for any other purpose.',
         NSLocationWhenInUseUsageDescription:
-          "This app accesses your location to let you post videos or photos to nearby locations.",
+          'This app accesses your location to let you post videos or photos to nearby locations.',
         ITSAppUsesNonExemptEncryption: false,
       },
       supportsTablet: false,
-      bundleIdentifier: IS_DEV ? "com.greetai.mentdev" : "com.greetai.ment",
-      googleServicesFile: IS_DEV ? "./GoogleService-Info.plist" : "./GoogleService-Info-Prod.plist",
+      bundleIdentifier: IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment',
+      googleServicesFile: './GoogleService-Info.plist',
     },
-    assetBundlePatterns: ["**/*"],
+    assetBundlePatterns: ['**/*'],
     android: {
       // Check expo docs: https://docs.expo.dev/versions/latest/config/app/#softwarekeyboardlayoutmode
-      softwareKeyboardLayoutMode: "pan",
-      package: IS_DEV ? "com.greetai.mntdev" : "com.greetai.mnt",
+      softwareKeyboardLayoutMode: 'pan',
+      package: IS_DEV ? 'com.greetai.mntdev' : 'com.greetai.mnt',
       adaptiveIcon: {
-        foregroundImage: "./assets/images/adaptive-icon.png",
-        backgroundColor: "#ffffff",
+        foregroundImage: './assets/images/adaptive-icon.png',
+        backgroundColor: '#ffffff',
       },
 
-      googleServicesFile: "./google-services.json",
+      googleServicesFile: './google-services.json',
       intentFilters: [
         {
-          action: "VIEW",
+          action: 'VIEW',
           autoVerify: true,
           data: [
             {
-              scheme: "https",
+              scheme: 'https',
               host: `${app_name_slug}.ge`,
-              pathPrefix: "/links",
+              pathPrefix: '/links',
             },
             {
-              scheme: "https",
+              scheme: 'https',
               host: `${app_name_slug}.ge`,
-              pathPrefix: "/status",
+              pathPrefix: '/status',
             },
           ],
-          category: ["BROWSABLE", "DEFAULT"],
+          category: ['BROWSABLE', 'DEFAULT'],
         },
       ],
-      permissions: ["READ_CONTACTS"],
+      permissions: ['READ_CONTACTS'],
     },
     plugins: [
-      "expo-router",
+      'expo-router',
       [
-        "expo-share-intent",
+        'expo-share-intent',
         {
           iosActivationRules: {
             NSExtensionActivationSupportsWebURLWithMaxCount: 1,
@@ -83,14 +90,14 @@ export default {
             NSExtensionActivationSupportsText: true,
             NSExtensionActivationSupportsImageWithMaxCount: 10,
           },
-          androidIntentFilters: ["text/*", "image/*"],
+          androidIntentFilters: ['text/*', 'image/*'],
         },
       ],
       [
-        "expo-build-properties",
+        'expo-build-properties',
         {
           ios: {
-            useFrameworks: "static",
+            useFrameworks: 'static',
           },
           android: {
             //LiveKit sdk requires min 24
@@ -100,50 +107,50 @@ export default {
         },
       ],
       [
-        "expo-notifications",
+        'expo-notifications',
         {
-          icon: "./assets/images/small-icon-android.png",
-          color: "#000",
+          icon: './assets/images/small-icon-android.png',
+          color: '#000',
         },
       ],
       [
-        "react-native-vision-camera",
+        'react-native-vision-camera',
         {
           cameraPermissionText:
-            "$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live.",
+            '$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live.',
 
           // optionally, if you want to record audio:
           enableMicrophonePermission: true,
           microphonePermissionText:
-            "$(PRODUCT_NAME) needs access to your Microphone to capture audio.",
+            '$(PRODUCT_NAME) needs access to your Microphone to capture audio.',
         },
       ],
       [
-        "@sentry/react-native/expo",
+        '@sentry/react-native/expo',
         {
-          url: "https://sentry.io/",
-          project: "react-native",
-          organization: "greetai-inc",
+          url: 'https://sentry.io/',
+          project: 'react-native',
+          organization: 'greetai-inc',
         },
       ],
       [
-        "expo-location",
+        'expo-location',
         {
           locationPermissionText:
-            "This app accesses your location to let you post videos or photos to nearby locations.",
+            'This app accesses your location to let you post videos or photos to nearby locations.',
         },
       ],
       [
-        "expo-contacts",
+        'expo-contacts',
         {
           contactsPermission:
-            "WAL needs access to your contacts to help you find friends on the app. Your contact information is only used for friend discovery and is never stored or shared.",
+            'WAL needs access to your contacts to help you find friends on the app. Your contact information is only used for friend discovery and is never stored or shared.',
         },
       ],
-      "@react-native-firebase/app",
-      "react-native-compressor",
+      '@react-native-firebase/app',
+      'react-native-compressor',
       [
-        "expo-build-properties",
+        'expo-build-properties',
         {
           ios: {
             newArchEnabled: false,
@@ -153,39 +160,47 @@ export default {
           },
         },
       ],
-      "react-native-libsodium",
+      'react-native-libsodium',
       [
-        "react-native-share",
+        'react-native-share',
         {
-          ios: ["fb", "instagram", "whatsapp", "tg", "twitter", "tiktoksharesdk"],
+          ios: [
+            'fb',
+            'instagram',
+            'whatsapp',
+            'tg',
+            'twitter',
+            'tiktoksharesdk',
+          ],
           android: [
-            "com.whatsapp",
-            "org.telegram.messenger",
-            "com.facebook.katana",
-            "com.instagram.android",
-            "com.twitter.android",
-            "com.zhiliaoapp.musically",
+            'com.whatsapp',
+            'org.telegram.messenger',
+            'com.facebook.katana',
+            'com.instagram.android',
+            'com.twitter.android',
+            'com.zhiliaoapp.musically',
           ],
         },
       ],
-      "@livekit/react-native-expo-plugin",
-      "@config-plugins/react-native-webrtc",
+      '@livekit/react-native-expo-plugin',
+      '@config-plugins/react-native-webrtc',
       [
-        "expo-image-picker",
+        'expo-image-picker',
         {
-          photosPermission: "$(PRODUCT_NAME) needs access to your photos to set profile image.",
+          photosPermission:
+            '$(PRODUCT_NAME) needs access to your photos to set profile image.',
           cameraPermission:
-            "$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live on locations.",
+            '$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live on locations.',
         },
       ],
       [
-        "expo-splash-screen",
+        'expo-splash-screen',
         {
-          backgroundColor: "#000000",
-          image: "./assets/images/icon.png",
+          backgroundColor: '#000000',
+          image: './assets/images/icon.png',
           dark: {
-            image: "./assets/images/icon.png",
-            backgroundColor: "#000000",
+            image: './assets/images/icon.png',
+            backgroundColor: '#000000',
           },
           imageWidth: 200,
         },
@@ -199,7 +214,7 @@ export default {
         origin: false,
       },
       eas: {
-        projectId: "a9de94ea-576e-4767-ae3f-085bfe155f96",
+        projectId: 'a9de94ea-576e-4767-ae3f-085bfe155f96',
       },
     },
   },

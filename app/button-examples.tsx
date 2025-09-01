@@ -1,7 +1,7 @@
-import React from "react";
-import { ScrollView, View, Text } from "react-native";
-import Button from "@/components/Button";
-import { useTheme } from "@/lib/theme";
+import React from 'react';
+import { ScrollView, View, Text } from 'react-native';
+import Button from '@/components/Button';
+import { useTheme } from '@/lib/theme';
 
 export default function ButtonExamplesScreen() {
   const theme = useTheme();
@@ -16,7 +16,7 @@ export default function ButtonExamplesScreen() {
       <Text
         style={{
           fontSize: theme.fontSizes.lg,
-          fontWeight: "700",
+          fontWeight: '700',
           color: theme.colors.text,
           marginBottom: theme.spacing.md,
         }}
@@ -34,7 +34,7 @@ export default function ButtonExamplesScreen() {
       <Text
         style={{
           fontSize: theme.fontSizes.lg,
-          fontWeight: "700",
+          fontWeight: '700',
           color: theme.colors.text,
           marginVertical: theme.spacing.md,
         }}
@@ -49,7 +49,7 @@ export default function ButtonExamplesScreen() {
       <Text
         style={{
           fontSize: theme.fontSizes.lg,
-          fontWeight: "700",
+          fontWeight: '700',
           color: theme.colors.text,
           marginVertical: theme.spacing.md,
         }}
@@ -76,7 +76,7 @@ export default function ButtonExamplesScreen() {
       <Text
         style={{
           fontSize: theme.fontSizes.lg,
-          fontWeight: "700",
+          fontWeight: '700',
           color: theme.colors.text,
           marginVertical: theme.spacing.md,
         }}
@@ -88,14 +88,14 @@ export default function ButtonExamplesScreen() {
       <Text
         style={{
           fontSize: theme.fontSizes.lg,
-          fontWeight: "700",
+          fontWeight: '700',
           color: theme.colors.text,
           marginVertical: theme.spacing.md,
         }}
       >
         Square Icon Buttons
       </Text>
-      <View style={{ flexDirection: "row", gap: theme.spacing.sm }}>
+      <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
         <Button icon="add" variant="primary" size="medium" onPress={() => {}} />
         <Button
           icon="camera"
@@ -114,14 +114,14 @@ export default function ButtonExamplesScreen() {
       <Text
         style={{
           fontSize: theme.fontSizes.lg,
-          fontWeight: "700",
+          fontWeight: '700',
           color: theme.colors.text,
           marginVertical: theme.spacing.md,
         }}
       >
         Big Rounded Square Icon Buttons
       </Text>
-      <View style={{ flexDirection: "row", gap: theme.spacing.sm }}>
+      <View style={{ flexDirection: 'row', gap: theme.spacing.sm }}>
         <Button
           icon="add"
           variant="primary"

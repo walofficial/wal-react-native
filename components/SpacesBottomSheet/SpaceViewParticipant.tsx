@@ -1,12 +1,12 @@
 import {
   AudioSession,
   useLocalParticipantPermissions,
-} from "@livekit/react-native";
-import { useEffect } from "react";
-import { useLocalParticipant } from "@livekit/react-native";
-import { Platform, View, Text } from "react-native";
-import { useAtomValue } from "jotai";
-import { activeLivekitRoomState } from "./atom";
+} from '@livekit/react-native';
+import { useEffect } from 'react';
+import { useLocalParticipant } from '@livekit/react-native';
+import { Platform, View, Text } from 'react-native';
+import { useAtomValue } from 'jotai';
+import { activeLivekitRoomState } from './atom';
 
 export type RoomMetadata = {
   creator_identity: string;
@@ -47,10 +47,10 @@ function SpaceViewSpeaker() {
   useEffect(() => {
     const startAudioSession = async () => {
       await AudioSession.startAudioSession();
-      if (Platform.OS === "ios") {
-        await AudioSession.selectAudioOutput("default");
+      if (Platform.OS === 'ios') {
+        await AudioSession.selectAudioOutput('default');
       } else {
-        await AudioSession.selectAudioOutput("speaker");
+        await AudioSession.selectAudioOutput('speaker');
       }
     };
     startAudioSession();
@@ -73,10 +73,10 @@ function SpaceViewNonSpeaker() {
   useEffect(() => {
     const startAudioSession = async () => {
       await AudioSession.startAudioSession();
-      if (Platform.OS === "ios") {
-        await AudioSession.selectAudioOutput("default");
+      if (Platform.OS === 'ios') {
+        await AudioSession.selectAudioOutput('default');
       } else {
-        await AudioSession.selectAudioOutput("speaker");
+        await AudioSession.selectAudioOutput('speaker');
       }
     };
     startAudioSession();

@@ -1,8 +1,8 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { Text } from "@/components/ui/text";
-import { useTheme } from "@/lib/theme";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Text } from '@/components/ui/text';
+import { useTheme } from '@/lib/theme';
 
 interface ContactListHeaderProps {
   icon: keyof typeof Ionicons.glyphMap;
@@ -25,14 +25,14 @@ const ContactListHeader: React.FC<ContactListHeaderProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 16,
     marginTop: 8,
   },
   title: {
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
     marginLeft: 12,
   },
 });

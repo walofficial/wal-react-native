@@ -1,7 +1,7 @@
-import React from "react";
-import { LinearGradient } from "expo-linear-gradient";
-import { SAFE_AREA_PADDING } from "../CameraPage/Constants";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import React from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SAFE_AREA_PADDING } from '../CameraPage/Constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TaskBottomOverlay({
   children,
@@ -19,7 +19,7 @@ export default function TaskBottomOverlay({
         flex: 1,
         paddingTop: 20,
       }}
-      colors={["rgba(0,0,0,0.45)", "rgba(0,0,0,0.45)"]}
+      colors={['rgba(0,0,0,0.45)', 'rgba(0,0,0,0.45)']}
     >
       {children}
     </LinearGradient>

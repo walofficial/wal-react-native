@@ -1,21 +1,21 @@
-import React from "react";
-import { View, StyleSheet, useColorScheme, Dimensions } from "react-native";
-import { useThemeColor } from "@/hooks/useThemeColor";
+import React from 'react';
+import { View, StyleSheet, useColorScheme, Dimensions } from 'react-native';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 interface NewsCardSkeletonProps {
   itemCount?: number;
 }
 
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const ITEM_WIDTH = SCREEN_WIDTH * 0.85;
 const ITEM_SPACING = 12;
 
 const SkeletonItem = () => {
-  const backgroundColor = useThemeColor({}, "background");
-  const borderColor = useThemeColor({}, "icon");
+  const backgroundColor = useThemeColor({}, 'background');
+  const borderColor = useThemeColor({}, 'icon');
   const skeletonColor = useThemeColor(
-    { light: "#E1E4E8", dark: "#333" },
-    "icon"
+    { light: '#E1E4E8', dark: '#333' },
+    'icon',
   );
 
   return (
@@ -31,19 +31,19 @@ const SkeletonItem = () => {
           <View
             style={[
               styles.titleLine,
-              { backgroundColor: skeletonColor, width: "90%" },
+              { backgroundColor: skeletonColor, width: '90%' },
             ]}
           />
           <View
             style={[
               styles.titleLine,
-              { backgroundColor: skeletonColor, width: "80%" },
+              { backgroundColor: skeletonColor, width: '80%' },
             ]}
           />
           <View
             style={[
               styles.titleLine,
-              { backgroundColor: skeletonColor, width: "60%" },
+              { backgroundColor: skeletonColor, width: '60%' },
             ]}
           />
         </View>
@@ -81,15 +81,15 @@ const NewsCardSkeleton: React.FC<NewsCardSkeletonProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     paddingVertical: 8,
   },
   skeletonWrapper: {
     width: ITEM_WIDTH,
   },
   skeletonItem: {
-    flexDirection: "column",
-    justifyContent: "space-between",
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     padding: 16,
     height: 150,
     borderRadius: 12,
@@ -97,11 +97,11 @@ const styles = StyleSheet.create({
   },
   skeletonContent: {
     flex: 1,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   titleContainer: {
     flex: 1,
-    justifyContent: "flex-start",
+    justifyContent: 'flex-start',
   },
   titleLine: {
     height: 14,
@@ -109,8 +109,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   skeletonFooter: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   footerLine: {
     width: 100,

@@ -1,25 +1,25 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { View, StyleSheet } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { Button } from "./ui/button";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { useTheme } from "@/lib/theme";
-import { useColorScheme } from "@/lib/useColorScheme";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, StyleSheet } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Button } from './ui/button';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { useToast } from './ToastUsage';
 
 export default function TakeVideo({ disabled }: { disabled: boolean }) {
   const router = useRouter();
   const { feedId } = useLocalSearchParams();
   const theme = useTheme();
   const { isDarkColorScheme } = useColorScheme();
-
+  const { dismiss } = useToast();
   const onTakeVideoClick = async () => {
     // Dismiss previous toasts if any
-    toast.dismiss();
+    dismiss('all');
 
     try {
       const cachedVideoPath = await AsyncStorage.getItem(
-        `lastRecordedVideoPath_${feedId}`
+        `lastRecordedVideoPath_${feedId}`,
       );
       if (cachedVideoPath) {
         router.navigate({
@@ -27,7 +27,7 @@ export default function TakeVideo({ disabled }: { disabled: boolean }) {
           params: {
             feedId: feedId as string,
             path: cachedVideoPath,
-            type: "video",
+            type: 'video',
           },
         });
       } else {
@@ -39,13 +39,13 @@ export default function TakeVideo({ disabled }: { disabled: boolean }) {
         });
       }
     } catch (e) {
-      console.error("Error accessing camera or cached video:", e);
+      console.error('Error accessing camera or cached video:', e);
     }
   };
 
   const buttonBackgroundColor = isDarkColorScheme
-    ? "rgba(70, 70, 70, 0.9)"
-    : "rgba(210, 210, 210, 0.9)";
+    ? 'rgba(70, 70, 70, 0.9)'
+    : 'rgba(210, 210, 210, 0.9)';
 
   return (
     <Button
@@ -56,8 +56,8 @@ export default function TakeVideo({ disabled }: { disabled: boolean }) {
           backgroundColor: buttonBackgroundColor,
           borderWidth: 1,
           borderColor: isDarkColorScheme
-            ? "rgba(100, 100, 100, 0.5)"
-            : "rgba(180, 180, 180, 0.5)",
+            ? 'rgba(100, 100, 100, 0.5)'
+            : 'rgba(180, 180, 180, 0.5)',
           opacity: disabled ? 0.5 : 1,
         },
       ]}
@@ -75,13 +75,13 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.5)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.5)',
   },
   iconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

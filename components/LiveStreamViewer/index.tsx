@@ -1,15 +1,14 @@
-import { useToast } from "@/components/ToastUsage";
+import { useToast } from '@/components/ToastUsage';
 import {
   LiveKitRoom,
   useRemoteParticipants,
   VideoTrack,
-  VideoView,
   useParticipantTracks,
   useConnectionState,
   AudioSession,
   setLogLevel,
   LogLevel,
-} from "@livekit/react-native";
+} from '@livekit/react-native';
 import {
   View,
   Text,
@@ -19,16 +18,16 @@ import {
   StyleSheet,
   Dimensions,
   DimensionValue,
-} from "react-native";
-import useLiveStreamToken from "./useLiveStreamToken";
-import { Track } from "livekit-client";
-import { router } from "expo-router";
-import { useRouter } from "expo-router";
-import { useEffect } from "react";
-import TopGradient from "../VideoPlayback/TopGradient";
-import CloseButton from "../CloseButton";
-import { FontSizes } from "@/lib/theme";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import useLiveStreamToken from './useLiveStreamToken';
+import { Track } from 'livekit-client';
+import { router } from 'expo-router';
+import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
+import TopGradient from '../VideoPlayback/TopGradient';
+import CloseButton from '../CloseButton';
+import { FontSizes } from '@/lib/theme';
+import { t } from '@/lib/i18n';
 
 // Component for constraining video to portrait aspect ratio
 function ConstrainedLiveVideo({ children }: { children: React.ReactNode }) {
@@ -39,15 +38,15 @@ function ConstrainedLiveVideo({ children }: { children: React.ReactNode }) {
     <View style={styles.constrainedContainer}>
       <View
         style={{
-          width: "100%",
-          height: Dimensions.get("window").height * 0.8,
-          maxWidth: Dimensions.get("window").width * 0.9,
+          width: '100%',
+          height: Dimensions.get('window').height * 0.8,
+          maxWidth: Dimensions.get('window').width * 0.9,
           aspectRatio: 1 / aspectRatio, // Container will be taller than wide
-          alignSelf: "center",
+          alignSelf: 'center',
           borderRadius: 16,
-          overflow: "hidden",
-          backgroundColor: "black",
-          position: "relative",
+          overflow: 'hidden',
+          backgroundColor: 'black',
+          position: 'relative',
         }}
       >
         {children}
@@ -69,30 +68,27 @@ function LiveStreamViewer({
   const { data, isLoading, error } = useLiveStreamToken(liveKitRoomName);
   const router = useRouter();
   const { error: errorToast } = useToast();
-  if (isLoading) return <Text>{t("common.loading")}</Text>;
+  if (isLoading) return <Text>{t('common.loading')}</Text>;
   if (error)
     return (
       <Text>
-        {t("common.error_colon")} {error.message}
+        {t('common.error_colon')} {error.message}
       </Text>
     );
 
   return (
     <LiveKitRoom
-      serverUrl={"wss://ment-6gg5tj49.livekit.cloud"}
+      serverUrl={'wss://ment-6gg5tj49.livekit.cloud'}
       token={data?.livekit_token}
-      onError={(error: Error) => {
-        toast(error.message);
-      }}
       onConnected={() => {}}
       connect={true}
       options={{
-        adaptiveStream: { pixelDensity: "screen" },
+        adaptiveStream: { pixelDensity: 'screen' },
       }}
       onDisconnected={() => {
         errorToast({
-          title: t("common.live_stream_disconnected"),
-          description: t("common.live_stream_disconnected"),
+          title: t('common.live_stream_disconnected'),
+          description: t('common.live_stream_disconnected'),
         });
         router.back();
       }}
@@ -103,7 +99,7 @@ function LiveStreamViewer({
 }
 
 function RoomView({ topControls }: { topControls: React.ReactNode }) {
-  const tracks = useParticipantTracks([Track.Source.Camera], "identity");
+  const tracks = useParticipantTracks([Track.Source.Camera], 'identity');
   const router = useRouter();
   const connectionState = useConnectionState();
   const { error: errorToast } = useToast();
@@ -111,10 +107,10 @@ function RoomView({ topControls }: { topControls: React.ReactNode }) {
   useEffect(() => {
     const startAudioSession = async () => {
       await AudioSession.startAudioSession();
-      if (Platform.OS === "ios") {
-        await AudioSession.selectAudioOutput("default");
+      if (Platform.OS === 'ios') {
+        await AudioSession.selectAudioOutput('default');
       } else {
-        await AudioSession.selectAudioOutput("speaker");
+        await AudioSession.selectAudioOutput('speaker');
       }
     };
     startAudioSession();
@@ -124,13 +120,13 @@ function RoomView({ topControls }: { topControls: React.ReactNode }) {
     };
   }, []);
 
-  if (connectionState === "connected") {
+  if (connectionState === 'connected') {
     if (tracks.length === 0) {
       return (
         <ConstrainedLiveVideo>
           <View style={styles.noStreamContainer}>
             <Text style={styles.noStreamText}>
-              {t("common.live_stream_unavailable")}
+              {t('common.live_stream_unavailable')}
             </Text>
             <CloseButton variant="x" onClick={() => router.back()} />
           </View>
@@ -159,56 +155,56 @@ function RoomView({ topControls }: { topControls: React.ReactNode }) {
 const styles = StyleSheet.create({
   constrainedContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "transparent",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
   },
   noStreamContainer: {
     flex: 1,
     padding: 40,
-    alignItems: "center",
+    alignItems: 'center',
     gap: 12,
-    justifyContent: "center",
-    backgroundColor: "black",
+    justifyContent: 'center',
+    backgroundColor: 'black',
   },
   noStreamText: {
-    color: "white",
+    color: 'white',
     fontSize: FontSizes.medium,
     paddingHorizontal: 20,
-    textAlign: "center",
+    textAlign: 'center',
   },
   streamContainer: {
     flex: 1,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "black",
-    overflow: "hidden",
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'black',
+    overflow: 'hidden',
   },
   videoTrack: {
     flex: 1,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
   },
   loadingContainer: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "black",
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'black',
   },
   liveIndicator: {
-    position: "absolute",
+    position: 'absolute',
     top: 12,
     right: 12,
-    backgroundColor: "#FF0000",
+    backgroundColor: '#FF0000',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 20,
     zIndex: 10,
   },
   liveText: {
-    color: "white",
+    color: 'white',
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

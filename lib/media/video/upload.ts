@@ -1,9 +1,9 @@
-import * as FileSystem from "expo-file-system";
-import { AbortError } from "@/lib/async/cancelable";
-import { CompressedVideo } from "@/lib/media/video/types";
-import { UploadToLocationResponse } from "@/lib/api/generated";
-import { API_BASE_URL } from "@/lib/api/config";
-import { supabase } from "@/lib/supabase";
+import * as FileSystem from 'expo-file-system';
+import { AbortError } from '@/lib/async/cancelable';
+import { CompressedVideo } from '@/lib/media/video/types';
+import { UploadToLocationResponse } from '@/lib/api/generated';
+import { API_BASE_URL } from '@/lib/api/config';
+import { supabase } from '@/lib/supabase';
 
 async function getCurrentAuthToken(): Promise<string | null> {
   const { data } = await supabase.auth.getSession();
@@ -17,23 +17,23 @@ const uploadVideosToLocation = async (
     feed_id: string;
     recording_time: number;
     text_content: string;
-  }
+  },
 ) => {
   const token = await getCurrentAuthToken();
   if (!token) {
-    throw new Error("No authentication token available");
+    throw new Error('No authentication token available');
   }
 
   return FileSystem.createUploadTask(
-    API_BASE_URL + "verify-videos/upload-to-location",
+    API_BASE_URL + 'verify-videos/upload-to-location',
     video.uri,
     {
       headers: {
-        "content-type": video.mimeType,
+        'content-type': video.mimeType,
         Authorization: `Bearer ${token}`,
       },
-      httpMethod: "POST",
-      fieldName: "video_file",
+      httpMethod: 'POST',
+      fieldName: 'video_file',
       parameters: {
         feed_id: params.feed_id,
         recording_time: params.recording_time.toString(),
@@ -42,7 +42,7 @@ const uploadVideosToLocation = async (
       mimeType: video.mimeType,
       uploadType: FileSystem.FileSystemUploadType.MULTIPART,
     },
-    (p) => setProgress(p.totalBytesSent / p.totalBytesExpectedToSend)
+    (p) => setProgress(p.totalBytesSent / p.totalBytesExpectedToSend),
   );
 };
 
@@ -78,7 +78,7 @@ export async function uploadVideo({
   const res = await uploadTask.uploadAsync();
 
   if (!res?.body) {
-    throw new Error("No response");
+    throw new Error('No response');
   }
 
   const responseBody = JSON.parse(res.body);

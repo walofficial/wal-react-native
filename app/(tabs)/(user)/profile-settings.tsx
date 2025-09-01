@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   View,
   Alert,
@@ -9,34 +9,34 @@ import {
   Platform,
   useColorScheme as useRNColorScheme,
   TouchableOpacity,
-} from "react-native";
-import Button from "@/components/Button";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Text } from "@/components/ui/text";
-import { useMutation } from "@tanstack/react-query";
+} from 'react-native';
+import Button from '@/components/Button';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Text } from '@/components/ui/text';
+import { useMutation } from '@tanstack/react-query';
 import {
   deleteUserMutation,
   updateUserMutation,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import { useRouter } from "expo-router";
-import { dateOfBirthSchema } from "@/lib/schema";
-import DateOfBirth from "@/components/DateOfBirth";
-import { H4 } from "@/components/ui/typography";
-import EnableNotifications from "@/components/EnableNotifications";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { supabase } from "@/lib/supabase";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSession } from "@/components/AuthLayer";
-import { FontSizes, useTheme } from "@/lib/theme";
-import SimpleGoBackHeader from "@/components/SimpleGoBackHeader";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { t } from "@/lib/i18n";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { useRouter } from 'expo-router';
+import { dateOfBirthSchema } from '@/lib/schema';
+import DateOfBirth from '@/components/DateOfBirth';
+import { H4 } from '@/components/ui/typography';
+import EnableNotifications from '@/components/EnableNotifications';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { supabase } from '@/lib/supabase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSession } from '@/components/AuthLayer';
+import { FontSizes, useTheme } from '@/lib/theme';
+import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { t } from '@/lib/i18n';
 
 const formSchema = z
   .object({
-    username: z.string().min(1, "სახელი აუცილებელია"),
+    username: z.string().min(1, 'სახელი აუცილებელია'),
     gender: z.string(),
   })
   .and(dateOfBirthSchema);
@@ -53,7 +53,7 @@ export function AcceptButton({
   onPress,
 }: AcceptButtonProps) {
   const theme = useTheme();
-  const iconColor = useThemeColor({}, "icon");
+  const iconColor = useThemeColor({}, 'icon');
 
   return (
     <TouchableOpacity
@@ -77,11 +77,11 @@ export default function Component() {
   const { user, setAuthUser } = useSession();
   const router = useRouter();
   const theme = useTheme();
-  const colorScheme = useRNColorScheme() || "dark";
+  const colorScheme = useRNColorScheme() || 'dark';
 
   useEffect(() => {
     if (!user) {
-      router.navigate("/");
+      router.navigate('/');
     }
   }, [user]);
 
@@ -97,7 +97,7 @@ export default function Component() {
     },
     onSuccess: () => {},
     onError: (error) => {
-      Alert.alert("პროფილი ვერ განახლდა");
+      Alert.alert('პროფილი ვერ განახლდა');
     },
   });
 
@@ -110,9 +110,9 @@ export default function Component() {
   } = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: user?.username || "",
-      gender: user?.gender || "",
-      date_of_birth: user?.date_of_birth || "",
+      username: user?.username || '',
+      gender: user?.gender || '',
+      date_of_birth: user?.date_of_birth || '',
     },
   });
 
@@ -126,37 +126,37 @@ export default function Component() {
     ...deleteUserMutation(),
     onSuccess: async () => {
       await supabase.auth.signOut();
-      router.replace("/(auth)/sign-in");
+      router.replace('/(auth)/sign-in');
     },
     onError: (error) => {
-      Alert.alert("ანგარიშის წაშლა ვერ მოხერხდა");
+      Alert.alert('ანგარიშის წაშლა ვერ მოხერხდა');
     },
   });
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      "ანგარიშის წაშლა",
-      "დარწმუნებული ხართ, რომ გსურთ ანგარიშის წაშლა?",
+      'ანგარიშის წაშლა',
+      'დარწმუნებული ხართ, რომ გსურთ ანგარიშის წაშლა?',
       [
         {
-          text: t("common.cancel"),
-          style: "cancel",
+          text: t('common.cancel'),
+          style: 'cancel',
         },
         {
-          text: t("common.delete"),
-          style: "destructive",
+          text: t('common.delete'),
+          style: 'destructive',
           onPress: () => deleteAccountMutation.mutate({}),
         },
-      ]
+      ],
     );
   };
 
   const handleClearCache = async () => {
     try {
       await AsyncStorage.clear();
-      Alert.alert("Cache cleared successfully");
+      Alert.alert('Cache cleared successfully');
     } catch (error) {
-      Alert.alert("Failed to clear cache");
+      Alert.alert('Failed to clear cache');
     }
   };
 
@@ -181,7 +181,7 @@ export default function Component() {
         <View style={styles.content}>
           <View style={styles.formContainer}>
             <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t("common.username")}
+              {t('common.username')}
             </H4>
             <Controller
               control={control}
@@ -193,7 +193,7 @@ export default function Component() {
                       ...styles.usernameInput,
                       color: theme.colors.text,
                       backgroundColor:
-                        colorScheme === "dark" ? "#1C1C1E" : "#F2F2F7",
+                        colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
                       borderColor: theme.colors.border,
                     }}
                     editable={false}
@@ -206,13 +206,13 @@ export default function Component() {
               <Text style={styles.errorText}>{errors.username.message}</Text>
             )}
             <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t("common.date_of_birth")}
+              {t('common.date_of_birth')}
             </H4>
             <DateOfBirth control={control} />
 
             <View style={styles.notificationSection}>
               <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                {t("common.notifications")}
+                {t('common.notifications')}
               </H4>
               <EnableNotifications />
             </View>
@@ -227,7 +227,7 @@ export default function Component() {
           onPress={handleDeleteAccount}
           disabled={deleteAccountMutation.isPending}
           loading={deleteAccountMutation.isPending}
-          title={t("common.delete_account")}
+          title={t('common.delete_account')}
         />
         {__DEV__ && (
           <Button
@@ -236,7 +236,7 @@ export default function Component() {
             variant="outline"
             onPress={handleClearCache}
             style={styles.clearCacheButton}
-            title={t("common.clear_cache")}
+            title={t('common.clear_cache')}
           />
         )}
       </View>
@@ -247,7 +247,7 @@ export default function Component() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "100%",
+    height: '100%',
   },
   content: {
     padding: 25,
@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   headerButton: {
     maxWidth: 150,
@@ -274,24 +274,24 @@ const styles = StyleSheet.create({
     marginVertical: 8,
   },
   notificationSection: {
-    flexDirection: "column",
+    flexDirection: 'column',
     marginVertical: 12,
   },
   errorText: {
-    color: "red",
+    color: 'red',
   },
   footer: {
     marginBottom: 20,
     paddingHorizontal: 20,
-    width: "100%",
+    width: '100%',
   },
   deleteText: {
-    color: "#ef4444",
+    color: '#ef4444',
   },
   clearCacheButton: {
     marginTop: 8,
   },
   clearCacheText: {
-    color: "#3b82f6",
+    color: '#3b82f6',
   },
 });

@@ -1,6 +1,6 @@
-import React from "react";
-import { StyleSheet } from "react-native";
-import { Avatar, AvatarImage } from "../ui/avatar";
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { Avatar, AvatarImage } from '../ui/avatar';
 
 interface MessageItemAvatarProps {
   photoUrl: string;
@@ -17,11 +17,11 @@ const MessageItemAvatar: React.FC<MessageItemAvatarProps> = ({ photoUrl }) => {
 const styles = StyleSheet.create({
   avatar: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
-    objectFit: "cover",
+    objectFit: 'cover',
   },
 });
 

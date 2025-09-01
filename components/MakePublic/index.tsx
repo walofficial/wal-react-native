@@ -1,9 +1,8 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useMakePublicMutation } from "@/hooks/useMakePublicMutation";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { useToast } from "../ToastUsage";
-import { t } from "@/lib/i18n";
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useMakePublicMutation } from '@/hooks/useMakePublicMutation';
+import { useToast } from '../ToastUsage';
+import { t } from '@/lib/i18n';
 
 export default function MakePublic({
   verificationId,
@@ -33,20 +32,20 @@ export default function MakePublic({
         },
         onSuccess: () => {
           success({
-            title: newValue ? t("common.published") : t("common.hidden"),
+            title: newValue ? t('common.published') : t('common.hidden'),
           });
         },
-      }
+      },
     );
   };
 
   return (
     <TouchableOpacity
       onPress={handleToggle}
-      style={[styles.button, { backgroundColor: "#efefef" }]}
+      style={[styles.button, { backgroundColor: '#efefef' }]}
     >
       <Text style={styles.buttonText}>
-        {isPublic ? t("common.hide") : t("common.publish")}
+        {isPublic ? t('common.hide') : t('common.publish')}
       </Text>
     </TouchableOpacity>
   );
@@ -54,17 +53,17 @@ export default function MakePublic({
 
 const styles = StyleSheet.create({
   button: {
-    flexDirection: "row",
+    flexDirection: 'row',
     borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 12,
-    width: "100%",
+    width: '100%',
     padding: 16,
   },
   buttonText: {
-    color: "#000000",
+    color: '#000000',
     fontSize: 20,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

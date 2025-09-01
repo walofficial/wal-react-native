@@ -1,34 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
-import { Text } from "@/components/ui/text";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import cn from "clsx";
-import { User } from "@/lib/api/generated";
-import { Skeleton } from "../ui/skeleton";
-import { Ionicons } from "@expo/vector-icons";
-import * as Progress from "react-native-progress";
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
+import { Text } from '@/components/ui/text';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import cn from 'clsx';
+import { User } from '@/lib/api/generated';
+import { Skeleton } from '../ui/skeleton';
+import { Ionicons } from '@expo/vector-icons';
+import * as Progress from 'react-native-progress';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
   Easing,
-} from "react-native-reanimated";
-import UserAvatarLayout, { AvatarWidth } from "../UserAvatar";
-import { useTheme } from "@/lib/theme";
+} from 'react-native-reanimated';
+import UserAvatarLayout, { AvatarWidth } from '../UserAvatar';
+import { useTheme } from '@/lib/theme';
 
 export default function UserAvatarAnimated({
-  size = "md",
+  size = 'md',
   user,
   isLoading,
   isSuccess,
-  color = "green",
+  color = 'green',
   showName = false,
 }: {
   user: User;
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
   isSuccess?: boolean;
-  color?: "green" | "pink" | "blue" | "gray";
+  color?: 'green' | 'pink' | 'blue' | 'gray';
   showName?: boolean;
 }) {
   const theme = useTheme();
@@ -111,25 +111,25 @@ export default function UserAvatarAnimated({
             {
               backgroundColor: !imageUrl
                 ? theme.colors.card.background
-                : "transparent",
+                : 'transparent',
             },
             imageAnimatedStyle,
           ]}
           className={`flex items-center justify-center w-full h-full ${
-            !imageUrl ? "rounded-full" : ""
+            !imageUrl ? 'rounded-full' : ''
           }`}
         >
           {imageUrl ? (
             <AvatarImage className="rounded-full" source={{ uri: imageUrl }} />
           ) : (
             <Text className="text-2xl" style={{ color: theme.colors.text }}>
-              {user?.username || "N/A"}
+              {user?.username || 'N/A'}
             </Text>
           )}
         </Animated.View>
         <Animated.View
           style={[
-            { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
+            { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
             checkmarkAnimatedStyle,
           ]}
           className="flex items-center justify-center"
@@ -138,7 +138,7 @@ export default function UserAvatarAnimated({
         </Animated.View>
         <Animated.View
           style={[
-            { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 },
+            { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
             progressAnimatedStyle,
           ]}
           className="flex items-center justify-center"
@@ -166,12 +166,12 @@ export default function UserAvatarAnimated({
 }
 
 export const UserAvatarAnimatedSkeleton = ({
-  size = "md",
+  size = 'md',
 }: {
-  size: "sm" | "md" | "lg";
+  size: 'sm' | 'md' | 'lg';
 }) => {
   return (
-    <UserAvatarLayout size={size} borderColor={"gray"}>
+    <UserAvatarLayout size={size} borderColor={'gray'}>
       <Skeleton className="w-full h-full rounded-full" />
     </UserAvatarLayout>
   );

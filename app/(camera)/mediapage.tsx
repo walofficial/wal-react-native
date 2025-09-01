@@ -1,1 +1,1 @@
-export { default } from "@/screens/mediapage";
+export { default } from '@/screens/mediapage';

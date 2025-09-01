@@ -1,10 +1,10 @@
-import React, { forwardRef } from "react";
-import { StyleSheet } from "react-native";
-import { Image } from "expo-image";
+import React, { forwardRef } from 'react';
+import { StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import {
   Zoomable as RNZoomable,
   ZOOM_TYPE,
-} from "@likashefqet/react-native-image-zoom";
+} from '@likashefqet/react-native-image-zoom';
 
 interface ZoomableImageProps {
   uri: string;
@@ -31,7 +31,7 @@ const ZoomableImage = forwardRef<any, ZoomableImageProps>(
       maxScale = 5,
       doubleTapScale = 3,
     },
-    ref
+    ref,
   ) => {
     return (
       <RNZoomable
@@ -62,7 +62,7 @@ const ZoomableImage = forwardRef<any, ZoomableImageProps>(
         />
       </RNZoomable>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
 });
 

@@ -1,15 +1,17 @@
-import * as Updates from "expo-updates";
-import { isWeb, isAndroid } from "../platform";
+import * as Updates from 'expo-updates';
+import { isWeb, isAndroid } from '../platform';
 import { client } from './generated/client.gen';
-import { supabase } from "../supabase";
+import { supabase } from '../supabase';
 
 export const isDev =
-  process.env.EXPO_PUBLIC_IS_DEV === "true" &&
-  Updates.channel !== "preview" &&
-  Updates.channel !== "production";
+  process.env.EXPO_PUBLIC_IS_DEV === 'true' &&
+  Updates.channel !== 'preview' &&
+  Updates.channel !== 'production';
+
+export const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
 export const API_BASE_URL = isWeb
-  ? "http://localhost:5500"
+  ? 'http://localhost:5500'
   : (process.env.EXPO_PUBLIC_API_URL as string);
 
 // Initialize the client with base URL
@@ -17,7 +19,7 @@ client.setConfig({
   baseURL: API_BASE_URL,
   throwOnError: false,
   headers: {
-    "x-is-anonymous": String(isWeb),
+    'x-is-anonymous': String(isWeb),
   },
 });
 
@@ -84,5 +86,5 @@ client.instance.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   Text,
   StyleSheet,
@@ -8,9 +8,9 @@ import {
   Animated, // Keep Animated.View as it accepts animated styles via the style prop
   ViewStyle,
   StyleProp,
-} from "react-native";
+} from 'react-native';
 
-export type FactualityBadgeType = "truth" | "misleading" | "needs-context";
+export type FactualityBadgeType = 'truth' | 'misleading' | 'needs-context';
 
 export interface FactualityBadgeProps {
   text: string;
@@ -26,21 +26,21 @@ const FactualityBadge: React.FC<FactualityBadgeProps> = ({
   onPress,
 }) => {
   const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === "dark";
+  const isDarkColorScheme = colorScheme === 'dark';
   let backgroundColor, textColor;
 
   switch (type) {
-    case "truth":
-      textColor = isDarkColorScheme ? "#34d399" : "#065f46"; // Whiter green in dark mode
-      backgroundColor = isDarkColorScheme ? "#065f46" : "#d1fae5"; // Solid dark green background in dark mode
+    case 'truth':
+      textColor = isDarkColorScheme ? '#34d399' : '#065f46'; // Whiter green in dark mode
+      backgroundColor = isDarkColorScheme ? '#065f46' : '#d1fae5'; // Solid dark green background in dark mode
       break;
-    case "needs-context": // Blue
-      textColor = isDarkColorScheme ? "#93c5fd" : "#1e40af"; // Whiter blue in dark mode
-      backgroundColor = isDarkColorScheme ? "#1e3a8a" : "#dbeafe"; // Solid dark blue background in dark mode
+    case 'needs-context': // Blue
+      textColor = isDarkColorScheme ? '#93c5fd' : '#1e40af'; // Whiter blue in dark mode
+      backgroundColor = isDarkColorScheme ? '#1e3a8a' : '#dbeafe'; // Solid dark blue background in dark mode
       break;
-    case "misleading": // Red/Orange
-      textColor = isDarkColorScheme ? "#fca5a5" : "#dc2626"; // Whiter red in dark mode
-      backgroundColor = isDarkColorScheme ? "#991b1b" : "#fee2e2"; // Solid dark red background in dark mode
+    case 'misleading': // Red/Orange
+      textColor = isDarkColorScheme ? '#fca5a5' : '#dc2626'; // Whiter red in dark mode
+      backgroundColor = isDarkColorScheme ? '#991b1b' : '#fee2e2'; // Solid dark red background in dark mode
       break;
   }
 
@@ -66,15 +66,15 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     height: 28,
     // Note: Platform-specific shadows from NewsCardItem are not here by default.
     // They can be added via the `style` prop if needed.
   },
   badgeText: {
     fontSize: 13,
-    fontWeight: "600",
+    fontWeight: '600',
     lineHeight: 16,
     letterSpacing: -0.24,
   },

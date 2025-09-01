@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Pressable, Text, StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React from 'react';
+import { View, Pressable, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   FadeIn,
   useAnimatedStyle,
@@ -8,10 +8,10 @@ import Animated, {
   withSpring,
   withTiming,
   interpolateColor,
-} from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import * as Haptics from "expo-haptics";
-import { BlurView } from "expo-blur";
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Haptics from 'expo-haptics';
+import { BlurView } from 'expo-blur';
 
 interface RoomControlsProps {
   micEnabled: boolean;
@@ -52,8 +52,8 @@ export function RoomControls({
     return {
       transform: [{ scale: micScale.value }],
       backgroundColor: micEnabled
-        ? withTiming("rgba(10, 132, 255, 0.3)")
-        : withTiming("rgba(255, 255, 255, 0.1)"),
+        ? withTiming('rgba(10, 132, 255, 0.3)')
+        : withTiming('rgba(255, 255, 255, 0.1)'),
     };
   });
 
@@ -61,8 +61,8 @@ export function RoomControls({
     return {
       transform: [{ scale: cameraScale.value }],
       backgroundColor: cameraEnabled
-        ? withTiming("rgba(10, 132, 255, 0.3)")
-        : withTiming("rgba(255, 255, 255, 0.1)"),
+        ? withTiming('rgba(10, 132, 255, 0.3)')
+        : withTiming('rgba(255, 255, 255, 0.1)'),
     };
   });
 
@@ -147,7 +147,7 @@ export function RoomControls({
             style={[styles.controlButton, micAnimatedStyle]}
           >
             <Ionicons
-              name={micEnabled ? "mic" : "mic-off"}
+              name={micEnabled ? 'mic' : 'mic-off'}
               size={24}
               color="white"
             />
@@ -158,7 +158,7 @@ export function RoomControls({
             style={[styles.controlButton, cameraAnimatedStyle]}
           >
             <Ionicons
-              name={cameraEnabled ? "videocam" : "videocam-off"}
+              name={cameraEnabled ? 'videocam' : 'videocam-off'}
               size={24}
               color="white"
             />
@@ -185,14 +185,14 @@ export function RoomControls({
 
 const styles = StyleSheet.create({
   liveIndicator: {
-    position: "absolute",
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "rgba(239, 68, 68, 0.9)",
+    position: 'absolute',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(239, 68, 68, 0.9)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -201,30 +201,30 @@ const styles = StyleSheet.create({
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     marginRight: 8,
     opacity: 0.9,
   },
   liveIndicatorText: {
-    color: "white",
-    fontWeight: "600",
+    color: 'white',
+    fontWeight: '600',
     fontSize: 13,
     letterSpacing: 0.5,
   },
   blurContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: "rgba(0,0,0,0.2)",
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   controlsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-evenly",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
     paddingVertical: 12,
     paddingHorizontal: 8,
   },
@@ -232,18 +232,18 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: "rgba(255,255,255,0.1)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   disconnectButton: {
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: "#EF4444",
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
+    backgroundColor: '#EF4444',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 2,

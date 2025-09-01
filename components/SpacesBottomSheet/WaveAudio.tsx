@@ -1,5 +1,5 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   withRepeat,
@@ -8,7 +8,7 @@ import Animated, {
   withDelay,
   useSharedValue,
   withSpring,
-} from "react-native-reanimated";
+} from 'react-native-reanimated';
 
 const WaveAudio = () => {
   const bars = Array(3)
@@ -22,10 +22,10 @@ const WaveAudio = () => {
         withRepeat(
           withSequence(
             withTiming(0.5, { duration: 300 }),
-            withTiming(1, { duration: 300 })
+            withTiming(1, { duration: 300 }),
           ),
-          -1
-        )
+          -1,
+        ),
       );
     });
   }, []);
@@ -39,7 +39,7 @@ const WaveAudio = () => {
 
         return (
           <Animated.View
-            className={"bg-pink-800"}
+            className={'bg-pink-800'}
             key={index}
             style={[styles.bar, animatedStyle]}
           />
@@ -51,16 +51,16 @@ const WaveAudio = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     width: 24,
     height: 10,
     marginTop: 7,
   },
   bar: {
     width: 6,
-    height: "100%",
+    height: '100%',
     borderRadius: 5,
   },
 });

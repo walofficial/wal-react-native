@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { Pressable, Animated, Text, ViewStyle, StyleSheet } from "react-native";
-import { useTheme } from "@/lib/theme";
+import React, { useState } from 'react';
+import { Pressable, Animated, Text, ViewStyle, StyleSheet } from 'react-native';
+import { useTheme } from '@/lib/theme';
 
 export default function AnimatedPressable({
   children,
@@ -55,15 +55,15 @@ export default function AnimatedPressable({
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
+    display: 'flex',
   },
   button: {
-    width: "100%",
-    justifyContent: "flex-start",
+    width: '100%',
+    justifyContent: 'flex-start',
     marginBottom: 12,
     borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     borderWidth: 1,
     padding: 12,
   },

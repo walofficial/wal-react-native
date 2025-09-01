@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
-import { type DimensionValue, Pressable, View } from "react-native";
-import { type AnimatedRef } from "react-native-reanimated";
-import { Image } from "expo-image";
+import React, { useRef } from 'react';
+import { type DimensionValue, Pressable, View } from 'react-native';
+import { type AnimatedRef } from 'react-native-reanimated';
+import { Image } from 'expo-image';
 
-import { useHandleRef } from "@/lib/hooks/useHandleRef";
-import type { Dimensions } from "@/lib/media/types";
-import { isNative } from "@/lib/platform";
+import { useHandleRef } from '@/lib/hooks/useHandleRef';
+import type { Dimensions } from '@/lib/media/types';
+import { isNative } from '@/lib/platform';
 
 export function ConstrainedImage({
   aspectRatio,
@@ -28,27 +28,27 @@ export function ConstrainedImage({
   }, [aspectRatio]);
 
   return (
-    <View style={{ width: "100%" }}>
-      <View style={{ overflow: "hidden", paddingTop: outerAspectRatio }}>
+    <View style={{ width: '100%' }}>
+      <View style={{ overflow: 'hidden', paddingTop: outerAspectRatio }}>
         <View
           style={{
-            position: "absolute",
+            position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            flexDirection: "row",
+            flexDirection: 'row',
           }}
         >
           <View
             style={[
               {
-                height: "100%",
+                height: '100%',
                 borderRadius: 8,
-                overflow: "hidden",
-                backgroundColor: "rgba(0,0,0,0.25)",
+                overflow: 'hidden',
+                backgroundColor: 'rgba(0,0,0,0.25)',
               },
-              fullBleed ? { width: "100%" } : { aspectRatio },
+              fullBleed ? { width: '100%' } : { aspectRatio },
             ]}
           >
             {children}
@@ -61,18 +61,18 @@ export function ConstrainedImage({
 
 export function AutoSizedImage({
   image,
-  crop = "constrained",
+  crop = 'constrained',
   hideBadge,
   onPress,
   onLongPress,
   onPressIn,
 }: {
   image: any;
-  crop?: "none" | "square" | "constrained";
+  crop?: 'none' | 'square' | 'constrained';
   hideBadge?: boolean;
   onPress?: (
     containerRef: AnimatedRef<any>,
-    fetchedDims: Dimensions | null
+    fetchedDims: Dimensions | null,
   ) => void;
   onLongPress?: () => void;
   onPressIn?: () => void;
@@ -98,7 +98,7 @@ export function AutoSizedImage({
     rawIsCropped = aspectRatio < constrained;
   }
 
-  const cropDisabled = crop === "none";
+  const cropDisabled = crop === 'none';
   const isCropped = rawIsCropped && !cropDisabled;
   const isContain = aspectRatio === undefined;
   const hasAlt = !!image.alt;
@@ -106,8 +106,8 @@ export function AutoSizedImage({
   const contents = (
     <View ref={containerRef} collapsable={false} style={{ flex: 1 }}>
       <Image
-        contentFit={isContain ? "contain" : "cover"}
-        style={{ width: "100%", height: "100%" }}
+        contentFit={isContain ? 'contain' : 'cover'}
+        style={{ width: '100%', height: '100%' }}
         source={image.thumb}
         accessible={true} // Must set for `accessibilityLabel` to work
         accessibilityIgnoresInvertColors
@@ -127,10 +127,10 @@ export function AutoSizedImage({
         <View
           accessible={false}
           style={{
-            position: "absolute",
+            position: 'absolute',
             bottom: 8,
             right: 8,
-            flexDirection: "row",
+            flexDirection: 'row',
             gap: 3,
           }}
         >
@@ -138,7 +138,7 @@ export function AutoSizedImage({
             <View
               style={{
                 borderRadius: 4,
-                backgroundColor: "rgba(0,0,0,0.25)",
+                backgroundColor: 'rgba(0,0,0,0.25)',
                 padding: 3,
                 opacity: 0.8,
               }}
@@ -148,7 +148,7 @@ export function AutoSizedImage({
                 style={{
                   width: 12,
                   height: 12,
-                  backgroundColor: "white",
+                  backgroundColor: 'white',
                 }}
               />
             </View>
@@ -156,9 +156,9 @@ export function AutoSizedImage({
           {hasAlt && (
             <View
               style={{
-                justifyContent: "center",
+                justifyContent: 'center',
                 borderRadius: 4,
-                backgroundColor: "rgba(0,0,0,0.25)",
+                backgroundColor: 'rgba(0,0,0,0.25)',
                 padding: 3,
                 opacity: 0.8,
               }}
@@ -168,7 +168,7 @@ export function AutoSizedImage({
                 style={{
                   width: 20,
                   height: 8,
-                  backgroundColor: "white",
+                  backgroundColor: 'white',
                 }}
               />
             </View>
@@ -188,10 +188,10 @@ export function AutoSizedImage({
         accessibilityLabel={image.alt}
         accessibilityHint="Views full image"
         style={{
-          width: "100%",
+          width: '100%',
           borderRadius: 8,
-          overflow: "hidden",
-          backgroundColor: "rgba(0,0,0,0.25)",
+          overflow: 'hidden',
+          backgroundColor: 'rgba(0,0,0,0.25)',
           aspectRatio: max ?? 1,
         }}
       >
@@ -201,7 +201,7 @@ export function AutoSizedImage({
   } else {
     return (
       <ConstrainedImage
-        fullBleed={crop === "square"}
+        fullBleed={crop === 'square'}
         aspectRatio={constrained ?? 1}
       >
         <Pressable
@@ -211,7 +211,7 @@ export function AutoSizedImage({
           // alt here is what screen readers actually use
           accessibilityLabel={image.alt}
           accessibilityHint="Views full image"
-          style={{ height: "100%" }}
+          style={{ height: '100%' }}
         >
           {contents}
         </Pressable>

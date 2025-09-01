@@ -1,0 +1,105 @@
+name: Production Deploy
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        type: choice
+        description: 'Platform to deploy'
+        default: 'all'
+        options:
+          - android
+          - ios
+          - all
+      mode:
+        type: choice
+        description: 'Mode: build_and_submit or remote_update'
+        default: 'build_and_submit'
+        options:
+          - build_and_submit
+          - remote_update
+      channel:
+        type: string
+        description: 'EAS update channel (used when mode=remote_update)'
+        default: 'production'
+
+env:
+  EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+  EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
+  EXPO_APPLE_PASSWORD: ${{ secrets.EXPO_APPLE_PASSWORD }}
+  EXPO_TEAM_ID: ${{ secrets.EXPO_TEAM_ID }}
+  GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+  NODE_OPTIONS: --openssl-legacy-provider
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔐 Prepare Firebase config files from secrets
+        run: |
+          printf "%s" "$GOOGLE_SERVICES_JSON" > google-services.json
+          printf "%s" "$GOOGLESERVICE_INFO_PROD_PLIST" > GoogleService-Info.plist
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GOOGLESERVICE_INFO_PROD_PLIST: ${{ secrets.GOOGLESERVICE_INFO_PROD_PLIST }}
+
+      - name: 🏗 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: |
+          npm ci
+          npm i -g eas-cli@latest
+
+      - name: 🔧 Show EAS CLI version
+        run: eas --version
+
+      - name: 🔄 EAS Update (remote update)
+        if: github.event.inputs.mode == 'remote_update'
+        run: |
+          eas update --channel ${{ github.event.inputs.channel }} --non-interactive --message "Remote update: ${GITHUB_SHA::7}"
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: 📱 Build Android (Production AAB)
+        if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android') && github.event.inputs.mode != 'remote_update'
+        run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          eas build --platform android --profile production --non-interactive
+        env:
+          NODE_ENV: production
+
+      - name: 🚀 Submit Android to Play Store
+        if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android') && github.event.inputs.mode != 'remote_update'
+        run: |
+          eas submit -p android --latest --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+
+      - name: 📱 Build iOS (Production IPA)
+        if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios') && github.event.inputs.mode != 'remote_update'
+        run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          eas build --platform ios --profile production --non-interactive
+        env:
+          NODE_ENV: production
+
+      - name: 🚀 Submit iOS to App Store
+        if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios') && github.event.inputs.mode != 'remote_update'
+        run: |
+          eas submit -p ios --latest --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+          EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
+          EXPO_APPLE_PASSWORD: ${{ secrets.EXPO_APPLE_PASSWORD }}
+          EXPO_TEAM_ID: ${{ secrets.EXPO_TEAM_ID }}

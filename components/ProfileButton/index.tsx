@@ -1,8 +1,8 @@
-import { Link } from "expo-router";
-import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
-import { View, StyleSheet } from "react-native";
-import useAuth from "@/hooks/useAuth";
-import { User } from "lucide-react-native";
+import { Link } from 'expo-router';
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
+import { View, StyleSheet } from 'react-native';
+import useAuth from '@/hooks/useAuth';
+import { User } from 'lucide-react-native';
 
 interface ProfileButtonProps {
   isActive?: boolean;
@@ -14,7 +14,7 @@ function ProfileButton({ isActive }: ProfileButtonProps) {
 
   return (
     <View style={styles.container}>
-      <Link href={"/user"} asChild>
+      <Link href={'/user'} asChild>
         <View style={[styles.avatarContainer, isActive && styles.activeScale]}>
           {image ? (
             <Avatar alt="Profile image" style={styles.avatar}>
@@ -24,11 +24,11 @@ function ProfileButton({ isActive }: ProfileButtonProps) {
                 }}
               />
               <AvatarFallback>
-                <User size={20} color={isActive ? "#000" : "#9ca3af"} />
+                <User size={20} color={isActive ? '#000' : '#9ca3af'} />
               </AvatarFallback>
             </Avatar>
           ) : (
-            <User size={30} color={isActive ? "#000" : "#9ca3af"} />
+            <User size={30} color={isActive ? '#000' : '#9ca3af'} />
           )}
         </View>
       </Link>
@@ -38,12 +38,12 @@ function ProfileButton({ isActive }: ProfileButtonProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatarContainer: {
-    position: "relative",
+    position: 'relative',
   },
   activeScale: {
     transform: [{ scale: 1.1 }],

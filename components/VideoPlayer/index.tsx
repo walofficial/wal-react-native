@@ -1,7 +1,7 @@
-import { useRef, useState, useEffect } from "react";
-import { StyleSheet, Animated } from "react-native";
-import { Video, ResizeMode, AVPlaybackStatus } from "expo-av";
-import { isIOS } from "@/lib/platform";
+import { useRef, useState, useEffect } from 'react';
+import { StyleSheet, Animated } from 'react-native';
+import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import { isIOS } from '@/lib/platform';
 
 interface VideoPlayerProps {
   videoUri: string;
@@ -11,11 +11,11 @@ interface VideoPlayerProps {
 export default function VideoPlayer({ videoUri, style }: VideoPlayerProps) {
   const videoRef = useRef<Video>(null);
   const [status, setStatus] = useState<AVPlaybackStatus>(
-    {} as AVPlaybackStatus
+    {} as AVPlaybackStatus,
   );
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const videoSrc = isIOS ? videoUri.replace(".mpd", ".m3u8") : videoUri;
+  const videoSrc = isIOS ? videoUri.replace('.mpd', '.m3u8') : videoUri;
 
   const startFadeIn = () => {
     setTimeout(() => {

@@ -1,9 +1,12 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
-import useAuth from "@/hooks/useAuth";
-import { getMessagesChatMessagesGetInfiniteOptions, getMessagesChatMessagesGetOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { getMessagesChatMessagesGet } from "@/lib/api/generated";
-import { ChatMessage, GetMessagesResponse } from "@/lib/api/generated";
-import ProtocolService from "@/lib/services/ProtocolService";
+import { useInfiniteQuery } from '@tanstack/react-query';
+import useAuth from '@/hooks/useAuth';
+import {
+  getMessagesChatMessagesGetInfiniteOptions,
+  getMessagesChatMessagesGetOptions,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { getMessagesChatMessagesGet } from '@/lib/api/generated';
+import { ChatMessage, GetMessagesResponse } from '@/lib/api/generated';
+import ProtocolService from '@/lib/services/ProtocolService';
 
 type ChatMessages = ChatMessage[];
 
@@ -11,30 +14,30 @@ const useMessageFetching = (
   roomId: string,
   refetchInterval: number | undefined,
   idle: boolean,
-  recipientId: string
+  recipientId: string,
 ) => {
   const { user } = useAuth();
-  const pageSize = 15
+  const pageSize = 15;
   const queryOptions = getMessagesChatMessagesGetInfiniteOptions({
     query: {
       page_size: pageSize,
       room_id: roomId,
     },
-  })
+  });
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       ...queryOptions,
       queryFn: async ({ pageParam, queryKey, signal }) => {
-        const one = queryKey[0]
+        const one = queryKey[0];
 
         const { data } = await getMessagesChatMessagesGet({
           query: {
             page_size: one.query.page_size,
             room_id: one.query.room_id,
-            page: pageParam as number
+            page: pageParam as number,
           },
           signal,
-          throwOnError: true
+          throwOnError: true,
         });
 
         // Decrypt messages
@@ -50,7 +53,7 @@ const useMessageFetching = (
             data.messages.map(async (message: ChatMessage) => {
               try {
                 if (message.encrypted_content && message.nonce) {
-                  let decryptedMessage = "";
+                  let decryptedMessage = '';
 
                   decryptedMessage = await ProtocolService.decryptMessage(
                     localUserId === message.author_id
@@ -59,7 +62,7 @@ const useMessageFetching = (
                     {
                       encryptedMessage: message.encrypted_content,
                       nonce: message.nonce,
-                    }
+                    },
                   );
 
                   return {
@@ -75,15 +78,15 @@ const useMessageFetching = (
                 // );
                 return null; // Return null for failed messages
               }
-            })
+            }),
           );
 
           // Filter out null values from failed decryption attempts
           decryptedMessages = processedMessages.filter(
-            (msg): msg is ChatMessage => msg !== null
+            (msg): msg is ChatMessage => msg !== null,
           );
         } catch (error) {
-          console.error("Error processing messages", error);
+          console.error('Error processing messages', error);
           decryptedMessages = data.messages
             .map((message: ChatMessage) => {
               if (message.encrypted_content) {
@@ -109,7 +112,9 @@ const useMessageFetching = (
         const sorted = allPages.sort((a, b) => b.page - a.page);
         // Use the number of pages already loaded to compute the next page number
         // Starts at 1, so next page after N pages is N + 1
-        return sorted.some((item) => item.next_cursor === null) ? undefined : sorted.find((item) => !!item.next_cursor)?.next_cursor
+        return sorted.some((item) => item.next_cursor === null)
+          ? undefined
+          : sorted.find((item) => !!item.next_cursor)?.next_cursor;
       },
       getPreviousPageParam: (firstPage) =>
         firstPage.previous_cursor || undefined,

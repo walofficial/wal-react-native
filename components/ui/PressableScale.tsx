@@ -1,12 +1,12 @@
-import { Pressable, PressableProps, StyleProp, ViewStyle } from "react-native";
+import { Pressable, PressableProps, StyleProp, ViewStyle } from 'react-native';
 import Animated, {
   cancelAnimation,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
   withTiming,
-} from "react-native-reanimated";
-import { isWeb, isNative } from "@/lib/platform";
+} from 'react-native-reanimated';
+import { isWeb, isNative } from '@/lib/platform';
 
 // Determine default scale based on platform
 const DEFAULT_TARGET_SCALE = isNative ? 0.98 : 1;

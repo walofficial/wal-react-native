@@ -1,8 +1,8 @@
-import React, { forwardRef } from "react";
-import { TouchableOpacity, View, Text, StyleSheet } from "react-native";
-import { Image } from "expo-image";
-import { extractDomain, getFaviconUrl } from "@/utils/urlUtils";
-import { Ionicons } from "@expo/vector-icons";
+import React, { forwardRef } from 'react';
+import { TouchableOpacity, View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+import { extractDomain, getFaviconUrl } from '@/utils/urlUtils';
+import { Ionicons } from '@expo/vector-icons';
 
 interface SourceIconProps {
   sourceUrl: string;
@@ -25,7 +25,7 @@ export const SourceIcon = forwardRef<any, SourceIconProps>(
       noBackground,
       ...props
     },
-    ref
+    ref,
   ) => {
     const domain = extractDomain(sourceUrl);
     const faviconUrl = getFaviconUrl(domain);
@@ -35,7 +35,7 @@ export const SourceIcon = forwardRef<any, SourceIconProps>(
 
     // If invalid URL, render first letter of domain or a globe icon
     if (!isValidFaviconUrl) {
-      const firstLetter = sourceUrl ? sourceUrl.charAt(0).toUpperCase() : "?";
+      const firstLetter = sourceUrl ? sourceUrl.charAt(0).toUpperCase() : '?';
 
       return (
         <View
@@ -45,7 +45,7 @@ export const SourceIcon = forwardRef<any, SourceIconProps>(
             {
               width: size,
               height: size,
-              backgroundColor: noBackground ? "transparent" : "black",
+              backgroundColor: noBackground ? 'transparent' : 'black',
             },
             style,
           ]}
@@ -66,10 +66,10 @@ export const SourceIcon = forwardRef<any, SourceIconProps>(
           {
             width: size,
             height: size,
-            backgroundColor: noBackground ? "transparent" : "black",
+            backgroundColor: noBackground ? 'transparent' : 'black',
             borderRadius: size / 2,
-            justifyContent: "center",
-            alignItems: "center",
+            justifyContent: 'center',
+            alignItems: 'center',
           },
           style,
         ]}
@@ -82,18 +82,18 @@ export const SourceIcon = forwardRef<any, SourceIconProps>(
         />
       </View>
     );
-  }
+  },
 );
 
 const styles = StyleSheet.create({
   fallbackContainer: {
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 50,
   },
   fallbackText: {
-    color: "#374151",
-    fontWeight: "bold",
+    color: '#374151',
+    fontWeight: 'bold',
   },
 });
 

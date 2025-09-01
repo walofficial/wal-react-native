@@ -13,7 +13,7 @@ Thank you for your interest in contributing!
 
 - Create feature branches from `dev`
 - Open PRs into `dev`
-- `staging` is for pre-release; `main` is production
+- `preview` is for pre-release; `main` is production
 
 ## Checks
 
@@ -35,3 +35,4 @@ Thank you for your interest in contributing!
 
 - Version comes from `app.config.js`
 - Android APKs are uploaded to GitHub Releases; AAB to Play Store
+- Check git flow scripts in package.json file

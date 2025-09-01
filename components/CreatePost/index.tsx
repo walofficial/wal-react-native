@@ -1,7 +1,7 @@
-import { TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useTheme } from "@/lib/theme";
+import { TouchableOpacity, StyleSheet } from 'react-native';
+import { useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTheme } from '@/lib/theme';
 
 interface CreatePostProps {
   disabled: boolean;
@@ -26,7 +26,7 @@ export default function CreatePost({ disabled, feedId }: CreatePostProps) {
           pathname: `/(tabs)/(home)/[feedId]/create-post`,
           params: {
             feedId,
-            disableImagePicker: "true",
+            disableImagePicker: 'true',
           },
         });
       }}
@@ -38,13 +38,13 @@ export default function CreatePost({ disabled, feedId }: CreatePostProps) {
 
 const styles = StyleSheet.create({
   container: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 16,
     right: 20,
     width: 70,
     height: 70,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
   },
 });

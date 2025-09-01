@@ -6,7 +6,7 @@ import {
   useParticipantInfo,
   useParticipants,
   useRoomContext,
-} from "@livekit/react-native";
+} from '@livekit/react-native';
 import {
   View,
   Text,
@@ -14,23 +14,23 @@ import {
   TouchableOpacity,
   Alert,
   StyleSheet,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import ImageLoader from "../ImageLoader";
-import { useLocalParticipant } from "@livekit/react-native";
-import { convertToCDNUrl } from "@/lib/utils";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import { useRemoveFromStage } from "./useRemoveFromStage";
-import { useInviteToStage } from "./useInviteToStage";
-import { useAtomValue } from "jotai";
-import { activeLivekitRoomState, participantSearchState } from "./atom";
-import { Avatar } from "../ui/avatar";
-import WaveAudio from "./WaveAudio";
-import SpaceViewParticipant from "./SpaceViewParticipant";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useHaptics } from "@/lib/haptics";
-import { FontSizes } from "@/lib/theme";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import ImageLoader from '../ImageLoader';
+import { useLocalParticipant } from '@livekit/react-native';
+import { convertToCDNUrl } from '@/lib/utils';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import { useRemoveFromStage } from './useRemoveFromStage';
+import { useInviteToStage } from './useInviteToStage';
+import { useAtomValue } from 'jotai';
+import { activeLivekitRoomState, participantSearchState } from './atom';
+import { Avatar } from '../ui/avatar';
+import WaveAudio from './WaveAudio';
+import SpaceViewParticipant from './SpaceViewParticipant';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useHaptics } from '@/lib/haptics';
+import { FontSizes } from '@/lib/theme';
+import { t } from '@/lib/i18n';
 
 export default function PresenceDialog({
   isHost = false,
@@ -46,17 +46,17 @@ export default function PresenceDialog({
   useIOSAudioManagement(room);
 
   const hosts = participants.filter(
-    (participant) => participant.permissions?.canPublish ?? false
+    (participant) => participant.permissions?.canPublish ?? false,
   );
 
   const viewers = participants.filter(
-    (participant) => !participant.permissions?.canPublish ?? true
+    (participant) => !participant.permissions?.canPublish ?? true,
   );
 
   const filteredViewers = viewers
     .map((participant) => {
-      const metadata = JSON.parse(participant.metadata || "{}");
-      const username = metadata.username || "";
+      const metadata = JSON.parse(participant.metadata || '{}');
+      const username = metadata.username || '';
       const handRaised = metadata.hand_raised || false;
       const matchScore = username
         .toLowerCase()
@@ -74,7 +74,7 @@ export default function PresenceDialog({
     .map(({ participant }) => participant)
     .slice(0, 50);
 
-  if (connectionState !== "connected") {
+  if (connectionState !== 'connected') {
     return <View style={styles.container}></View>;
   }
   return (
@@ -92,7 +92,7 @@ export default function PresenceDialog({
                   >
                     <ParticipantListItem
                       participant={participant}
-                      metadata={JSON.parse(participant.metadata || "{}")}
+                      metadata={JSON.parse(participant.metadata || '{}')}
                       isCurrentUser={
                         participant.identity === localParticipant.identity
                       }
@@ -115,7 +115,7 @@ export default function PresenceDialog({
                   >
                     <ParticipantListItem
                       participant={participant}
-                      metadata={JSON.parse(participant.metadata || "{}")}
+                      metadata={JSON.parse(participant.metadata || '{}')}
                       isCurrentUser={
                         participant.identity === localParticipant.identity
                       }
@@ -161,41 +161,41 @@ function ParticipantListItem({
   const handlePress = async () => {
     if (!isHost || isCurrentUser) return;
 
-    haptic("Medium");
+    haptic('Medium');
 
     if (metadata.invited_to_stage && metadata.hand_raised) {
       Alert.alert(
-        "სცენიდან წაშლა",
+        'სცენიდან წაშლა',
         `გსურთ ${metadata.username}-ის სცენიდან წაშლა?`,
         [
           {
-            text: t("common.cancel"),
-            style: "cancel",
+            text: t('common.cancel'),
+            style: 'cancel',
           },
           {
-            text: t("common.delete"),
+            text: t('common.delete'),
             onPress: async () => {
-              haptic("Medium");
+              haptic('Medium');
               removeFromStage({
-                livekit_room_name: liveKitRoom?.livekit_room_name || "",
+                livekit_room_name: liveKitRoom?.livekit_room_name || '',
                 participant_identity: participant.identity,
               });
             },
           },
-        ]
+        ],
       );
     } else {
-      Alert.alert("მოწვევა", `გსურთ ${metadata.username}-ის სცენაზე მოწვევა?`, [
+      Alert.alert('მოწვევა', `გსურთ ${metadata.username}-ის სცენაზე მოწვევა?`, [
         {
-          text: t("common.cancel"),
-          style: "cancel",
+          text: t('common.cancel'),
+          style: 'cancel',
         },
         {
-          text: t("common.invite"),
+          text: t('common.invite'),
           onPress: async () => {
-            haptic("Medium");
+            haptic('Medium');
             inviteToStage({
-              livekit_room_name: liveKitRoom?.livekit_room_name || "",
+              livekit_room_name: liveKitRoom?.livekit_room_name || '',
               participant_identity: participant.identity,
             });
           },
@@ -217,7 +217,7 @@ function ParticipantListItem({
                 />
               ) : (
                 <Text style={styles.avatarText}>
-                  {metadata?.username?.[0] || "N/A"}
+                  {metadata?.username?.[0] || 'N/A'}
                 </Text>
               )}
             </View>
@@ -236,7 +236,7 @@ function ParticipantListItem({
           <WaveAudio />
         ) : (
           <Text style={styles.roleText} numberOfLines={1}>
-            {isSpeaker ? "წამყვანი" : "მსმენელი"}
+            {isSpeaker ? 'წამყვანი' : 'მსმენელი'}
           </Text>
         )}
       </View>
@@ -256,20 +256,20 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   participantsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   participantCell: {
-    width: "22%",
+    width: '22%',
   },
   participantContainer: {
     marginBottom: 16,
-    flexDirection: "column",
-    alignItems: "center",
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatarContainer: {
-    position: "relative",
+    position: 'relative',
   },
   avatar: {
     width: 70,
@@ -279,38 +279,38 @@ const styles = StyleSheet.create({
   },
   avatarContent: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
   avatarImage: {
     borderRadius: 100,
   },
   avatarText: {
-    color: "white",
+    color: 'white',
     fontSize: FontSizes.medium,
   },
   handRaisedIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: -4,
     right: -4,
-    backgroundColor: "black",
+    backgroundColor: 'black',
     borderRadius: 100,
     padding: 4,
   },
   username: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
-    overflow: "hidden",
-    textAlign: "center",
+    fontWeight: '600',
+    overflow: 'hidden',
+    textAlign: 'center',
     marginTop: 4,
   },
   roleText: {
-    color: "#9ca3af",
+    color: '#9ca3af',
     fontSize: 12,
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 4,
   },
 });

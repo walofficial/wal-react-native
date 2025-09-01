@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { atom, useAtom } from "jotai";
+import { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { atom, useAtom } from 'jotai';
 
-const MUTE_PREFERENCE_KEY = "@video_mute_preference";
+const MUTE_PREFERENCE_KEY = '@video_mute_preference';
 
 export const globalMuteAtom = atom(false);
 
@@ -16,9 +16,9 @@ export const useGlobalMute = () => {
   const loadMutePreference = async () => {
     try {
       const preference = await AsyncStorage.getItem(MUTE_PREFERENCE_KEY);
-      setIsMuted(preference === "true");
+      setIsMuted(preference === 'true');
     } catch (error) {
-      console.error("Error loading mute preference:", error);
+      console.error('Error loading mute preference:', error);
     }
   };
 
@@ -27,7 +27,7 @@ export const useGlobalMute = () => {
       await AsyncStorage.setItem(MUTE_PREFERENCE_KEY, String(muted));
       setIsMuted(muted);
     } catch (error) {
-      console.error("Error saving mute preference:", error);
+      console.error('Error saving mute preference:', error);
     }
   };
 

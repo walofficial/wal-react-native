@@ -1,9 +1,9 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
-import { LiveStream } from "@/components/CameraPage/LiveStream";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { SAFE_AREA_PADDING } from "@/components/CameraPage/Constants";
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { LiveStream } from '@/components/CameraPage/LiveStream';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { SAFE_AREA_PADDING } from '@/components/CameraPage/Constants';
 
 export default function LiveStreamPage() {
   const { feedId, livekit_token, room_name } = useLocalSearchParams<{
@@ -22,7 +22,7 @@ export default function LiveStreamPage() {
         roomName={room_name}
         onDisconnect={() => {
           router.replace({
-            pathname: "/(tabs)/(home)/[feedId]",
+            pathname: '/(tabs)/(home)/[feedId]',
             params: {
               feedId: feedId as string,
             },
@@ -36,10 +36,10 @@ export default function LiveStreamPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: 'black',
   },
   closeButton: {
-    position: "absolute",
+    position: 'absolute',
     top: SAFE_AREA_PADDING.paddingTop,
     left: SAFE_AREA_PADDING.paddingLeft,
     width: 40,
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   icon: {
-    textShadowColor: "black",
+    textShadowColor: 'black',
     textShadowOffset: {
       height: 0,
       width: 0,

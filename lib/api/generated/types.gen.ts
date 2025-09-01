@@ -4,641 +4,653 @@
  * AISummaryPoint
  */
 export type AiSummaryPoint = {
-    /**
-     * Text
-     */
-    text: string;
-    /**
-     * Timestamp
-     */
-    timestamp?: string | null;
-    /**
-     * Link To Timestamp
-     */
-    link_to_timestamp?: string | null;
+  /**
+   * Text
+   */
+  text: string;
+  /**
+   * Timestamp
+   */
+  timestamp?: string | null;
+  /**
+   * Link To Timestamp
+   */
+  link_to_timestamp?: string | null;
 };
 
 /**
  * AIVideoSummary
  */
 export type AiVideoSummary = {
-    /**
-     * Title
-     * Title of the video
-     */
-    title: string;
-    /**
-     * Relevant Statements
-     * List of relevant statements from the audio transcript
-     */
-    relevant_statements: Array<AiSummaryPoint>;
-    /**
-     * Interesting Facts
-     * List of interesting facts from the audio transcript
-     */
-    interesting_facts: Array<string>;
-    /**
-     * Did You Know
-     * List of did you know facts from the audio transcript
-     */
-    did_you_know: Array<string>;
-    /**
-     * Short Summary
-     * Short summary of the audio transcript
-     */
-    short_summary: string;
-    /**
-     * Statements
-     * List of statements from the audio transcript which can be fact checked in English
-     */
-    statements: Array<string> | null;
+  /**
+   * Title
+   * Title of the video
+   */
+  title: string;
+  /**
+   * Relevant Statements
+   * List of relevant statements from the audio transcript
+   */
+  relevant_statements: Array<AiSummaryPoint>;
+  /**
+   * Interesting Facts
+   * List of interesting facts from the audio transcript
+   */
+  interesting_facts: Array<string>;
+  /**
+   * Did You Know
+   * List of did you know facts from the audio transcript
+   */
+  did_you_know: Array<string>;
+  /**
+   * Short Summary
+   * Short summary of the audio transcript
+   */
+  short_summary: string;
+  /**
+   * Statements
+   * List of statements from the audio transcript which can be fact checked in English
+   */
+  statements: Array<string> | null;
 };
 
 /**
  * AIVideoSummaryStatus
  */
-export type AiVideoSummaryStatus = 'PENDING' | 'COMPLETED' | 'FAILED' | 'FAILED_PREPROCESSING' | 'SKIPPED_DURATION' | 'METADATA_INCOMPLETE' | 'METADATA_FETCH_FAILED' | 'PROCESSING_ERROR' | 'NOT_ELIGIBLE';
+export type AiVideoSummaryStatus =
+  | 'PENDING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'FAILED_PREPROCESSING'
+  | 'SKIPPED_DURATION'
+  | 'METADATA_INCOMPLETE'
+  | 'METADATA_FETCH_FAILED'
+  | 'PROCESSING_ERROR'
+  | 'NOT_ELIGIBLE';
 
 /**
  * Body_create_space
  */
 export type BodyCreateSpace = {
-    /**
-     * Scheduled At
-     */
-    scheduled_at?: string | null;
-    /**
-     * Text Content
-     */
-    text_content?: string | null;
-    /**
-     * Feed Id
-     */
-    feed_id?: string | null;
+  /**
+   * Scheduled At
+   */
+  scheduled_at?: string | null;
+  /**
+   * Text Content
+   */
+  text_content?: string | null;
+  /**
+   * Feed Id
+   */
+  feed_id?: string | null;
 };
 
 /**
  * Body_message_user_live_actions_message__target_user_id__post
  */
 export type BodyMessageUserLiveActionsMessageTargetUserIdPost = {
-    /**
-     * Message
-     */
-    message: string;
+  /**
+   * Message
+   */
+  message: string;
 };
 
 /**
  * Body_publish_post
  */
 export type BodyPublishPost = {
-    /**
-     * Feed Id
-     */
-    feed_id: string;
-    /**
-     * Content
-     */
-    content?: string;
-    /**
-     * Files
-     * verification images
-     */
-    files?: Array<Blob | File>;
+  /**
+   * Feed Id
+   */
+  feed_id: string;
+  /**
+   * Content
+   */
+  content?: string;
+  /**
+   * Files
+   * verification images
+   */
+  files?: Array<Blob | File>;
 };
 
 /**
  * Body_request_livekit_ingress
  */
 export type BodyRequestLivekitIngress = {
-    /**
-     * Feed Id
-     */
-    feed_id: string;
-    /**
-     * Text Content
-     */
-    text_content?: string | null;
+  /**
+   * Feed Id
+   */
+  feed_id: string;
+  /**
+   * Text Content
+   */
+  text_content?: string | null;
 };
 
 /**
  * Body_send_user_notification_feeds_send_user_notification_post
  */
 export type BodySendUserNotificationFeedsSendUserNotificationPost = {
-    /**
-     * User Id
-     */
-    user_id: string;
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Description
-     */
-    description: string;
-    /**
-     * Notification Type
-     */
-    notification_type?: string;
-    /**
-     * Verification Id
-     */
-    verification_id?: string | null;
+  /**
+   * User Id
+   */
+  user_id: string;
+  /**
+   * Title
+   */
+  title: string;
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Notification Type
+   */
+  notification_type?: string;
+  /**
+   * Verification Id
+   */
+  verification_id?: string | null;
 };
 
 /**
  * Body_start_live
  */
 export type BodyStartLive = {
-    /**
-     * Feed Id
-     */
-    feed_id: string;
-    /**
-     * Text Content
-     */
-    text_content?: string | null;
+  /**
+   * Feed Id
+   */
+  feed_id: string;
+  /**
+   * Text Content
+   */
+  text_content?: string | null;
 };
 
 /**
  * Body_submit_user_video_verification_location_upload
  */
 export type BodySubmitUserVideoVerificationLocationUpload = {
-    /**
-     * Video File
-     * A video for task verification
-     */
-    video_file: Blob | File;
-    /**
-     * Feed Id
-     */
-    feed_id: string;
-    /**
-     * Recording Time
-     */
-    recording_time: number;
-    /**
-     * Text Content
-     */
-    text_content?: string | null;
+  /**
+   * Video File
+   * A video for task verification
+   */
+  video_file: Blob | File;
+  /**
+   * Feed Id
+   */
+  feed_id: string;
+  /**
+   * Recording Time
+   */
+  recording_time: number;
+  /**
+   * Text Content
+   */
+  text_content?: string | null;
 };
 
 /**
  * Body_upload_photo_to_location_verify_photos_upload_to_location_post
  */
 export type BodyUploadPhotoToLocationVerifyPhotosUploadToLocationPost = {
-    /**
-     * Photo File
-     * verification image
-     */
-    photo_file: Blob | File;
-    /**
-     * Feed Id
-     */
-    feed_id: string;
-    /**
-     * Text Content
-     */
-    text_content?: string | null;
+  /**
+   * Photo File
+   * verification image
+   */
+  photo_file: Blob | File;
+  /**
+   * Feed Id
+   */
+  feed_id: string;
+  /**
+   * Text Content
+   */
+  text_content?: string | null;
 };
 
 /**
  * Body_upload_user_photos
  */
 export type BodyUploadUserPhotos = {
-    /**
-     * Files
-     */
-    files: Array<Blob | File>;
+  /**
+   * Files
+   */
+  files: Array<Blob | File>;
 };
 
 /**
  * ChatMessage
  */
 export type ChatMessage = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Author Id
-     */
-    author_id: string;
-    /**
-     * Room Id
-     */
-    room_id: string;
-    /**
-     * Recipient Id
-     */
-    recipient_id: string;
-    /**
-     * Message
-     */
-    message?: string | null;
-    /**
-     * Encrypted Content
-     */
-    encrypted_content: string | null;
-    /**
-     * Nonce
-     */
-    nonce: string | null;
-    /**
-     * Message State
-     */
-    message_state: string;
-    /**
-     * Sent Date
-     */
-    sent_date?: string | null;
-    /**
-     * Temporary Id
-     */
-    temporary_id?: string | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Author Id
+   */
+  author_id: string;
+  /**
+   * Room Id
+   */
+  room_id: string;
+  /**
+   * Recipient Id
+   */
+  recipient_id: string;
+  /**
+   * Message
+   */
+  message?: string | null;
+  /**
+   * Encrypted Content
+   */
+  encrypted_content: string | null;
+  /**
+   * Nonce
+   */
+  nonce: string | null;
+  /**
+   * Message State
+   */
+  message_state: string;
+  /**
+   * Sent Date
+   */
+  sent_date?: string | null;
+  /**
+   * Temporary Id
+   */
+  temporary_id?: string | null;
 };
 
 /**
  * ChatRoom
  */
 export type ChatRoom = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Participants
-     */
-    participants: Array<User>;
-    /**
-     * Created At
-     */
-    created_at: string;
-    /**
-     * Updated At
-     */
-    updated_at: string;
-    /**
-     * Target User Id
-     */
-    target_user_id?: string;
-    /**
-     * User Public Key
-     */
-    user_public_key?: string;
-    last_message?: ChatMessage | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Participants
+   */
+  participants: Array<User>;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+  /**
+   * Target User Id
+   */
+  target_user_id?: string;
+  /**
+   * User Public Key
+   */
+  user_public_key?: string;
+  last_message?: ChatMessage | null;
 };
 
 /**
  * CheckRegisteredUsersRequest
  */
 export type CheckRegisteredUsersRequest = {
-    /**
-     * Phone Numbers
-     */
-    phone_numbers: Array<string>;
+  /**
+   * Phone Numbers
+   */
+  phone_numbers: Array<string>;
 };
 
 /**
  * CheckUsernameResponse
  */
 export type CheckUsernameResponse = {
-    /**
-     * Available
-     */
-    available: boolean;
-    /**
-     * Message
-     */
-    message: string;
+  /**
+   * Available
+   */
+  available: boolean;
+  /**
+   * Message
+   */
+  message: string;
 };
 
 /**
  * Comment
  */
 export type Comment = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Verification Id
-     */
-    verification_id: string;
-    /**
-     * Author Id
-     */
-    author_id: string;
-    /**
-     * Content
-     */
-    content: string;
-    /**
-     * Likes Count
-     */
-    likes_count?: number;
-    /**
-     * Created At
-     */
-    created_at?: string;
-    /**
-     * Updated At
-     */
-    updated_at?: string;
-    /**
-     * Tags
-     */
-    tags?: Array<CommentTag>;
-    /**
-     * Parent Comment Id
-     */
-    parent_comment_id?: string | null;
-    ai_analysis?: CommentAiAnalysis | null;
-    /**
-     * Score
-     */
-    score?: number;
-    author?: User | null;
-    reactions_summary?: ReactionsSummary;
-    current_user_reaction?: CurrentUserReaction | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Verification Id
+   */
+  verification_id: string;
+  /**
+   * Author Id
+   */
+  author_id: string;
+  /**
+   * Content
+   */
+  content: string;
+  /**
+   * Likes Count
+   */
+  likes_count?: number;
+  /**
+   * Created At
+   */
+  created_at?: string;
+  /**
+   * Updated At
+   */
+  updated_at?: string;
+  /**
+   * Tags
+   */
+  tags?: Array<CommentTag>;
+  /**
+   * Parent Comment Id
+   */
+  parent_comment_id?: string | null;
+  ai_analysis?: CommentAiAnalysis | null;
+  /**
+   * Score
+   */
+  score?: number;
+  author?: User | null;
+  reactions_summary?: ReactionsSummary;
+  current_user_reaction?: CurrentUserReaction | null;
 };
 
 /**
  * CommentAIAnalysis
  */
 export type CommentAiAnalysis = {
-    /**
-     * Sentiment
-     */
-    sentiment: string;
-    /**
-     * Labels
-     */
-    labels: Array<string>;
-    /**
-     * Toxicity Score
-     */
-    toxicity_score: number;
-    /**
-     * Summary
-     */
-    summary?: string | null;
-    /**
-     * Generated At
-     */
-    generated_at: string;
+  /**
+   * Sentiment
+   */
+  sentiment: string;
+  /**
+   * Labels
+   */
+  labels: Array<string>;
+  /**
+   * Toxicity Score
+   */
+  toxicity_score: number;
+  /**
+   * Summary
+   */
+  summary?: string | null;
+  /**
+   * Generated At
+   */
+  generated_at: string;
 };
 
 /**
  * CommentResponse
  */
 export type CommentResponse = {
-    comment: Comment;
-    /**
-     * Is Liked By User
-     */
-    is_liked_by_user?: boolean;
+  comment: Comment;
+  /**
+   * Is Liked By User
+   */
+  is_liked_by_user?: boolean;
 };
 
 /**
  * CommentTag
  */
 export type CommentTag = {
-    /**
-     * User Id
-     */
-    user_id: string;
-    /**
-     * Username
-     */
-    username: string;
-    /**
-     * Start Index
-     */
-    start_index: number;
-    /**
-     * End Index
-     */
-    end_index: number;
+  /**
+   * User Id
+   */
+  user_id: string;
+  /**
+   * Username
+   */
+  username: string;
+  /**
+   * Start Index
+   */
+  start_index: number;
+  /**
+   * End Index
+   */
+  end_index: number;
 };
 
 /**
  * ContentTypeFilter
  */
-export type ContentTypeFilter = 'last24h' | 'youtube_only' | 'social_media_only';
+export type ContentTypeFilter =
+  | 'last24h'
+  | 'youtube_only'
+  | 'social_media_only';
 
 /**
  * CreateChatRoomRequest
  */
 export type CreateChatRoomRequest = {
-    /**
-     * Target User Id
-     */
-    target_user_id: string;
-    /**
-     * User Public Key
-     */
-    user_public_key: string;
+  /**
+   * Target User Id
+   */
+  target_user_id: string;
+  /**
+   * User Public Key
+   */
+  user_public_key: string;
 };
 
 /**
  * CreateChatRoomResponse
  */
 export type CreateChatRoomResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
-    /**
-     * Chat Room Id
-     */
-    chat_room_id: string;
-    /**
-     * Target Public Key
-     */
-    target_public_key: string;
+  /**
+   * Success
+   */
+  success: boolean;
+  /**
+   * Chat Room Id
+   */
+  chat_room_id: string;
+  /**
+   * Target Public Key
+   */
+  target_public_key: string;
 };
 
 /**
  * CreateCommentRequest
  */
 export type CreateCommentRequest = {
-    /**
-     * Content
-     */
-    content: string;
-    /**
-     * Verification Id
-     */
-    verification_id: string;
-    /**
-     * Parent Comment Id
-     */
-    parent_comment_id?: string | null;
-    /**
-     * Tags
-     */
-    tags?: Array<CommentTag>;
+  /**
+   * Content
+   */
+  content: string;
+  /**
+   * Verification Id
+   */
+  verification_id: string;
+  /**
+   * Parent Comment Id
+   */
+  parent_comment_id?: string | null;
+  /**
+   * Tags
+   */
+  tags?: Array<CommentTag>;
 };
 
 /**
  * CreateReactionRequest
  */
 export type CreateReactionRequest = {
-    reaction_type: ReactionType;
+  reaction_type: ReactionType;
 };
 
 /**
  * CreateSpaceResponse
  */
 export type CreateSpaceResponse = {
-    /**
-     * Room Name
-     */
-    room_name: string;
-    /**
-     * Verification Id
-     */
-    verification_id: string;
-    /**
-     * Space State
-     */
-    space_state: string;
-    /**
-     * Scheduled At
-     */
-    scheduled_at: string;
+  /**
+   * Room Name
+   */
+  room_name: string;
+  /**
+   * Verification Id
+   */
+  verification_id: string;
+  /**
+   * Space State
+   */
+  space_state: string;
+  /**
+   * Scheduled At
+   */
+  scheduled_at: string;
 };
 
 /**
  * CreateStreamRequest
  */
 export type CreateStreamRequest = {
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name: string;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name: string;
 };
 
 /**
  * CreateUserRequest
  */
 export type CreateUserRequest = {
-    /**
-     * City
-     */
-    city: string | null;
-    /**
-     * Date Of Birth
-     */
-    date_of_birth: string | null;
-    /**
-     * Email
-     */
-    email: string;
-    /**
-     * Gender
-     */
-    gender: string | null;
-    /**
-     * External User Id
-     */
-    external_user_id: string;
-    /**
-     * Interests
-     */
-    interests: Array<string> | null;
-    /**
-     * Username
-     */
-    username: string | null;
-    /**
-     * Photos
-     */
-    photos?: Array<{
-        [key: string]: unknown;
-    }> | null;
-    /**
-     * Phone Number
-     */
-    phone_number: string;
-    /**
-     * Preferred Content Language
-     */
-    preferred_content_language?: string | null;
+  /**
+   * City
+   */
+  city: string | null;
+  /**
+   * Date Of Birth
+   */
+  date_of_birth: string | null;
+  /**
+   * Email
+   */
+  email: string;
+  /**
+   * Gender
+   */
+  gender: string | null;
+  /**
+   * External User Id
+   */
+  external_user_id: string;
+  /**
+   * Interests
+   */
+  interests: Array<string> | null;
+  /**
+   * Username
+   */
+  username: string | null;
+  /**
+   * Photos
+   */
+  photos?: Array<{
+    [key: string]: unknown;
+  }> | null;
+  /**
+   * Phone Number
+   */
+  phone_number: string;
+  /**
+   * Preferred Content Language
+   */
+  preferred_content_language?: string | null;
 };
 
 /**
  * CurrentUserReaction
  */
 export type CurrentUserReaction = {
-    type: ReactionType;
+  type: ReactionType;
 };
 
 /**
  * ExecuteLocationPostUploadRequest
  */
 export type ExecuteLocationPostUploadRequest = {
-    /**
-     * Feed Id
-     */
-    feed_id: string;
-    /**
-     * Assignee User Id
-     */
-    assignee_user_id: string;
-    /**
-     * Content Type
-     */
-    content_type: string;
-    /**
-     * File Name
-     */
-    file_name: string;
-    /**
-     * File Extension
-     */
-    file_extension: string;
-    /**
-     * Verification Id
-     */
-    verification_id: string;
-    /**
-     * Should Transcode
-     */
-    should_transcode: boolean;
+  /**
+   * Feed Id
+   */
+  feed_id: string;
+  /**
+   * Assignee User Id
+   */
+  assignee_user_id: string;
+  /**
+   * Content Type
+   */
+  content_type: string;
+  /**
+   * File Name
+   */
+  file_name: string;
+  /**
+   * File Extension
+   */
+  file_extension: string;
+  /**
+   * Verification Id
+   */
+  verification_id: string;
+  /**
+   * Should Transcode
+   */
+  should_transcode: boolean;
 };
 
 /**
  * ExternalVideo
  */
 export type ExternalVideo = {
-    /**
-     * Url
-     */
-    url: string;
-    /**
-     * Platform
-     */
-    platform?: string;
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Platform
+   */
+  platform?: string;
 };
 
 /**
  * FCPResponse
  */
 export type FcpResponse = {
-    /**
-     * Ok
-     */
-    ok: boolean;
-    /**
-     * Message
-     */
-    message: string;
-    /**
-     * Expo Push Token
-     */
-    expo_push_token?: string | null;
+  /**
+   * Ok
+   */
+  ok: boolean;
+  /**
+   * Message
+   */
+  message: string;
+  /**
+   * Expo Push Token
+   */
+  expo_push_token?: string | null;
 };
 
 /**
@@ -651,26 +663,26 @@ export type FactCheckStatus = 'IDLE' | 'PENDING' | 'COMPLETED' | 'FAILED';
  * Reference supporting or refuting a fact check
  */
 export type FactCheckingReference = {
-    /**
-     * Url
-     * URL of the reference source
-     */
-    url: string;
-    /**
-     * Source Title
-     * Title of the reference source
-     */
-    source_title?: string;
-    /**
-     * Key Quote
-     * Key quote from the source supporting the fact check
-     */
-    key_quote: string;
-    /**
-     * Is Supportive
-     * Whether the reference supports or refutes the statement
-     */
-    is_supportive: boolean;
+  /**
+   * Url
+   * URL of the reference source
+   */
+  url: string;
+  /**
+   * Source Title
+   * Title of the reference source
+   */
+  source_title?: string;
+  /**
+   * Key Quote
+   * Key quote from the source supporting the fact check
+   */
+  key_quote: string;
+  /**
+   * Is Supportive
+   * Whether the reference supports or refutes the statement
+   */
+  is_supportive: boolean;
 };
 
 /**
@@ -678,334 +690,334 @@ export type FactCheckingReference = {
  * Result of a fact check operation
  */
 export type FactCheckingResult = {
-    /**
-     * Factuality
-     * Factuality score from 0-1, where 0 is completely false and 1 is completely true
-     */
-    factuality?: number;
-    /**
-     * Reason
-     * Structured Georgian explanation with sections სიმართლე/ტყუილი/გადაუმოწმებელი using bullet points and evidence paragraphs
-     */
-    reason?: string;
-    /**
-     * Score Justification
-     * Comprehensive English analysis explaining the detailed reasoning behind the factuality score generation
-     */
-    score_justification?: string;
-    /**
-     * Reason Summary
-     * 1-2 sentence summary of the fact check result which can be read easily
-     */
-    reason_summary?: string | null;
-    /**
-     * Fact Status
-     * 1 or 2 word fact status
-     */
-    fact_status?: string | null;
-    /**
-     * References
-     * List of references supporting the fact check
-     */
-    references?: Array<FactCheckingReference>;
-    /**
-     * Visited Urls
-     * URLs visited during fact checking
-     */
-    visited_urls?: Array<string>;
-    /**
-     * Read Urls
-     * URLs read during fact checking
-     */
-    read_urls?: Array<string>;
-    /**
-     * Usage
-     * Usage information about the fact check
-     */
-    usage?: {
-        [key: string]: unknown;
-    } | null;
+  /**
+   * Factuality
+   * Factuality score from 0-1, where 0 is completely false and 1 is completely true
+   */
+  factuality?: number;
+  /**
+   * Reason
+   * Structured Georgian explanation with sections სიმართლე/ტყუილი/გადაუმოწმებელი using bullet points and evidence paragraphs
+   */
+  reason?: string;
+  /**
+   * Score Justification
+   * Comprehensive English analysis explaining the detailed reasoning behind the factuality score generation
+   */
+  score_justification?: string;
+  /**
+   * Reason Summary
+   * 1-2 sentence summary of the fact check result which can be read easily
+   */
+  reason_summary?: string | null;
+  /**
+   * Fact Status
+   * 1 or 2 word fact status
+   */
+  fact_status?: string | null;
+  /**
+   * References
+   * List of references supporting the fact check
+   */
+  references?: Array<FactCheckingReference>;
+  /**
+   * Visited Urls
+   * URLs visited during fact checking
+   */
+  visited_urls?: Array<string>;
+  /**
+   * Read Urls
+   * URLs read during fact checking
+   */
+  read_urls?: Array<string>;
+  /**
+   * Usage
+   * Usage information about the fact check
+   */
+  usage?: {
+    [key: string]: unknown;
+  } | null;
 };
 
 /**
  * Feed
  */
 export type Feed = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Feed Title
-     */
-    feed_title: string;
-    /**
-     * Feed Category Id
-     */
-    feed_category_id?: string | null;
-    /**
-     * Display Name
-     */
-    display_name: string;
-    /**
-     * Feed Location
-     */
-    feed_location?: {
-        [key: string]: unknown;
-    } | null;
-    /**
-     * Feed Locations
-     */
-    feed_locations?: Array<{
-        [key: string]: unknown;
-    }> | null;
-    /**
-     * Feed Description
-     */
-    feed_description?: string | null;
-    /**
-     * Hidden
-     */
-    hidden?: boolean | null;
-    /**
-     * Live User Count
-     */
-    live_user_count?: number | null;
-    /**
-     * Verification Count
-     */
-    verification_count?: number | null;
-    /**
-     * No Restrictions
-     */
-    no_restrictions?: boolean | null;
-    /**
-     * Feed Language Code
-     */
-    feed_language_code?: string | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Feed Title
+   */
+  feed_title: string;
+  /**
+   * Feed Category Id
+   */
+  feed_category_id?: string | null;
+  /**
+   * Display Name
+   */
+  display_name: string;
+  /**
+   * Feed Location
+   */
+  feed_location?: {
+    [key: string]: unknown;
+  } | null;
+  /**
+   * Feed Locations
+   */
+  feed_locations?: Array<{
+    [key: string]: unknown;
+  }> | null;
+  /**
+   * Feed Description
+   */
+  feed_description?: string | null;
+  /**
+   * Hidden
+   */
+  hidden?: boolean | null;
+  /**
+   * Live User Count
+   */
+  live_user_count?: number | null;
+  /**
+   * Verification Count
+   */
+  verification_count?: number | null;
+  /**
+   * No Restrictions
+   */
+  no_restrictions?: boolean | null;
+  /**
+   * Feed Language Code
+   */
+  feed_language_code?: string | null;
 };
 
 /**
  * FeedPost
  */
 export type FeedPost = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Assignee User Id
-     */
-    assignee_user_id?: string;
-    /**
-     * Feed Id
-     */
-    feed_id?: string;
-    /**
-     * State
-     */
-    state?: string;
-    /**
-     * Transcode Job Name
-     */
-    transcode_job_name?: string | null;
-    verified_media_playback?: PlaybackMedia | null;
-    /**
-     * News Id
-     */
-    news_id?: string | null;
-    /**
-     * Text Summary
-     */
-    text_summary?: string | null;
-    /**
-     * Text Content
-     */
-    text_content?: string | null;
-    /**
-     * Visited Urls
-     */
-    visited_urls?: Array<string> | null;
-    /**
-     * Read Urls
-     */
-    read_urls?: Array<string> | null;
-    /**
-     * Is Public
-     */
-    is_public?: boolean;
-    /**
-     * Is Live
-     */
-    is_live?: boolean;
-    /**
-     * Is Space
-     */
-    is_space?: boolean;
-    /**
-     * Has Recording
-     */
-    has_recording?: boolean;
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name?: string | null;
-    /**
-     * Space State
-     */
-    space_state?: string | null;
-    /**
-     * Scheduled At
-     */
-    scheduled_at?: string | null;
-    assignee_user?: User | null;
-    /**
-     * Last Modified Date
-     */
-    last_modified_date: string;
-    /**
-     * Image Gallery With Dims
-     */
-    image_gallery_with_dims?: Array<ImageWithDims>;
-    feed?: Feed | null;
-    /**
-     * Is Factchecked
-     */
-    is_factchecked?: boolean;
-    /**
-     * Title
-     */
-    title?: string | null;
-    /**
-     * Text Content In English
-     */
-    text_content_in_english?: string | null;
-    /**
-     * News Date
-     */
-    news_date?: string | null;
-    /**
-     * Sources
-     */
-    sources?: Array<Source>;
-    /**
-     * Fact Check Id
-     */
-    fact_check_id?: string | null;
-    fact_check_data?: FactCheckingResult | null;
-    fact_check_status?: FactCheckStatus | null;
-    /**
-     * Is Generated News
-     */
-    is_generated_news?: boolean;
-    external_video?: ExternalVideo | null;
-    ai_video_summary?: AiVideoSummary | null;
-    ai_video_summary_status?: AiVideoSummaryStatus | null;
-    metadata_status?: MetadataStatus | null;
-    /**
-     * Ai Video Summary Error
-     */
-    ai_video_summary_error?: string | null;
-    social_media_scrape_details?: SocialMediaScrapeDetails | null;
-    social_media_scrape_status?: SocialMediaScrapeStatus | null;
-    /**
-     * Social Media Scrape Error
-     */
-    social_media_scrape_error?: string | null;
-    preview_data?: LinkPreviewData | null;
-    /**
-     * Government Summary
-     */
-    government_summary?: string | null;
-    /**
-     * Opposition Summary
-     */
-    opposition_summary?: string | null;
-    /**
-     * Neutral Summary
-     */
-    neutral_summary?: string | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Assignee User Id
+   */
+  assignee_user_id?: string;
+  /**
+   * Feed Id
+   */
+  feed_id?: string;
+  /**
+   * State
+   */
+  state?: string;
+  /**
+   * Transcode Job Name
+   */
+  transcode_job_name?: string | null;
+  verified_media_playback?: PlaybackMedia | null;
+  /**
+   * News Id
+   */
+  news_id?: string | null;
+  /**
+   * Text Summary
+   */
+  text_summary?: string | null;
+  /**
+   * Text Content
+   */
+  text_content?: string | null;
+  /**
+   * Visited Urls
+   */
+  visited_urls?: Array<string> | null;
+  /**
+   * Read Urls
+   */
+  read_urls?: Array<string> | null;
+  /**
+   * Is Public
+   */
+  is_public?: boolean;
+  /**
+   * Is Live
+   */
+  is_live?: boolean;
+  /**
+   * Is Space
+   */
+  is_space?: boolean;
+  /**
+   * Has Recording
+   */
+  has_recording?: boolean;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name?: string | null;
+  /**
+   * Space State
+   */
+  space_state?: string | null;
+  /**
+   * Scheduled At
+   */
+  scheduled_at?: string | null;
+  assignee_user?: User | null;
+  /**
+   * Last Modified Date
+   */
+  last_modified_date: string;
+  /**
+   * Image Gallery With Dims
+   */
+  image_gallery_with_dims?: Array<ImageWithDims>;
+  feed?: Feed | null;
+  /**
+   * Is Factchecked
+   */
+  is_factchecked?: boolean;
+  /**
+   * Title
+   */
+  title?: string | null;
+  /**
+   * Text Content In English
+   */
+  text_content_in_english?: string | null;
+  /**
+   * News Date
+   */
+  news_date?: string | null;
+  /**
+   * Sources
+   */
+  sources?: Array<Source>;
+  /**
+   * Fact Check Id
+   */
+  fact_check_id?: string | null;
+  fact_check_data?: FactCheckingResult | null;
+  fact_check_status?: FactCheckStatus | null;
+  /**
+   * Is Generated News
+   */
+  is_generated_news?: boolean;
+  external_video?: ExternalVideo | null;
+  ai_video_summary?: AiVideoSummary | null;
+  ai_video_summary_status?: AiVideoSummaryStatus | null;
+  metadata_status?: MetadataStatus | null;
+  /**
+   * Ai Video Summary Error
+   */
+  ai_video_summary_error?: string | null;
+  social_media_scrape_details?: SocialMediaScrapeDetails | null;
+  social_media_scrape_status?: SocialMediaScrapeStatus | null;
+  /**
+   * Social Media Scrape Error
+   */
+  social_media_scrape_error?: string | null;
+  preview_data?: LinkPreviewData | null;
+  /**
+   * Government Summary
+   */
+  government_summary?: string | null;
+  /**
+   * Opposition Summary
+   */
+  opposition_summary?: string | null;
+  /**
+   * Neutral Summary
+   */
+  neutral_summary?: string | null;
 };
 
 /**
  * FeedWithLocation
  */
 export type FeedWithLocation = {
-    feed: Feed;
-    nearest_location?: Location | null;
+  feed: Feed;
+  nearest_location?: Location | null;
 };
 
 /**
  * FeedsResponse
  */
 export type FeedsResponse = {
-    /**
-     * Feeds At Location
-     */
-    feeds_at_location: Array<Feed>;
-    /**
-     * Nearest Feeds
-     */
-    nearest_feeds: Array<FeedWithLocation>;
+  /**
+   * Feeds At Location
+   */
+  feeds_at_location: Array<Feed>;
+  /**
+   * Nearest Feeds
+   */
+  nearest_feeds: Array<FeedWithLocation>;
 };
 
 /**
  * FriendRequest
  */
 export type FriendRequest = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Sender Id
-     */
-    sender_id: string;
-    /**
-     * Receiver Id
-     */
-    receiver_id: string;
-    status: FriendRequestStatus;
-    /**
-     * Created At
-     */
-    created_at: string;
-    /**
-     * Updated At
-     */
-    updated_at: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Sender Id
+   */
+  sender_id: string;
+  /**
+   * Receiver Id
+   */
+  receiver_id: string;
+  status: FriendRequestStatus;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
 };
 
 /**
  * FriendRequestResponse
  */
 export type FriendRequestResponse = {
-    user: User;
-    request: FriendRequest;
+  user: User;
+  request: FriendRequest;
 };
 
 /**
  * FriendRequestSent
  */
 export type FriendRequestSent = {
-    /**
-     * Target User Id
-     */
-    target_user_id: string;
+  /**
+   * Target User Id
+   */
+  target_user_id: string;
 };
 
 /**
  * FriendRequestSentResponse
  */
 export type FriendRequestSentResponse = {
-    /**
-     * Error Code
-     */
-    error_code: string;
-    /**
-     * Request Id
-     */
-    request_id: string;
+  /**
+   * Error Code
+   */
+  error_code: string;
+  /**
+   * Request Id
+   */
+  request_id: string;
 };
 
 /**
@@ -1017,458 +1029,455 @@ export type FriendRequestStatus = 'pending' | 'accepted' | 'rejected';
  * GetCommentReactionsResponse
  */
 export type GetCommentReactionsResponse = {
-    /**
-     * Comment Id
-     */
-    comment_id: string;
-    reactions_summary: ReactionsSummary;
-    current_user_reaction?: CurrentUserReaction | null;
+  /**
+   * Comment Id
+   */
+  comment_id: string;
+  reactions_summary: ReactionsSummary;
+  current_user_reaction?: CurrentUserReaction | null;
 };
 
 /**
  * GetCountryResponse
  */
 export type GetCountryResponse = {
-    /**
-     * Country Code
-     */
-    country_code: string;
-    /**
-     * Ip Address
-     */
-    ip_address: string;
-    /**
-     * Detection Method
-     */
-    detection_method: string;
+  /**
+   * Country Code
+   */
+  country_code: string;
+  /**
+   * Ip Address
+   */
+  ip_address: string;
+  /**
+   * Detection Method
+   */
+  detection_method: string;
 };
 
 /**
  * GetFactCheckRatingsCountResponse
  */
 export type GetFactCheckRatingsCountResponse = {
-    /**
-     * Ratings Count
-     */
-    ratings_count: number;
-    /**
-     * Has Rated
-     */
-    has_rated: boolean;
+  /**
+   * Ratings Count
+   */
+  ratings_count: number;
+  /**
+   * Has Rated
+   */
+  has_rated: boolean;
 };
 
 /**
  * GetFactCheckResponse
  */
 export type GetFactCheckResponse = {
-    /**
-     * Has Rated
-     */
-    has_rated: boolean;
+  /**
+   * Has Rated
+   */
+  has_rated: boolean;
 };
 
 /**
  * GetImpressionsCountResponse
  */
 export type GetImpressionsCountResponse = {
-    /**
-     * Impressions Count
-     */
-    impressions_count: number;
-    /**
-     * Unique Viewers
-     */
-    unique_viewers: number;
+  /**
+   * Impressions Count
+   */
+  impressions_count: number;
+  /**
+   * Unique Viewers
+   */
+  unique_viewers: number;
 };
 
 /**
  * GetLiveStreamTokenResponse
  */
 export type GetLiveStreamTokenResponse = {
-    /**
-     * Livekit Token
-     */
-    livekit_token: string;
-    /**
-     * Room Name
-     */
-    room_name: string;
+  /**
+   * Livekit Token
+   */
+  livekit_token: string;
+  /**
+   * Room Name
+   */
+  room_name: string;
 };
 
 /**
  * GetMessagesResponse
  */
 export type GetMessagesResponse = {
-    /**
-     * Messages
-     */
-    messages: Array<ChatMessage>;
-    /**
-     * Page
-     */
-    page: number;
-    /**
-     * Page Size
-     */
-    page_size: number;
-    /**
-     * Previous Cursor
-     */
-    previous_cursor?: number | null;
-    /**
-     * Next Cursor
-     */
-    next_cursor?: number | null;
+  /**
+   * Messages
+   */
+  messages: Array<ChatMessage>;
+  /**
+   * Page
+   */
+  page: number;
+  /**
+   * Page Size
+   */
+  page_size: number;
+  /**
+   * Previous Cursor
+   */
+  previous_cursor?: number | null;
+  /**
+   * Next Cursor
+   */
+  next_cursor?: number | null;
 };
 
 /**
  * GetUserChatRoomsResponse
  */
 export type GetUserChatRoomsResponse = {
-    /**
-     * Chat Rooms
-     */
-    chat_rooms: Array<ChatRoom>;
+  /**
+   * Chat Rooms
+   */
+  chat_rooms: Array<ChatRoom>;
 };
 
 /**
  * GetVerificationCommentsCountResponse
  */
 export type GetVerificationCommentsCountResponse = {
-    /**
-     * Count
-     */
-    count: number;
+  /**
+   * Count
+   */
+  count: number;
 };
 
 /**
  * GetVerificationCommentsResponse
  */
 export type GetVerificationCommentsResponse = {
-    /**
-     * Comments
-     */
-    comments: Array<CommentResponse>;
+  /**
+   * Comments
+   */
+  comments: Array<CommentResponse>;
 };
 
 /**
  * GetVerificationLikesCountResponse
  */
 export type GetVerificationLikesCountResponse = {
-    /**
-     * Likes Count
-     */
-    likes_count: number;
-    /**
-     * Has Liked
-     */
-    has_liked: boolean;
+  /**
+   * Likes Count
+   */
+  likes_count: number;
+  /**
+   * Has Liked
+   */
+  has_liked: boolean;
 };
 
 /**
  * GoLiveRequest
  */
 export type GoLiveRequest = {
-    /**
-     * Feed Id
-     */
-    feed_id: string;
+  /**
+   * Feed Id
+   */
+  feed_id: string;
 };
 
 /**
  * HTTPValidationError
  */
 export type HttpValidationError = {
-    /**
-     * Detail
-     */
-    detail?: Array<ValidationError>;
+  /**
+   * Detail
+   */
+  detail?: Array<ValidationError>;
 };
 
 /**
  * ImageWithDims
  */
 export type ImageWithDims = {
-    /**
-     * Url
-     */
-    url: string;
-    /**
-     * Width
-     */
-    width: number;
-    /**
-     * Height
-     */
-    height: number;
-    /**
-     * Aspectratio
-     */
-    aspectRatio: {
-        [key: string]: unknown;
-    };
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Width
+   */
+  width: number;
+  /**
+   * Height
+   */
+  height: number;
+  /**
+   * Aspectratio
+   */
+  aspectRatio: {
+    [key: string]: unknown;
+  };
 };
 
 /**
  * InviteToStageRequest
  */
 export type InviteToStageRequest = {
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name: string;
-    /**
-     * Participant Identity
-     */
-    participant_identity: string;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name: string;
+  /**
+   * Participant Identity
+   */
+  participant_identity: string;
 };
 
 /**
  * LikeCommentResponse
  */
 export type LikeCommentResponse = {
-    /**
-     * Status
-     */
-    status: string;
+  /**
+   * Status
+   */
+  status: string;
 };
 
 /**
  * LikeVerificationResponse
  */
 export type LikeVerificationResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
+  /**
+   * Success
+   */
+  success: boolean;
 };
 
 /**
  * LinkPreviewData
  */
 export type LinkPreviewData = {
-    /**
-     * Url
-     */
-    url?: string;
-    /**
-     * Title
-     */
-    title: string | null;
-    /**
-     * Description
-     */
-    description: string | null;
-    /**
-     * Images
-     */
-    images: Array<string> | null;
-    /**
-     * Site Name
-     */
-    site_name: string | null;
-    /**
-     * Platform
-     */
-    platform: string | null;
+  /**
+   * Url
+   */
+  url?: string;
+  /**
+   * Title
+   */
+  title: string | null;
+  /**
+   * Description
+   */
+  description: string | null;
+  /**
+   * Images
+   */
+  images: Array<string> | null;
+  /**
+   * Site Name
+   */
+  site_name: string | null;
+  /**
+   * Platform
+   */
+  platform: string | null;
 };
 
 /**
  * LiveUser
  */
 export type LiveUser = {
-    user: User;
-    /**
-     * Is Friend
-     */
-    is_friend: boolean;
+  user: User;
+  /**
+   * Is Friend
+   */
+  is_friend: boolean;
 };
 
 /**
  * LiveUsersCount
  */
 export type LiveUsersCount = {
-    /**
-     * Count
-     */
-    count: number;
+  /**
+   * Count
+   */
+  count: number;
 };
 
 /**
  * Location
  */
 export type Location = {
-    /**
-     * Name
-     */
-    name: string;
-    /**
-     * Address
-     */
-    address: string;
-    /**
-     * Location
-     */
-    location: [
-        number,
-        number
-    ];
+  /**
+   * Name
+   */
+  name: string;
+  /**
+   * Address
+   */
+  address: string;
+  /**
+   * Location
+   */
+  location: [number, number];
 };
 
 /**
  * LocationFeedPost
  */
 export type LocationFeedPost = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * Assignee User Id
-     */
-    assignee_user_id?: string;
-    /**
-     * Feed Id
-     */
-    feed_id?: string;
-    /**
-     * State
-     */
-    state?: string;
-    /**
-     * Transcode Job Name
-     */
-    transcode_job_name?: string | null;
-    verified_media_playback?: PlaybackMedia | null;
-    /**
-     * News Id
-     */
-    news_id?: string | null;
-    /**
-     * Text Summary
-     */
-    text_summary?: string | null;
-    /**
-     * Text Content
-     */
-    text_content?: string | null;
-    /**
-     * Visited Urls
-     */
-    visited_urls?: Array<string> | null;
-    /**
-     * Read Urls
-     */
-    read_urls?: Array<string> | null;
-    /**
-     * Is Public
-     */
-    is_public?: boolean;
-    /**
-     * Is Live
-     */
-    is_live?: boolean;
-    /**
-     * Is Space
-     */
-    is_space?: boolean;
-    /**
-     * Has Recording
-     */
-    has_recording?: boolean;
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name?: string | null;
-    /**
-     * Space State
-     */
-    space_state?: string | null;
-    /**
-     * Scheduled At
-     */
-    scheduled_at?: string | null;
-    assignee_user?: User | null;
-    /**
-     * Last Modified Date
-     */
-    last_modified_date: string;
-    /**
-     * Image Gallery With Dims
-     */
-    image_gallery_with_dims?: Array<ImageWithDims>;
-    feed?: Feed | null;
-    /**
-     * Is Factchecked
-     */
-    is_factchecked?: boolean;
-    /**
-     * Title
-     */
-    title?: string | null;
-    /**
-     * Text Content In English
-     */
-    text_content_in_english?: string | null;
-    /**
-     * News Date
-     */
-    news_date?: string | null;
-    /**
-     * Sources
-     */
-    sources?: Array<Source>;
-    /**
-     * Fact Check Id
-     */
-    fact_check_id?: string | null;
-    fact_check_data?: FactCheckingResult | null;
-    fact_check_status?: FactCheckStatus | null;
-    /**
-     * Is Generated News
-     */
-    is_generated_news?: boolean;
-    external_video?: ExternalVideo | null;
-    ai_video_summary?: AiVideoSummary | null;
-    ai_video_summary_status?: AiVideoSummaryStatus | null;
-    metadata_status?: MetadataStatus | null;
-    /**
-     * Ai Video Summary Error
-     */
-    ai_video_summary_error?: string | null;
-    social_media_scrape_details?: SocialMediaScrapeDetails | null;
-    social_media_scrape_status?: SocialMediaScrapeStatus | null;
-    /**
-     * Social Media Scrape Error
-     */
-    social_media_scrape_error?: string | null;
-    preview_data?: LinkPreviewData | null;
-    /**
-     * Government Summary
-     */
-    government_summary?: string | null;
-    /**
-     * Opposition Summary
-     */
-    opposition_summary?: string | null;
-    /**
-     * Neutral Summary
-     */
-    neutral_summary?: string | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Assignee User Id
+   */
+  assignee_user_id?: string;
+  /**
+   * Feed Id
+   */
+  feed_id?: string;
+  /**
+   * State
+   */
+  state?: string;
+  /**
+   * Transcode Job Name
+   */
+  transcode_job_name?: string | null;
+  verified_media_playback?: PlaybackMedia | null;
+  /**
+   * News Id
+   */
+  news_id?: string | null;
+  /**
+   * Text Summary
+   */
+  text_summary?: string | null;
+  /**
+   * Text Content
+   */
+  text_content?: string | null;
+  /**
+   * Visited Urls
+   */
+  visited_urls?: Array<string> | null;
+  /**
+   * Read Urls
+   */
+  read_urls?: Array<string> | null;
+  /**
+   * Is Public
+   */
+  is_public?: boolean;
+  /**
+   * Is Live
+   */
+  is_live?: boolean;
+  /**
+   * Is Space
+   */
+  is_space?: boolean;
+  /**
+   * Has Recording
+   */
+  has_recording?: boolean;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name?: string | null;
+  /**
+   * Space State
+   */
+  space_state?: string | null;
+  /**
+   * Scheduled At
+   */
+  scheduled_at?: string | null;
+  assignee_user?: User | null;
+  /**
+   * Last Modified Date
+   */
+  last_modified_date: string;
+  /**
+   * Image Gallery With Dims
+   */
+  image_gallery_with_dims?: Array<ImageWithDims>;
+  feed?: Feed | null;
+  /**
+   * Is Factchecked
+   */
+  is_factchecked?: boolean;
+  /**
+   * Title
+   */
+  title?: string | null;
+  /**
+   * Text Content In English
+   */
+  text_content_in_english?: string | null;
+  /**
+   * News Date
+   */
+  news_date?: string | null;
+  /**
+   * Sources
+   */
+  sources?: Array<Source>;
+  /**
+   * Fact Check Id
+   */
+  fact_check_id?: string | null;
+  fact_check_data?: FactCheckingResult | null;
+  fact_check_status?: FactCheckStatus | null;
+  /**
+   * Is Generated News
+   */
+  is_generated_news?: boolean;
+  external_video?: ExternalVideo | null;
+  ai_video_summary?: AiVideoSummary | null;
+  ai_video_summary_status?: AiVideoSummaryStatus | null;
+  metadata_status?: MetadataStatus | null;
+  /**
+   * Ai Video Summary Error
+   */
+  ai_video_summary_error?: string | null;
+  social_media_scrape_details?: SocialMediaScrapeDetails | null;
+  social_media_scrape_status?: SocialMediaScrapeStatus | null;
+  /**
+   * Social Media Scrape Error
+   */
+  social_media_scrape_error?: string | null;
+  preview_data?: LinkPreviewData | null;
+  /**
+   * Government Summary
+   */
+  government_summary?: string | null;
+  /**
+   * Opposition Summary
+   */
+  opposition_summary?: string | null;
+  /**
+   * Neutral Summary
+   */
+  neutral_summary?: string | null;
 };
 
 /**
  * MarkNotificationsReadResponse
  */
 export type MarkNotificationsReadResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
-    /**
-     * Modified Count
-     */
-    modified_count: number;
+  /**
+   * Success
+   */
+  success: boolean;
+  /**
+   * Modified Count
+   */
+  modified_count: number;
 };
 
 /**
@@ -1485,606 +1494,881 @@ export type MetadataStatus = 'IDLE' | 'PENDING' | 'COMPLETED' | 'FAILED';
  * NewMessageState
  */
 export type NewMessageState = {
-    /**
-     * Id
-     */
-    id: string;
-    state: MessageState;
+  /**
+   * Id
+   */
+  id: string;
+  state: MessageState;
 };
 
 /**
  * Notification
  */
 export type Notification = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * From User Id
-     */
-    from_user_id: string;
-    /**
-     * To User Id
-     */
-    to_user_id: string;
-    type: NotificationType;
-    /**
-     * Created At
-     */
-    created_at: string;
-    /**
-     * Read
-     */
-    read?: boolean;
-    /**
-     * Verification Id
-     */
-    verification_id?: string | null;
-    /**
-     * Message
-     */
-    message?: string | null;
-    /**
-     * Count
-     */
-    count?: number | null;
-    from_user?: User | null;
-    /**
-     * Comment Id
-     */
-    comment_id?: string | null;
-    /**
-     * Reaction Type
-     */
-    reaction_type?: string | null;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * From User Id
+   */
+  from_user_id: string;
+  /**
+   * To User Id
+   */
+  to_user_id: string;
+  type: NotificationType;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Read
+   */
+  read?: boolean;
+  /**
+   * Verification Id
+   */
+  verification_id?: string | null;
+  /**
+   * Message
+   */
+  message?: string | null;
+  /**
+   * Count
+   */
+  count?: number | null;
+  from_user?: User | null;
+  /**
+   * Comment Id
+   */
+  comment_id?: string | null;
+  /**
+   * Reaction Type
+   */
+  reaction_type?: string | null;
 };
 
 /**
  * NotificationResponse
  */
 export type NotificationResponse = {
-    notification: Notification;
-    from_user: User;
+  notification: Notification;
+  from_user: User;
 };
 
 /**
  * NotificationType
  */
-export type NotificationType = 'poke' | 'message' | 'verification_like' | 'impression' | 'comment_tag' | 'comment_reaction';
+export type NotificationType =
+  | 'poke'
+  | 'message'
+  | 'verification_like'
+  | 'impression'
+  | 'comment_tag'
+  | 'comment_reaction';
 
 /**
  * PlaybackMedia
  */
 export type PlaybackMedia = {
-    /**
-     * Hls
-     */
-    hls?: string | null;
-    /**
-     * Dash
-     */
-    dash?: string | null;
-    /**
-     * Mp4
-     */
-    mp4?: string | null;
-    /**
-     * Thumbnail
-     */
-    thumbnail?: string;
+  /**
+   * Hls
+   */
+  hls?: string | null;
+  /**
+   * Dash
+   */
+  dash?: string | null;
+  /**
+   * Mp4
+   */
+  mp4?: string | null;
+  /**
+   * Thumbnail
+   */
+  thumbnail?: string;
 };
 
 /**
  * ProfileInformationResponse
  */
 export type ProfileInformationResponse = {
-    /**
-     * Username
-     */
-    username: string;
-    /**
-     * Stats
-     */
-    stats: {
-        [key: string]: unknown;
-    };
-    /**
-     * Photos
-     */
-    photos: Array<UserPhoto>;
-    /**
-     * Is Friend
-     */
-    is_friend: boolean;
-    /**
-     * User Id
-     */
-    user_id: string;
+  /**
+   * Username
+   */
+  username: string;
+  /**
+   * Stats
+   */
+  stats: {
+    [key: string]: unknown;
+  };
+  /**
+   * Photos
+   */
+  photos: Array<UserPhoto>;
+  /**
+   * Is Friend
+   */
+  is_friend: boolean;
+  /**
+   * User Id
+   */
+  user_id: string;
 };
 
 /**
  * RaiseHandRequest
  */
 export type RaiseHandRequest = {
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name: string;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name: string;
 };
 
 /**
  * RateFactCheckResponse
  */
 export type RateFactCheckResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
+  /**
+   * Success
+   */
+  success: boolean;
 };
 
 /**
  * ReactionCount
  */
 export type ReactionCount = {
-    /**
-     * Count
-     */
-    count?: number;
+  /**
+   * Count
+   */
+  count?: number;
 };
 
 /**
  * ReactionType
  */
-export type ReactionType = 'like' | 'love' | 'laugh' | 'angry' | 'sad' | 'wow' | 'dislike';
+export type ReactionType =
+  | 'like'
+  | 'love'
+  | 'laugh'
+  | 'angry'
+  | 'sad'
+  | 'wow'
+  | 'dislike';
 
 /**
  * ReactionsSummary
  */
 export type ReactionsSummary = {
-    like?: ReactionCount;
-    love?: ReactionCount;
-    laugh?: ReactionCount;
-    angry?: ReactionCount;
-    sad?: ReactionCount;
-    wow?: ReactionCount;
-    dislike?: ReactionCount;
+  like?: ReactionCount;
+  love?: ReactionCount;
+  laugh?: ReactionCount;
+  angry?: ReactionCount;
+  sad?: ReactionCount;
+  wow?: ReactionCount;
+  dislike?: ReactionCount;
 };
 
 /**
  * RemoveFromStageRequest
  */
 export type RemoveFromStageRequest = {
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name: string;
-    /**
-     * Participant Identity
-     */
-    participant_identity: string;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name: string;
+  /**
+   * Participant Identity
+   */
+  participant_identity: string;
 };
 
 /**
  * RemoveReactionResponse
  */
 export type RemoveReactionResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
-    reaction_type?: ReactionType | null;
-    updated_summary: ReactionsSummary;
+  /**
+   * Success
+   */
+  success: boolean;
+  reaction_type?: ReactionType | null;
+  updated_summary: ReactionsSummary;
 };
 
 /**
  * ReportRequest
  */
 export type ReportRequest = {
-    /**
-     * Target Id
-     */
-    target_id: string;
+  /**
+   * Target Id
+   */
+  target_id: string;
 };
 
 /**
  * RequestLivekitIngressResponse
  */
 export type RequestLivekitIngressResponse = {
-    /**
-     * Livekit Token
-     */
-    livekit_token: string;
-    /**
-     * Room Name
-     */
-    room_name: string;
-    /**
-     * Ingress Url
-     */
-    ingress_url: string;
-    /**
-     * Ingress Id
-     */
-    ingress_id: string;
-    /**
-     * Ingress Name
-     */
-    ingress_name: string;
-    /**
-     * Ingress Key
-     */
-    ingress_key: string;
+  /**
+   * Livekit Token
+   */
+  livekit_token: string;
+  /**
+   * Room Name
+   */
+  room_name: string;
+  /**
+   * Ingress Url
+   */
+  ingress_url: string;
+  /**
+   * Ingress Id
+   */
+  ingress_id: string;
+  /**
+   * Ingress Name
+   */
+  ingress_name: string;
+  /**
+   * Ingress Key
+   */
+  ingress_key: string;
 };
 
 /**
  * RoomPreviewData
  */
 export type RoomPreviewData = {
-    /**
-     * Description
-     */
-    description: string;
-    /**
-     * Number Of Participants
-     */
-    number_of_participants: number;
-    /**
-     * Exists
-     */
-    exists: boolean;
-    /**
-     * Space State
-     */
-    space_state: string;
-    /**
-     * Is Subscribed
-     */
-    is_subscribed: boolean;
+  /**
+   * Description
+   */
+  description: string;
+  /**
+   * Number Of Participants
+   */
+  number_of_participants: number;
+  /**
+   * Exists
+   */
+  exists: boolean;
+  /**
+   * Space State
+   */
+  space_state: string;
+  /**
+   * Is Subscribed
+   */
+  is_subscribed: boolean;
 };
 
 /**
  * ScreenshotInfo
  */
 export type ScreenshotInfo = {
-    /**
-     * Url
-     */
-    url?: string | null;
-    /**
-     * Width
-     */
-    width?: number | null;
-    /**
-     * Height
-     */
-    height?: number | null;
+  /**
+   * Url
+   */
+  url?: string | null;
+  /**
+   * Width
+   */
+  width?: number | null;
+  /**
+   * Height
+   */
+  height?: number | null;
 };
 
 /**
  * SendPublicKeyRequest
  */
 export type SendPublicKeyRequest = {
-    /**
-     * User Id
-     */
-    user_id: string;
-    /**
-     * Public Key
-     */
-    public_key: string;
+  /**
+   * User Id
+   */
+  user_id: string;
+  /**
+   * Public Key
+   */
+  public_key: string;
 };
 
 /**
  * SocialMediaScrapeDetails
  */
 export type SocialMediaScrapeDetails = {
-    /**
-     * Platform
-     */
-    platform: string;
-    /**
-     * Url
-     */
-    url: string;
-    /**
-     * Content
-     */
-    content?: string | null;
-    /**
-     * Author Name
-     */
-    author_name?: string | null;
-    /**
-     * Post Date
-     */
-    post_date?: string | null;
-    /**
-     * Image Urls
-     */
-    image_urls?: Array<string> | null;
-    screenshot?: ScreenshotInfo | null;
-    /**
-     * Metadata
-     */
-    metadata?: {
-        [key: string]: unknown;
-    } | null;
-    /**
-     * Author Profile Image
-     */
-    author_profile_image?: string | null;
+  /**
+   * Platform
+   */
+  platform: string;
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Content
+   */
+  content?: string | null;
+  /**
+   * Author Name
+   */
+  author_name?: string | null;
+  /**
+   * Post Date
+   */
+  post_date?: string | null;
+  /**
+   * Image Urls
+   */
+  image_urls?: Array<string> | null;
+  screenshot?: ScreenshotInfo | null;
+  /**
+   * Metadata
+   */
+  metadata?: {
+    [key: string]: unknown;
+  } | null;
+  /**
+   * Author Profile Image
+   */
+  author_profile_image?: string | null;
 };
 
 /**
  * SocialMediaScrapeStatus
  */
-export type SocialMediaScrapeStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+export type SocialMediaScrapeStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'FAILED';
 
 /**
  * Source
  */
 export type Source = {
-    /**
-     * Title
-     */
-    title: string;
-    /**
-     * Uri
-     */
-    uri: string;
-    /**
-     * Domain
-     */
-    domain?: string | null;
+  /**
+   * Title
+   */
+  title: string;
+  /**
+   * Uri
+   */
+  uri: string;
+  /**
+   * Domain
+   */
+  domain?: string | null;
 };
 
 /**
  * StartLiveResponse
  */
 export type StartLiveResponse = {
-    /**
-     * Livekit Token
-     */
-    livekit_token: string;
-    /**
-     * Room Name
-     */
-    room_name: string;
+  /**
+   * Livekit Token
+   */
+  livekit_token: string;
+  /**
+   * Room Name
+   */
+  room_name: string;
 };
 
 /**
  * StopStreamRequest
  */
 export type StopStreamRequest = {
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name: string;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name: string;
 };
 
 /**
  * SubscribeSpaceRequest
  */
 export type SubscribeSpaceRequest = {
-    /**
-     * Livekit Room Name
-     */
-    livekit_room_name: string;
+  /**
+   * Livekit Room Name
+   */
+  livekit_room_name: string;
 };
 
 /**
  * TrackImpressionsResponse
  */
 export type TrackImpressionsResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
+  /**
+   * Success
+   */
+  success: boolean;
 };
 
 /**
  * UnlikeVerificationResponse
  */
 export type UnlikeVerificationResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
+  /**
+   * Success
+   */
+  success: boolean;
 };
 
 /**
  * UnrateFactCheckResponse
  */
 export type UnrateFactCheckResponse = {
-    /**
-     * Success
-     */
-    success: boolean;
+  /**
+   * Success
+   */
+  success: boolean;
 };
 
 /**
  * UnreadCountResponse
  */
 export type UnreadCountResponse = {
-    /**
-     * Count
-     */
-    count: number;
+  /**
+   * Count
+   */
+  count: number;
 };
 
 /**
  * UpdateMessageRequest
  */
 export type UpdateMessageRequest = {
-    /**
-     * Messages
-     */
-    messages: Array<NewMessageState>;
+  /**
+   * Messages
+   */
+  messages: Array<NewMessageState>;
 };
 
 /**
  * UpdateUserRequest
  */
 export type UpdateUserRequest = {
-    /**
-     * Username
-     */
-    username?: string | null;
-    /**
-     * Date Of Birth
-     */
-    date_of_birth?: string | null;
-    /**
-     * Gender
-     */
-    gender?: string | null;
-    /**
-     * Photos
-     */
-    photos?: Array<{
-        [key: string]: unknown;
-    }> | null;
-    /**
-     * Preferred Content Language
-     */
-    preferred_content_language?: string | null;
-    /**
-     * Preferred News Feed Id
-     */
-    preferred_news_feed_id?: string | null;
-    /**
-     * Preferred Fact Check Feed Id
-     */
-    preferred_fact_check_feed_id?: string | null;
+  /**
+   * Username
+   */
+  username?: string | null;
+  /**
+   * Date Of Birth
+   */
+  date_of_birth?: string | null;
+  /**
+   * Gender
+   */
+  gender?: string | null;
+  /**
+   * Photos
+   */
+  photos?: Array<{
+    [key: string]: unknown;
+  }> | null;
+  /**
+   * Preferred Content Language
+   */
+  preferred_content_language?: string | null;
+  /**
+   * Preferred News Feed Id
+   */
+  preferred_news_feed_id?: string | null;
+  /**
+   * Preferred Fact Check Feed Id
+   */
+  preferred_fact_check_feed_id?: string | null;
 };
 
 /**
  * UpdateVerificationVisibilityRequest
  */
 export type UpdateVerificationVisibilityRequest = {
-    /**
-     * Verification Id
-     */
-    verification_id: string;
-    /**
-     * Is Public
-     */
-    is_public: boolean;
+  /**
+   * Verification Id
+   */
+  verification_id: string;
+  /**
+   * Is Public
+   */
+  is_public: boolean;
 };
 
 /**
  * UploadPhotoToLocationResponse
  */
 export type UploadPhotoToLocationResponse = {
-    verification: FeedPost;
+  verification: FeedPost;
 };
 
 /**
  * UploadPhotosResponse
  */
 export type UploadPhotosResponse = {
-    /**
-     * Blur Hash
-     */
-    blur_hash: string;
-    /**
-     * Image Id
-     */
-    image_id: string;
-    /**
-     * Image Url
-     */
-    image_url: Array<string>;
+  /**
+   * Blur Hash
+   */
+  blur_hash: string;
+  /**
+   * Image Id
+   */
+  image_id: string;
+  /**
+   * Image Url
+   */
+  image_url: Array<string>;
 };
 
 /**
  * UploadToLocationResponse
  */
 export type UploadToLocationResponse = {
-    /**
-     * Uploaded File Url
-     */
-    uploaded_file_url: string;
-    /**
-     * Gtask Payload
-     */
-    gtask_payload: {
-        [key: string]: unknown;
-    };
-    verification: LocationFeedPost;
+  /**
+   * Uploaded File Url
+   */
+  uploaded_file_url: string;
+  /**
+   * Gtask Payload
+   */
+  gtask_payload: {
+    [key: string]: unknown;
+  };
+  verification: LocationFeedPost;
 };
 
 /**
  * User
  */
 export type User = {
-    /**
-     * Id
-     */
-    id: string;
-    /**
-     * City
-     */
-    city?: string | null;
-    /**
-     * Date Of Birth
-     */
-    date_of_birth: string | null;
-    /**
-     * Email
-     */
-    email: string;
-    /**
-     * Phone Number
-     */
-    phone_number: string;
-    /**
-     * Username
-     */
-    username: string | null;
-    /**
-     * Gender
-     */
-    gender: string | null;
-    /**
-     * External User Id
-     */
-    external_user_id: string;
-    /**
-     * Interests
-     */
-    interests: Array<string> | null;
-    /**
-     * Photos
-     */
-    photos: Array<UserPhoto>;
-    /**
-     * Is In Waitlist
-     */
-    is_in_waitlist?: boolean | null;
-    /**
-     * Can Summarify
-     */
-    can_summarify?: boolean | null;
-    /**
-     * Preferred News Feed Id
-     */
-    preferred_news_feed_id?: string;
-    /**
-     * Preferred Fact Check Feed Id
-     */
-    preferred_fact_check_feed_id?: string;
-    /**
-     * Preferred Content Language
-     */
-    preferred_content_language?: string;
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * City
+   */
+  city?: string | null;
+  /**
+   * Date Of Birth
+   */
+  date_of_birth: string | null;
+  /**
+   * Email
+   */
+  email: string;
+  /**
+   * Phone Number
+   */
+  phone_number: string;
+  /**
+   * Username
+   */
+  username: string | null;
+  /**
+   * Gender
+   */
+  gender: string | null;
+  /**
+   * External User Id
+   */
+  external_user_id: string;
+  /**
+   * Interests
+   */
+  interests: Array<string> | null;
+  /**
+   * Photos
+   */
+  photos: Array<UserPhoto>;
+  /**
+   * Is In Waitlist
+   */
+  is_in_waitlist?: boolean | null;
+  /**
+   * Can Summarify
+   */
+  can_summarify?: boolean | null;
+  /**
+   * Preferred News Feed Id
+   */
+  preferred_news_feed_id?: string;
+  /**
+   * Preferred Fact Check Feed Id
+   */
+  preferred_fact_check_feed_id?: string;
+  /**
+   * Preferred Content Language
+   */
+  preferred_content_language?: string;
 };
 
 /**
  * UserLocationRequest
  */
 export type UserLocationRequest = {
+  /**
+   * Latitude
+   */
+  latitude: number;
+  /**
+   * Longitude
+   */
+  longitude: number;
+};
+
+/**
+ * UserLocationResponse
+ */
+export type UserLocationResponse = {
+  /**
+   * City
+   */
+  city: string;
+};
+
+/**
+ * UserPhoto
+ */
+export type UserPhoto = {
+  /**
+   * Image Url
+   */
+  image_url: Array<string>;
+  /**
+   * Image Id
+   */
+  image_id?: string | null;
+  /**
+   * Blur Hash
+   */
+  blur_hash?: string | null;
+};
+
+/**
+ * ValidationError
+ */
+export type ValidationError = {
+  /**
+   * Location
+   */
+  loc: Array<string | number>;
+  /**
+   * Message
+   */
+  msg: string;
+  /**
+   * Error Type
+   */
+  type: string;
+};
+
+export type GetLocationFeedsData = {
+  body?: never;
+  headers?: {
+    /**
+     * X-User-Location-Latitude
+     */
+    'x-user-location-latitude'?: number;
+    /**
+     * X-User-Location-Longitude
+     */
+    'x-user-location-longitude'?: number;
+  };
+  path?: never;
+  query: {
+    /**
+     * Category Id
+     */
+    category_id: string;
+    /**
+     * Ignore Location Check
+     */
+    ignore_location_check?: boolean;
+  };
+  url: '/feeds/locations';
+};
+
+export type GetLocationFeedsErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
+};
+
+export type GetLocationFeedsError =
+  GetLocationFeedsErrors[keyof GetLocationFeedsErrors];
+
+export type GetLocationFeedsResponses = {
+  /**
+   * Successful Response
+   */
+  200: FeedsResponse;
+};
+
+export type GetLocationFeedsResponse =
+  GetLocationFeedsResponses[keyof GetLocationFeedsResponses];
+
+export type SendPushNotificationFeedsNotificationsPushPostData = {
+  /**
+   * Notification Data
+   */
+  body: {
+    [key: string]: unknown;
+  };
+  path?: never;
+  query?: never;
+  url: '/feeds/notifications/push';
+};
+
+export type SendPushNotificationFeedsNotificationsPushPostErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type SendPushNotificationFeedsNotificationsPushPostError =
+  SendPushNotificationFeedsNotificationsPushPostErrors[keyof SendPushNotificationFeedsNotificationsPushPostErrors];
+
+export type SendPushNotificationFeedsNotificationsPushPostResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type GetLiveUsersData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Feed Id
+     */
+    feed_id: string;
+  };
+  url: '/feeds/live-users';
+};
+
+export type GetLiveUsersErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetLiveUsersError = GetLiveUsersErrors[keyof GetLiveUsersErrors];
+
+export type GetLiveUsersResponses = {
+  /**
+   * Response Get Live Users
+   * Successful Response
+   */
+  200: Array<LiveUser>;
+};
+
+export type GetLiveUsersResponse =
+  GetLiveUsersResponses[keyof GetLiveUsersResponses];
+
+export type CountLiveUsersData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Feed Id
+     */
+    feed_id: string;
+  };
+  url: '/feeds/live-users/count';
+};
+
+export type CountLiveUsersErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type CountLiveUsersError =
+  CountLiveUsersErrors[keyof CountLiveUsersErrors];
+
+export type CountLiveUsersResponses = {
+  /**
+   * Successful Response
+   */
+  200: LiveUsersCount;
+};
+
+export type CountLiveUsersResponse =
+  CountLiveUsersResponses[keyof CountLiveUsersResponses];
+
+export type GetSingleFeedData = {
+  body?: never;
+  path: {
+    /**
+     * Feed Id
+     */
+    feed_id: string;
+  };
+  query?: never;
+  url: '/feeds/single/{feed_id}';
+};
+
+export type GetSingleFeedErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type GetSingleFeedError = GetSingleFeedErrors[keyof GetSingleFeedErrors];
+
+export type GetSingleFeedResponses = {
+  /**
+   * Successful Response
+   */
+  200: Feed;
+};
+
+export type GetSingleFeedResponse =
+  GetSingleFeedResponses[keyof GetSingleFeedResponses];
+
+export type CheckLocationData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Feed Id
+     */
+    feed_id: string;
     /**
      * Latitude
      */
@@ -2093,428 +2377,178 @@ export type UserLocationRequest = {
      * Longitude
      */
     longitude: number;
-};
-
-/**
- * UserLocationResponse
- */
-export type UserLocationResponse = {
-    /**
-     * City
-     */
-    city: string;
-};
-
-/**
- * UserPhoto
- */
-export type UserPhoto = {
-    /**
-     * Image Url
-     */
-    image_url: Array<string>;
-    /**
-     * Image Id
-     */
-    image_id?: string | null;
-    /**
-     * Blur Hash
-     */
-    blur_hash?: string | null;
-};
-
-/**
- * ValidationError
- */
-export type ValidationError = {
-    /**
-     * Location
-     */
-    loc: Array<string | number>;
-    /**
-     * Message
-     */
-    msg: string;
-    /**
-     * Error Type
-     */
-    type: string;
-};
-
-export type GetLocationFeedsData = {
-    body?: never;
-    headers?: {
-        /**
-         * X-User-Location-Latitude
-         */
-        'x-user-location-latitude'?: number;
-        /**
-         * X-User-Location-Longitude
-         */
-        'x-user-location-longitude'?: number;
-    };
-    path?: never;
-    query: {
-        /**
-         * Category Id
-         */
-        category_id: string;
-        /**
-         * Ignore Location Check
-         */
-        ignore_location_check?: boolean;
-    };
-    url: '/feeds/locations';
-};
-
-export type GetLocationFeedsErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
-};
-
-export type GetLocationFeedsError = GetLocationFeedsErrors[keyof GetLocationFeedsErrors];
-
-export type GetLocationFeedsResponses = {
-    /**
-     * Successful Response
-     */
-    200: FeedsResponse;
-};
-
-export type GetLocationFeedsResponse = GetLocationFeedsResponses[keyof GetLocationFeedsResponses];
-
-export type SendPushNotificationFeedsNotificationsPushPostData = {
-    /**
-     * Notification Data
-     */
-    body: {
-        [key: string]: unknown;
-    };
-    path?: never;
-    query?: never;
-    url: '/feeds/notifications/push';
-};
-
-export type SendPushNotificationFeedsNotificationsPushPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type SendPushNotificationFeedsNotificationsPushPostError = SendPushNotificationFeedsNotificationsPushPostErrors[keyof SendPushNotificationFeedsNotificationsPushPostErrors];
-
-export type SendPushNotificationFeedsNotificationsPushPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
-};
-
-export type GetLiveUsersData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Feed Id
-         */
-        feed_id: string;
-    };
-    url: '/feeds/live-users';
-};
-
-export type GetLiveUsersErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type GetLiveUsersError = GetLiveUsersErrors[keyof GetLiveUsersErrors];
-
-export type GetLiveUsersResponses = {
-    /**
-     * Response Get Live Users
-     * Successful Response
-     */
-    200: Array<LiveUser>;
-};
-
-export type GetLiveUsersResponse = GetLiveUsersResponses[keyof GetLiveUsersResponses];
-
-export type CountLiveUsersData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Feed Id
-         */
-        feed_id: string;
-    };
-    url: '/feeds/live-users/count';
-};
-
-export type CountLiveUsersErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type CountLiveUsersError = CountLiveUsersErrors[keyof CountLiveUsersErrors];
-
-export type CountLiveUsersResponses = {
-    /**
-     * Successful Response
-     */
-    200: LiveUsersCount;
-};
-
-export type CountLiveUsersResponse = CountLiveUsersResponses[keyof CountLiveUsersResponses];
-
-export type GetSingleFeedData = {
-    body?: never;
-    path: {
-        /**
-         * Feed Id
-         */
-        feed_id: string;
-    };
-    query?: never;
-    url: '/feeds/single/{feed_id}';
-};
-
-export type GetSingleFeedErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-};
-
-export type GetSingleFeedError = GetSingleFeedErrors[keyof GetSingleFeedErrors];
-
-export type GetSingleFeedResponses = {
-    /**
-     * Successful Response
-     */
-    200: Feed;
-};
-
-export type GetSingleFeedResponse = GetSingleFeedResponses[keyof GetSingleFeedResponses];
-
-export type CheckLocationData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Feed Id
-         */
-        feed_id: string;
-        /**
-         * Latitude
-         */
-        latitude: number;
-        /**
-         * Longitude
-         */
-        longitude: number;
-    };
-    url: '/feeds/check-location';
+  };
+  url: '/feeds/check-location';
 };
 
 export type CheckLocationErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type CheckLocationError = CheckLocationErrors[keyof CheckLocationErrors];
 
 export type CheckLocationResponses = {
-    /**
-     * Response Check Location
-     * Successful Response
-     */
-    200: [
-        boolean,
-        Location | null
-    ];
+  /**
+   * Response Check Location
+   * Successful Response
+   */
+  200: [boolean, Location | null];
 };
 
-export type CheckLocationResponse = CheckLocationResponses[keyof CheckLocationResponses];
+export type CheckLocationResponse =
+  CheckLocationResponses[keyof CheckLocationResponses];
 
 export type GoLiveData = {
-    body: GoLiveRequest;
-    path?: never;
-    query?: never;
-    url: '/feeds/go-live';
+  body: GoLiveRequest;
+  path?: never;
+  query?: never;
+  url: '/feeds/go-live';
 };
 
 export type GoLiveErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type GoLiveError = GoLiveErrors[keyof GoLiveErrors];
 
 export type GoLiveResponses = {
-    /**
-     * Response Go Live
-     * Successful Response
-     */
-    200: {
-        [key: string]: unknown;
-    };
+  /**
+   * Response Go Live
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
 };
 
 export type GoLiveResponse = GoLiveResponses[keyof GoLiveResponses];
 
 export type PublishPostData = {
-    body: BodyPublishPost;
-    path?: never;
-    query?: never;
-    url: '/feeds/publish-post';
+  body: BodyPublishPost;
+  path?: never;
+  query?: never;
+  url: '/feeds/publish-post';
 };
 
 export type PublishPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type PublishPostError = PublishPostErrors[keyof PublishPostErrors];
 
 export type PublishPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: LocationFeedPost;
+  /**
+   * Successful Response
+   */
+  200: LocationFeedPost;
 };
 
-export type PublishPostResponse = PublishPostResponses[keyof PublishPostResponses];
+export type PublishPostResponse =
+  PublishPostResponses[keyof PublishPostResponses];
 
 export type GetCountryFeedData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/feeds/get-country-feed';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/feeds/get-country-feed';
 };
 
 export type GetCountryFeedErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
 };
 
 export type GetCountryFeedResponses = {
-    /**
-     * Successful Response
-     */
-    200: Feed;
+  /**
+   * Successful Response
+   */
+  200: Feed;
 };
 
-export type GetCountryFeedResponse = GetCountryFeedResponses[keyof GetCountryFeedResponses];
+export type GetCountryFeedResponse =
+  GetCountryFeedResponses[keyof GetCountryFeedResponses];
 
 export type GetScreenshotData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Verification Id
-         * Verification ID for screenshot
-         */
-        verification_id: string;
-        /**
-         * Tab
-         * Content perspective
-         */
-        tab?: string;
-    };
-    url: '/feeds/screenshot';
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Verification Id
+     * Verification ID for screenshot
+     */
+    verification_id: string;
+    /**
+     * Tab
+     * Content perspective
+     */
+    tab?: string;
+  };
+  url: '/feeds/screenshot';
 };
 
 export type GetScreenshotErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type GetScreenshotError = GetScreenshotErrors[keyof GetScreenshotErrors];
 
 export type GetScreenshotResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Tab
-         * Content perspective
-         */
-        tab?: string;
-        /**
-         * Verification Id
-         * Verification ID
-         */
-        verification_id?: string | null;
-    };
-    url: '/feeds/generate-social-media-content';
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Tab
+     * Content perspective
+     */
+    tab?: string;
+    /**
+     * Verification Id
+     * Verification ID
+     */
+    verification_id?: string | null;
+  };
+  url: '/feeds/generate-social-media-content';
 };
 
-export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetErrors = {
+export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetErrors =
+  {
     /**
      * Not found
      */
@@ -2523,2405 +2557,2503 @@ export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetErrors =
      * Validation Error
      */
     422: HttpValidationError;
-};
+  };
 
-export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetError = GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetErrors[keyof GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetErrors];
+export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetError =
+  GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetErrors[keyof GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetErrors];
 
-export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetResponses = {
+export type GenerateSocialMediaContentFeedsGenerateSocialMediaContentGetResponses =
+  {
     /**
      * Successful Response
      */
     200: unknown;
-};
+  };
 
 export type SendUserNotificationFeedsSendUserNotificationPostData = {
-    body: BodySendUserNotificationFeedsSendUserNotificationPost;
-    path?: never;
-    query?: never;
-    url: '/feeds/send-user-notification';
+  body: BodySendUserNotificationFeedsSendUserNotificationPost;
+  path?: never;
+  query?: never;
+  url: '/feeds/send-user-notification';
 };
 
 export type SendUserNotificationFeedsSendUserNotificationPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type SendUserNotificationFeedsSendUserNotificationPostError = SendUserNotificationFeedsSendUserNotificationPostErrors[keyof SendUserNotificationFeedsSendUserNotificationPostErrors];
+export type SendUserNotificationFeedsSendUserNotificationPostError =
+  SendUserNotificationFeedsSendUserNotificationPostErrors[keyof SendUserNotificationFeedsSendUserNotificationPostErrors];
 
 export type SendUserNotificationFeedsSendUserNotificationPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type UploadUserPhotosData = {
-    body: BodyUploadUserPhotos;
-    path?: never;
-    query?: never;
-    url: '/upload-photos';
+  body: BodyUploadUserPhotos;
+  path?: never;
+  query?: never;
+  url: '/upload-photos';
 };
 
 export type UploadUserPhotosErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
-export type UploadUserPhotosError = UploadUserPhotosErrors[keyof UploadUserPhotosErrors];
+export type UploadUserPhotosError =
+  UploadUserPhotosErrors[keyof UploadUserPhotosErrors];
 
 export type UploadUserPhotosResponses = {
-    /**
-     * Response Upload User Photos
-     * Successful Response
-     */
-    200: Array<UploadPhotosResponse>;
+  /**
+   * Response Upload User Photos
+   * Successful Response
+   */
+  200: Array<UploadPhotosResponse>;
 };
 
-export type UploadUserPhotosResponse = UploadUserPhotosResponses[keyof UploadUserPhotosResponses];
+export type UploadUserPhotosResponse =
+  UploadUserPhotosResponses[keyof UploadUserPhotosResponses];
 
 export type UploadPhotoToLocationVerifyPhotosUploadToLocationPostData = {
-    body: BodyUploadPhotoToLocationVerifyPhotosUploadToLocationPost;
-    path?: never;
-    query?: never;
-    url: '/verify-photos/upload-to-location';
+  body: BodyUploadPhotoToLocationVerifyPhotosUploadToLocationPost;
+  path?: never;
+  query?: never;
+  url: '/verify-photos/upload-to-location';
 };
 
 export type UploadPhotoToLocationVerifyPhotosUploadToLocationPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
-export type UploadPhotoToLocationVerifyPhotosUploadToLocationPostError = UploadPhotoToLocationVerifyPhotosUploadToLocationPostErrors[keyof UploadPhotoToLocationVerifyPhotosUploadToLocationPostErrors];
+export type UploadPhotoToLocationVerifyPhotosUploadToLocationPostError =
+  UploadPhotoToLocationVerifyPhotosUploadToLocationPostErrors[keyof UploadPhotoToLocationVerifyPhotosUploadToLocationPostErrors];
 
 export type UploadPhotoToLocationVerifyPhotosUploadToLocationPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: UploadPhotoToLocationResponse;
+  /**
+   * Successful Response
+   */
+  200: UploadPhotoToLocationResponse;
 };
 
-export type UploadPhotoToLocationVerifyPhotosUploadToLocationPostResponse = UploadPhotoToLocationVerifyPhotosUploadToLocationPostResponses[keyof UploadPhotoToLocationVerifyPhotosUploadToLocationPostResponses];
+export type UploadPhotoToLocationVerifyPhotosUploadToLocationPostResponse =
+  UploadPhotoToLocationVerifyPhotosUploadToLocationPostResponses[keyof UploadPhotoToLocationVerifyPhotosUploadToLocationPostResponses];
 
 export type SubmitUserVideoVerificationLocationUploadData = {
-    body: BodySubmitUserVideoVerificationLocationUpload;
-    path?: never;
-    query?: never;
-    url: '/verify-videos/upload-to-location';
+  body: BodySubmitUserVideoVerificationLocationUpload;
+  path?: never;
+  query?: never;
+  url: '/verify-videos/upload-to-location';
 };
 
 export type SubmitUserVideoVerificationLocationUploadErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type SubmitUserVideoVerificationLocationUploadError = SubmitUserVideoVerificationLocationUploadErrors[keyof SubmitUserVideoVerificationLocationUploadErrors];
+export type SubmitUserVideoVerificationLocationUploadError =
+  SubmitUserVideoVerificationLocationUploadErrors[keyof SubmitUserVideoVerificationLocationUploadErrors];
 
 export type SubmitUserVideoVerificationLocationUploadResponses = {
-    /**
-     * Successful Response
-     */
-    200: UploadToLocationResponse;
+  /**
+   * Successful Response
+   */
+  200: UploadToLocationResponse;
 };
 
-export type SubmitUserVideoVerificationLocationUploadResponse = SubmitUserVideoVerificationLocationUploadResponses[keyof SubmitUserVideoVerificationLocationUploadResponses];
+export type SubmitUserVideoVerificationLocationUploadResponse =
+  SubmitUserVideoVerificationLocationUploadResponses[keyof SubmitUserVideoVerificationLocationUploadResponses];
 
 export type ExecuteUserVideoVerificationLocationUploadData = {
-    body: ExecuteLocationPostUploadRequest;
-    path?: never;
-    query?: never;
-    url: '/verify-videos/execute/location-upload';
+  body: ExecuteLocationPostUploadRequest;
+  path?: never;
+  query?: never;
+  url: '/verify-videos/execute/location-upload';
 };
 
 export type ExecuteUserVideoVerificationLocationUploadErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type ExecuteUserVideoVerificationLocationUploadError = ExecuteUserVideoVerificationLocationUploadErrors[keyof ExecuteUserVideoVerificationLocationUploadErrors];
+export type ExecuteUserVideoVerificationLocationUploadError =
+  ExecuteUserVideoVerificationLocationUploadErrors[keyof ExecuteUserVideoVerificationLocationUploadErrors];
 
 export type ExecuteUserVideoVerificationLocationUploadResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type LiveWebhookData = {
-    body?: never;
-    headers?: {
-        /**
-         * Authorization
-         */
-        authorization?: string;
-    };
-    path?: never;
-    query?: never;
-    url: '/live/webhook';
+  body?: never;
+  headers?: {
+    /**
+     * Authorization
+     */
+    authorization?: string;
+  };
+  path?: never;
+  query?: never;
+  url: '/live/webhook';
 };
 
 export type LiveWebhookErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type LiveWebhookError = LiveWebhookErrors[keyof LiveWebhookErrors];
 
 export type LiveWebhookResponses = {
-    /**
-     * Response Live Webhook
-     * Successful Response
-     */
-    200: boolean;
+  /**
+   * Response Live Webhook
+   * Successful Response
+   */
+  200: boolean;
 };
 
-export type LiveWebhookResponse = LiveWebhookResponses[keyof LiveWebhookResponses];
+export type LiveWebhookResponse =
+  LiveWebhookResponses[keyof LiveWebhookResponses];
 
 export type GetLiveStreamTokenData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Room Name
-         */
-        room_name: string;
-    };
-    url: '/live/get-live-stream-token';
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Room Name
+     */
+    room_name: string;
+  };
+  url: '/live/get-live-stream-token';
 };
 
 export type GetLiveStreamTokenErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetLiveStreamTokenError = GetLiveStreamTokenErrors[keyof GetLiveStreamTokenErrors];
+export type GetLiveStreamTokenError =
+  GetLiveStreamTokenErrors[keyof GetLiveStreamTokenErrors];
 
 export type GetLiveStreamTokenResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetLiveStreamTokenResponse;
+  /**
+   * Successful Response
+   */
+  200: GetLiveStreamTokenResponse;
 };
 
-export type GetLiveStreamTokenResponse2 = GetLiveStreamTokenResponses[keyof GetLiveStreamTokenResponses];
+export type GetLiveStreamTokenResponse2 =
+  GetLiveStreamTokenResponses[keyof GetLiveStreamTokenResponses];
 
 export type RequestLivekitIngressData = {
-    body: BodyRequestLivekitIngress;
-    path?: never;
-    query?: never;
-    url: '/live/request-livekit-ingress';
+  body: BodyRequestLivekitIngress;
+  path?: never;
+  query?: never;
+  url: '/live/request-livekit-ingress';
 };
 
 export type RequestLivekitIngressErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type RequestLivekitIngressError = RequestLivekitIngressErrors[keyof RequestLivekitIngressErrors];
+export type RequestLivekitIngressError =
+  RequestLivekitIngressErrors[keyof RequestLivekitIngressErrors];
 
 export type RequestLivekitIngressResponses = {
-    /**
-     * Successful Response
-     */
-    200: RequestLivekitIngressResponse;
+  /**
+   * Successful Response
+   */
+  200: RequestLivekitIngressResponse;
 };
 
-export type RequestLivekitIngressResponse2 = RequestLivekitIngressResponses[keyof RequestLivekitIngressResponses];
+export type RequestLivekitIngressResponse2 =
+  RequestLivekitIngressResponses[keyof RequestLivekitIngressResponses];
 
 export type StartLiveData = {
-    body: BodyStartLive;
-    path?: never;
-    query?: never;
-    url: '/live/request-live';
+  body: BodyStartLive;
+  path?: never;
+  query?: never;
+  url: '/live/request-live';
 };
 
 export type StartLiveErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type StartLiveError = StartLiveErrors[keyof StartLiveErrors];
 
 export type StartLiveResponses = {
-    /**
-     * Successful Response
-     */
-    200: StartLiveResponse;
+  /**
+   * Successful Response
+   */
+  200: StartLiveResponse;
 };
 
 export type StartLiveResponse2 = StartLiveResponses[keyof StartLiveResponses];
 
 export type CreateUserData = {
-    body: CreateUserRequest;
-    path?: never;
-    query?: never;
-    url: '/user/create-user';
+  body: CreateUserRequest;
+  path?: never;
+  query?: never;
+  url: '/user/create-user';
 };
 
 export type CreateUserErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
 export type CreateUserError = CreateUserErrors[keyof CreateUserErrors];
 
 export type CreateUserResponses = {
-    /**
-     * Successful Response
-     */
-    200: User;
+  /**
+   * Successful Response
+   */
+  200: User;
 };
 
 export type CreateUserResponse = CreateUserResponses[keyof CreateUserResponses];
 
 export type GetUserData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/user/get-user';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/user/get-user';
 };
 
 export type GetUserErrors = {
-    /**
-     * User not found
-     */
-    404: unknown;
+  /**
+   * User not found
+   */
+  404: unknown;
 };
 
 export type GetUserResponses = {
-    /**
-     * Successful Response
-     */
-    200: User;
+  /**
+   * Successful Response
+   */
+  200: User;
 };
 
 export type GetUserResponse = GetUserResponses[keyof GetUserResponses];
 
 export type UpdateVerificationVisibilityData = {
-    body: UpdateVerificationVisibilityRequest;
-    path?: never;
-    query?: never;
-    url: '/user/update-verification-visibility';
+  body: UpdateVerificationVisibilityRequest;
+  path?: never;
+  query?: never;
+  url: '/user/update-verification-visibility';
 };
 
 export type UpdateVerificationVisibilityErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
-export type UpdateVerificationVisibilityError = UpdateVerificationVisibilityErrors[keyof UpdateVerificationVisibilityErrors];
+export type UpdateVerificationVisibilityError =
+  UpdateVerificationVisibilityErrors[keyof UpdateVerificationVisibilityErrors];
 
 export type UpdateVerificationVisibilityResponses = {
-    /**
-     * Response Update Verification Visibility
-     * Successful Response
-     */
-    200: {
-        [key: string]: unknown;
-    };
+  /**
+   * Response Update Verification Visibility
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
 };
 
-export type UpdateVerificationVisibilityResponse = UpdateVerificationVisibilityResponses[keyof UpdateVerificationVisibilityResponses];
+export type UpdateVerificationVisibilityResponse =
+  UpdateVerificationVisibilityResponses[keyof UpdateVerificationVisibilityResponses];
 
 export type GetVerificationsData = {
-    body?: never;
-    headers?: {
-        /**
-         * Accept-Language
-         */
-        'accept-language'?: string;
-    };
-    path?: never;
-    query?: {
-        /**
-         * Page
-         */
-        page?: number;
-        /**
-         * Page Size
-         */
-        page_size?: number;
-        /**
-         * Target User Id
-         */
-        target_user_id?: string | null;
-    };
-    url: '/user/get-verifications';
+  body?: never;
+  headers?: {
+    /**
+     * Accept-Language
+     */
+    'accept-language'?: string;
+  };
+  path?: never;
+  query?: {
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Page Size
+     */
+    page_size?: number;
+    /**
+     * Target User Id
+     */
+    target_user_id?: string | null;
+  };
+  url: '/user/get-verifications';
 };
 
 export type GetVerificationsErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Internal server error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Internal server error
+   */
+  500: unknown;
 };
 
-export type GetVerificationsError = GetVerificationsErrors[keyof GetVerificationsErrors];
+export type GetVerificationsError =
+  GetVerificationsErrors[keyof GetVerificationsErrors];
 
 export type GetVerificationsResponses = {
-    /**
-     * Response Get Verifications
-     * Successful Response
-     */
-    200: Array<FeedPost>;
+  /**
+   * Response Get Verifications
+   * Successful Response
+   */
+  200: Array<FeedPost>;
 };
 
-export type GetVerificationsResponse = GetVerificationsResponses[keyof GetVerificationsResponses];
+export type GetVerificationsResponse =
+  GetVerificationsResponses[keyof GetVerificationsResponses];
 
 export type GetUserVerificationData = {
-    body?: never;
-    headers?: {
-        /**
-         * Accept-Language
-         */
-        'accept-language'?: string;
-    };
-    path?: never;
-    query: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    url: '/user/get-verification';
+  body?: never;
+  headers?: {
+    /**
+     * Accept-Language
+     */
+    'accept-language'?: string;
+  };
+  path?: never;
+  query: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  url: '/user/get-verification';
 };
 
 export type GetUserVerificationErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
-export type GetUserVerificationError = GetUserVerificationErrors[keyof GetUserVerificationErrors];
+export type GetUserVerificationError =
+  GetUserVerificationErrors[keyof GetUserVerificationErrors];
 
 export type GetUserVerificationResponses = {
-    /**
-     * Successful Response
-     */
-    200: FeedPost;
+  /**
+   * Successful Response
+   */
+  200: FeedPost;
 };
 
-export type GetUserVerificationResponse = GetUserVerificationResponses[keyof GetUserVerificationResponses];
+export type GetUserVerificationResponse =
+  GetUserVerificationResponses[keyof GetUserVerificationResponses];
 
 export type UpdateUserData = {
-    body: UpdateUserRequest;
-    path?: never;
-    query?: never;
-    url: '/user/update';
+  body: UpdateUserRequest;
+  path?: never;
+  query?: never;
+  url: '/user/update';
 };
 
 export type UpdateUserErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
 export type UpdateUserError = UpdateUserErrors[keyof UpdateUserErrors];
 
 export type UpdateUserResponses = {
-    /**
-     * Response Update User
-     * Successful Response
-     */
-    200: {
-        [key: string]: unknown;
-    };
+  /**
+   * Response Update User
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
 };
 
 export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
 
 export type UpsertFcmData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/user/upsert-fcm';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/user/upsert-fcm';
 };
 
 export type UpsertFcmErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
 export type UpsertFcmResponses = {
-    /**
-     * Successful Response
-     */
-    200: FcpResponse;
+  /**
+   * Successful Response
+   */
+  200: FcpResponse;
 };
 
 export type UpsertFcmResponse = UpsertFcmResponses[keyof UpsertFcmResponses];
 
 export type GetFcmTokenData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/user/get-fcm';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/user/get-fcm';
 };
 
 export type GetFcmTokenErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
 export type GetFcmTokenResponses = {
-    /**
-     * Successful Response
-     */
-    200: FcpResponse;
+  /**
+   * Successful Response
+   */
+  200: FcpResponse;
 };
 
-export type GetFcmTokenResponse = GetFcmTokenResponses[keyof GetFcmTokenResponses];
+export type GetFcmTokenResponse =
+  GetFcmTokenResponses[keyof GetFcmTokenResponses];
 
 export type DeleteFcmData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/user/delete-fcm';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/user/delete-fcm';
 };
 
 export type DeleteFcmErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
 export type DeleteFcmResponses = {
-    /**
-     * Successful Response
-     */
-    200: FcpResponse;
+  /**
+   * Successful Response
+   */
+  200: FcpResponse;
 };
 
 export type DeleteFcmResponse = DeleteFcmResponses[keyof DeleteFcmResponses];
 
 export type GetUserLocationData = {
-    body: UserLocationRequest;
-    path?: never;
-    query?: never;
-    url: '/user/location';
+  body: UserLocationRequest;
+  path?: never;
+  query?: never;
+  url: '/user/location';
 };
 
 export type GetUserLocationErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
-export type GetUserLocationError = GetUserLocationErrors[keyof GetUserLocationErrors];
+export type GetUserLocationError =
+  GetUserLocationErrors[keyof GetUserLocationErrors];
 
 export type GetUserLocationResponses = {
-    /**
-     * Successful Response
-     */
-    200: UserLocationResponse;
+  /**
+   * Successful Response
+   */
+  200: UserLocationResponse;
 };
 
-export type GetUserLocationResponse = GetUserLocationResponses[keyof GetUserLocationResponses];
+export type GetUserLocationResponse =
+  GetUserLocationResponses[keyof GetUserLocationResponses];
 
 export type DeleteUserData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/user/delete';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/user/delete';
 };
 
 export type DeleteUserErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Deletion error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Deletion error
+   */
+  500: unknown;
 };
 
 export type DeleteUserResponses = {
-    /**
-     * Response Delete User
-     * Successful Response
-     */
-    200: {
-        [key: string]: unknown;
-    };
+  /**
+   * Response Delete User
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
 };
 
 export type DeleteUserResponse = DeleteUserResponses[keyof DeleteUserResponses];
 
 export type CheckRegisteredUsersData = {
-    body: CheckRegisteredUsersRequest;
-    path?: never;
-    query?: never;
-    url: '/user/check_registered_users';
+  body: CheckRegisteredUsersRequest;
+  path?: never;
+  query?: never;
+  url: '/user/check_registered_users';
 };
 
 export type CheckRegisteredUsersErrors = {
-    /**
-     * Invalid input
-     */
-    400: unknown;
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Server error
-     */
-    500: unknown;
+  /**
+   * Invalid input
+   */
+  400: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Server error
+   */
+  500: unknown;
 };
 
-export type CheckRegisteredUsersError = CheckRegisteredUsersErrors[keyof CheckRegisteredUsersErrors];
+export type CheckRegisteredUsersError =
+  CheckRegisteredUsersErrors[keyof CheckRegisteredUsersErrors];
 
 export type CheckRegisteredUsersResponses = {
-    /**
-     * Response Check Registered Users
-     * Successful Response
-     */
-    200: Array<User>;
+  /**
+   * Response Check Registered Users
+   * Successful Response
+   */
+  200: Array<User>;
 };
 
-export type CheckRegisteredUsersResponse = CheckRegisteredUsersResponses[keyof CheckRegisteredUsersResponses];
+export type CheckRegisteredUsersResponse =
+  CheckRegisteredUsersResponses[keyof CheckRegisteredUsersResponses];
 
 export type BlockUserBlockTargetIdPostData = {
-    body?: never;
-    path: {
-        /**
-         * Target Id
-         */
-        target_id: string;
-    };
-    query?: never;
-    url: '/user/block/{target_id}';
+  body?: never;
+  path: {
+    /**
+     * Target Id
+     */
+    target_id: string;
+  };
+  query?: never;
+  url: '/user/block/{target_id}';
 };
 
 export type BlockUserBlockTargetIdPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type BlockUserBlockTargetIdPostError = BlockUserBlockTargetIdPostErrors[keyof BlockUserBlockTargetIdPostErrors];
+export type BlockUserBlockTargetIdPostError =
+  BlockUserBlockTargetIdPostErrors[keyof BlockUserBlockTargetIdPostErrors];
 
 export type BlockUserBlockTargetIdPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type UnblockUserUnblockTargetIdPostData = {
-    body?: never;
-    path: {
-        /**
-         * Target Id
-         */
-        target_id: string;
-    };
-    query?: never;
-    url: '/user/unblock/{target_id}';
+  body?: never;
+  path: {
+    /**
+     * Target Id
+     */
+    target_id: string;
+  };
+  query?: never;
+  url: '/user/unblock/{target_id}';
 };
 
 export type UnblockUserUnblockTargetIdPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type UnblockUserUnblockTargetIdPostError = UnblockUserUnblockTargetIdPostErrors[keyof UnblockUserUnblockTargetIdPostErrors];
+export type UnblockUserUnblockTargetIdPostError =
+  UnblockUserUnblockTargetIdPostErrors[keyof UnblockUserUnblockTargetIdPostErrors];
 
 export type UnblockUserUnblockTargetIdPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type ReportUserReportTargetIdPostData = {
-    body: ReportRequest;
-    path?: never;
-    query?: never;
-    url: '/user/report/{target_id}';
+  body: ReportRequest;
+  path?: never;
+  query?: never;
+  url: '/user/report/{target_id}';
 };
 
 export type ReportUserReportTargetIdPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type ReportUserReportTargetIdPostError = ReportUserReportTargetIdPostErrors[keyof ReportUserReportTargetIdPostErrors];
+export type ReportUserReportTargetIdPostError =
+  ReportUserReportTargetIdPostErrors[keyof ReportUserReportTargetIdPostErrors];
 
 export type ReportUserReportTargetIdPostResponses = {
-    /**
-     * Response Report User Report  Target Id  Post
-     * Successful Response
-     */
-    200: {
-        [key: string]: unknown;
-    };
+  /**
+   * Response Report User Report  Target Id  Post
+   * Successful Response
+   */
+  200: {
+    [key: string]: unknown;
+  };
 };
 
-export type ReportUserReportTargetIdPostResponse = ReportUserReportTargetIdPostResponses[keyof ReportUserReportTargetIdPostResponses];
+export type ReportUserReportTargetIdPostResponse =
+  ReportUserReportTargetIdPostResponses[keyof ReportUserReportTargetIdPostResponses];
 
 export type CheckUsernameUserCheckUsernameUsernameGetData = {
-    body?: never;
-    path: {
-        /**
-         * Username
-         */
-        username: string;
-    };
-    query?: never;
-    url: '/user/check-username/{username}';
+  body?: never;
+  path: {
+    /**
+     * Username
+     */
+    username: string;
+  };
+  query?: never;
+  url: '/user/check-username/{username}';
 };
 
 export type CheckUsernameUserCheckUsernameUsernameGetErrors = {
-    /**
-     * Invalid input
-     */
-    400: unknown;
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Invalid input
+   */
+  400: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type CheckUsernameUserCheckUsernameUsernameGetError = CheckUsernameUserCheckUsernameUsernameGetErrors[keyof CheckUsernameUserCheckUsernameUsernameGetErrors];
+export type CheckUsernameUserCheckUsernameUsernameGetError =
+  CheckUsernameUserCheckUsernameUsernameGetErrors[keyof CheckUsernameUserCheckUsernameUsernameGetErrors];
 
 export type CheckUsernameUserCheckUsernameUsernameGetResponses = {
-    /**
-     * Successful Response
-     */
-    200: CheckUsernameResponse;
+  /**
+   * Successful Response
+   */
+  200: CheckUsernameResponse;
 };
 
-export type CheckUsernameUserCheckUsernameUsernameGetResponse = CheckUsernameUserCheckUsernameUsernameGetResponses[keyof CheckUsernameUserCheckUsernameUsernameGetResponses];
+export type CheckUsernameUserCheckUsernameUsernameGetResponse =
+  CheckUsernameUserCheckUsernameUsernameGetResponses[keyof CheckUsernameUserCheckUsernameUsernameGetResponses];
 
 export type GetUserProfileUserProfileUserIdGetData = {
-    body?: never;
-    path: {
-        /**
-         * User Id
-         */
-        user_id: string;
-    };
-    query?: never;
-    url: '/user/profile/{user_id}';
+  body?: never;
+  path: {
+    /**
+     * User Id
+     */
+    user_id: string;
+  };
+  query?: never;
+  url: '/user/profile/{user_id}';
 };
 
 export type GetUserProfileUserProfileUserIdGetErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetUserProfileUserProfileUserIdGetError = GetUserProfileUserProfileUserIdGetErrors[keyof GetUserProfileUserProfileUserIdGetErrors];
+export type GetUserProfileUserProfileUserIdGetError =
+  GetUserProfileUserProfileUserIdGetErrors[keyof GetUserProfileUserProfileUserIdGetErrors];
 
 export type GetUserProfileUserProfileUserIdGetResponses = {
-    /**
-     * Successful Response
-     */
-    200: ProfileInformationResponse;
+  /**
+   * Successful Response
+   */
+  200: ProfileInformationResponse;
 };
 
-export type GetUserProfileUserProfileUserIdGetResponse = GetUserProfileUserProfileUserIdGetResponses[keyof GetUserProfileUserProfileUserIdGetResponses];
+export type GetUserProfileUserProfileUserIdGetResponse =
+  GetUserProfileUserProfileUserIdGetResponses[keyof GetUserProfileUserProfileUserIdGetResponses];
 
 export type GetUserProfileByUsernameData = {
-    body?: never;
-    path: {
-        /**
-         * Username
-         */
-        username: string;
-    };
-    query?: never;
-    url: '/user/profile/username/{username}';
+  body?: never;
+  path: {
+    /**
+     * Username
+     */
+    username: string;
+  };
+  query?: never;
+  url: '/user/profile/username/{username}';
 };
 
 export type GetUserProfileByUsernameErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetUserProfileByUsernameError = GetUserProfileByUsernameErrors[keyof GetUserProfileByUsernameErrors];
+export type GetUserProfileByUsernameError =
+  GetUserProfileByUsernameErrors[keyof GetUserProfileByUsernameErrors];
 
 export type GetUserProfileByUsernameResponses = {
-    /**
-     * Successful Response
-     */
-    200: User;
+  /**
+   * Successful Response
+   */
+  200: User;
 };
 
-export type GetUserProfileByUsernameResponse = GetUserProfileByUsernameResponses[keyof GetUserProfileByUsernameResponses];
+export type GetUserProfileByUsernameResponse =
+  GetUserProfileByUsernameResponses[keyof GetUserProfileByUsernameResponses];
 
 export type GetLocationFeedPaginatedData = {
-    body?: never;
-    headers?: {
-        /**
-         * Accept-Language
-         */
-        'accept-language'?: string;
-    };
-    path: {
-        /**
-         * Feed Id
-         */
-        feed_id: string;
-    };
-    query?: {
-        /**
-         * Page
-         */
-        page?: number;
-        /**
-         * Page Size
-         */
-        page_size?: number;
-        content_type_filter?: ContentTypeFilter;
-        /**
-         * Search Term
-         */
-        search_term?: string | null;
-    };
-    url: '/user/feed/location-feed/{feed_id}';
+  body?: never;
+  headers?: {
+    /**
+     * Accept-Language
+     */
+    'accept-language'?: string;
+  };
+  path: {
+    /**
+     * Feed Id
+     */
+    feed_id: string;
+  };
+  query?: {
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Page Size
+     */
+    page_size?: number;
+    content_type_filter?: ContentTypeFilter;
+    /**
+     * Search Term
+     */
+    search_term?: string | null;
+  };
+  url: '/user/feed/location-feed/{feed_id}';
 };
 
 export type GetLocationFeedPaginatedErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Internal server error
-     */
-    500: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Internal server error
+   */
+  500: unknown;
 };
 
-export type GetLocationFeedPaginatedError = GetLocationFeedPaginatedErrors[keyof GetLocationFeedPaginatedErrors];
+export type GetLocationFeedPaginatedError =
+  GetLocationFeedPaginatedErrors[keyof GetLocationFeedPaginatedErrors];
 
 export type GetLocationFeedPaginatedResponses = {
-    /**
-     * Response Get Location Feed Paginated
-     * Successful Response
-     */
-    200: Array<FeedPost>;
+  /**
+   * Response Get Location Feed Paginated
+   * Successful Response
+   */
+  200: Array<FeedPost>;
 };
 
-export type GetLocationFeedPaginatedResponse = GetLocationFeedPaginatedResponses[keyof GetLocationFeedPaginatedResponses];
+export type GetLocationFeedPaginatedResponse =
+  GetLocationFeedPaginatedResponses[keyof GetLocationFeedPaginatedResponses];
 
 export type SendFriendRequestData = {
-    body: FriendRequestSent;
-    path?: never;
-    query?: never;
-    url: '/friends/request';
+  body: FriendRequestSent;
+  path?: never;
+  query?: never;
+  url: '/friends/request';
 };
 
 export type SendFriendRequestErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type SendFriendRequestError = SendFriendRequestErrors[keyof SendFriendRequestErrors];
+export type SendFriendRequestError =
+  SendFriendRequestErrors[keyof SendFriendRequestErrors];
 
 export type SendFriendRequestResponses = {
-    /**
-     * Successful Response
-     */
-    201: FriendRequestSentResponse;
+  /**
+   * Successful Response
+   */
+  201: FriendRequestSentResponse;
 };
 
-export type SendFriendRequestResponse = SendFriendRequestResponses[keyof SendFriendRequestResponses];
+export type SendFriendRequestResponse =
+  SendFriendRequestResponses[keyof SendFriendRequestResponses];
 
 export type GetFriendRequestsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/friends/requests';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/friends/requests';
 };
 
 export type GetFriendRequestsErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
 };
 
 export type GetFriendRequestsResponses = {
-    /**
-     * Response Get Friend Requests
-     * Successful Response
-     */
-    200: Array<FriendRequestResponse>;
+  /**
+   * Response Get Friend Requests
+   * Successful Response
+   */
+  200: Array<FriendRequestResponse>;
 };
 
-export type GetFriendRequestsResponse = GetFriendRequestsResponses[keyof GetFriendRequestsResponses];
+export type GetFriendRequestsResponse =
+  GetFriendRequestsResponses[keyof GetFriendRequestsResponses];
 
 export type AcceptFriendRequestData = {
-    body?: never;
-    path: {
-        /**
-         * Request Id
-         */
-        request_id: string;
-    };
-    query?: never;
-    url: '/friends/request/{request_id}/accept';
+  body?: never;
+  path: {
+    /**
+     * Request Id
+     */
+    request_id: string;
+  };
+  query?: never;
+  url: '/friends/request/{request_id}/accept';
 };
 
 export type AcceptFriendRequestErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type AcceptFriendRequestError = AcceptFriendRequestErrors[keyof AcceptFriendRequestErrors];
+export type AcceptFriendRequestError =
+  AcceptFriendRequestErrors[keyof AcceptFriendRequestErrors];
 
 export type AcceptFriendRequestResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type RejectFriendRequestData = {
-    body?: never;
-    path: {
-        /**
-         * Request Id
-         */
-        request_id: string;
-    };
-    query?: never;
-    url: '/friends/request/{request_id}/reject';
+  body?: never;
+  path: {
+    /**
+     * Request Id
+     */
+    request_id: string;
+  };
+  query?: never;
+  url: '/friends/request/{request_id}/reject';
 };
 
 export type RejectFriendRequestErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type RejectFriendRequestError = RejectFriendRequestErrors[keyof RejectFriendRequestErrors];
+export type RejectFriendRequestError =
+  RejectFriendRequestErrors[keyof RejectFriendRequestErrors];
 
 export type RejectFriendRequestResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type GetFriendsListData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Page
-         */
-        page?: number;
-        /**
-         * Page Size
-         */
-        page_size?: number;
-    };
-    url: '/friends/list';
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Page Size
+     */
+    page_size?: number;
+  };
+  url: '/friends/list';
 };
 
 export type GetFriendsListErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetFriendsListError = GetFriendsListErrors[keyof GetFriendsListErrors];
+export type GetFriendsListError =
+  GetFriendsListErrors[keyof GetFriendsListErrors];
 
 export type GetFriendsListResponses = {
-    /**
-     * Response Get Friends List
-     * Successful Response
-     */
-    200: Array<User>;
+  /**
+   * Response Get Friends List
+   * Successful Response
+   */
+  200: Array<User>;
 };
 
-export type GetFriendsListResponse = GetFriendsListResponses[keyof GetFriendsListResponses];
+export type GetFriendsListResponse =
+  GetFriendsListResponses[keyof GetFriendsListResponses];
 
 export type RemoveFriendData = {
-    body?: never;
-    path: {
-        /**
-         * Friend Id
-         */
-        friend_id: string;
-    };
-    query?: never;
-    url: '/friends/remove/{friend_id}';
+  body?: never;
+  path: {
+    /**
+     * Friend Id
+     */
+    friend_id: string;
+  };
+  query?: never;
+  url: '/friends/remove/{friend_id}';
 };
 
 export type RemoveFriendErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type RemoveFriendError = RemoveFriendErrors[keyof RemoveFriendErrors];
 
 export type RemoveFriendResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type GetBlockedFriendsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/friends/blocked';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/friends/blocked';
 };
 
 export type GetBlockedFriendsErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
 };
 
 export type GetBlockedFriendsResponses = {
-    /**
-     * Response Get Blocked Friends
-     * Successful Response
-     */
-    200: Array<User>;
+  /**
+   * Response Get Blocked Friends
+   * Successful Response
+   */
+  200: Array<User>;
 };
 
-export type GetBlockedFriendsResponse = GetBlockedFriendsResponses[keyof GetBlockedFriendsResponses];
+export type GetBlockedFriendsResponse =
+  GetBlockedFriendsResponses[keyof GetBlockedFriendsResponses];
 
 export type UpdateMessageStateChatUpdateMessagesPostData = {
-    body: UpdateMessageRequest;
-    path?: never;
-    query?: never;
-    url: '/chat/update-messages';
+  body: UpdateMessageRequest;
+  path?: never;
+  query?: never;
+  url: '/chat/update-messages';
 };
 
 export type UpdateMessageStateChatUpdateMessagesPostErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
-export type UpdateMessageStateChatUpdateMessagesPostError = UpdateMessageStateChatUpdateMessagesPostErrors[keyof UpdateMessageStateChatUpdateMessagesPostErrors];
+export type UpdateMessageStateChatUpdateMessagesPostError =
+  UpdateMessageStateChatUpdateMessagesPostErrors[keyof UpdateMessageStateChatUpdateMessagesPostErrors];
 
 export type UpdateMessageStateChatUpdateMessagesPostResponses = {
-    /**
-     * Response Update Message State Chat Update Messages Post
-     * Successful Response
-     */
-    201: {
-        [key: string]: boolean;
-    };
+  /**
+   * Response Update Message State Chat Update Messages Post
+   * Successful Response
+   */
+  201: {
+    [key: string]: boolean;
+  };
 };
 
-export type UpdateMessageStateChatUpdateMessagesPostResponse = UpdateMessageStateChatUpdateMessagesPostResponses[keyof UpdateMessageStateChatUpdateMessagesPostResponses];
+export type UpdateMessageStateChatUpdateMessagesPostResponse =
+  UpdateMessageStateChatUpdateMessagesPostResponses[keyof UpdateMessageStateChatUpdateMessagesPostResponses];
 
 export type GetMessagesChatMessagesGetData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Room Id
-         */
-        room_id: string;
-        /**
-         * Page
-         */
-        page?: number;
-        /**
-         * Page Size
-         */
-        page_size?: number;
-    };
-    url: '/chat/messages';
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Room Id
+     */
+    room_id: string;
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Page Size
+     */
+    page_size?: number;
+  };
+  url: '/chat/messages';
 };
 
 export type GetMessagesChatMessagesGetErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
-    /**
-     * Generation error
-     */
-    500: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Generation error
+   */
+  500: unknown;
 };
 
-export type GetMessagesChatMessagesGetError = GetMessagesChatMessagesGetErrors[keyof GetMessagesChatMessagesGetErrors];
+export type GetMessagesChatMessagesGetError =
+  GetMessagesChatMessagesGetErrors[keyof GetMessagesChatMessagesGetErrors];
 
 export type GetMessagesChatMessagesGetResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetMessagesResponse;
+  /**
+   * Successful Response
+   */
+  200: GetMessagesResponse;
 };
 
-export type GetMessagesChatMessagesGetResponse = GetMessagesChatMessagesGetResponses[keyof GetMessagesChatMessagesGetResponses];
+export type GetMessagesChatMessagesGetResponse =
+  GetMessagesChatMessagesGetResponses[keyof GetMessagesChatMessagesGetResponses];
 
 export type GetUserChatRoomsData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/chat/chat-rooms';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/chat/chat-rooms';
 };
 
 export type GetUserChatRoomsResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetUserChatRoomsResponse;
+  /**
+   * Successful Response
+   */
+  200: GetUserChatRoomsResponse;
 };
 
-export type GetUserChatRoomsResponse2 = GetUserChatRoomsResponses[keyof GetUserChatRoomsResponses];
+export type GetUserChatRoomsResponse2 =
+  GetUserChatRoomsResponses[keyof GetUserChatRoomsResponses];
 
 export type CreateChatRoomData = {
-    body: CreateChatRoomRequest;
-    path?: never;
-    query?: never;
-    url: '/chat/create-chat-room';
+  body: CreateChatRoomRequest;
+  path?: never;
+  query?: never;
+  url: '/chat/create-chat-room';
 };
 
 export type CreateChatRoomErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type CreateChatRoomError = CreateChatRoomErrors[keyof CreateChatRoomErrors];
+export type CreateChatRoomError =
+  CreateChatRoomErrors[keyof CreateChatRoomErrors];
 
 export type CreateChatRoomResponses = {
-    /**
-     * Successful Response
-     */
-    200: CreateChatRoomResponse;
+  /**
+   * Successful Response
+   */
+  200: CreateChatRoomResponse;
 };
 
-export type CreateChatRoomResponse2 = CreateChatRoomResponses[keyof CreateChatRoomResponses];
+export type CreateChatRoomResponse2 =
+  CreateChatRoomResponses[keyof CreateChatRoomResponses];
 
 export type ExpireChatRoomChatExpireChatRoomPostData = {
-    /**
-     * Request
-     */
-    body: {
-        [key: string]: unknown;
-    };
-    path?: never;
-    query?: never;
-    url: '/chat/expire-chat-room';
+  /**
+   * Request
+   */
+  body: {
+    [key: string]: unknown;
+  };
+  path?: never;
+  query?: never;
+  url: '/chat/expire-chat-room';
 };
 
 export type ExpireChatRoomChatExpireChatRoomPostErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type ExpireChatRoomChatExpireChatRoomPostError = ExpireChatRoomChatExpireChatRoomPostErrors[keyof ExpireChatRoomChatExpireChatRoomPostErrors];
+export type ExpireChatRoomChatExpireChatRoomPostError =
+  ExpireChatRoomChatExpireChatRoomPostErrors[keyof ExpireChatRoomChatExpireChatRoomPostErrors];
 
 export type ExpireChatRoomChatExpireChatRoomPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type SendPublicKeyChatSendPublicKeyPostData = {
-    body: SendPublicKeyRequest;
-    path?: never;
-    query?: never;
-    url: '/chat/send-public-key';
+  body: SendPublicKeyRequest;
+  path?: never;
+  query?: never;
+  url: '/chat/send-public-key';
 };
 
 export type SendPublicKeyChatSendPublicKeyPostErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type SendPublicKeyChatSendPublicKeyPostError = SendPublicKeyChatSendPublicKeyPostErrors[keyof SendPublicKeyChatSendPublicKeyPostErrors];
+export type SendPublicKeyChatSendPublicKeyPostError =
+  SendPublicKeyChatSendPublicKeyPostErrors[keyof SendPublicKeyChatSendPublicKeyPostErrors];
 
 export type SendPublicKeyChatSendPublicKeyPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type GetMessageChatRoomData = {
-    body?: never;
-    path?: never;
-    query: {
-        /**
-         * Room Id
-         */
-        room_id: string;
-    };
-    url: '/chat/message-chat-room';
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Room Id
+     */
+    room_id: string;
+  };
+  url: '/chat/message-chat-room';
 };
 
 export type GetMessageChatRoomErrors = {
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetMessageChatRoomError = GetMessageChatRoomErrors[keyof GetMessageChatRoomErrors];
+export type GetMessageChatRoomError =
+  GetMessageChatRoomErrors[keyof GetMessageChatRoomErrors];
 
 export type GetMessageChatRoomResponses = {
-    /**
-     * Successful Response
-     */
-    200: ChatRoom;
+  /**
+   * Successful Response
+   */
+  200: ChatRoom;
 };
 
-export type GetMessageChatRoomResponse = GetMessageChatRoomResponses[keyof GetMessageChatRoomResponses];
+export type GetMessageChatRoomResponse =
+  GetMessageChatRoomResponses[keyof GetMessageChatRoomResponses];
 
 export type GetNotificationsData = {
-    body?: never;
-    path?: never;
-    query?: {
-        /**
-         * Page
-         */
-        page?: number;
-        /**
-         * Limit
-         */
-        limit?: number;
-    };
-    url: '/notifications';
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Limit
+     */
+    limit?: number;
+  };
+  url: '/notifications';
 };
 
 export type GetNotificationsErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetNotificationsError = GetNotificationsErrors[keyof GetNotificationsErrors];
+export type GetNotificationsError =
+  GetNotificationsErrors[keyof GetNotificationsErrors];
 
 export type GetNotificationsResponses = {
-    /**
-     * Response Get Notifications
-     * Successful Response
-     */
-    200: Array<NotificationResponse>;
+  /**
+   * Response Get Notifications
+   * Successful Response
+   */
+  200: Array<NotificationResponse>;
 };
 
-export type GetNotificationsResponse = GetNotificationsResponses[keyof GetNotificationsResponses];
+export type GetNotificationsResponse =
+  GetNotificationsResponses[keyof GetNotificationsResponses];
 
 export type MarkNotificationsReadData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/notifications/mark-read';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/notifications/mark-read';
 };
 
 export type MarkNotificationsReadErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
 };
 
 export type MarkNotificationsReadResponses = {
-    /**
-     * Successful Response
-     */
-    200: MarkNotificationsReadResponse;
+  /**
+   * Successful Response
+   */
+  200: MarkNotificationsReadResponse;
 };
 
-export type MarkNotificationsReadResponse2 = MarkNotificationsReadResponses[keyof MarkNotificationsReadResponses];
+export type MarkNotificationsReadResponse2 =
+  MarkNotificationsReadResponses[keyof MarkNotificationsReadResponses];
 
 export type GetUnreadCountData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/notifications/unread-count';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/notifications/unread-count';
 };
 
 export type GetUnreadCountErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
+  /**
+   * Not found
+   */
+  404: unknown;
 };
 
 export type GetUnreadCountResponses = {
-    /**
-     * Successful Response
-     */
-    200: UnreadCountResponse;
+  /**
+   * Successful Response
+   */
+  200: UnreadCountResponse;
 };
 
-export type GetUnreadCountResponse = GetUnreadCountResponses[keyof GetUnreadCountResponses];
+export type GetUnreadCountResponse =
+  GetUnreadCountResponses[keyof GetUnreadCountResponses];
 
 export type PokeUserLiveActionsPokeTargetUserIdPostData = {
-    body?: never;
-    path: {
-        /**
-         * Target User Id
-         */
-        target_user_id: string;
-    };
-    query?: never;
-    url: '/live-actions/poke/{target_user_id}';
+  body?: never;
+  path: {
+    /**
+     * Target User Id
+     */
+    target_user_id: string;
+  };
+  query?: never;
+  url: '/live-actions/poke/{target_user_id}';
 };
 
 export type PokeUserLiveActionsPokeTargetUserIdPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type PokeUserLiveActionsPokeTargetUserIdPostError = PokeUserLiveActionsPokeTargetUserIdPostErrors[keyof PokeUserLiveActionsPokeTargetUserIdPostErrors];
+export type PokeUserLiveActionsPokeTargetUserIdPostError =
+  PokeUserLiveActionsPokeTargetUserIdPostErrors[keyof PokeUserLiveActionsPokeTargetUserIdPostErrors];
 
 export type PokeUserLiveActionsPokeTargetUserIdPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type MessageUserLiveActionsMessageTargetUserIdPostData = {
-    body: BodyMessageUserLiveActionsMessageTargetUserIdPost;
-    path: {
-        /**
-         * Target User Id
-         */
-        target_user_id: string;
-    };
-    query?: never;
-    url: '/live-actions/message/{target_user_id}';
+  body: BodyMessageUserLiveActionsMessageTargetUserIdPost;
+  path: {
+    /**
+     * Target User Id
+     */
+    target_user_id: string;
+  };
+  query?: never;
+  url: '/live-actions/message/{target_user_id}';
 };
 
 export type MessageUserLiveActionsMessageTargetUserIdPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type MessageUserLiveActionsMessageTargetUserIdPostError = MessageUserLiveActionsMessageTargetUserIdPostErrors[keyof MessageUserLiveActionsMessageTargetUserIdPostErrors];
+export type MessageUserLiveActionsMessageTargetUserIdPostError =
+  MessageUserLiveActionsMessageTargetUserIdPostErrors[keyof MessageUserLiveActionsMessageTargetUserIdPostErrors];
 
 export type MessageUserLiveActionsMessageTargetUserIdPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type LikeVerificationData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/like-verification/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/like-verification/{verification_id}';
 };
 
 export type LikeVerificationErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type LikeVerificationError = LikeVerificationErrors[keyof LikeVerificationErrors];
+export type LikeVerificationError =
+  LikeVerificationErrors[keyof LikeVerificationErrors];
 
 export type LikeVerificationResponses = {
-    /**
-     * Successful Response
-     */
-    200: LikeVerificationResponse;
+  /**
+   * Successful Response
+   */
+  200: LikeVerificationResponse;
 };
 
-export type LikeVerificationResponse2 = LikeVerificationResponses[keyof LikeVerificationResponses];
+export type LikeVerificationResponse2 =
+  LikeVerificationResponses[keyof LikeVerificationResponses];
 
 export type UnlikeVerificationData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/unlike-verification/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/unlike-verification/{verification_id}';
 };
 
 export type UnlikeVerificationErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type UnlikeVerificationError = UnlikeVerificationErrors[keyof UnlikeVerificationErrors];
+export type UnlikeVerificationError =
+  UnlikeVerificationErrors[keyof UnlikeVerificationErrors];
 
 export type UnlikeVerificationResponses = {
-    /**
-     * Successful Response
-     */
-    200: UnlikeVerificationResponse;
+  /**
+   * Successful Response
+   */
+  200: UnlikeVerificationResponse;
 };
 
-export type UnlikeVerificationResponse2 = UnlikeVerificationResponses[keyof UnlikeVerificationResponses];
+export type UnlikeVerificationResponse2 =
+  UnlikeVerificationResponses[keyof UnlikeVerificationResponses];
 
 export type GetVerificationLikesCountData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/verification-likes/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/verification-likes/{verification_id}';
 };
 
 export type GetVerificationLikesCountErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetVerificationLikesCountError = GetVerificationLikesCountErrors[keyof GetVerificationLikesCountErrors];
+export type GetVerificationLikesCountError =
+  GetVerificationLikesCountErrors[keyof GetVerificationLikesCountErrors];
 
 export type GetVerificationLikesCountResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetVerificationLikesCountResponse;
+  /**
+   * Successful Response
+   */
+  200: GetVerificationLikesCountResponse;
 };
 
-export type GetVerificationLikesCountResponse2 = GetVerificationLikesCountResponses[keyof GetVerificationLikesCountResponses];
+export type GetVerificationLikesCountResponse2 =
+  GetVerificationLikesCountResponses[keyof GetVerificationLikesCountResponses];
 
 export type TrackImpressionsData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/track-impressions/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/track-impressions/{verification_id}';
 };
 
 export type TrackImpressionsErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type TrackImpressionsError = TrackImpressionsErrors[keyof TrackImpressionsErrors];
+export type TrackImpressionsError =
+  TrackImpressionsErrors[keyof TrackImpressionsErrors];
 
 export type TrackImpressionsResponses = {
-    /**
-     * Successful Response
-     */
-    200: TrackImpressionsResponse;
+  /**
+   * Successful Response
+   */
+  200: TrackImpressionsResponse;
 };
 
-export type TrackImpressionsResponse2 = TrackImpressionsResponses[keyof TrackImpressionsResponses];
+export type TrackImpressionsResponse2 =
+  TrackImpressionsResponses[keyof TrackImpressionsResponses];
 
 export type GetImpressionsCountData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/get-impressions/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/get-impressions/{verification_id}';
 };
 
 export type GetImpressionsCountErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetImpressionsCountError = GetImpressionsCountErrors[keyof GetImpressionsCountErrors];
+export type GetImpressionsCountError =
+  GetImpressionsCountErrors[keyof GetImpressionsCountErrors];
 
 export type GetImpressionsCountResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetImpressionsCountResponse;
+  /**
+   * Successful Response
+   */
+  200: GetImpressionsCountResponse;
 };
 
-export type GetImpressionsCountResponse2 = GetImpressionsCountResponses[keyof GetImpressionsCountResponses];
+export type GetImpressionsCountResponse2 =
+  GetImpressionsCountResponses[keyof GetImpressionsCountResponses];
 
 export type RateFactCheckData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/rate-fact-check/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/rate-fact-check/{verification_id}';
 };
 
 export type RateFactCheckErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type RateFactCheckError = RateFactCheckErrors[keyof RateFactCheckErrors];
 
 export type RateFactCheckResponses = {
-    /**
-     * Successful Response
-     */
-    200: RateFactCheckResponse;
+  /**
+   * Successful Response
+   */
+  200: RateFactCheckResponse;
 };
 
-export type RateFactCheckResponse2 = RateFactCheckResponses[keyof RateFactCheckResponses];
+export type RateFactCheckResponse2 =
+  RateFactCheckResponses[keyof RateFactCheckResponses];
 
 export type UnrateFactCheckData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/unrate-fact-check/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/unrate-fact-check/{verification_id}';
 };
 
 export type UnrateFactCheckErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type UnrateFactCheckError = UnrateFactCheckErrors[keyof UnrateFactCheckErrors];
+export type UnrateFactCheckError =
+  UnrateFactCheckErrors[keyof UnrateFactCheckErrors];
 
 export type UnrateFactCheckResponses = {
-    /**
-     * Successful Response
-     */
-    200: UnrateFactCheckResponse;
+  /**
+   * Successful Response
+   */
+  200: UnrateFactCheckResponse;
 };
 
-export type UnrateFactCheckResponse2 = UnrateFactCheckResponses[keyof UnrateFactCheckResponses];
+export type UnrateFactCheckResponse2 =
+  UnrateFactCheckResponses[keyof UnrateFactCheckResponses];
 
 export type GetFactCheckRatingsCountData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/fact-check-ratings/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/fact-check-ratings/{verification_id}';
 };
 
 export type GetFactCheckRatingsCountErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetFactCheckRatingsCountError = GetFactCheckRatingsCountErrors[keyof GetFactCheckRatingsCountErrors];
+export type GetFactCheckRatingsCountError =
+  GetFactCheckRatingsCountErrors[keyof GetFactCheckRatingsCountErrors];
 
 export type GetFactCheckRatingsCountResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetFactCheckRatingsCountResponse;
+  /**
+   * Successful Response
+   */
+  200: GetFactCheckRatingsCountResponse;
 };
 
-export type GetFactCheckRatingsCountResponse2 = GetFactCheckRatingsCountResponses[keyof GetFactCheckRatingsCountResponses];
+export type GetFactCheckRatingsCountResponse2 =
+  GetFactCheckRatingsCountResponses[keyof GetFactCheckRatingsCountResponses];
 
 export type GetFactCheckData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/live-actions/fact-check/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/live-actions/fact-check/{verification_id}';
 };
 
 export type GetFactCheckErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type GetFactCheckError = GetFactCheckErrors[keyof GetFactCheckErrors];
 
 export type GetFactCheckResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetFactCheckResponse;
+  /**
+   * Successful Response
+   */
+  200: GetFactCheckResponse;
 };
 
-export type GetFactCheckResponse2 = GetFactCheckResponses[keyof GetFactCheckResponses];
+export type GetFactCheckResponse2 =
+  GetFactCheckResponses[keyof GetFactCheckResponses];
 
 export type GetRoomPreviewDataData = {
-    body?: never;
-    path: {
-        /**
-         * Livekit Room Name
-         */
-        livekit_room_name: string;
-    };
-    query?: never;
-    url: '/space/preview/{livekit_room_name}';
+  body?: never;
+  path: {
+    /**
+     * Livekit Room Name
+     */
+    livekit_room_name: string;
+  };
+  query?: never;
+  url: '/space/preview/{livekit_room_name}';
 };
 
 export type GetRoomPreviewDataErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetRoomPreviewDataError = GetRoomPreviewDataErrors[keyof GetRoomPreviewDataErrors];
+export type GetRoomPreviewDataError =
+  GetRoomPreviewDataErrors[keyof GetRoomPreviewDataErrors];
 
 export type GetRoomPreviewDataResponses = {
-    /**
-     * Successful Response
-     */
-    200: RoomPreviewData;
+  /**
+   * Successful Response
+   */
+  200: RoomPreviewData;
 };
 
-export type GetRoomPreviewDataResponse = GetRoomPreviewDataResponses[keyof GetRoomPreviewDataResponses];
+export type GetRoomPreviewDataResponse =
+  GetRoomPreviewDataResponses[keyof GetRoomPreviewDataResponses];
 
 export type StopStreamData = {
-    body: StopStreamRequest;
-    path?: never;
-    query?: never;
-    url: '/space/stop-stream';
+  body: StopStreamRequest;
+  path?: never;
+  query?: never;
+  url: '/space/stop-stream';
 };
 
 export type StopStreamErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type StopStreamError = StopStreamErrors[keyof StopStreamErrors];
 
 export type StopStreamResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type CreateStreamData = {
-    body: CreateStreamRequest;
-    path?: never;
-    query?: never;
-    url: '/space/create-stream';
+  body: CreateStreamRequest;
+  path?: never;
+  query?: never;
+  url: '/space/create-stream';
 };
 
 export type CreateStreamErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type CreateStreamError = CreateStreamErrors[keyof CreateStreamErrors];
 
 export type CreateStreamResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type CreateSpaceData = {
-    body?: BodyCreateSpace;
-    path?: never;
-    query?: never;
-    url: '/space/create-space';
+  body?: BodyCreateSpace;
+  path?: never;
+  query?: never;
+  url: '/space/create-space';
 };
 
 export type CreateSpaceErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type CreateSpaceError = CreateSpaceErrors[keyof CreateSpaceErrors];
 
 export type CreateSpaceResponses = {
-    /**
-     * Successful Response
-     */
-    200: CreateSpaceResponse;
+  /**
+   * Successful Response
+   */
+  200: CreateSpaceResponse;
 };
 
-export type CreateSpaceResponse2 = CreateSpaceResponses[keyof CreateSpaceResponses];
+export type CreateSpaceResponse2 =
+  CreateSpaceResponses[keyof CreateSpaceResponses];
 
 export type InviteToStageData = {
-    body: InviteToStageRequest;
-    path?: never;
-    query?: never;
-    url: '/space/invite-to-stage';
+  body: InviteToStageRequest;
+  path?: never;
+  query?: never;
+  url: '/space/invite-to-stage';
 };
 
 export type InviteToStageErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type InviteToStageError = InviteToStageErrors[keyof InviteToStageErrors];
 
 export type InviteToStageResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type RemoveFromStageData = {
-    body: RemoveFromStageRequest;
-    path?: never;
-    query?: never;
-    url: '/space/remove-from-stage';
+  body: RemoveFromStageRequest;
+  path?: never;
+  query?: never;
+  url: '/space/remove-from-stage';
 };
 
 export type RemoveFromStageErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type RemoveFromStageError = RemoveFromStageErrors[keyof RemoveFromStageErrors];
+export type RemoveFromStageError =
+  RemoveFromStageErrors[keyof RemoveFromStageErrors];
 
 export type RemoveFromStageResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type RaiseHandData = {
-    body: RaiseHandRequest;
-    path?: never;
-    query?: never;
-    url: '/space/raise-hand';
+  body: RaiseHandRequest;
+  path?: never;
+  query?: never;
+  url: '/space/raise-hand';
 };
 
 export type RaiseHandErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type RaiseHandError = RaiseHandErrors[keyof RaiseHandErrors];
 
 export type RaiseHandResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type SubscribeSpaceData = {
-    body: SubscribeSpaceRequest;
-    path?: never;
-    query?: never;
-    url: '/space/subscribe-space';
+  body: SubscribeSpaceRequest;
+  path?: never;
+  query?: never;
+  url: '/space/subscribe-space';
 };
 
 export type SubscribeSpaceErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type SubscribeSpaceError = SubscribeSpaceErrors[keyof SubscribeSpaceErrors];
+export type SubscribeSpaceError =
+  SubscribeSpaceErrors[keyof SubscribeSpaceErrors];
 
 export type SubscribeSpaceResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type TriggerSpaceStartData = {
-    /**
-     * Payload
-     */
-    body: {
-        [key: string]: unknown;
-    };
-    path?: never;
-    query?: never;
-    url: '/space/trigger-space-start';
+  /**
+   * Payload
+   */
+  body: {
+    [key: string]: unknown;
+  };
+  path?: never;
+  query?: never;
+  url: '/space/trigger-space-start';
 };
 
 export type TriggerSpaceStartErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type TriggerSpaceStartError = TriggerSpaceStartErrors[keyof TriggerSpaceStartErrors];
+export type TriggerSpaceStartError =
+  TriggerSpaceStartErrors[keyof TriggerSpaceStartErrors];
 
 export type TriggerSpaceStartResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type CreateCommentCommentsPostData = {
-    body: CreateCommentRequest;
-    path?: never;
-    query?: never;
-    url: '/comments';
+  body: CreateCommentRequest;
+  path?: never;
+  query?: never;
+  url: '/comments';
 };
 
 export type CreateCommentCommentsPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type CreateCommentCommentsPostError = CreateCommentCommentsPostErrors[keyof CreateCommentCommentsPostErrors];
+export type CreateCommentCommentsPostError =
+  CreateCommentCommentsPostErrors[keyof CreateCommentCommentsPostErrors];
 
 export type CreateCommentCommentsPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type GetVerificationCommentsData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: {
-        /**
-         * Sort By
-         */
-        sort_by?: 'recent' | 'top';
-        /**
-         * Page
-         */
-        page?: number;
-        /**
-         * Limit
-         */
-        limit?: number;
-    };
-    url: '/comments/verification/{verification_id}';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: {
+    /**
+     * Sort By
+     */
+    sort_by?: 'recent' | 'top';
+    /**
+     * Page
+     */
+    page?: number;
+    /**
+     * Limit
+     */
+    limit?: number;
+  };
+  url: '/comments/verification/{verification_id}';
 };
 
 export type GetVerificationCommentsErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetVerificationCommentsError = GetVerificationCommentsErrors[keyof GetVerificationCommentsErrors];
+export type GetVerificationCommentsError =
+  GetVerificationCommentsErrors[keyof GetVerificationCommentsErrors];
 
 export type GetVerificationCommentsResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetVerificationCommentsResponse;
+  /**
+   * Successful Response
+   */
+  200: GetVerificationCommentsResponse;
 };
 
-export type GetVerificationCommentsResponse2 = GetVerificationCommentsResponses[keyof GetVerificationCommentsResponses];
+export type GetVerificationCommentsResponse2 =
+  GetVerificationCommentsResponses[keyof GetVerificationCommentsResponses];
 
 export type UnlikeCommentData = {
-    body?: never;
-    path: {
-        /**
-         * Comment Id
-         */
-        comment_id: string;
-    };
-    query?: never;
-    url: '/comments/{comment_id}/like';
+  body?: never;
+  path: {
+    /**
+     * Comment Id
+     */
+    comment_id: string;
+  };
+  query?: never;
+  url: '/comments/{comment_id}/like';
 };
 
 export type UnlikeCommentErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type UnlikeCommentError = UnlikeCommentErrors[keyof UnlikeCommentErrors];
 
 export type UnlikeCommentResponses = {
-    /**
-     * Successful Response
-     */
-    200: LikeCommentResponse;
+  /**
+   * Successful Response
+   */
+  200: LikeCommentResponse;
 };
 
-export type UnlikeCommentResponse = UnlikeCommentResponses[keyof UnlikeCommentResponses];
+export type UnlikeCommentResponse =
+  UnlikeCommentResponses[keyof UnlikeCommentResponses];
 
 export type LikeCommentData = {
-    body?: never;
-    path: {
-        /**
-         * Comment Id
-         */
-        comment_id: string;
-    };
-    query?: never;
-    url: '/comments/{comment_id}/like';
+  body?: never;
+  path: {
+    /**
+     * Comment Id
+     */
+    comment_id: string;
+  };
+  query?: never;
+  url: '/comments/{comment_id}/like';
 };
 
 export type LikeCommentErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type LikeCommentError = LikeCommentErrors[keyof LikeCommentErrors];
 
 export type LikeCommentResponses = {
-    /**
-     * Successful Response
-     */
-    200: LikeCommentResponse;
+  /**
+   * Successful Response
+   */
+  200: LikeCommentResponse;
 };
 
-export type LikeCommentResponse2 = LikeCommentResponses[keyof LikeCommentResponses];
+export type LikeCommentResponse2 =
+  LikeCommentResponses[keyof LikeCommentResponses];
 
 export type GetVerificationCommentsCountData = {
-    body?: never;
-    path: {
-        /**
-         * Verification Id
-         */
-        verification_id: string;
-    };
-    query?: never;
-    url: '/comments/verification/{verification_id}/count';
+  body?: never;
+  path: {
+    /**
+     * Verification Id
+     */
+    verification_id: string;
+  };
+  query?: never;
+  url: '/comments/verification/{verification_id}/count';
 };
 
 export type GetVerificationCommentsCountErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetVerificationCommentsCountError = GetVerificationCommentsCountErrors[keyof GetVerificationCommentsCountErrors];
+export type GetVerificationCommentsCountError =
+  GetVerificationCommentsCountErrors[keyof GetVerificationCommentsCountErrors];
 
 export type GetVerificationCommentsCountResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetVerificationCommentsCountResponse;
+  /**
+   * Successful Response
+   */
+  200: GetVerificationCommentsCountResponse;
 };
 
-export type GetVerificationCommentsCountResponse2 = GetVerificationCommentsCountResponses[keyof GetVerificationCommentsCountResponses];
+export type GetVerificationCommentsCountResponse2 =
+  GetVerificationCommentsCountResponses[keyof GetVerificationCommentsCountResponses];
 
 export type DeleteCommentData = {
-    body?: never;
-    path: {
-        /**
-         * Comment Id
-         */
-        comment_id: string;
-    };
-    query?: never;
-    url: '/comments/{comment_id}';
+  body?: never;
+  path: {
+    /**
+     * Comment Id
+     */
+    comment_id: string;
+  };
+  query?: never;
+  url: '/comments/{comment_id}';
 };
 
 export type DeleteCommentErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
 export type DeleteCommentError = DeleteCommentErrors[keyof DeleteCommentErrors];
 
 export type DeleteCommentResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type RemoveReactionData = {
-    body?: never;
-    path: {
-        /**
-         * Comment Id
-         */
-        comment_id: string;
-    };
-    query?: never;
-    url: '/comments/{comment_id}/reactions';
+  body?: never;
+  path: {
+    /**
+     * Comment Id
+     */
+    comment_id: string;
+  };
+  query?: never;
+  url: '/comments/{comment_id}/reactions';
 };
 
 export type RemoveReactionErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type RemoveReactionError = RemoveReactionErrors[keyof RemoveReactionErrors];
+export type RemoveReactionError =
+  RemoveReactionErrors[keyof RemoveReactionErrors];
 
 export type RemoveReactionResponses = {
-    /**
-     * Successful Response
-     */
-    200: RemoveReactionResponse;
+  /**
+   * Successful Response
+   */
+  200: RemoveReactionResponse;
 };
 
-export type RemoveReactionResponse2 = RemoveReactionResponses[keyof RemoveReactionResponses];
+export type RemoveReactionResponse2 =
+  RemoveReactionResponses[keyof RemoveReactionResponses];
 
 export type GetCommentReactionsCommentsCommentIdReactionsGetData = {
-    body?: never;
-    path: {
-        /**
-         * Comment Id
-         */
-        comment_id: string;
-    };
-    query?: never;
-    url: '/comments/{comment_id}/reactions';
+  body?: never;
+  path: {
+    /**
+     * Comment Id
+     */
+    comment_id: string;
+  };
+  query?: never;
+  url: '/comments/{comment_id}/reactions';
 };
 
 export type GetCommentReactionsCommentsCommentIdReactionsGetErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type GetCommentReactionsCommentsCommentIdReactionsGetError = GetCommentReactionsCommentsCommentIdReactionsGetErrors[keyof GetCommentReactionsCommentsCommentIdReactionsGetErrors];
+export type GetCommentReactionsCommentsCommentIdReactionsGetError =
+  GetCommentReactionsCommentsCommentIdReactionsGetErrors[keyof GetCommentReactionsCommentsCommentIdReactionsGetErrors];
 
 export type GetCommentReactionsCommentsCommentIdReactionsGetResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetCommentReactionsResponse;
+  /**
+   * Successful Response
+   */
+  200: GetCommentReactionsResponse;
 };
 
-export type GetCommentReactionsCommentsCommentIdReactionsGetResponse = GetCommentReactionsCommentsCommentIdReactionsGetResponses[keyof GetCommentReactionsCommentsCommentIdReactionsGetResponses];
+export type GetCommentReactionsCommentsCommentIdReactionsGetResponse =
+  GetCommentReactionsCommentsCommentIdReactionsGetResponses[keyof GetCommentReactionsCommentsCommentIdReactionsGetResponses];
 
 export type AddOrUpdateReactionCommentsCommentIdReactionsPostData = {
-    body: CreateReactionRequest;
-    path: {
-        /**
-         * Comment Id
-         */
-        comment_id: string;
-    };
-    query?: never;
-    url: '/comments/{comment_id}/reactions';
+  body: CreateReactionRequest;
+  path: {
+    /**
+     * Comment Id
+     */
+    comment_id: string;
+  };
+  query?: never;
+  url: '/comments/{comment_id}/reactions';
 };
 
 export type AddOrUpdateReactionCommentsCommentIdReactionsPostErrors = {
-    /**
-     * Not found
-     */
-    404: unknown;
-    /**
-     * Validation Error
-     */
-    422: HttpValidationError;
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
 };
 
-export type AddOrUpdateReactionCommentsCommentIdReactionsPostError = AddOrUpdateReactionCommentsCommentIdReactionsPostErrors[keyof AddOrUpdateReactionCommentsCommentIdReactionsPostErrors];
+export type AddOrUpdateReactionCommentsCommentIdReactionsPostError =
+  AddOrUpdateReactionCommentsCommentIdReactionsPostErrors[keyof AddOrUpdateReactionCommentsCommentIdReactionsPostErrors];
 
 export type AddOrUpdateReactionCommentsCommentIdReactionsPostResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type GetCountryData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/get-country';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/get-country';
 };
 
 export type GetCountryResponses = {
-    /**
-     * Successful Response
-     */
-    200: GetCountryResponse;
+  /**
+   * Successful Response
+   */
+  200: GetCountryResponse;
 };
 
-export type GetCountryResponse2 = GetCountryResponses[keyof GetCountryResponses];
+export type GetCountryResponse2 =
+  GetCountryResponses[keyof GetCountryResponses];
 
 export type EndpointHealthGetData = {
-    body?: never;
-    path?: never;
-    query?: never;
-    url: '/health';
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/health';
 };
 
 export type EndpointHealthGetResponses = {
-    /**
-     * Successful Response
-     */
-    200: unknown;
+  /**
+   * Successful Response
+   */
+  200: unknown;
 };
 
 export type ClientOptions = {
-    baseURL: 'http://localhost:5500' | (string & {});
+  baseURL: 'http://localhost:5500' | (string & {});
 };

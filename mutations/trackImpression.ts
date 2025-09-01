@@ -1,6 +1,6 @@
 // @ts-nocheck
-import { useMutation } from "@tanstack/react-query";
-import { trackImpressionsMutation } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useMutation } from '@tanstack/react-query';
+import { trackImpressionsMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 // Cache to store the last tracked time for each verification ID
 const impressionCache: Record<string, number> = {};
@@ -9,7 +9,7 @@ const COOLDOWN_PERIOD = 60000; // 60 seconds cooldown period
 export const useTrackImpression = () => {
   return useMutation({
     ...trackImpressionsMutation(),
-    mutationKey: ["track-impression"],
+    mutationKey: ['track-impression'],
     mutationFn: (verificationId: string) => {
       const now = Date.now();
       const lastTracked = impressionCache[verificationId] || 0;

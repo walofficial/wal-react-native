@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getUserProfileUserProfileUserIdGetOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
+import { useQuery } from '@tanstack/react-query';
+import { getUserProfileUserProfileUserIdGetOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export function useProfileInformation(userId: string) {
   return useQuery({

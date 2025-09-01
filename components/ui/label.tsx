@@ -1,6 +1,6 @@
-import * as LabelPrimitive from "~/components/primitives/label";
-import * as React from "react";
-import { StyleSheet } from "react-native";
+import * as LabelPrimitive from '~/components/primitives/label';
+import * as React from 'react';
+import { StyleSheet } from 'react-native';
 
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Text>,
@@ -25,9 +25,9 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16, // native:text-base
-    fontWeight: "500", // font-medium
+    fontWeight: '500', // font-medium
     lineHeight: 16, // leading-none
-    color: "#000", // text-foreground
+    color: '#000', // text-foreground
   },
 });
 

@@ -1,11 +1,11 @@
-import { TouchableOpacity, StyleSheet, Text } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import Ionicons from "@expo/vector-icons/Ionicons";
-import { useTheme } from "@/lib/theme";
-import { useShareIntentContext } from "expo-share-intent";
-import { useEffect, useRef } from "react";
-import { isIOS } from "@/lib/platform";
-import { t } from "@/lib/i18n";
+import { TouchableOpacity, StyleSheet, Text } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTheme } from '@/lib/theme';
+import { useShareIntentContext } from 'expo-share-intent';
+import { useEffect, useRef } from 'react';
+import { isIOS } from '@/lib/platform';
+import { t } from '@/lib/i18n';
 
 interface CreatePostProps {
   disabled: boolean;
@@ -23,10 +23,10 @@ export default function CreatePostGlobal({
   }>();
 
   const isDark =
-    theme.colors.background === "#000000" ||
-    theme.colors.background === "#121212";
-  const buttonBg = isDark ? "#FFFFFF" : "#000000";
-  const contentColor = isDark ? "#000000" : "#FFFFFF";
+    theme.colors.background === '#000000' ||
+    theme.colors.background === '#121212';
+  const buttonBg = isDark ? '#FFFFFF' : '#000000';
+  const contentColor = isDark ? '#000000' : '#FFFFFF';
 
   return (
     <TouchableOpacity
@@ -43,7 +43,7 @@ export default function CreatePostGlobal({
           pathname: `/(tabs)/(fact-check)/[feedId]/create-post`,
           params: {
             feedId,
-            disableRoomCreation: "true",
+            disableRoomCreation: 'true',
             sharedContent: params.sharedContent,
           },
         });
@@ -51,7 +51,7 @@ export default function CreatePostGlobal({
     >
       <Ionicons name="add" size={18} color={contentColor} style={styles.icon} />
       <Text style={[styles.buttonText, { color: contentColor }]}>
-        {t("common.check_fact")}
+        {t('common.check_fact')}
       </Text>
     </TouchableOpacity>
   );
@@ -62,10 +62,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    shadowColor: "#000",
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 3,
@@ -79,6 +79,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });

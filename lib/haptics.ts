@@ -1,13 +1,12 @@
-import React from "react";
-import * as Device from "expo-device";
-import { impactAsync, ImpactFeedbackStyle } from "expo-haptics";
+import React from 'react';
+import * as Device from 'expo-device';
+import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 
-import { isIOS, isWeb } from "./platform";
-import { toast } from "@backpackapp-io/react-native-toast";
+import { isIOS, isWeb } from './platform';
 
 export function useHaptics() {
   return React.useCallback(
-    (strength: "Light" | "Medium" | "Heavy" = "Medium") => {
+    (strength: 'Light' | 'Medium' | 'Heavy' = 'Medium') => {
       if (isWeb) {
         return;
       }
@@ -23,6 +22,6 @@ export function useHaptics() {
         // toast("Buzzz!");
       }
     },
-    []
+    [],
   );
 }

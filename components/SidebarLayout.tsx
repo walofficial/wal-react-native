@@ -1,17 +1,15 @@
-// @ts-nocheck
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
   Pressable,
   useWindowDimensions,
   StyleSheet,
-  TextStyle,
-} from "react-native";
-import { Link, usePathname, Href } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
-import { H1 } from "./ui/typography";
-import { useTheme } from "@/lib/theme";
+} from 'react-native';
+import { Link, usePathname } from 'expo-router';
+import type { Href } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { H1 } from './ui/typography';
 /**
  * This is an example SidebarLayout component for web.
  * You can style this however you like by adjusting the flexbox styling,
@@ -22,7 +20,7 @@ import { useTheme } from "@/lib/theme";
  */
 
 interface NavItemProps {
-  href: Href<string>;
+  href: Href;
   icon: keyof typeof Ionicons.glyphMap;
   label: string;
 }
@@ -36,7 +34,6 @@ const NavItem = ({
   const pathname = usePathname();
   const [isHovered, setIsHovered] = useState(false);
   const isActive = pathname === href;
-  const theme = useTheme();
 
   if (isMobile) {
     return (
@@ -45,7 +42,7 @@ const NavItem = ({
           <Ionicons
             name={icon}
             size={24}
-            color={isActive ? "white" : "#9ca3af"}
+            color={isActive ? 'white' : '#9ca3af'}
           />
           <Text
             style={[
@@ -110,13 +107,12 @@ export default function SidebarLayout({
 }) {
   const { width } = useWindowDimensions();
   const isMobileWidth = width < 768; // Standard tablet breakpoint
-  const theme = useTheme();
 
   const navigationItems: NavItemProps[] = [
     {
-      href: "/(tabs)/(home)",
-      icon: "home",
-      label: "მთავარი",
+      href: '/(tabs)/(home)',
+      icon: 'home',
+      label: 'მთავარი',
     },
     // Add more navigation items here as needed
   ];
@@ -160,43 +156,43 @@ export default function SidebarLayout({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#000",
+    backgroundColor: '#000',
   },
   mainContent: {
     flex: 1,
   },
   mobileTabBar: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: "rgba(255, 255, 255, 0.1)",
-    backgroundColor: "#000",
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: '#000',
     paddingVertical: 8,
     paddingHorizontal: 16,
   },
   desktopContainer: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: 'row',
     maxWidth: 1100,
-    width: "100%",
-    marginHorizontal: "auto",
-    backgroundColor: "#000",
+    width: '100%',
+    marginHorizontal: 'auto',
+    backgroundColor: '#000',
   },
   sidebar: {
     width: 250,
     paddingTop: 20,
-    alignItems: "flex-start",
+    alignItems: 'flex-start',
     borderRightWidth: 1,
-    borderRightColor: "rgba(255, 255, 255, 0.1)",
+    borderRightColor: 'rgba(255, 255, 255, 0.1)',
   },
   logoWrapper: {
     paddingHorizontal: 12,
-    width: "100%",
+    width: '100%',
   },
   mobileNavItem: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 12,
   },
   mobileNavText: {
@@ -204,44 +200,44 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   activeText: {
-    color: "white",
+    color: 'white',
   },
   inactiveText: {
-    color: "#9ca3af",
+    color: '#9ca3af',
   },
   navItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
     borderRadius: 9999,
     marginBottom: 8,
   },
   activeNavItem: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   hoveredNavItem: {
-    backgroundColor: "rgba(255, 255, 255, 0.05)",
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   navItemText: {
-    color: "white",
+    color: 'white',
     fontSize: 20,
-    fontWeight: "500",
+    fontWeight: '500',
     marginLeft: 16,
   },
   activeNavItemText: {
-    fontWeight: "600",
+    fontWeight: '600',
   },
   hoveredNavItemText: {
-    color: "white",
+    color: 'white',
   },
   logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
     borderRadius: 9999,
     marginBottom: 8,
   },
   logoText: {
-    color: "white",
+    color: 'white',
   },
 });

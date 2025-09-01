@@ -1,6 +1,6 @@
-import * as React from "react";
-import { StyleSheet } from "react-native";
-import * as AvatarPrimitive from "~/components/primitives/avatar";
+import * as React from 'react';
+import { StyleSheet } from 'react-native';
+import * as AvatarPrimitive from '~/components/primitives/avatar';
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
@@ -32,27 +32,27 @@ AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName;
 
 const styles = StyleSheet.create({
   root: {
-    position: "relative",
-    flexDirection: "row",
+    position: 'relative',
+    flexDirection: 'row',
     height: 40,
     width: 40,
     flexShrink: 0,
-    overflow: "hidden",
+    overflow: 'hidden',
     borderRadius: 9999,
   },
   image: {
     aspectRatio: 1,
-    height: "100%",
-    width: "100%",
+    height: '100%',
+    width: '100%',
   },
   fallback: {
     flex: 1,
-    height: "100%",
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 9999,
-    backgroundColor: "#e5e5e5", // muted color
+    backgroundColor: '#e5e5e5', // muted color
   },
 });
 

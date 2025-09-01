@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,21 +8,21 @@ import {
   Dimensions,
   ActivityIndicator,
   DimensionValue,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import SourceIcon from "./SourceIcon";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { FontSizes } from "@/lib/theme";
-import { LinearGradient } from "expo-linear-gradient";
-import { useSetAtom } from "jotai";
-import { aiSummaryBottomSheetState } from "@/lib/atoms/news";
-import { Image } from "expo-image";
-import { useThemeColor } from "@/hooks/useThemeColor";
-import { convertToCDNUrl } from "@/lib/utils";
-import FactualityBadge from "./ui/FactualityBadge";
-import { getFactCheckBadgeInfo } from "@/utils/factualityUtils";
-import { LinkPreviewData } from "@/lib/api/generated";
-import { t } from "@/lib/i18n";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import SourceIcon from './SourceIcon';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { FontSizes } from '@/lib/theme';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useSetAtom } from 'jotai';
+import { aiSummaryBottomSheetState } from '@/lib/atoms/news';
+import { Image } from 'expo-image';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { convertToCDNUrl } from '@/lib/utils';
+import FactualityBadge from './ui/FactualityBadge';
+import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
+import { LinkPreviewData } from '@/lib/api/generated';
+import { t } from '@/lib/i18n';
 
 interface LinkPreviewProps {
   previewData: LinkPreviewData;
@@ -35,7 +35,7 @@ interface LinkPreviewProps {
   factuality?: number;
 }
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
+const SCREEN_WIDTH = Dimensions.get('window').width;
 // Assume parent FeedItem has paddingHorizontal: 8 on each side
 const PARENT_HORIZONTAL_PADDING = 8 * 2;
 const EFFECTIVE_WIDTH = SCREEN_WIDTH - PARENT_HORIZONTAL_PADDING;
@@ -55,10 +55,10 @@ export default function LinkPreview({
   const router = useRouter();
   const [isInvalidLink, setIsInvalidLink] = useState(false);
 
-  const cardBackgroundColor = useThemeColor({}, "background");
-  const textColor = useThemeColor({}, "text");
-  const secondaryTextColor = useThemeColor({}, "text");
-  const borderColor = useThemeColor({}, "background");
+  const cardBackgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+  const secondaryTextColor = useThemeColor({}, 'text');
+  const borderColor = useThemeColor({}, 'background');
 
   const badgeInfo = getFactCheckBadgeInfo(factuality);
 
@@ -67,7 +67,7 @@ export default function LinkPreview({
 
   if (!previewData?.images || previewData.images.length === 0) {
     // Use auto height for text-only previews
-    containerHeight = "auto";
+    containerHeight = 'auto';
   } else {
     // Default to strict 16:9 for other cases with images (e.g., regular feed view)
     containerHeight = CARD_HEIGHT_16_9;
@@ -75,7 +75,7 @@ export default function LinkPreview({
 
   // General invalid link checker
   const isLinkInvalid = (url: string): boolean => {
-    if (!url || typeof url !== "string") return true;
+    if (!url || typeof url !== 'string') return true;
 
     try {
       const urlObj = new URL(url);
@@ -98,12 +98,12 @@ export default function LinkPreview({
 
       // Check hostname patterns that are often problematic
       const problematicDomains = [
-        "localhost",
-        "127.0.0.1",
-        "0.0.0.0",
-        "example.com",
-        "test.com",
-        "placeholder.com",
+        'localhost',
+        '127.0.0.1',
+        '0.0.0.0',
+        'example.com',
+        'test.com',
+        'placeholder.com',
       ];
 
       // Check for problematic patterns
@@ -122,7 +122,7 @@ export default function LinkPreview({
       if (url.length < 10) return true;
 
       // Check for missing TLD
-      if (!urlObj.hostname.includes(".")) return true;
+      if (!urlObj.hostname.includes('.')) return true;
 
       return false;
     } catch (error) {
@@ -145,7 +145,7 @@ export default function LinkPreview({
     if (inFeedView && verificationId) {
       // In feed view, navigate to verification page when clicked
       router.navigate({
-        pathname: "/verification/[verificationId]",
+        pathname: '/verification/[verificationId]',
         params: {
           verificationId,
           feedId,
@@ -167,7 +167,7 @@ export default function LinkPreview({
             height: containerHeight, // Use calculated height
           },
           // Apply textOnlyContainer style only if needed for other styles
-          containerHeight === "auto" ? styles.textOnlyContainer : null,
+          containerHeight === 'auto' ? styles.textOnlyContainer : null,
         ]}
       >
         <TouchableOpacity
@@ -183,7 +183,7 @@ export default function LinkPreview({
             ]}
           />
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.8)"]}
+            colors={['transparent', 'rgba(0,0,0,0.8)']}
             style={styles.gradient}
           />
           <View style={styles.loadingTitleContainer}>
@@ -198,7 +198,7 @@ export default function LinkPreview({
               style={[
                 styles.loadingTitle,
                 styles.loadingDark,
-                { width: "60%", marginTop: 8, backgroundColor: borderColor },
+                { width: '60%', marginTop: 8, backgroundColor: borderColor },
               ]}
             />
           </View>
@@ -215,7 +215,7 @@ export default function LinkPreview({
           styles.textOnlyContainer,
           {
             backgroundColor: cardBackgroundColor,
-            height: "auto",
+            height: 'auto',
           },
         ]}
       >
@@ -248,7 +248,7 @@ export default function LinkPreview({
             backgroundColor: cardBackgroundColor,
             height: containerHeight, // Use calculated height
           },
-          containerHeight === "auto" ? styles.textOnlyContainer : null,
+          containerHeight === 'auto' ? styles.textOnlyContainer : null,
         ]}
       >
         <View
@@ -262,7 +262,7 @@ export default function LinkPreview({
             ]}
           />
           <LinearGradient
-            colors={["transparent", "rgba(0,0,0,0.8)"]}
+            colors={['transparent', 'rgba(0,0,0,0.8)']}
             style={styles.gradient}
           />
           <View style={styles.contentOverlay}>
@@ -295,7 +295,7 @@ export default function LinkPreview({
           backgroundColor: cardBackgroundColor,
           height: containerHeight, // Use calculated height
         },
-        containerHeight === "auto" ? styles.textOnlyContainer : null,
+        containerHeight === 'auto' ? styles.textOnlyContainer : null,
       ]}
     >
       <TouchableOpacity
@@ -312,7 +312,7 @@ export default function LinkPreview({
             />
 
             <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.5)"]}
+              colors={['transparent', 'rgba(0,0,0,0.5)']}
               style={styles.gradient}
             />
 
@@ -333,15 +333,15 @@ export default function LinkPreview({
 
                     {previewData.description && (
                       <Text style={styles.description} numberOfLines={2}>
-                        {previewData.description.replace(/\n/g, " ")}
+                        {previewData.description.replace(/\n/g, ' ')}
                       </Text>
                     )}
 
                     <View style={styles.badgeContainer}>
                       {badgeInfo?.text && (
                         <FactualityBadge
-                          text={badgeInfo?.text || ""}
-                          type={badgeInfo?.type || "needs-context"}
+                          text={badgeInfo?.text || ''}
+                          type={badgeInfo?.type || 'needs-context'}
                           style={styles.factualityBadge}
                         />
                       )}
@@ -355,10 +355,10 @@ export default function LinkPreview({
                           <Text
                             style={[
                               styles.aiSummaryText,
-                              { color: "rgba(255, 255, 255, 0.95)" },
+                              { color: 'rgba(255, 255, 255, 0.95)' },
                             ]}
                           >
-                            {t("common.analysis")}
+                            {t('common.analysis')}
                           </Text>
                         </View>
                       )}
@@ -394,7 +394,7 @@ export default function LinkPreview({
                         { fontSize: 12, color: textColor },
                       ]}
                     >
-                      {t("common.analysis")}
+                      {t('common.analysis')}
                     </Text>
                   </View>
                 )}
@@ -418,7 +418,7 @@ export default function LinkPreview({
                 ]}
                 numberOfLines={3}
               >
-                {previewData.description.replace(/\n/g, " ")}
+                {previewData.description.replace(/\n/g, ' ')}
               </Text>
             )}
           </View>
@@ -432,34 +432,34 @@ const styles = StyleSheet.create({
   container: {
     marginVertical: 8,
     borderRadius: 12,
-    overflow: "hidden",
-    width: "100%",
+    overflow: 'hidden',
+    width: '100%',
   },
   textOnlyContainer: {
-    height: "auto",
+    height: 'auto',
     minHeight: 120,
   },
   content: {
     flex: 1,
-    position: "relative",
+    position: 'relative',
   },
   textOnlyContent: {
     padding: 16,
     flex: 1,
   },
   textOnlyHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 8,
   },
   siteName: {
-    color: "#888",
+    color: '#888',
     fontSize: 12,
     marginLeft: 8,
   },
   textOnlyTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     marginBottom: 8,
   },
   textOnlyDescription: {
@@ -467,190 +467,190 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   contentOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
   image: {
-    width: "100%",
-    height: "100%",
-    position: "absolute",
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
   },
   gradient: {
-    position: "absolute",
+    position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    height: "70%",
+    height: '70%',
   },
   titleContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     bottom: 0,
     left: 0,
     right: 0,
   },
   textBackground: {
-    backgroundColor: "rgba(0, 0, 0, 0.35)",
+    backgroundColor: 'rgba(0, 0, 0, 0.35)',
     paddingHorizontal: 12,
     paddingVertical: 12,
-    width: "100%",
-    height: "100%",
-    justifyContent: "flex-end",
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
   },
   headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: 6,
   },
   title: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    fontWeight: '600',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     flex: 1,
     marginRight: 8,
   },
   iconContainer: {
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: 'rgba(0,0,0,0.5)',
     borderRadius: 8,
     padding: 4,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   description: {
     fontSize: 13,
-    fontWeight: "400",
-    color: "#FFFFFF",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    fontWeight: '400',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     lineHeight: 18,
     marginBottom: 10,
   },
   analysisBadge: {
-    backgroundColor: "rgba(255, 255, 255, 0.18)",
+    backgroundColor: 'rgba(255, 255, 255, 0.18)',
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 12,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     marginTop: 8,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
     shadowRadius: 1.5,
   },
   aiSummaryText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: FontSizes.small,
-    fontWeight: "600",
+    fontWeight: '600',
     letterSpacing: -0.2,
   },
   // Loading state styles
   loadingTitleContainer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 12,
     left: 12,
     right: 12,
   },
   loadingContent: {
     padding: 16,
-    justifyContent: "center",
+    justifyContent: 'center',
   },
   loadingBackground: {
-    backgroundColor: "#1A1A1A",
+    backgroundColor: '#1A1A1A',
   },
   loadingDark: {
-    backgroundColor: "rgba(60, 60, 60, 0.5)",
+    backgroundColor: 'rgba(60, 60, 60, 0.5)',
     borderRadius: 4,
   },
   loadingTitle: {
     height: 18,
-    width: "90%",
+    width: '90%',
     borderRadius: 4,
   },
   invalidLinkBackground: {
-    backgroundColor: "#2A2A2A",
+    backgroundColor: '#2A2A2A',
   },
   invalidLinkTitle: {
-    color: "#FF6B6B",
+    color: '#FF6B6B',
     fontSize: 16,
-    fontWeight: "600",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    fontWeight: '600',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     flex: 1,
     marginRight: 8,
   },
   invalidLinkDescription: {
-    color: "#f0f0f0",
+    color: '#f0f0f0',
     fontSize: 13,
-    fontWeight: "400",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    fontWeight: '400',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     lineHeight: 18,
     marginBottom: 10,
   },
   metadataLoadingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   metadataLoadingText: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
     marginLeft: 8,
   },
   factualityBadgeOverlay: {
     marginTop: 8,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
   factualityBadge: {
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
   },
   textOnlyBadge: {
     marginLeft: 8,
   },
   badgeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
-    flexWrap: "wrap",
+    flexWrap: 'wrap',
   },
   aiSummaryBadge: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 10,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 4,
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     height: 28,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.2)",
-    boxShadow: "0px 4px 10px 0px rgba(0, 0, 0, 0.1)",
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    boxShadow: '0px 4px 10px 0px rgba(0, 0, 0, 0.1)',
   },
   textOnlyAISummaryBadge: {
     paddingHorizontal: 8,
     paddingVertical: 4,
-    backgroundColor: "rgba(0, 0, 0, 0.08)",
+    backgroundColor: 'rgba(0, 0, 0, 0.08)',
     borderWidth: 1,
-    borderColor: "rgba(0, 0, 0, 0.1)",
-    boxShadow: "0px 2px 6px 0px rgba(0, 0, 0, 0.08)",
+    borderColor: 'rgba(0, 0, 0, 0.1)',
+    boxShadow: '0px 2px 6px 0px rgba(0, 0, 0, 0.08)',
   },
   linkPreviewBadge: {
-    backgroundColor: "rgba(0, 0, 0, 0.85)",
+    backgroundColor: 'rgba(0, 0, 0, 0.85)',
     borderRadius: 6,
     paddingVertical: 4,
     paddingHorizontal: 8,
@@ -659,15 +659,15 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0px 0px 10px 0px rgba(0, 0, 0, 0.5)",
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.5)',
   },
   customBadgeText: {
     fontSize: 13,
-    fontWeight: "700",
-    color: "#FFFFFF",
-    textShadowColor: "rgba(0, 0, 0, 0.75)",
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textShadowColor: 'rgba(0, 0, 0, 0.75)',
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 2,
     letterSpacing: -0.24,

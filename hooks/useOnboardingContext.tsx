@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface OnboardingState {
   hasSeenSpaceInfo: boolean;
@@ -18,7 +18,7 @@ const defaultState: OnboardingState = {
 };
 
 const OnboardingContext = createContext<OnboardingContextType | undefined>(
-  undefined
+  undefined,
 );
 
 export function OnboardingProvider({
@@ -33,17 +33,16 @@ export function OnboardingProvider({
     // Load all onboarding states when the provider mounts
     const loadOnboardingStates = async () => {
       try {
-        const hasSeenSpaceInfo = await AsyncStorage.getItem("hasSeenSpaceInfo");
-        const hasSeenContactSync = await AsyncStorage.getItem(
-          "hasSeenContactSync"
-        );
+        const hasSeenSpaceInfo = await AsyncStorage.getItem('hasSeenSpaceInfo');
+        const hasSeenContactSync =
+          await AsyncStorage.getItem('hasSeenContactSync');
         setOnboardingState((state) => ({
           ...state,
           hasSeenSpaceInfo: !!hasSeenSpaceInfo,
           hasSeenContactSync: !!hasSeenContactSync,
         }));
       } catch (error) {
-        console.error("Failed to load onboarding states:", error);
+        console.error('Failed to load onboarding states:', error);
       }
     };
 
@@ -53,13 +52,13 @@ export function OnboardingProvider({
   const markTutorialAsSeen = async (tutorialKey: keyof OnboardingState) => {
     try {
       const storageKey = tutorialKey;
-      await AsyncStorage.setItem(storageKey, "true");
+      await AsyncStorage.setItem(storageKey, 'true');
       setOnboardingState((state) => ({
         ...state,
         [tutorialKey]: true,
       }));
     } catch (error) {
-      console.error("Failed to mark tutorial as seen:", error);
+      console.error('Failed to mark tutorial as seen:', error);
     }
   };
 
@@ -73,7 +72,7 @@ export function OnboardingProvider({
 export function useOnboarding() {
   const context = useContext(OnboardingContext);
   if (context === undefined) {
-    throw new Error("useOnboarding must be used within an OnboardingProvider");
+    throw new Error('useOnboarding must be used within an OnboardingProvider');
   }
   return context;
 }

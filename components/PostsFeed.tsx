@@ -1,15 +1,15 @@
-import React, { useRef, useCallback, forwardRef } from "react";
+import React, { useRef, useCallback, forwardRef } from 'react';
 import {
   Dimensions,
   Platform,
   ActivityIndicator,
   RefreshControl,
-} from "react-native";
-import { useAtomValue } from "jotai";
-import { isWeb } from "@/lib/platform";
-import { List, ListMethods } from "./List";
-import { useScrollToTop } from "@react-navigation/native";
-import useFeeds from "@/hooks/useFeeds";
+} from 'react-native';
+import { useAtomValue } from 'jotai';
+import { isWeb } from '@/lib/platform';
+import { List, ListMethods } from './List';
+import { useScrollToTop } from '@react-navigation/native';
+import useFeeds from '@/hooks/useFeeds';
 
 interface PostsFeedProps<T> {
   data: T[];
@@ -63,7 +63,7 @@ const PostsFeed = forwardRef<ListMethods, PostsFeedProps<any>>((props, ref) => {
       scrollEnabled={true}
       headerOffset={headerOffset}
       removeClippedSubviews={true}
-      maxToRenderPerBatch={Platform.OS === "ios" ? 3 : 1}
+      maxToRenderPerBatch={Platform.OS === 'ios' ? 3 : 1}
       updateCellsBatchingPeriod={40}
       nestedScrollEnabled={true}
       contentContainerStyle={{

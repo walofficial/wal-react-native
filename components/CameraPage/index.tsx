@@ -1,7 +1,7 @@
-import * as React from "react";
-import { useRef, useState, useCallback, useMemo } from "react";
-import type { GestureResponderEvent } from "react-native";
-import { Text } from "../ui/text";
+import * as React from 'react';
+import { useRef, useState, useCallback, useMemo } from 'react';
+import type { GestureResponderEvent } from 'react-native';
+import { Text } from '../ui/text';
 
 import {
   Platform,
@@ -10,25 +10,25 @@ import {
   View,
   TextInput,
   KeyboardAvoidingView,
-} from "react-native";
-import type { PinchGestureHandlerGestureEvent } from "react-native-gesture-handler";
+} from 'react-native';
+import type { PinchGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import {
   PinchGestureHandler,
   TapGestureHandler,
-} from "react-native-gesture-handler";
+} from 'react-native-gesture-handler';
 import type {
   CameraProps,
   CameraRuntimeError,
   PhotoFile,
   VideoFile,
-} from "react-native-vision-camera";
+} from 'react-native-vision-camera';
 import {
   useCameraDevice,
   useCameraFormat,
   useLocationPermission,
   useMicrophonePermission,
-} from "react-native-vision-camera";
-import { Camera } from "react-native-vision-camera";
+} from 'react-native-vision-camera';
+import { Camera } from 'react-native-vision-camera';
 import {
   CONTENT_SPACING,
   CONTROL_BUTTON_SIZE,
@@ -36,7 +36,7 @@ import {
   SAFE_AREA_PADDING,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
-} from "./Constants";
+} from './Constants';
 import Reanimated, {
   Extrapolate,
   interpolate,
@@ -45,19 +45,19 @@ import Reanimated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-} from "react-native-reanimated";
-import { useEffect } from "react";
-import { useIsForeground } from "../../hooks/useIsForeground";
-import { StatusBarBlurBackground } from "./StatusBarBlurBackground";
-import IonIcon from "@expo/vector-icons/Ionicons";
-import { useIsFocused } from "@react-navigation/core";
-import { usePreferredCameraDevice } from "../../hooks/usePreferredCameraDevice";
-import { CaptureButton } from "./CaptureButton";
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { CaptureButtonPhoto } from "./CaptureButtonPhoto";
-import { toast } from "@backpackapp-io/react-native-toast";
-import { LiveButton } from "./LiveButton";
-import { t } from "@/lib/i18n";
+} from 'react-native-reanimated';
+import { useEffect } from 'react';
+import { useIsForeground } from '../../hooks/useIsForeground';
+import { StatusBarBlurBackground } from './StatusBarBlurBackground';
+import IonIcon from '@expo/vector-icons/Ionicons';
+import { useIsFocused } from '@react-navigation/core';
+import { usePreferredCameraDevice } from '../../hooks/usePreferredCameraDevice';
+import { CaptureButton } from './CaptureButton';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { CaptureButtonPhoto } from './CaptureButtonPhoto';
+import { LiveButton } from './LiveButton';
+import { t } from '@/lib/i18n';
+import { useToast } from '../ToastUsage';
 
 const ReanimatedCamera = Reanimated.createAnimatedComponent(Camera);
 Reanimated.addWhitelistedNativeProps({
@@ -70,10 +70,10 @@ const getAspectRatio = (width: number, height: number) => {
   const ratio = width / height;
   // Common aspect ratios
   const ratios = {
-    "16:9": 16 / 9,
-    "4:3": 4 / 3,
-    "1:1": 1,
-    "9:16": 9 / 16,
+    '16:9': 16 / 9,
+    '4:3': 4 / 3,
+    '1:1': 1,
+    '9:16': 9 / 16,
   };
 
   // Find the closest matching ratio
@@ -89,8 +89,8 @@ const CameraOverlay = Reanimated.createAnimatedComponent(View);
 export default function CameraPage(): React.ReactElement {
   const navigation = useNavigation();
   const { feedId } = useLocalSearchParams();
-
-  const [liveDescription, setLiveDescription] = useState("");
+  const { dismiss } = useToast();
+  const [liveDescription, setLiveDescription] = useState('');
 
   const shouldShowMediaTypeSwitch = true;
 
@@ -106,12 +106,12 @@ export default function CameraPage(): React.ReactElement {
   const isForeground = useIsForeground();
   const isActive = isFocussed && isForeground;
 
-  const [cameraPosition, setCameraPosition] = useState<"front" | "back">(
-    "back"
+  const [cameraPosition, setCameraPosition] = useState<'front' | 'back'>(
+    'back',
   );
 
   const [enableHdr, setEnableHdr] = useState(false);
-  const [flash, setFlash] = useState<"off" | "on">("off");
+  const [flash, setFlash] = useState<'off' | 'on'>('off');
   const [enableNightMode, setEnableNightMode] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
@@ -145,7 +145,7 @@ export default function CameraPage(): React.ReactElement {
   const supportsHdr = format?.supportsPhotoHdr;
   const supports60Fps = useMemo(
     () => device?.formats.some((f) => f.maxFps >= 60),
-    [device?.formats]
+    [device?.formats],
   );
   const canToggleNightMode = device?.supportsLowLightBoost ?? false;
 
@@ -172,7 +172,7 @@ export default function CameraPage(): React.ReactElement {
     (_isPressingButton: boolean) => {
       isPressingButton.value = _isPressingButton;
     },
-    [isPressingButton]
+    [isPressingButton],
   );
   const onError = useCallback((error: CameraRuntimeError) => {
     console.error(error);
@@ -181,7 +181,7 @@ export default function CameraPage(): React.ReactElement {
     setIsCameraInitialized(true);
   }, []);
   const onMediaCaptured = useCallback(
-    (media: PhotoFile | VideoFile, type: "photo" | "video") => {
+    (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
       router.replace({
         pathname: `/(camera)/mediapage`,
         params: {
@@ -192,13 +192,13 @@ export default function CameraPage(): React.ReactElement {
         },
       });
     },
-    [navigation]
+    [navigation],
   );
   const onFlipCameraPressed = useCallback(() => {
-    setCameraPosition((p) => (p === "back" ? "front" : "back"));
+    setCameraPosition((p) => (p === 'back' ? 'front' : 'back'));
   }, []);
   const onFlashPressed = useCallback(() => {
-    setFlash((f) => (f === "off" ? "on" : "off"));
+    setFlash((f) => (f === 'off' ? 'on' : 'off'));
   }, []);
 
   //#endregion
@@ -212,7 +212,7 @@ export default function CameraPage(): React.ReactElement {
         y: event.locationY,
       });
     },
-    [device?.supportsFocus]
+    [device?.supportsFocus],
   );
   const onDoubleTap = useCallback(() => {
     onFlipCameraPressed();
@@ -243,13 +243,13 @@ export default function CameraPage(): React.ReactElement {
         event.scale,
         [1 - 1 / SCALE_FULL_ZOOM, 1, SCALE_FULL_ZOOM],
         [-1, 0, 1],
-        Extrapolate.CLAMP
+        Extrapolate.CLAMP,
       );
       zoom.value = interpolate(
         scale,
         [-1, 0, 1],
         [minZoom, startZoom, maxZoom],
-        Extrapolate.CLAMP
+        Extrapolate.CLAMP,
       );
     },
   });
@@ -282,9 +282,9 @@ export default function CameraPage(): React.ReactElement {
   const formatTime = (time: number) => {
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    return `${minutes.toString().padStart(2, "0")}:${seconds
+    return `${minutes.toString().padStart(2, '0')}:${seconds
       .toString()
-      .padStart(2, "0")}`;
+      .padStart(2, '0')}`;
   };
 
   const recordingTimerStyle = useAnimatedStyle(() => {
@@ -297,7 +297,7 @@ export default function CameraPage(): React.ReactElement {
   const videoHdr = format?.supportsVideoHdr && enableHdr;
   const photoHdr = format?.supportsPhotoHdr && enableHdr && !videoHdr;
 
-  const [currentAspectRatio, setCurrentAspectRatio] = useState<string>("");
+  const [currentAspectRatio, setCurrentAspectRatio] = useState<string>('');
 
   useEffect(() => {
     if (format) {
@@ -307,16 +307,16 @@ export default function CameraPage(): React.ReactElement {
     }
   }, [format]);
 
-  const [selectedMode, setSelectedMode] = useState<"video" | "photo" | "live">(
-    "video"
+  const [selectedMode, setSelectedMode] = useState<'video' | 'photo' | 'live'>(
+    'video',
   );
 
   // Add this new animated style for the overlay
   const overlayStyle = useAnimatedStyle(() => {
     return {
       ...StyleSheet.absoluteFillObject,
-      backgroundColor: "black",
-      opacity: withTiming(selectedMode === "live" ? 0.5 : 0),
+      backgroundColor: 'black',
+      opacity: withTiming(selectedMode === 'live' ? 0.5 : 0),
     };
   }, [selectedMode]);
 
@@ -336,10 +336,10 @@ export default function CameraPage(): React.ReactElement {
                 ref={camera}
                 onInitialized={onInitialized}
                 onError={onError}
-                onStarted={() => console.log("Camera started!")}
-                onStopped={() => console.log("Camera stopped!")}
-                onPreviewStarted={() => console.log("Preview started!")}
-                onPreviewStopped={() => console.log("Preview stopped!")}
+                onStarted={() => console.log('Camera started!')}
+                onStopped={() => console.log('Camera stopped!')}
+                onPreviewStarted={() => console.log('Preview started!')}
+                onPreviewStopped={() => console.log('Preview stopped!')}
                 onOutputOrientationChanged={(o) =>
                   console.log(`Output orientation changed to ${o}!`)
                 }
@@ -383,14 +383,14 @@ export default function CameraPage(): React.ReactElement {
         </Text>
       </Reanimated.View>
 
-      {selectedMode === "live" && (
+      {selectedMode === 'live' && (
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={[styles.liveInputContainer, { width: "80%", paddingTop: 30 }]}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={[styles.liveInputContainer, { width: '80%', paddingTop: 30 }]}
         >
           <TextInput
             style={styles.liveTextInput}
-            placeholder={"Sup?"}
+            placeholder={'Sup?'}
             placeholderTextColor="rgba(255, 255, 255, 0.6)"
             value={liveDescription}
             onChangeText={setLiveDescription}
@@ -414,28 +414,28 @@ export default function CameraPage(): React.ReactElement {
               <TouchableOpacity
                 style={[
                   styles.switchButton,
-                  selectedMode === "video" && styles.switchButtonActive,
+                  selectedMode === 'video' && styles.switchButtonActive,
                 ]}
-                onPress={() => setSelectedMode("video")}
+                onPress={() => setSelectedMode('video')}
               >
-                <Text style={styles.switchButtonText}>{t("common.video")}</Text>
+                <Text style={styles.switchButtonText}>{t('common.video')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.switchButton,
-                  selectedMode === "photo" && styles.switchButtonActive,
+                  selectedMode === 'photo' && styles.switchButtonActive,
                 ]}
-                onPress={() => setSelectedMode("photo")}
+                onPress={() => setSelectedMode('photo')}
               >
-                <Text style={styles.switchButtonText}>{t("common.photo")}</Text>
+                <Text style={styles.switchButtonText}>{t('common.photo')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
                   styles.switchButton,
-                  selectedMode === "live" && styles.switchButtonActive,
+                  selectedMode === 'live' && styles.switchButtonActive,
                 ]}
                 onPress={() => {
-                  setSelectedMode("live");
+                  setSelectedMode('live');
                 }}
               >
                 <Text style={[styles.switchButtonText, styles.liveText]}>
@@ -445,7 +445,7 @@ export default function CameraPage(): React.ReactElement {
             </View>
           )}
 
-          {selectedMode === "live" ? (
+          {selectedMode === 'live' ? (
             <LiveButton
               isLive={false}
               onShowRoom={({
@@ -456,7 +456,7 @@ export default function CameraPage(): React.ReactElement {
                 room_name: string;
               }) => {
                 router.replace({
-                  pathname: "/(tabs)/(home)/[feedId]/livestream",
+                  pathname: '/(tabs)/(home)/[feedId]/livestream',
                   params: {
                     feedId: feedId as string,
                     livekit_token: livekit_token,
@@ -467,11 +467,11 @@ export default function CameraPage(): React.ReactElement {
               feedId={feedId as string}
               textContent={liveDescription}
             />
-          ) : selectedMode === "photo" ? (
+          ) : selectedMode === 'photo' ? (
             <CaptureButtonPhoto
               camera={camera}
               onMediaCaptured={onMediaCaptured}
-              flash={supportsFlash ? flash : "off"}
+              flash={supportsFlash ? flash : 'off'}
               enabled={isCameraInitialized && isActive}
               setIsPressingButton={setIsPressingButton}
             />
@@ -480,7 +480,7 @@ export default function CameraPage(): React.ReactElement {
               camera={camera}
               onMediaCaptured={onMediaCaptured}
               feedId={feedId as string}
-              flash={supportsFlash ? flash : "off"}
+              flash={supportsFlash ? flash : 'off'}
               enabled={isCameraInitialized && isActive}
               setRecordingTimeView={setIsRecording}
               setIsPressingButton={setIsPressingButton}
@@ -501,9 +501,9 @@ export default function CameraPage(): React.ReactElement {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            toast.remove();
+            dismiss('all');
             router.navigate({
-              pathname: "/(tabs)/(home)/[feedId]",
+              pathname: '/(tabs)/(home)/[feedId]',
               params: {
                 feedId: feedId as string,
               },
@@ -518,7 +518,7 @@ export default function CameraPage(): React.ReactElement {
         {supportsFlash && (
           <TouchableOpacity style={styles.button} onPress={onFlashPressed}>
             <IonIcon
-              name={flash === "on" ? "flash" : "flash-off"}
+              name={flash === 'on' ? 'flash' : 'flash-off'}
               color="white"
               size={24}
             />
@@ -538,7 +538,7 @@ export default function CameraPage(): React.ReactElement {
             onPress={() => setEnableNightMode(!enableNightMode)}
           >
             <IonIcon
-              name={enableNightMode ? "moon" : "moon-outline"}
+              name={enableNightMode ? 'moon' : 'moon-outline'}
               color="white"
               size={24}
             />
@@ -552,22 +552,22 @@ export default function CameraPage(): React.ReactElement {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: 'black',
   },
   captureButton: {
-    position: "absolute",
-    alignSelf: "center",
+    position: 'absolute',
+    alignSelf: 'center',
     bottom: SAFE_AREA_PADDING.paddingBottom,
   },
   captureButtonContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   switchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 16,
   },
   button: {
@@ -575,71 +575,71 @@ const styles = StyleSheet.create({
     width: CONTROL_BUTTON_SIZE,
     height: CONTROL_BUTTON_SIZE,
     borderRadius: CONTROL_BUTTON_SIZE / 2,
-    backgroundColor: "rgba(140, 140, 140, 0.3)",
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: 'rgba(140, 140, 140, 0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   rightButtonRow: {
-    position: "absolute",
+    position: 'absolute',
     right: SAFE_AREA_PADDING.paddingRight,
     top: SAFE_AREA_PADDING.paddingTop + 20 + 40,
   },
   text: {
-    color: "white",
+    color: 'white',
     fontSize: 11,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   emptyContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   recordingTimer: {
-    position: "absolute",
-    alignSelf: "center",
+    position: 'absolute',
+    alignSelf: 'center',
     bottom: SAFE_AREA_PADDING.paddingBottom + 50,
   },
   recordingTimerText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   switchButton: {
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 20,
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
     marginHorizontal: 5,
   },
   switchButtonActive: {
-    backgroundColor: "rgba(255, 255, 255, 0.3)",
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   switchButtonText: {
-    color: "white",
+    color: 'white',
     fontSize: 14,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   liveText: {
-    color: "#FF1493",
+    color: '#FF1493',
   },
   liveInputContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: SAFE_AREA_PADDING.paddingTop + 20,
     left: SAFE_AREA_PADDING.paddingLeft,
     right: SAFE_AREA_PADDING.paddingRight,
     zIndex: 1,
   },
   liveTextInput: {
-    width: "90%",
-    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    width: '90%',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    color: "white",
+    color: 'white',
     fontSize: 16,
     marginBottom: 16,
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.3)",
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
 });

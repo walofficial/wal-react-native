@@ -1,13 +1,13 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   updateMessageStateChatUpdateMessagesPostMutation,
   getMessagesChatMessagesGetInfiniteOptions,
-} from "@/lib/api/generated/@tanstack/react-query.gen";
-import { ChatMessage } from "@/lib/api/generated";
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { ChatMessage } from '@/lib/api/generated';
 
 const useMessageUpdates = (
   roomId: string,
-  trackedMessageIdsRef: React.MutableRefObject<Set<string>>
+  trackedMessageIdsRef: React.MutableRefObject<Set<string>>,
 ) => {
   const queryClient = useQueryClient();
   const mutateUpdateMessages = useMutation({
@@ -27,14 +27,14 @@ const useMessageUpdates = (
       (mutateUpdateMessages.mutate as any)(
         {
           body: {
-            messages: messageIds.map((item) => ({ id: item, state: "READ" })),
+            messages: messageIds.map((item) => ({ id: item, state: 'READ' })),
           },
         },
         {
           onSuccess: () => {
             trackedMessageIdsRef.current.clear();
           },
-        }
+        },
       );
     }
   };

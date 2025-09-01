@@ -1,16 +1,16 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   TouchableOpacity,
   ActivityIndicator,
   StyleSheet,
-} from "react-native";
-import { Text } from "@/components/ui/text";
-import { Ionicons } from "@expo/vector-icons";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
-import { FontSizes } from "@/lib/theme";
-import { useTheme } from "@/lib/theme";
-import { FriendRequest, User } from "@/lib/api/generated";
+} from 'react-native';
+import { Text } from '@/components/ui/text';
+import { Ionicons } from '@expo/vector-icons';
+import { Avatar, AvatarImage } from '@/components/ui/avatar';
+import { FontSizes } from '@/lib/theme';
+import { useTheme } from '@/lib/theme';
+import { FriendRequest, User } from '@/lib/api/generated';
 
 interface FriendRequestItemProps {
   user: User;
@@ -48,7 +48,7 @@ const FriendRequestItem: React.FC<FriendRequestItemProps> = ({
               {
                 backgroundColor: !imageUrl
                   ? theme.colors.card.background
-                  : "transparent",
+                  : 'transparent',
                 borderRadius: !imageUrl ? 30 : 0,
               },
             ]}
@@ -60,18 +60,18 @@ const FriendRequestItem: React.FC<FriendRequestItemProps> = ({
               />
             ) : (
               <Text style={[styles.avatarText, { color: theme.colors.text }]}>
-                {user.username?.charAt(0).toUpperCase() || ""}
+                {user.username?.charAt(0).toUpperCase() || ''}
               </Text>
             )}
           </View>
         </Avatar>
         <View style={styles.usernameContainer}>
           <Text style={[styles.username, { color: theme.colors.text }]}>
-            {user.username || ""}
+            {user.username || ''}
           </Text>
         </View>
       </View>
-      {request.status === "pending" && request.sender_id === user.id && (
+      {request.status === 'pending' && request.sender_id === user.id && (
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[
@@ -117,17 +117,17 @@ const FriendRequestItem: React.FC<FriendRequestItemProps> = ({
           </TouchableOpacity>
         </View>
       )}
-      {request.status === "pending" && request.sender_id !== user.id && (
+      {request.status === 'pending' && request.sender_id !== user.id && (
         <Text style={[styles.pendingText, { color: theme.colors.text }]}>
           გაგზავნილია
         </Text>
       )}
-      {request.status === "accepted" && (
+      {request.status === 'accepted' && (
         <Text style={[styles.acceptedText, { color: theme.colors.primary }]}>
           Accepted
         </Text>
       )}
-      {request.status === "rejected" && (
+      {request.status === 'rejected' && (
         <Text style={[styles.rejectedText, { color: theme.colors.accent }]}>
           Rejected
         </Text>
@@ -138,15 +138,15 @@ const FriendRequestItem: React.FC<FriendRequestItemProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 12,
-    width: "100%",
+    width: '100%',
   },
   leftContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   avatar: {
     borderWidth: 2,
@@ -157,10 +157,10 @@ const styles = StyleSheet.create({
   },
   avatarInner: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    height: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
   avatarImage: {
     borderRadius: 30,
@@ -173,30 +173,30 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: FontSizes.medium,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: 'row',
   },
   acceptButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 9999,
     marginRight: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   rejectButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 9999,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pendingText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   acceptedText: {},
   rejectedText: {},

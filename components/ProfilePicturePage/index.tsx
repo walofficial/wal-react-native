@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Image,
@@ -6,15 +6,15 @@ import {
   StyleSheet,
   Pressable,
   ActivityIndicator,
-} from "react-native";
-import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
-import { Ionicons } from "@expo/vector-icons";
+} from 'react-native';
+import { useLocalSearchParams, usePathname, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import {
   SafeAreaView,
   useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import { convertToCDNUrl } from "@/lib/utils";
-import useAuth from "@/hooks/useAuth";
+} from 'react-native-safe-area-context';
+import { convertToCDNUrl } from '@/lib/utils';
+import useAuth from '@/hooks/useAuth';
 
 const ProfilePicture = ({
   showMessageOption = false,
@@ -39,17 +39,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     zIndex: 40,
     paddingHorizontal: 20,
   },
   backButton: {
-    position: "absolute",
+    position: 'absolute',
     top: 40,
     left: 20,
     zIndex: 1,
@@ -57,8 +57,8 @@ const styles = StyleSheet.create({
   },
   image: {
     flex: 1,
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
 });
 

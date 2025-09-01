@@ -1,6 +1,6 @@
-import { useTheme } from "@/lib/theme";
-import { StyleSheet } from "react-native";
-import { useMemo } from "react";
+import { useTheme } from '@/lib/theme';
+import { StyleSheet } from 'react-native';
+import { useMemo } from 'react';
 
 /**
  * Hook that provides theme-aware styling based on the current color scheme
@@ -20,12 +20,12 @@ export function useStyles() {
         title: {
           color: theme.colors.text,
           fontSize: theme.fontSizes.xxl,
-          fontWeight: "bold" as const,
+          fontWeight: 'bold' as const,
         },
         subtitle: {
           color: theme.colors.text,
           fontSize: theme.fontSizes.lg,
-          fontWeight: "bold" as const,
+          fontWeight: 'bold' as const,
         },
         secondary: {
           color: theme.colors.feedItem.secondaryText,
@@ -72,8 +72,8 @@ export function useStyles() {
         text: {
           color: theme.colors.button.text,
           fontSize: theme.fontSizes.md,
-          fontWeight: "bold" as const,
-          textAlign: "center" as const,
+          fontWeight: 'bold' as const,
+          textAlign: 'center' as const,
         },
       },
 
@@ -108,6 +108,6 @@ export function useStyles() {
         ...theme.fontSizes,
       },
     }),
-    [theme]
+    [theme],
   );
 }

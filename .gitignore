@@ -40,3 +40,4 @@ build-android.sh
 build-ios-development.sh
 build-ios-preview.sh
 build-ios.sh
+ 

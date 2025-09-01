@@ -1,8 +1,8 @@
-import { TouchableOpacity, View, StyleSheet } from "react-native";
-import { Avatar } from "../ui/avatar";
-import ImageLoader from "../ImageLoader";
-import { useRouter } from "expo-router";
-import useAuth from "@/hooks/useAuth";
+import { TouchableOpacity, View, StyleSheet } from 'react-native';
+import { Avatar } from '../ui/avatar';
+import ImageLoader from '../ImageLoader';
+import { useRouter } from 'expo-router';
+import useAuth from '@/hooks/useAuth';
 
 function UserCircleProfile({
   photo,
@@ -19,10 +19,10 @@ function UserCircleProfile({
       <TouchableOpacity
         onPress={() => {
           if (isAuthUser) {
-            router.navigate("/(tabs)/(user)/change-photo");
+            router.navigate('/(tabs)/(user)/change-photo');
           } else {
             router.navigate({
-              pathname: "/(tabs)/(home)/profile-picture",
+              pathname: '/(tabs)/(home)/profile-picture',
               params: {
                 userId,
                 imageUrl: photo,
@@ -49,19 +49,19 @@ function UserCircleProfile({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   avatar: {
     flex: 1,
     borderRadius: 9999,
     marginBottom: 20,
-    flexDirection: "row",
+    flexDirection: 'row',
     width: 128,
     height: 128,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     width: 128,
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     width: 128,
     height: 128,
     borderRadius: 9999,
-    backgroundColor: "#3A3A3C",
+    backgroundColor: '#3A3A3C',
   },
 });
 

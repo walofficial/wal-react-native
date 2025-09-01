@@ -1,17 +1,17 @@
-import React from "react";
-import { View, TouchableOpacity, Dimensions, StyleSheet } from "react-native";
-import { useQuery } from "@tanstack/react-query";
-import UserLiveItem from "@/components/UserLiveItem";
-import useLiveUser from "@/hooks/useLiveUser";
-import useAuth from "@/hooks/useAuth";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
-import Animated, { FadeIn } from "react-native-reanimated";
-import { useTheme } from "@/lib/theme";
-import { locationUserListSheetState } from "@/lib/atoms/location";
-import { useAtom } from "jotai";
-import { useIsFocused } from "@react-navigation/native";
-import { getLiveUsersOptions } from "@/lib/api/generated/@tanstack/react-query.gen";
-import { trackEvent } from "@/lib/analytics";
+import React from 'react';
+import { View, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
+import { useQuery } from '@tanstack/react-query';
+import UserLiveItem from '@/components/UserLiveItem';
+import useLiveUser from '@/hooks/useLiveUser';
+import useAuth from '@/hooks/useAuth';
+import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
+import Animated, { FadeIn } from 'react-native-reanimated';
+import { useTheme } from '@/lib/theme';
+import { locationUserListSheetState } from '@/lib/atoms/location';
+import { useAtom } from 'jotai';
+import { useIsFocused } from '@react-navigation/native';
+import { getLiveUsersOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { trackEvent } from '@/lib/analytics';
 
 const MAX_ITEMS = 30;
 const COLUMNS = 4;
@@ -32,7 +32,7 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
     refetchInterval: isFocused ? 3000 : false,
   });
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
-    locationUserListSheetState
+    locationUserListSheetState,
   );
 
   const { user } = useAuth();
@@ -41,7 +41,7 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
   const items = (data || [])
     .slice(0, MAX_ITEMS)
     .sort((a, b) =>
-      a.user.id === user.id ? -1 : b.user.id === user.id ? 1 : 0
+      a.user.id === user.id ? -1 : b.user.id === user.id ? 1 : 0,
     );
 
   return (
@@ -57,13 +57,13 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
                 style={[
                   styles.itemContainer,
                   {
-                    width: Dimensions.get("window").width / COLUMNS - 5,
+                    width: Dimensions.get('window').width / COLUMNS - 5,
                     borderColor: theme.colors.border,
                   },
                 ]}
                 onPress={() => {
                   if (item.user.id === user.id) return;
-                  trackEvent("location_feed_live_users_button_pressed", {});
+                  trackEvent('location_feed_live_users_button_pressed', {});
 
                   setIsBottomSheetOpen(false);
                   requestAnimationFrame(() => {
@@ -76,7 +76,7 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
                 <UserLiveItem
                   showName={item.user.id !== user.id}
                   size="md"
-                  color={"pink"}
+                  color={'pink'}
                   isLoading={
                     joinChat.isPending &&
                     joinChat.variables.targetUserId === item.user.id
@@ -101,10 +101,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "flex-start",
-    width: "100%",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    width: '100%',
     paddingVertical: 8,
   },
   itemContainer: {
