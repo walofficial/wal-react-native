@@ -15,7 +15,6 @@ import SpacesBottomSheet from '@/components/SpacesBottomSheet';
 import { Lightbox } from '@/components/Lightbox/Lightbox';
 import useFeeds from '@/hooks/useFeeds';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
-import { Georgia } from '@/lib/icons/Georgia';
 import { useShareIntentContext } from 'expo-share-intent';
 import ErrorMessageCard from '@/components/ErrorMessageCard';
 import FullScreenLoader from '@/components/FullScreenLoader';
