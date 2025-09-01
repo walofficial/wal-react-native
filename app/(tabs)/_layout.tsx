@@ -6,7 +6,6 @@ import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
 import { StyleSheet, View, BackHandler } from 'react-native';
-import { BlurView } from 'expo-blur';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useColorScheme } from '@/lib/useColorScheme';
