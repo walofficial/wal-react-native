@@ -13,7 +13,7 @@ import { createStore, Provider, useAtom } from 'jotai';
 import { isDev, SENTRY_DSN } from '@/lib/api/config';
 import AppStateHandler from '../components/AppStateHandler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useOTAUpdates } from '@/hooks/useOTAUpdates';
 import {
   focusManager,
