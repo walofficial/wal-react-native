@@ -23,7 +23,7 @@ import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { Provider as HeaderTransformProvider } from '@/lib/context/header-transform';
 import { Provider as ReactionsOverlayProvider } from '@/lib/reactionsOverlay/reactionsOverlay';
 import { ReactionsOverlay } from '@/components/ReactionsOverlay/ReactionsOverlay';
-import { useAtom, useSetAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { factCheckBottomSheetState } from '@/lib/atoms/news';
 import { locationUserListSheetState } from '@/lib/atoms/location';
 
