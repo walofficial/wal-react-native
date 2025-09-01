@@ -29,15 +29,7 @@ Create a `.env.development` file in the project root:
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=<your-supabase-url>
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
-EXPO_PUBLIC_ENABLE_FIREBASE=false
 ```
-
-If you want Firebase (Analytics/Remote Config) locally, add the platform config files:
-
-- Place `GoogleService-Info.plist` at the repository root for iOS
-- Place `google-services.json` at the repository root for Android
-
-These files are optional for local development. If they are missing or `EXPO_PUBLIC_ENABLE_FIREBASE=false`, Firebase is disabled automatically.
 
 ### Run
 
