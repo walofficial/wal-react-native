@@ -3,7 +3,6 @@
 set -euo pipefail
 
 MAIN_BRANCH="main"
-STAGING_BRANCH="preview"
 
 if [[ ${1-} == "" ]]; then
   echo "Usage: $0 <release-name-or-version>" >&2
@@ -11,6 +10,7 @@ if [[ ${1-} == "" ]]; then
 fi
 
 RELEASE_NAME="$1"
+RELEASE_BRANCH="release/${RELEASE_NAME}"
 
 if [[ -n "$(git status --porcelain)" ]]; then
   echo "Working tree is not clean. Commit or stash your changes first." >&2
@@ -20,17 +20,20 @@ fi
 echo "Fetching latest refs..."
 git fetch --all --prune
 
-echo "Ensuring ${STAGING_BRANCH} is up to date..."
-git checkout "${STAGING_BRANCH}"
+echo "Ensuring ${RELEASE_BRANCH} is up to date..."
+git checkout "${RELEASE_BRANCH}" || {
+  echo "Release branch ${RELEASE_BRANCH} not found locally. Did you start it?" >&2
+  exit 1
+}
 git pull --rebase --autostash || git pull --rebase
 
-echo "Creating PR ${STAGING_BRANCH} -> ${MAIN_BRANCH}..."
+echo "Creating PR ${RELEASE_BRANCH} -> ${MAIN_BRANCH}..."
 if command -v gh >/dev/null 2>&1; then
   gh pr create \
     --base "${MAIN_BRANCH}" \
-    --head "${STAGING_BRANCH}" \
+    --head "${RELEASE_BRANCH}" \
     --title "chore(release): ${RELEASE_NAME} to main" \
-    --body "Promote preview to main for release ${RELEASE_NAME}. Tagging and git-flow finish happen after merge." \
+    --body "Promote release ${RELEASE_NAME} to main. Tagging and git-flow finish happen after merge." \
     --draft || true
   echo "Opened draft PR to main (or it already exists)."
 else
@@ -45,7 +48,7 @@ else
     echo "Could not parse origin URL ${ORIGIN_URL}. Please open PR manually." >&2
     exit 1
   fi
-  echo "Open PR: ${REPO_URL}/compare/${MAIN_BRANCH}...${STAGING_BRANCH}?expand=1"
+  echo "Open PR: ${REPO_URL}/compare/${MAIN_BRANCH}...${RELEASE_BRANCH}?expand=1"
 fi
 
 echo "After merge to main, manually tag and finish release if desired:"
