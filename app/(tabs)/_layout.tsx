@@ -1,4 +1,4 @@
-import { Redirect, router, Tabs, usePathname, useRouter } from 'expo-router';
+import { Redirect, Tabs, usePathname, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
