@@ -1,17 +1,13 @@
 import { Redirect, router, Tabs, usePathname, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
-import {
-  BottomSheetModal,
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
-import { StyleSheet, View, BackHandler } from 'react-native';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { BackHandler } from 'react-native';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { isUserRegistered, useSession } from '@/components/AuthLayer';
 import DbUserGetter from '@/components/DbUserGetter';
-import { useNotificationHandler } from '@/components/DbUserGetter/useNotficationHandler';
 import SidebarLayout from '@/components/SidebarLayout';
 import { isAndroid, isIOS, isWeb } from '@/lib/platform';
 import LocationProvider from '@/components/LocationProvider';

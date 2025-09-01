@@ -133,20 +133,6 @@ jobs:
             sudo apt-get update && sudo apt-get install -y jq
           fi
 
-      # - name: 📱 Build Development APK
-      #   if:
-      #     github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'dev' || (
-      #     github.event_name == 'push' && (
-      #     github.ref == 'refs/heads/dev'
-      #     ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
-      #     )
-      #   run: |
-      #     # Build with increased memory limit
-      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-      #     eas build --platform android --profile development --local --non-interactive --output=./app-dev.apk
-      #   env:
-      #     NODE_ENV: development
-
       - name: 📱 Build Preview APK
         if: github.event_name == 'push' && (
           startsWith(github.ref, 'refs/heads/release/')
@@ -158,44 +144,17 @@ jobs:
         env:
           NODE_ENV: production
 
-      # - name: 📱 Build Production APK
-      #   if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-apk' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
-      #   run: |
-      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-      #     eas build --platform android --profile production-apk --non-interactive --output=./app-prod.apk
-      #   env:
-      #     NODE_ENV: production
-
-      # - name: 📱 Build Production AAB
-      #   if: github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'prod-aab' || (github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android'))
-      #   run: |
-      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-      #     eas build --platform android --profile production --non-interactive --output=./app-prod.aab
-      #   env:
-      #     NODE_ENV: production
-
-      # - name: 📱 Build iOS Development
-      #   if: ((github.event.inputs.buildType == 'all' || github.event.inputs.buildType == 'ios-dev') && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')) || (github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/develop') && matrix.platform == 'ios')
-      #   run: |
-      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-      #     eas build --platform ios --profile development --local --non-interactive --output=./app-ios-dev.app
-      #   env:
-      #     NODE_ENV: development
-
-      # - name: 📱 Build iOS Preview
-      #   if: github.event_name == 'push' && (
-      #     startsWith(github.ref, 'refs/heads/release/') ||
-      #     startsWith(github.ref, 'refs/heads/hotfix/')
-      #     ) && matrix.platform == 'ios'
-      #   run: |
-      #     export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-      #     export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-      #     eas build --platform ios --profile preview --non-interactive
-      #   env:
-      #     NODE_ENV: production
+      - name: 📱 Build iOS Preview
+        if: github.event_name == 'push' && (
+          startsWith(github.ref, 'refs/heads/release/') ||
+          startsWith(github.ref, 'refs/heads/hotfix/')
+          ) && matrix.platform == 'ios'
+        run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+          eas build --platform ios --profile preview --non-interactive
+        env:
+          NODE_ENV: production
 
       - name: 🏷️ Generate build information
         id: build-info
