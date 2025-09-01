@@ -45,9 +45,7 @@ export default {
       },
       supportsTablet: false,
       bundleIdentifier: IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment',
-      googleServicesFile: IS_DEV
-        ? './GoogleService-Info.plist'
-        : './GoogleService-Info-Prod.plist',
+      googleServicesFile: './GoogleService-Info.plist',
     },
     assetBundlePatterns: ['**/*'],
     android: {
