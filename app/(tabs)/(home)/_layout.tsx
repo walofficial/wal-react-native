@@ -1,4 +1,4 @@
-import { Link, Stack, useLocalSearchParams } from 'expo-router';
+import { Stack } from 'expo-router';
 import ProfileHeader from '@/components/ProfileHeader';
 import { TaskTitle } from '@/components/CustomTitle';
 import { ScrollReanimatedValueProvider } from '@/components/context/ScrollReanimatedValue';
