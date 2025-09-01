@@ -29,21 +29,21 @@ Create a `.env.development` file in the project root:
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=<your-supabase-url>
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+EXPO_PUBLIC_DISABLE_FIREBASE=true
 ```
 
 ### Run
 
 ```bash
-# Start Expo dev server
+# Build for you sinmulator
+npx expo run:ios or npx expo run:android
+
+# If you need to publish expo dev server on LAN do this
 npm start
 ```
 
 That’s it. With the backend on `http://localhost:5500` and the Supabase env set, the frontend and backend are connected.
 
-### Building
-
-- iOS/Android builds will include Firebase only if the service files exist in repo root, or if you set `EXPO_PUBLIC_ENABLE_FIREBASE=true` and provide files.
-- The files `GoogleService-Info.plist` and `google-services.json` are ignored by git; contributors add their own when needed.
 
 ### Additional notes
 

@@ -2,17 +2,6 @@ const IS_DEV = process.env.EXPO_PUBLIC_IS_DEV === 'true';
 // Keep app version in sync with package.json
 // Expo config is executed in Node; requiring JSON here is safe and supported
 const pkg = require('./package.json');
-const fs = require('fs');
-const path = require('path');
-
-// Firebase config toggles: enable only if files exist unless explicitly disabled
-const iosPlistPath = 'GoogleService-Info.plist';
-const androidJsonPath = 'google-services.json';
-const hasIosPlist = fs.existsSync(path.resolve(__dirname, iosPlistPath));
-const hasAndroidJson = fs.existsSync(path.resolve(__dirname, androidJsonPath));
-const ENABLE_FIREBASE =
-  process.env.EXPO_PUBLIC_ENABLE_FIREBASE !== 'false' &&
-  (hasIosPlist || hasAndroidJson);
 
 export const app_name_slug = 'wal';
 export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
@@ -138,7 +127,10 @@ const pluginsList = [
   ],
 ];
 
-if (ENABLE_FIREBASE) {
+// Firebase config toggles: enable only if explicitly enabled
+const DISABLE_FIREBASE = process.env.EXPO_PUBLIC_DISABLE_FIREBASE == 'true';
+
+if (!DISABLE_FIREBASE) {
   pluginsList.push('@react-native-firebase/app');
 }
 
@@ -181,7 +173,7 @@ export default {
       },
       supportsTablet: false,
       bundleIdentifier: IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment',
-      googleServicesFile: hasIosPlist
+      googleServicesFile: !DISABLE_FIREBASE
         ? './GoogleService-Info.plist'
         : undefined,
     },
@@ -195,7 +187,9 @@ export default {
         backgroundColor: '#ffffff',
       },
 
-      googleServicesFile: hasAndroidJson ? './google-services.json' : undefined,
+      googleServicesFile: !DISABLE_FIREBASE
+        ? './google-services.json'
+        : undefined,
       intentFilters: [
         {
           action: 'VIEW',
