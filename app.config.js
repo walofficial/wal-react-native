@@ -57,8 +57,7 @@ export default {
         backgroundColor: '#ffffff',
       },
 
-      googleServicesFile:
-        process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
+      googleServicesFile: './google-services.json',
       intentFilters: [
         {
           action: 'VIEW',
