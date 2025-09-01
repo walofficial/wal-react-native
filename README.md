@@ -13,47 +13,47 @@
 
 ### Backend
 
-- Backend repository: [WAL Server](https://github.com/wallofficial/wal-server)
-- By default, the backend listens at `http://localhost:5500`. Make sure you run the backend on that port.
+- Backend repository: [WAL Server](https://github.com/walofficial/wal-server)
+- By default, the backend listens at `http://localhost:5500`.
 
-### Setup
+### Setup (minimal)
 
 ```bash
-git clone <repo-url>
-cd wal-react-native
-pnpm install
+npm i
 ```
 
-### Environment variables
+You only need your Supabase URL and Anon Key. Create a new [Supabase project](https://supabase.com/dashboard/sign-in) to obtain them.
 
-You only need your Supabase URL and Anon Key. Create a new Supabase project to obtain them.
-
-Create a `.env` file in the project root:
+Create a `.env.development` file in the project root:
 
 ```bash
 EXPO_PUBLIC_SUPABASE_URL=<your-supabase-url>
 EXPO_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+EXPO_PUBLIC_ENABLE_FIREBASE=false
 ```
 
-Notes:
+If you want Firebase (Analytics/Remote Config) locally, add the platform config files:
 
-- These correspond to the typical "supabase_url" and "supabase_anon_key" from your Supabase project.
-- `pnpm start` writes a temporary `.env.local` and sets `EXPO_PUBLIC_API_URL` to your LAN IP on port 5500 so that local devices can talk to your backend.
+- Place `GoogleService-Info.plist` at the repository root for iOS
+- Place `google-services.json` at the repository root for Android
+
+These files are optional for local development. If they are missing or `EXPO_PUBLIC_ENABLE_FIREBASE=false`, Firebase is disabled automatically.
 
 ### Run
 
 ```bash
 # Start Expo dev server
-pnpm start
+npm start
 ```
 
 That’s it. With the backend on `http://localhost:5500` and the Supabase env set, the frontend and backend are connected.
+
+### Building
+
+- iOS/Android builds will include Firebase only if the service files exist in repo root, or if you set `EXPO_PUBLIC_ENABLE_FIREBASE=true` and provide files.
+- The files `GoogleService-Info.plist` and `google-services.json` are ignored by git; contributors add their own when needed.
 
 ### Additional notes
 
 - The new architecture from Expo/React Native has performance issues on Android, and LiveKit does not support the new architecture yet. There are no plans to migrate at this time.
 - You will need to add a test phone number in Supabase and set up phone number authentication with Twilio to log into the app. Twilio’s test setup is free.
-
-### Contributing
-
-This is a new project and we want to keep the startup effort minimal. We welcome PRs that improve the developer onboarding and experience.

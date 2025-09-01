@@ -2,9 +2,145 @@ const IS_DEV = process.env.EXPO_PUBLIC_IS_DEV === 'true';
 // Keep app version in sync with package.json
 // Expo config is executed in Node; requiring JSON here is safe and supported
 const pkg = require('./package.json');
+const fs = require('fs');
+const path = require('path');
+
+// Firebase config toggles: enable only if files exist unless explicitly disabled
+const iosPlistPath = 'GoogleService-Info.plist';
+const androidJsonPath = 'google-services.json';
+const hasIosPlist = fs.existsSync(path.resolve(__dirname, iosPlistPath));
+const hasAndroidJson = fs.existsSync(path.resolve(__dirname, androidJsonPath));
+const ENABLE_FIREBASE =
+  process.env.EXPO_PUBLIC_ENABLE_FIREBASE !== 'false' &&
+  (hasIosPlist || hasAndroidJson);
 
 export const app_name_slug = 'wal';
 export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
+
+// Build plugin list dynamically so the app can run without Firebase files
+const pluginsList = [
+  'expo-router',
+  [
+    'expo-share-intent',
+    {
+      iosActivationRules: {
+        NSExtensionActivationSupportsWebURLWithMaxCount: 1,
+        NSExtensionActivationSupportsWebPageWithMaxCount: 1,
+        NSExtensionActivationSupportsText: true,
+        NSExtensionActivationSupportsImageWithMaxCount: 10,
+      },
+      androidIntentFilters: ['text/*', 'image/*'],
+    },
+  ],
+  [
+    'expo-build-properties',
+    {
+      ios: {
+        useFrameworks: 'static',
+      },
+      android: {
+        //LiveKit sdk requires min 24
+        minSdkVersion: 24,
+        targetSdkVersion: 35,
+      },
+    },
+  ],
+  [
+    'expo-notifications',
+    {
+      icon: './assets/images/small-icon-android.png',
+      color: '#000',
+    },
+  ],
+  [
+    'react-native-vision-camera',
+    {
+      cameraPermissionText:
+        '$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live.',
+
+      // optionally, if you want to record audio:
+      enableMicrophonePermission: true,
+      microphonePermissionText:
+        '$(PRODUCT_NAME) needs access to your Microphone to capture audio.',
+    },
+  ],
+  [
+    '@sentry/react-native/expo',
+    {
+      url: 'https://sentry.io/',
+      project: 'react-native',
+      organization: 'greetai-inc',
+    },
+  ],
+  [
+    'expo-location',
+    {
+      locationPermissionText:
+        'This app accesses your location to let you post videos or photos to nearby locations.',
+    },
+  ],
+  [
+    'expo-contacts',
+    {
+      contactsPermission:
+        'WAL needs access to your contacts to help you find friends on the app. Your contact information is only used for friend discovery and is never stored or shared.',
+    },
+  ],
+  'react-native-compressor',
+  [
+    'expo-build-properties',
+    {
+      ios: {
+        newArchEnabled: false,
+      },
+      android: {
+        newArchEnabled: false,
+      },
+    },
+  ],
+  'react-native-libsodium',
+  [
+    'react-native-share',
+    {
+      ios: ['fb', 'instagram', 'whatsapp', 'tg', 'twitter', 'tiktoksharesdk'],
+      android: [
+        'com.whatsapp',
+        'org.telegram.messenger',
+        'com.facebook.katana',
+        'com.instagram.android',
+        'com.twitter.android',
+        'com.zhiliaoapp.musically',
+      ],
+    },
+  ],
+  '@livekit/react-native-expo-plugin',
+  '@config-plugins/react-native-webrtc',
+  [
+    'expo-image-picker',
+    {
+      photosPermission:
+        '$(PRODUCT_NAME) needs access to your photos to set profile image.',
+      cameraPermission:
+        '$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live on locations.',
+    },
+  ],
+  [
+    'expo-splash-screen',
+    {
+      backgroundColor: '#000000',
+      image: './assets/images/icon.png',
+      dark: {
+        image: './assets/images/icon.png',
+        backgroundColor: '#000000',
+      },
+      imageWidth: 200,
+    },
+  ],
+];
+
+if (ENABLE_FIREBASE) {
+  pluginsList.push('@react-native-firebase/app');
+}
 
 export default {
   expo: {
@@ -45,7 +181,9 @@ export default {
       },
       supportsTablet: false,
       bundleIdentifier: IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment',
-      googleServicesFile: './GoogleService-Info.plist',
+      googleServicesFile: hasIosPlist
+        ? './GoogleService-Info.plist'
+        : undefined,
     },
     assetBundlePatterns: ['**/*'],
     android: {
@@ -57,7 +195,7 @@ export default {
         backgroundColor: '#ffffff',
       },
 
-      googleServicesFile: './google-services.json',
+      googleServicesFile: hasAndroidJson ? './google-services.json' : undefined,
       intentFilters: [
         {
           action: 'VIEW',
@@ -79,133 +217,7 @@ export default {
       ],
       permissions: ['READ_CONTACTS'],
     },
-    plugins: [
-      'expo-router',
-      [
-        'expo-share-intent',
-        {
-          iosActivationRules: {
-            NSExtensionActivationSupportsWebURLWithMaxCount: 1,
-            NSExtensionActivationSupportsWebPageWithMaxCount: 1,
-            NSExtensionActivationSupportsText: true,
-            NSExtensionActivationSupportsImageWithMaxCount: 10,
-          },
-          androidIntentFilters: ['text/*', 'image/*'],
-        },
-      ],
-      [
-        'expo-build-properties',
-        {
-          ios: {
-            useFrameworks: 'static',
-          },
-          android: {
-            //LiveKit sdk requires min 24
-            minSdkVersion: 24,
-            targetSdkVersion: 35,
-          },
-        },
-      ],
-      [
-        'expo-notifications',
-        {
-          icon: './assets/images/small-icon-android.png',
-          color: '#000',
-        },
-      ],
-      [
-        'react-native-vision-camera',
-        {
-          cameraPermissionText:
-            '$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live.',
-
-          // optionally, if you want to record audio:
-          enableMicrophonePermission: true,
-          microphonePermissionText:
-            '$(PRODUCT_NAME) needs access to your Microphone to capture audio.',
-        },
-      ],
-      [
-        '@sentry/react-native/expo',
-        {
-          url: 'https://sentry.io/',
-          project: 'react-native',
-          organization: 'greetai-inc',
-        },
-      ],
-      [
-        'expo-location',
-        {
-          locationPermissionText:
-            'This app accesses your location to let you post videos or photos to nearby locations.',
-        },
-      ],
-      [
-        'expo-contacts',
-        {
-          contactsPermission:
-            'WAL needs access to your contacts to help you find friends on the app. Your contact information is only used for friend discovery and is never stored or shared.',
-        },
-      ],
-      '@react-native-firebase/app',
-      'react-native-compressor',
-      [
-        'expo-build-properties',
-        {
-          ios: {
-            newArchEnabled: false,
-          },
-          android: {
-            newArchEnabled: false,
-          },
-        },
-      ],
-      'react-native-libsodium',
-      [
-        'react-native-share',
-        {
-          ios: [
-            'fb',
-            'instagram',
-            'whatsapp',
-            'tg',
-            'twitter',
-            'tiktoksharesdk',
-          ],
-          android: [
-            'com.whatsapp',
-            'org.telegram.messenger',
-            'com.facebook.katana',
-            'com.instagram.android',
-            'com.twitter.android',
-            'com.zhiliaoapp.musically',
-          ],
-        },
-      ],
-      '@livekit/react-native-expo-plugin',
-      '@config-plugins/react-native-webrtc',
-      [
-        'expo-image-picker',
-        {
-          photosPermission:
-            '$(PRODUCT_NAME) needs access to your photos to set profile image.',
-          cameraPermission:
-            '$(PRODUCT_NAME) needs access to your Camera to capture photos and videos or go live on locations.',
-        },
-      ],
-      [
-        'expo-splash-screen',
-        {
-          backgroundColor: '#000000',
-          image: './assets/images/icon.png',
-          dark: {
-            image: './assets/images/icon.png',
-            backgroundColor: '#000000',
-          },
-          imageWidth: 200,
-        },
-      ],
-    ],
+    plugins: pluginsList,
     experiments: {
       typedRoutes: true,
     },
