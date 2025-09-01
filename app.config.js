@@ -44,9 +44,11 @@ export default {
       },
       supportsTablet: false,
       bundleIdentifier: IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment',
-      googleServicesFile: IS_DEV
-        ? './GoogleService-Info.plist'
-        : './GoogleService-Info-Prod.plist',
+      googleServicesFile: process.env.GOOGLESERVICE_INFO_PROD_PLIST
+        ? process.env.GOOGLESERVICE_INFO_PROD_PLIST
+        : IS_DEV
+          ? './GoogleService-Info.plist'
+          : './GoogleService-Info-Prod.plist',
     },
     assetBundlePatterns: ['**/*'],
     android: {
@@ -58,7 +60,8 @@ export default {
         backgroundColor: '#ffffff',
       },
 
-      googleServicesFile: './google-services.json',
+      googleServicesFile:
+        process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
       intentFilters: [
         {
           action: 'VIEW',
