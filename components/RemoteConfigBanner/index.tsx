@@ -1,8 +1,6 @@
 // @ts-nocheck
 
-import '@react-native-firebase/app';
 import React, { useEffect } from 'react';
-import remoteConfig from '@react-native-firebase/remote-config';
 import { useAtom } from 'jotai';
 import { firebaseRemoteConfigState } from '../../lib/state/storage';
 import { isDev } from '@/lib/api/config';
@@ -22,6 +20,9 @@ const RemoteConfigBanner = () => {
   useEffect(() => {
     const fetchAndActivateConfig = async () => {
       try {
+        // Lazily require to avoid hard dependency when Firebase is not configured
+        const remoteConfig =
+          require('@react-native-firebase/remote-config').default;
         await remoteConfig().setDefaults({
           mentbanner: JSON.stringify({
             type: 'info',

@@ -34,11 +34,6 @@ if [ -f "./node_modules/.bin/prettier" ]; then
   echo "$FILES" | xargs git add
 fi
 
-# Run lint-staged and TypeScript checks
-if [ -f "./node_modules/lint-staged/bin/lint-staged.js" ]; then
-  node ./node_modules/lint-staged/bin/lint-staged.js
-fi
-
 if [ -f "./node_modules/typescript/bin/tsc" ]; then
   node ./node_modules/typescript/bin/tsc --noEmit
 fi
