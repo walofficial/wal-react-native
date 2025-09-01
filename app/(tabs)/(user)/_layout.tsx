@@ -3,7 +3,7 @@ import ProfileHeader from '@/components/ProfileHeader';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 import useAuth from '@/hooks/useAuth';
 import { Link, Stack } from 'expo-router';
-import { TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '@/lib/theme';
 import SimpleGoBackHeaderPost from '@/components/SimpleGoBackHeaderPost';
