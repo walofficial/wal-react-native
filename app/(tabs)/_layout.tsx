@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { BackHandler } from 'react-native';
-
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { isUserRegistered, useSession } from '@/components/AuthLayer';
