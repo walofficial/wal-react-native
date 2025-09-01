@@ -1,0 +1,14 @@
+build/
+ios/
+android/
+**/*.html
+*.json
+*.md
+*.txt
+*.xml
+*.jsonc
+*.json5
+*.jsonp
+*.jsonld
+google-services.json
+GoogleService-Info.plist
