@@ -46,7 +46,6 @@ npm start
 
 That’s it. With the backend on `http://localhost:5500` and the Supabase env set, the frontend and backend are connected.
 
-
 ### Additional notes
 
 - The new architecture from Expo/React Native has performance issues on Android, and LiveKit does not support the new architecture yet. There are no plans to migrate at this time.

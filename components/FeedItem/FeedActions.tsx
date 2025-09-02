@@ -1,15 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   StyleSheet,
-  Platform,
   useColorScheme,
   Text,
-  Animated,
   Pressable,
-  TouchableOpacity,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import CommentButton from './CommentButton';
 import ShareButton from './ShareButton';
 import { useTheme } from '@/lib/theme';
@@ -37,23 +41,21 @@ const LoadingCircle = ({
   color: string;
   size?: number;
 }) => {
-  const rotateValue = useRef(new Animated.Value(0)).current;
+  const rotateValue = useSharedValue(0);
 
   useEffect(() => {
-    const animation = Animated.loop(
-      Animated.timing(rotateValue, {
-        toValue: 1,
-        duration: 1000,
-        useNativeDriver: false, // SVG animations need useNativeDriver: false
-      }),
+    rotateValue.value = withRepeat(
+      withTiming(1, { duration: 1000, easing: Easing.linear }),
+      -1,
+      false,
     );
-    animation.start();
-    return () => animation.stop();
+    // no cleanup needed for reanimated repeat loop
   }, []);
 
-  const rotate = rotateValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${rotateValue.value * 360}deg` }],
+    };
   });
 
   const radius = size / 2 - 1;
@@ -62,7 +64,7 @@ const LoadingCircle = ({
   const strokeDashoffset = circumference * 0.75; // Show 25% of the circle
 
   return (
-    <Animated.View style={{ transform: [{ rotate }] }}>
+    <Animated.View style={animatedStyle}>
       <Svg width={size} height={size}>
         <Circle
           cx={size / 2}
@@ -178,18 +180,9 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   const isSummaryLoading = verification?.ai_video_summary_status === 'PENDING';
   const metadataLoading = verification?.metadata_status === 'PENDING';
 
-  const loaderOpacity = useRef(
-    new Animated.Value(isFactualityLoading ? 1 : 0),
-  ).current;
-  const badgeOpacity = useRef(
-    new Animated.Value(isFactualityLoading ? 0 : 1),
-  ).current;
-  const summaryLoaderOpacity = useRef(
-    new Animated.Value(isSummaryLoading ? 1 : 0),
-  ).current;
-  const metadataLoaderOpacity = useRef(
-    new Animated.Value(metadataLoading ? 1 : 0),
-  ).current;
+  const loaderOpacity = useSharedValue(isFactualityLoading ? 1 : 0);
+  const summaryLoaderOpacity = useSharedValue(isSummaryLoading ? 1 : 0);
+  const metadataLoaderOpacity = useSharedValue(metadataLoading ? 1 : 0);
   const router = useRouter();
   const pathname = usePathname();
   const { closeLightbox } = useLightboxControls();
@@ -198,53 +191,45 @@ const FeedActions: React.FC<FeedActionsProps> = ({
 
   useEffect(() => {
     if (isFactualityLoading) {
-      // Show loader, hide badge
-      Animated.parallel([
-        Animated.timing(loaderOpacity, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(badgeOpacity, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      // Show loader
+      loaderOpacity.value = withTiming(1, {
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+      });
     } else if (badgeInfo) {
-      // Show badge, hide loader
-      Animated.parallel([
-        Animated.timing(loaderOpacity, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(badgeOpacity, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      // Hide loader
+      loaderOpacity.value = withTiming(0, {
+        duration: 300,
+        easing: Easing.inOut(Easing.ease),
+      });
     }
   }, [isFactualityLoading, badgeInfo]);
 
   // Handle summary loading animation
   useEffect(() => {
-    Animated.timing(summaryLoaderOpacity, {
-      toValue: isSummaryLoading ? 1 : 0,
+    summaryLoaderOpacity.value = withTiming(isSummaryLoading ? 1 : 0, {
       duration: 300,
-      useNativeDriver: true,
-    }).start();
+      easing: Easing.inOut(Easing.ease),
+    });
   }, [isSummaryLoading]);
 
   // Handle metadata loading animation
   useEffect(() => {
-    Animated.timing(metadataLoaderOpacity, {
-      toValue: metadataLoading ? 1 : 0,
+    metadataLoaderOpacity.value = withTiming(metadataLoading ? 1 : 0, {
       duration: 300,
-      useNativeDriver: true,
-    }).start();
+      easing: Easing.inOut(Easing.ease),
+    });
   }, [metadataLoading]);
+
+  const factualityAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: loaderOpacity.value,
+  }));
+  const summaryAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: summaryLoaderOpacity.value,
+  }));
+  const metadataAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: metadataLoaderOpacity.value,
+  }));
 
   const handleFactualityPress = () => {
     if (isFactualityLoading || isSummaryLoading || metadataLoading) {
@@ -314,25 +299,13 @@ const FeedActions: React.FC<FeedActionsProps> = ({
                   />
                 )}
               {isFactualityLoading && (
-                <FactualityLoader
-                  style={{
-                    opacity: loaderOpacity,
-                  }}
-                />
+                <FactualityLoader style={factualityAnimatedStyle} />
               )}
               {!isFactualityLoading && isSummaryLoading && (
-                <SummaryLoader
-                  style={{
-                    opacity: summaryLoaderOpacity,
-                  }}
-                />
+                <SummaryLoader style={summaryAnimatedStyle} />
               )}
               {!isFactualityLoading && !isSummaryLoading && metadataLoading && (
-                <MetadataLoader
-                  style={{
-                    opacity: metadataLoaderOpacity,
-                  }}
-                />
+                <MetadataLoader style={metadataAnimatedStyle} />
               )}
             </Pressable>
           </View>
