@@ -113,7 +113,7 @@ const FactualityLoader = ({ style }: { style?: any }) => {
 const SummaryLoader = ({ style }: { style?: any }) => {
   const theme = useTheme();
   const colorScheme = useColorScheme();
-  const isDarkColorScheme = colorScheme === 'dark';
+  const isDarkColorScheme = colorScheme === 'light';
 
   return (
     <Animated.View
