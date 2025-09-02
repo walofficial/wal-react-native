@@ -121,7 +121,7 @@ const SummaryLoader = ({ style }: { style?: any }) => {
         styles.loaderContainer,
         {
           backgroundColor: isDarkColorScheme
-            ? 'rgba(60, 60, 60, 0.3)'
+            ? 'rgba(60, 60, 60, 0.4)'
             : 'rgba(240, 240, 240, 0.5)',
         },
         style,
