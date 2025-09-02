@@ -74,6 +74,7 @@ jobs:
         if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android') && github.event.inputs.mode != 'remote_update'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+
           eas build --platform android --profile production --non-interactive
         env:
           NODE_ENV: production
@@ -90,6 +91,7 @@ jobs:
         if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios') && github.event.inputs.mode != 'remote_update'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+
           eas build --platform ios --profile production --non-interactive
         env:
           NODE_ENV: production
