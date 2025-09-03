@@ -20,10 +20,6 @@ android/*
 !android/widget/
 removed_folders/
 
-# Firebase service config (local only)
-GoogleService-Info.plist
-google-services.json
-
 # macOS
 .DS_Store
 
