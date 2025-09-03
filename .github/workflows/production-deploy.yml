@@ -32,6 +32,8 @@ env:
   EXPO_APPLE_PASSWORD: ${{ secrets.EXPO_APPLE_PASSWORD }}
   EXPO_TEAM_ID: ${{ secrets.EXPO_TEAM_ID }}
   GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
+  GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+  GOOGLESERVICE_INFO_PROD_PLIST: ${{ secrets.GOOGLESERVICE_INFO_PROD_PLIST }}
   NODE_OPTIONS: --openssl-legacy-provider
 
 jobs:
@@ -40,14 +42,6 @@ jobs:
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
-
-      - name: 🔐 Prepare Firebase config files from secrets
-        run: |
-          printf "%s" "$GOOGLE_SERVICES_JSON" > google-services.json
-          printf "%s" "$GOOGLESERVICE_INFO_PROD_PLIST" > GoogleService-Info.plist
-        env:
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-          GOOGLESERVICE_INFO_PROD_PLIST: ${{ secrets.GOOGLESERVICE_INFO_PROD_PLIST }}
 
       - name: 🏗 Setup Node.js
         uses: actions/setup-node@v4
@@ -70,6 +64,21 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
+      - name: 🔐 Prepare Firebase config files from secrets
+        run: |
+          printf "%s" "$GOOGLE_SERVICES_JSON" > google-services.json
+          printf "%s" "$GOOGLESERVICE_INFO_PROD_PLIST" > GoogleService-Info.plist
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          GOOGLESERVICE_INFO_PROD_PLIST: ${{ secrets.GOOGLESERVICE_INFO_PROD_PLIST }}
+
+      - name: ✅ Verify iOS Firebase plist exists
+        if: matrix.platform == 'ios'
+        run: |
+          if [ ! -s GoogleService-Info.plist ]; then
+            echo "GoogleService-Info.plist is missing or empty. Ensure GOOGLESERVICE_INFO_PROD_PLIST secret is set." >&2
+            exit 1
+          fi
       - name: 📱 Build Android (Production AAB)
         if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android') && github.event.inputs.mode != 'remote_update'
         run: |
