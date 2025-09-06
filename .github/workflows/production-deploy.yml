@@ -60,6 +60,12 @@ jobs:
       - name: 🔄 EAS Update (remote update)
         if: github.event.inputs.mode == 'remote_update'
         run: |
+          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
+          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+          export EXPO_PUBLIC_SENTRY_DSN=${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+          export EXPO_PUBLIC_SUPABASE_URL=${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          export EXPO_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          export EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}
           eas update --channel ${{ github.event.inputs.channel }} --non-interactive --message "Remote update: ${GITHUB_SHA::7}"
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
@@ -79,19 +85,24 @@ jobs:
             echo "GoogleService-Info.plist is missing or empty. Ensure GOOGLESERVICE_INFO_PROD_PLIST secret is set." >&2
             exit 1
           fi
+
       - name: 📱 Build Android (Production AAB)
         if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android') && github.event.inputs.mode != 'remote_update'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-
-          eas build --platform android --profile production --non-interactive
+          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+          export EXPO_PUBLIC_SENTRY_DSN=${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+          export EXPO_PUBLIC_SUPABASE_URL=${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          export EXPO_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          export EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}
+          eas build --platform android --profile production --non-interactive --local --output ./app-production.apk
         env:
           NODE_ENV: production
 
       - name: 🚀 Submit Android to Play Store
         if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android') && github.event.inputs.mode != 'remote_update'
         run: |
-          eas submit -p android --latest --non-interactive
+          eas submit -p android --latest --non-interactive --path ./app-production.apk
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           GOOGLE_PLAY_SERVICE_ACCOUNT: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}
@@ -100,15 +111,19 @@ jobs:
         if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios') && github.event.inputs.mode != 'remote_update'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
-
-          eas build --platform ios --profile production --non-interactive
+          export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+          export EXPO_PUBLIC_SENTRY_DSN=${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+          export EXPO_PUBLIC_SUPABASE_URL=${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+          export EXPO_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
+          export EXPO_PUBLIC_API_URL=${{ secrets.EXPO_PUBLIC_API_URL }}
+          eas build --platform ios --profile production --non-interactive --local --output ./app-production.ipa
         env:
           NODE_ENV: production
 
       - name: 🚀 Submit iOS to App Store
         if: (github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios') && github.event.inputs.mode != 'remote_update'
         run: |
-          eas submit -p ios --latest --non-interactive
+          eas submit -p ios --latest --non-interactive --path ./app-production.ipa
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
           EXPO_APPLE_ID: ${{ secrets.EXPO_APPLE_ID }}
