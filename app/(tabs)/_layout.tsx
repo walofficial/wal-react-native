@@ -210,28 +210,6 @@ export default function TabLayout() {
     }
   }, [pathname]);
 
-  // Navigate to news feed on sign in basically.
-  useEffect(() => {
-    if (
-      user?.preferred_news_feed_id &&
-      newsFeedId &&
-      !userIsLoading &&
-      !isLoading
-    ) {
-      // Only navigate if we're not already on the news feed
-      const isOnNewsFeed =
-        pathname.includes('(news)') && pathname.includes(newsFeedId);
-      if (!isOnNewsFeed) {
-        // router.navigate({
-        //   pathname: '/(tabs)/(news)/[feedId]',
-        //   params: {
-        //     feedId: user.preferred_news_feed_id,
-        //   },
-        // });
-      }
-    }
-  }, [user?.preferred_news_feed_id, newsFeedId, userIsLoading, isLoading]);
-
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
     return null;
