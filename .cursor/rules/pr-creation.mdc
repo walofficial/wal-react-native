@@ -1,0 +1,43 @@
+---
+description: "Create GitHub PR using template and MCP tools"
+---
+
+# PR Creation Workflow
+
+When user requests PR creation, execute this workflow:
+
+## Core Process
+
+1. **Gather git information** (see [git-analysis](mdc:.cursor/rules/git-analysis.mdc))
+2. **Generate PR content** (see [pr-template-generator](mdc:.cursor/rules/pr-template-generator.mdc))
+3. **Create PR via GitHub MCP**
+
+## GitHub MCP Call
+
+Always use `mcp_GitHub_create_pull_request` with:
+
+```json
+{
+  "owner": "extracted-from-git-remote",
+  "repo": "extracted-from-git-remote",
+  "title": "feat: add user authentication system",
+  "head": "feature/auth",
+  "base": "main",
+  "body": "# Summary\n\n[Generated from template]...",
+  "draft": false
+}
+```
+
+## Repository Requirements
+
+**Always include in PR body:**
+
+- Mongo pipeline usage confirmation
+- Service logic implementation confirmation
+- Reference to [PULL_REQUEST_TEMPLATE.md](mdc:.github/PULL_REQUEST_TEMPLATE.md)
+
+## Error Handling
+
+- **No changes**: "Please stage/commit changes first"
+- **GitHub API failure**: Show specific error + retry guidance
+- **Not in git repo**: Guide to correct directory
