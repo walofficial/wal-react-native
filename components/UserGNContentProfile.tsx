@@ -105,6 +105,7 @@ export default memo(function UserGNContentProfile({
         fact_check_data={item.fact_check_data}
         previewData={item.preview_data}
         thumbnail={item.verified_media_playback?.thumbnail || ''}
+        liveEndedAt={item.live_ended_at}
       />
     ),
     [currentViewableItemIndex],

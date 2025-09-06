@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Pressable, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Animated, {
   FadeIn,
@@ -20,6 +26,7 @@ interface RoomControlsProps {
   setCameraEnabled: (enabled: boolean) => void;
   onDisconnectClick?: () => void;
   onSwitchCamera?: () => void;
+  isDisconnecting?: boolean;
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -31,6 +38,7 @@ export function RoomControls({
   setCameraEnabled,
   onDisconnectClick,
   onSwitchCamera,
+  isDisconnecting,
 }: RoomControlsProps) {
   const insets = useSafeAreaInsets();
 
@@ -175,7 +183,11 @@ export function RoomControls({
             onPress={handleDisconnect}
             style={[styles.disconnectButton, disconnectAnimatedStyle]}
           >
-            <Ionicons name="close" size={24} color="white" />
+            {isDisconnecting ? (
+              <ActivityIndicator size="small" color="white" />
+            ) : (
+              <Ionicons name="close" size={24} color="white" />
+            )}
           </AnimatedPressable>
         </View>
       </BlurView>
@@ -188,7 +200,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(239, 68, 68, 0.9)',
+    backgroundColor: '#FF0000',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
@@ -240,7 +252,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-    backgroundColor: '#EF4444',
+    backgroundColor: '#FF0000',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',

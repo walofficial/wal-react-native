@@ -22,6 +22,7 @@ import {
   getLiveStreamToken,
   requestLivekitIngress,
   startLive,
+  stopLive,
   createUser,
   getUser,
   updateVerificationVisibility,
@@ -137,6 +138,8 @@ import type {
   StartLiveData,
   StartLiveError,
   StartLiveResponse2,
+  StopLiveData,
+  StopLiveError,
   CreateUserData,
   CreateUserError,
   CreateUserResponse,
@@ -283,6 +286,7 @@ export type QueryKey<TOptions extends Options> = [
   Pick<TOptions, 'baseURL' | 'body' | 'headers' | 'path' | 'query'> & {
     _id: string;
     _infinite?: boolean;
+    tags?: ReadonlyArray<string>;
   },
 ];
 
@@ -290,13 +294,19 @@ const createQueryKey = <TOptions extends Options>(
   id: string,
   options?: TOptions,
   infinite?: boolean,
+  tags?: ReadonlyArray<string>,
 ): [QueryKey<TOptions>[0]] => {
   const params: QueryKey<TOptions>[0] = {
     _id: id,
-    baseURL: (options?.client ?? _heyApiClient).getConfig().baseURL,
+    baseURL:
+      options?.baseURL ||
+      (options?.client ?? _heyApiClient).getConfig().baseURL,
   } as QueryKey<TOptions>[0];
   if (infinite) {
     params._infinite = infinite;
+  }
+  if (tags) {
+    params.tags = tags;
   }
   if (options?.body) {
     params.body = options.body;
@@ -1099,6 +1109,54 @@ export const startLiveMutation = (
   > = {
     mutationFn: async (localOptions) => {
       const { data } = await startLive({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const stopLiveQueryKey = (options: Options<StopLiveData>) =>
+  createQueryKey('stopLive', options);
+
+/**
+ * Stop Live
+ */
+export const stopLiveOptions = (options: Options<StopLiveData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await stopLive({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: stopLiveQueryKey(options),
+  });
+};
+
+/**
+ * Stop Live
+ */
+export const stopLiveMutation = (
+  options?: Partial<Options<StopLiveData>>,
+): UseMutationOptions<
+  unknown,
+  AxiosError<StopLiveError>,
+  Options<StopLiveData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    unknown,
+    AxiosError<StopLiveError>,
+    Options<StopLiveData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await stopLive({
         ...options,
         ...localOptions,
         throwOnError: true,

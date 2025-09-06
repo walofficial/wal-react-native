@@ -85,7 +85,6 @@ export default function LinkPreview({
 
       // Check for suspicious or problematic patterns
       const problematicPatterns = [
-        /story_fbid/, // Facebook story URLs that don't work well
         /\/share\/\?/, // Generic share URLs without proper content
         /javascript:/i, // JavaScript URLs
         /data:/i, // Data URLs
@@ -119,10 +118,14 @@ export default function LinkPreview({
       }
 
       // Check for URLs that are too short (likely incomplete)
-      if (url.length < 10) return true;
+      if (url.length < 10) {
+        return true;
+      }
 
       // Check for missing TLD
-      if (!urlObj.hostname.includes('.')) return true;
+      if (!urlObj.hostname.includes('.')) {
+        return true;
+      }
 
       return false;
     } catch (error) {
