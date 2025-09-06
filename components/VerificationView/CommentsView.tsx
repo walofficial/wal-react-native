@@ -428,6 +428,7 @@ const PostContent = memo(
               verification.ai_video_summary_status === 'COMPLETED' ||
               verification.ai_video_summary_status === 'PENDING'
             }
+            liveEndedAt={verification.live_ended_at || undefined}
           />
           {hasPreview && !imageUrl && !realTimeImageUrl && (
             <LinkPreview

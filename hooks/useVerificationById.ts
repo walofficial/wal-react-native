@@ -80,7 +80,8 @@ function useVerificationById(
 
       return data.ai_video_summary_status === 'PENDING' ||
         data.fact_check_status === 'PENDING' ||
-        data.metadata_status === 'PENDING'
+        data.metadata_status === 'PENDING' ||
+        data.is_live
         ? refetchInterval
         : false;
     },

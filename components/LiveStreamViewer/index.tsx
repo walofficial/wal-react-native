@@ -28,20 +28,17 @@ import TopGradient from '../VideoPlayback/TopGradient';
 import CloseButton from '../CloseButton';
 import { FontSizes } from '@/lib/theme';
 import { t } from '@/lib/i18n';
+import { useIsFocused } from '@react-navigation/native';
 
 // Component for constraining video to portrait aspect ratio
 function ConstrainedLiveVideo({ children }: { children: React.ReactNode }) {
   // Use 9:16 aspect ratio for portrait video (standard mobile video ratio)
-  const aspectRatio = 9 / 16;
-
   return (
     <View style={styles.constrainedContainer}>
       <View
         style={{
           width: '100%',
-          height: Dimensions.get('window').height * 0.8,
-          maxWidth: Dimensions.get('window').width * 0.9,
-          aspectRatio: 1 / aspectRatio, // Container will be taller than wide
+          aspectRatio: 9 / 16,
           alignSelf: 'center',
           borderRadius: 16,
           overflow: 'hidden',
@@ -65,9 +62,8 @@ function LiveStreamViewer({
   liveKitRoomName: string;
   topControls: React.ReactNode;
 }) {
+  const isFocused = useIsFocused();
   const { data, isLoading, error } = useLiveStreamToken(liveKitRoomName);
-  const router = useRouter();
-  const { error: errorToast } = useToast();
   if (isLoading) return <Text>{t('common.loading')}</Text>;
   if (error)
     return (
@@ -75,7 +71,7 @@ function LiveStreamViewer({
         {t('common.error_colon')} {error.message}
       </Text>
     );
-
+  if (!isFocused) return null;
   return (
     <LiveKitRoom
       serverUrl={'wss://ment-6gg5tj49.livekit.cloud'}
@@ -86,11 +82,11 @@ function LiveStreamViewer({
         adaptiveStream: { pixelDensity: 'screen' },
       }}
       onDisconnected={() => {
-        errorToast({
-          title: t('common.live_stream_disconnected'),
-          description: t('common.live_stream_disconnected'),
-        });
-        router.back();
+        // errorToast({
+        //   title: t('common.live_stream_disconnected'),
+        //   description: t('common.live_stream_disconnected'),
+        // });
+        // router.back();
       }}
     >
       <RoomView topControls={topControls} />
@@ -100,9 +96,7 @@ function LiveStreamViewer({
 
 function RoomView({ topControls }: { topControls: React.ReactNode }) {
   const tracks = useParticipantTracks([Track.Source.Camera], 'identity');
-  const router = useRouter();
   const connectionState = useConnectionState();
-  const { error: errorToast } = useToast();
 
   useEffect(() => {
     const startAudioSession = async () => {
@@ -119,7 +113,6 @@ function RoomView({ topControls }: { topControls: React.ReactNode }) {
       AudioSession.stopAudioSession();
     };
   }, []);
-
   if (connectionState === 'connected') {
     if (tracks.length === 0) {
       return (
@@ -128,7 +121,6 @@ function RoomView({ topControls }: { topControls: React.ReactNode }) {
             <Text style={styles.noStreamText}>
               {t('common.live_stream_unavailable')}
             </Text>
-            <CloseButton variant="x" onClick={() => router.back()} />
           </View>
         </ConstrainedLiveVideo>
       );

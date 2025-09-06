@@ -33,6 +33,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
 import { t } from '@/lib/i18n';
+import LiveStreamViewer from '../LiveStreamViewer';
 
 interface MediaContentProps {
   videoUrl?: string;
@@ -55,6 +56,7 @@ interface MediaContentProps {
   previewData?: LinkPreviewData;
   hasAISummary?: boolean;
   factuality?: number;
+  liveEndedAt?: string;
 }
 
 function MediaContent({
@@ -70,6 +72,7 @@ function MediaContent({
   mediaAlt,
   previewData,
   factuality,
+  liveEndedAt,
 }: MediaContentProps) {
   const router = useRouter();
 
@@ -247,6 +250,11 @@ function MediaContent({
           onImagePress={handleSingleTap}
           aspectRatio={1}
           verificationId={verificationId}
+        />
+      ) : livekitRoomName && !liveEndedAt ? (
+        <LiveStreamViewer
+          liveKitRoomName={livekitRoomName}
+          topControls={<View />}
         />
       ) : videoUrl ? (
         <SimplifiedVideoPlayback

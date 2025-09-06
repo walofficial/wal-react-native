@@ -95,7 +95,7 @@ export default function Layout() {
             />
 
             <Stack.Screen
-              name="[feedId]/livestream"
+              name="livestream"
               options={{
                 header: () => null,
               }}

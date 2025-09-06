@@ -2,7 +2,7 @@ import { Redirect, Tabs, usePathname, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { BackHandler } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { isUserRegistered, useSession } from '@/components/AuthLayer';
@@ -22,9 +22,76 @@ import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { Provider as HeaderTransformProvider } from '@/lib/context/header-transform';
 import { Provider as ReactionsOverlayProvider } from '@/lib/reactionsOverlay/reactionsOverlay';
 import { ReactionsOverlay } from '@/components/ReactionsOverlay/ReactionsOverlay';
-import { useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { factCheckBottomSheetState } from '@/lib/atoms/news';
 import { locationUserListSheetState } from '@/lib/atoms/location';
+import { isUserLiveState } from '@/components/CameraPage/atom';
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withSequence,
+  withTiming,
+} from 'react-native-reanimated';
+
+function LivePulseIcon({ children }: { children: React.ReactNode }) {
+  const scale = useSharedValue(1);
+  const opacity = useSharedValue(0.6);
+
+  React.useEffect(() => {
+    scale.value = withRepeat(
+      withSequence(
+        withTiming(1.15, { duration: 900, easing: Easing.inOut(Easing.quad) }),
+        withTiming(1.0, { duration: 900, easing: Easing.inOut(Easing.quad) }),
+      ),
+      -1,
+      true,
+    );
+    opacity.value = withRepeat(
+      withSequence(
+        withTiming(0.2, { duration: 900 }),
+        withTiming(0.6, { duration: 900 }),
+      ),
+      -1,
+      true,
+    );
+  }, []);
+
+  const ringStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+      opacity: opacity.value,
+    };
+  });
+
+  return (
+    <View style={styles.iconContainer}>
+      <Animated.View style={[styles.pulseRing, ringStyle]} />
+      <View style={styles.iconInner}>{children}</View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  iconContainer: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pulseRing: {
+    position: 'absolute',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,0,0,0.25)',
+  },
+  iconInner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
 
 export default function TabLayout() {
   const pathname = usePathname();
@@ -66,7 +133,7 @@ export default function TabLayout() {
   const router = useRouter();
   const setUserLocationBottomSheet = useSetAtom(locationUserListSheetState);
   const setIsFactCheckBottomSheetOpen = useSetAtom(factCheckBottomSheetState);
-
+  const isUserLive = useAtomValue(isUserLiveState);
   useEffect(() => {
     if (shareIntent && session && isAndroid) {
       // Check if we have images or text content to share
@@ -155,12 +222,12 @@ export default function TabLayout() {
       const isOnNewsFeed =
         pathname.includes('(news)') && pathname.includes(newsFeedId);
       if (!isOnNewsFeed) {
-        router.navigate({
-          pathname: '/(tabs)/(news)/[feedId]',
-          params: {
-            feedId: user.preferred_news_feed_id,
-          },
-        });
+        // router.navigate({
+        //   pathname: '/(tabs)/(news)/[feedId]',
+        //   params: {
+        //     feedId: user.preferred_news_feed_id,
+        //   },
+        // });
       }
     }
   }, [user?.preferred_news_feed_id, newsFeedId, userIsLoading, isLoading]);
@@ -233,7 +300,7 @@ export default function TabLayout() {
         <HeaderTransformProvider>
           <BottomSheetModalProvider>
             <Tabs
-              initialRouteName={`(news)`}
+              // initialRouteName={`(news)`}
               backBehavior="initialRoute"
               screenOptions={{
                 lazy: true,
@@ -251,24 +318,6 @@ export default function TabLayout() {
                 // tabBarHideOnKeyboard: isIOS,
               }}
             >
-              <Tabs.Screen
-                name="(home)"
-                options={{
-                  tabBarLabelStyle: {
-                    fontSize: 18,
-                  },
-                  tabBarIcon: ({ color, focused }) => (
-                    <TabBarIcon
-                      size={24}
-                      name={focused ? 'location' : 'location-outline'}
-                      color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
-                      style={
-                        focused ? { transform: [{ scale: 1.15 }] } : undefined
-                      }
-                    />
-                  ),
-                }}
-              />
               <Tabs.Screen
                 name="(news)"
                 options={{
@@ -319,7 +368,31 @@ export default function TabLayout() {
                   ),
                 }}
               />
-
+              <Tabs.Screen
+                name="(home)"
+                options={{
+                  tabBarLabelStyle: {
+                    fontSize: 18,
+                  },
+                  tabBarIcon: ({ color, focused }) =>
+                    isUserLive ? (
+                      <LivePulseIcon>
+                        <TabBarIcon size={24} name="radio" color="#FF0000" />
+                      </LivePulseIcon>
+                    ) : (
+                      <TabBarIcon
+                        size={24}
+                        name={focused ? 'location' : 'location-outline'}
+                        color={
+                          focused ? TAB_COLORS.active : TAB_COLORS.inactive
+                        }
+                        style={
+                          focused ? { transform: [{ scale: 1.15 }] } : undefined
+                        }
+                      />
+                    ),
+                }}
+              />
               <Tabs.Screen
                 name="(user)"
                 options={{

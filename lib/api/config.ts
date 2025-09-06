@@ -9,7 +9,6 @@ export const isDev =
   Updates.channel !== 'production';
 
 export const SENTRY_DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
-
 export const API_BASE_URL = isWeb
   ? 'http://localhost:5500'
   : (process.env.EXPO_PUBLIC_API_URL as string);

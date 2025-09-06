@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const TopGradient = React.memo(
   ({ topControls }: { topControls: React.ReactNode }) => {
-    const insets = useSafeAreaInsets();
     return (
       <View style={[styles.container, { zIndex: 100 }]}>
         <LinearGradient

@@ -455,8 +455,8 @@ export default function CameraPage(): React.ReactElement {
                 livekit_token: string;
                 room_name: string;
               }) => {
-                router.replace({
-                  pathname: '/(tabs)/(home)/[feedId]/livestream',
+                router.navigate({
+                  pathname: '/(tabs)/(home)/livestream',
                   params: {
                     feedId: feedId as string,
                     livekit_token: livekit_token,
