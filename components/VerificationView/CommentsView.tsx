@@ -310,7 +310,7 @@ const PostContent = memo(
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
-              isOwner={!!user && verification.assignee_user?.id === user.id}
+              // isOwner={!!user && verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -345,7 +345,7 @@ const PostContent = memo(
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
-              isOwner={!!user && verification.assignee_user?.id === user.id}
+              // isOwner={!!user && verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -428,6 +428,7 @@ const PostContent = memo(
               verification.ai_video_summary_status === 'COMPLETED' ||
               verification.ai_video_summary_status === 'PENDING'
             }
+            liveEndedAt={verification.live_ended_at || undefined}
           />
           {hasPreview && !imageUrl && !realTimeImageUrl && (
             <LinkPreview
@@ -470,7 +471,7 @@ const PostContent = memo(
           <FeedActions
             verificationId={verificationId}
             sourceComponent={null}
-            isOwner={!!user && verification.assignee_user?.id === user.id}
+            // isOwner={!!user && verification.assignee_user?.id === user.id}
           />
         </View>
       </View>

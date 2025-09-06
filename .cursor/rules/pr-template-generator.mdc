@@ -1,0 +1,82 @@
+---
+description: "Generate PR content using template structure"
+---
+
+# PR Template Content Generation
+
+Use [PULL_REQUEST_TEMPLATE.md](mdc:.github/PULL_REQUEST_TEMPLATE.md) structure with git analysis data.
+
+## Content Mapping
+
+### Summary Section
+
+```markdown
+# Summary
+
+Brief description extracted from commit messages and change analysis.
+Example: "Implements JWT-based authentication system with token refresh capability."
+```
+
+### Type of Change
+
+Map git changes to template checkboxes:
+
+- `feat:` commits → ✨ New feature
+- `fix:` commits → 🐛 Bug fix
+- `refactor:` commits → ♻️ Refactoring
+- `docs:` commits → 📝 Documentation
+- Performance-related → ⚡ Performance improvements
+- Test files modified → 🧪 Tests
+
+### Changes Made
+
+Transform git diff output:
+
+```markdown
+- [ ] Added JWT authentication service
+- [ ] Modified user login endpoint
+- [ ] Fixed token validation logic
+```
+
+### Motivation and Context
+
+Extract from commit messages:
+
+```markdown
+**Why is this change required?**
+Based on commit: "feat: add JWT authentication for better security"
+
+**What problem does it solve?**
+Replaces session-based auth with stateless JWT tokens.
+```
+
+## Repository-Specific Additions
+
+Always append:
+
+```markdown
+## Checklist
+
+- [ ] I have used mongo pipelines instead of loops where applicable (per repo guidelines)
+- [ ] I have defined logic in appropriate service files
+```
+
+## Example Output
+
+```markdown
+# Summary
+
+Implements JWT-based authentication system with token refresh capability.
+
+## Type of Change
+
+- [x] ✨ New feature (non-breaking change which adds functionality)
+
+## Changes Made
+
+- [x] Added JWT authentication service
+- [x] Modified user login endpoint
+- [x] Added token refresh mechanism
+
+[... rest of template sections filled ...]
+```

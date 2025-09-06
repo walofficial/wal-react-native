@@ -14,6 +14,7 @@ import { shareUrl } from '@/lib/share';
 import { app_name_slug } from '@/app.config';
 import { useTheme } from '@/lib/theme';
 import { t } from '@/lib/i18n';
+import { isAndroid } from '@/lib/platform';
 
 interface MenuViewProps {
   verificationId: string;
@@ -106,19 +107,22 @@ function MenuView({
               {
                 id: 'share',
                 title: t('common.share'),
-                imageColor: '#46F289',
+                image: isAndroid ? 'share' : 'square.and.arrow.up',
               },
               ...(isPublic
                 ? [
                     {
                       id: 'hide-post',
                       title: t('common.hide'),
+                      image: isAndroid ? 'visibility_off' : 'eye.slash',
+                      imageColor: 'yellow',
                     },
                   ]
                 : [
                     {
                       id: 'show-post',
                       title: t('common.show'),
+                      image: isAndroid ? 'visibility' : 'eye',
                     },
                   ]),
             ]
@@ -126,7 +130,7 @@ function MenuView({
               {
                 id: 'share',
                 title: t('common.share'),
-                imageColor: '#46F289',
+                image: isAndroid ? 'share' : 'square.and.arrow.up',
               },
               {
                 id: 'block',
@@ -134,6 +138,7 @@ function MenuView({
                 attributes: {
                   destructive: true,
                 },
+                image: isAndroid ? 'block' : 'slash.circle',
               },
               {
                 id: 'report',
@@ -141,6 +146,7 @@ function MenuView({
                 attributes: {
                   destructive: true,
                 },
+                image: isAndroid ? 'report' : 'exclamationmark.triangle',
               },
             ]
       }

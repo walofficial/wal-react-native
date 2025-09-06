@@ -17,7 +17,7 @@ try {
 }
 
 // Set the API URL with the local IP and port 5500
-process.env.EXPO_PUBLIC_API_URL = `http://${localIp}:5500/`;
+process.env.EXPO_PUBLIC_API_URL = `http://${localIp}:5500`;
 console.log(
   `🚀 Setting EXPO_PUBLIC_API_URL to: ${process.env.EXPO_PUBLIC_API_URL}`,
 );
