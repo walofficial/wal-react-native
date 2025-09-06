@@ -67,7 +67,7 @@ export default function TaskScrollableView() {
         return;
       }
     }
-  }, [data, isFetching, router, goLiveMutation, errorMsg]);
+  }, [data, isFetching, goLiveMutation, errorMsg]);
 
   return (
     <View

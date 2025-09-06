@@ -67,6 +67,9 @@ import type {
   StartLiveData,
   StartLiveResponses,
   StartLiveErrors,
+  StopLiveData,
+  StopLiveResponses,
+  StopLiveErrors,
   CreateUserData,
   CreateUserResponses,
   CreateUserErrors,
@@ -713,6 +716,23 @@ export const startLive = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+};
+
+/**
+ * Stop Live
+ */
+export const stopLive = <ThrowOnError extends boolean = false>(
+  options: Options<StopLiveData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    StopLiveResponses,
+    StopLiveErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/live/stop-live',
+    ...options,
   });
 };
 

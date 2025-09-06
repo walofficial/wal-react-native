@@ -851,6 +851,10 @@ export type FeedPost = {
    */
   is_live?: boolean;
   /**
+   * Live Ended At
+   */
+  live_ended_at?: string | null;
+  /**
    * Is Space
    */
   is_space?: boolean;
@@ -1274,15 +1278,15 @@ export type LinkPreviewData = {
   /**
    * Images
    */
-  images: Array<string> | null;
+  images?: Array<string> | null;
   /**
    * Site Name
    */
-  site_name: string | null;
+  site_name?: string | null;
   /**
    * Platform
    */
-  platform: string | null;
+  platform?: string | null;
 };
 
 /**
@@ -1377,6 +1381,10 @@ export type LocationFeedPost = {
    * Is Live
    */
   is_live?: boolean;
+  /**
+   * Live Ended At
+   */
+  live_ended_at?: string | null;
   /**
    * Is Space
    */
@@ -2845,6 +2853,34 @@ export type StartLiveResponses = {
 
 export type StartLiveResponse2 = StartLiveResponses[keyof StartLiveResponses];
 
+export type StopLiveData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Room Name
+     */
+    room_name: string;
+  };
+  url: '/live/stop-live';
+};
+
+export type StopLiveErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type StopLiveError = StopLiveErrors[keyof StopLiveErrors];
+
+export type StopLiveResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
 export type CreateUserData = {
   body: CreateUserRequest;
   path?: never;
@@ -3467,9 +3503,12 @@ export type GetUserProfileByUsernameError =
 
 export type GetUserProfileByUsernameResponses = {
   /**
+   * Response Get User Profile By Username
    * Successful Response
    */
-  200: User;
+  200: {
+    [key: string]: unknown;
+  };
 };
 
 export type GetUserProfileByUsernameResponse =

@@ -22,7 +22,7 @@ export default function RegisterPhotos() {
           flex: 1,
         }}
       >
-        <Photos redirectURL="/(tabs)/(home)" />
+        {/* <Photos redirectURL="/(tabs)/(home)" /> */}
       </View>
     </View>
   );

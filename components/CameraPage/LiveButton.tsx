@@ -6,7 +6,10 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
-import { requestLivekitIngressMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
+import {
+  requestLivekitIngressMutation,
+  startLiveMutation,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
 
@@ -30,7 +33,7 @@ export function LiveButton({
 }: LiveButtonProps) {
   const { error: errorToast } = useToast();
   const { mutate: requestLive, isPending } = useMutation({
-    ...requestLivekitIngressMutation(),
+    ...startLiveMutation(),
     onSuccess: (data) => {
       onShowRoom(data);
     },

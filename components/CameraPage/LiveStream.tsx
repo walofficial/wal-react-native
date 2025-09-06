@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Alert } from 'react-native';
 import {
   AudioSession,
   LiveKitRoom,
@@ -17,6 +17,12 @@ import { mediaDevices } from '@livekit/react-native-webrtc';
 import useAuth from '@/hooks/useAuth';
 import { BlurView } from 'expo-blur';
 import { t } from '@/lib/i18n';
+import { useToast } from '../ToastUsage';
+import { isUserLiveState } from './atom';
+import { useAtom } from 'jotai';
+import { apiClient } from '@/lib/api/client';
+import { useMutation } from '@tanstack/react-query';
+import { stopLiveMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 registerGlobals();
 
@@ -27,19 +33,35 @@ interface LiveStreamProps {
 }
 
 export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
-  const handleDisconnect = useCallback(() => {
-    // Ensure cleanup happens before calling the parent's onDisconnect
-    if (onDisconnect) {
-      onDisconnect();
-    }
-  }, [onDisconnect]);
+  const { error: errorToast, success: successToast } = useToast();
+  const [isUserLive, setIsUserLive] = useAtom(isUserLiveState);
+  const stopLive = useMutation({
+    ...stopLiveMutation(),
+    onSuccess: (data) => {
+      if (onDisconnect) {
+        setIsUserLive(false);
+        onDisconnect();
+      }
+    },
+  });
 
   return (
     <LiveKitRoom
       serverUrl={'wss://ment-6gg5tj49.livekit.cloud'}
       token={token}
+      onConnected={() => {
+        setIsUserLive(true);
+        // successToast({
+        //   title: t('common.live_stream_started'),
+        //   description: t('common.live_stream_started_description'),
+        // });
+      }}
       onError={(error: Error) => {
-        // toast(error.message);
+        // errorToast({
+        //   title: t('common.failed_to_start_live_stream'),
+        //   description: t('common.failed_to_start_live_stream_description'),
+        // });
+        setIsUserLive(false);
       }}
       connect={true}
       options={{
@@ -47,10 +69,24 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
       }}
       audio={true}
       video={true}
-      onDisconnected={handleDisconnect}
+      onDisconnected={() => {
+        setIsUserLive(false);
+        if (onDisconnect) {
+          onDisconnect();
+        }
+      }}
     >
       <View style={styles.container}>
-        <RoomView onDisconnect={handleDisconnect} />
+        <RoomView
+          isDisconnecting={stopLive.isPending}
+          onDisconnect={() =>
+            stopLive.mutate({
+              query: {
+                room_name: roomName,
+              },
+            })
+          }
+        />
       </View>
     </LiveKitRoom>
   );
@@ -58,15 +94,14 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
 
 interface RoomViewProps {
   onDisconnect?: () => void;
+  isDisconnecting?: boolean;
 }
 
-function RoomView({ onDisconnect }: RoomViewProps) {
+function RoomView({ onDisconnect, isDisconnecting }: RoomViewProps) {
   const { localParticipant } = useLocalParticipant();
   const [isMicEnabled, setIsMicEnabled] = useState(true);
   const [isCameraEnabled, setIsCameraEnabled] = useState(true);
   const [isCameraFrontFacing, setCameraFrontFacing] = useState(true);
-  const room = useRoomContext();
-  const { user } = useAuth();
 
   // Get all camera tracks.
   const tracks = useTracks([Track.Source.Camera]);
@@ -228,6 +263,7 @@ function RoomView({ onDisconnect }: RoomViewProps) {
         }}
         onDisconnectClick={handleDisconnect}
         onSwitchCamera={handleCameraSwitch}
+        isDisconnecting={isDisconnecting}
       />
     </View>
   );

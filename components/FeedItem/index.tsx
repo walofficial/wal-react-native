@@ -40,7 +40,8 @@ function arePropsEqual(prevProps: any, nextProps: any) {
     prevProps.ai_video_summary_status === nextProps.ai_video_summary_status &&
     prevProps.fact_check_status === nextProps.fact_check_status &&
     prevProps.fact_check_data === nextProps.fact_check_data &&
-    prevProps.thumbnail === nextProps.thumbnail
+    prevProps.thumbnail === nextProps.thumbnail &&
+    prevProps.liveEndedAt === nextProps.liveEndedAt
   );
 }
 
@@ -65,6 +66,7 @@ function FeedItem({
   imageGalleryWithDims,
   thumbnail,
   fact_check_data,
+  liveEndedAt,
 }: {
   name: string;
   time: string;
@@ -86,6 +88,7 @@ function FeedItem({
   fact_check_data: FeedPost['fact_check_data'];
   previewData: FeedPost['preview_data'];
   thumbnail: string;
+  liveEndedAt: FeedPost['live_ended_at'];
 }) {
   const { user } = useAuth();
   const router = useRouter();
@@ -158,6 +161,7 @@ function FeedItem({
           fact_check_data?.factuality ||
           verification?.fact_check_data?.factuality
         }
+        liveEndedAt={liveEndedAt || undefined}
       />
     );
   }, [
