@@ -68,7 +68,6 @@ function useVerificationById(
         verification_id: verificationId,
       },
     }),
-    throwOnError: true,
     enabled: enabled,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
