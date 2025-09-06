@@ -318,7 +318,7 @@ function FeedItem({
             />
           )}
           <FeedActions
-            isOwner={user?.id === posterId}
+            // isOwner={user?.id === posterId}
             showFactualityBadge={isJustText}
             // hideUserRects={isPreviewFeedItem || false}
             verificationId={verificationId}

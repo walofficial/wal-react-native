@@ -310,7 +310,7 @@ const PostContent = memo(
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
-              isOwner={!!user && verification.assignee_user?.id === user.id}
+              // isOwner={!!user && verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -345,7 +345,7 @@ const PostContent = memo(
             <FeedActions
               verificationId={verificationId}
               sourceComponent={null}
-              isOwner={!!user && verification.assignee_user?.id === user.id}
+              // isOwner={!!user && verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -470,7 +470,7 @@ const PostContent = memo(
           <FeedActions
             verificationId={verificationId}
             sourceComponent={null}
-            isOwner={!!user && verification.assignee_user?.id === user.id}
+            // isOwner={!!user && verification.assignee_user?.id === user.id}
           />
         </View>
       </View>

@@ -30,7 +30,7 @@ interface FeedActionsProps {
   sourceComponent?: React.ReactNode;
   hideUserRects?: boolean;
   showFactualityBadge?: boolean;
-  isOwner: boolean;
+  // isOwner: boolean;
 }
 
 // Animated loading circle component
@@ -166,12 +166,12 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   verificationId,
   sourceComponent,
   showFactualityBadge,
-  isOwner,
+  // isOwner,
 }) => {
   const { info } = useToast();
 
   // Use the same hook as CommentsView to ensure consistent data
-  const { data: verification } = useVerificationById(verificationId, isOwner, {
+  const { data: verification } = useVerificationById(verificationId, true, {
     refetchInterval: 5000, // Same interval as CommentsView uses
   });
   // Extract the data from verification object
