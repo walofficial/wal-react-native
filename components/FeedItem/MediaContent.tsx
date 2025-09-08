@@ -87,7 +87,6 @@ function MediaContent({
       height: img.aspectRatio.height,
     },
   }));
-
   const handleSingleTap = () => {
     // Only navigate if there are no images and no video (i.e., text-only content)
     if (images.length === 0 && !videoUrl) {
@@ -251,7 +250,7 @@ function MediaContent({
           aspectRatio={1}
           verificationId={verificationId}
         />
-      ) : livekitRoomName && !liveEndedAt ? (
+      ) : livekitRoomName && !liveEndedAt && isLive ? (
         <LiveStreamViewer
           liveKitRoomName={livekitRoomName}
           topControls={<View />}

@@ -131,12 +131,9 @@ export function useLocationFeedPaginated({
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
-    refetchInterval: (data) => {
-      const hasLiveStream = data?.state.data?.pages?.[0]?.some(
-        (item) => item.is_live,
-      );
-      return hasLiveStream ? 3000 : false;
-    },
+    // refetchInterval: (data) => {
+    //   return false
+    // },
     // subscribed: isFocused,
   });
   const items = data?.pages.flatMap((page) => page) || [];
