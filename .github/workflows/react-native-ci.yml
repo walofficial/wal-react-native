@@ -151,9 +151,7 @@ jobs:
           fi
 
       - name: 📱 Build Preview APK
-        if: github.event_name == 'push' && (
-          startsWith(github.ref, 'refs/heads/release/')
-          ) && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
+        if: github.event_name == 'push' && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -166,10 +164,7 @@ jobs:
           NODE_ENV: production
 
       - name: 📱 Build iOS Preview
-        if: github.event_name == 'push' && (
-          startsWith(github.ref, 'refs/heads/release/') ||
-          startsWith(github.ref, 'refs/heads/hotfix/')
-          ) && matrix.platform == 'ios'
+        if: github.event_name == 'push' && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}

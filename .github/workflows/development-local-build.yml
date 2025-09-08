@@ -21,7 +21,13 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [android]
+        include:
+          - platform: ios
+            runs-on: macos-latest
+    runs-on: ${{ matrix.platform == 'ios' && 'macos-latest' || 'ubuntu-latest' }}
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
@@ -49,7 +55,7 @@ jobs:
           GOOGLESERVICE_INFO_DEV_PLIST: ${{ secrets.GOOGLESERVICE_INFO_DEV_PLIST }}
 
       - name: ✅ Verify iOS Firebase plist exists
-        if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all'
+        if: matrix.platform == 'ios'
         run: |
           if [ ! -s GoogleService-Info.plist ]; then
             echo "GoogleService-Info.plist is missing or empty. Ensure GOOGLESERVICE_INFO_DEV_PLIST secret is set." >&2
@@ -57,7 +63,7 @@ jobs:
           fi
 
       - name: 📱 Build Android (development-local APK)
-        if: github.event.inputs.platform == 'android' || github.event.inputs.platform == 'all'
+        if: matrix.platform == 'android'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           eas build --platform android --profile development-local --non-interactive --local --output ./app-development-local.apk
@@ -65,7 +71,7 @@ jobs:
           NODE_ENV: development
 
       - name: 🍎 Build iOS (development-local dev client)
-        if: github.event.inputs.platform == 'ios' || github.event.inputs.platform == 'all'
+        if: matrix.platform == 'ios'
         run: |
           export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           eas build --platform ios --profile development-local --non-interactive --local --output ./app-development-local.ipa
