@@ -33,6 +33,12 @@ import { FontSizes, useTheme } from '@/lib/theme';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { t } from '@/lib/i18n';
+import * as Updates from 'expo-updates';
+import {
+  getApiBaseUrl as getApiBaseUrlFromConfig,
+  setApiBaseUrl as setApiBaseUrlInConfig,
+  API_BASE_URL as DEFAULT_API_BASE_URL,
+} from '@/lib/api/config';
 
 const formSchema = z
   .object({
@@ -78,6 +84,9 @@ export default function Component() {
   const router = useRouter();
   const theme = useTheme();
   const colorScheme = useRNColorScheme() || 'dark';
+  const isNonProduction = __DEV__ || Updates.channel !== 'production';
+
+  const [apiBaseUrl, setApiBaseUrl] = React.useState(getApiBaseUrlFromConfig());
 
   useEffect(() => {
     if (!user) {
@@ -151,6 +160,12 @@ export default function Component() {
     );
   };
 
+  const handleApplyApiBaseUrl = async () => {
+    try {
+      await setApiBaseUrlInConfig(apiBaseUrl);
+    } catch {}
+  };
+
   const handleClearCache = async () => {
     try {
       await AsyncStorage.clear();
@@ -216,6 +231,32 @@ export default function Component() {
               </H4>
               <EnableNotifications />
             </View>
+
+            {isNonProduction && (
+              <View style={styles.notificationSection}>
+                <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                  API Base URL (dev/preview)
+                </H4>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={{
+                      ...styles.usernameInput,
+                      color: theme.colors.text,
+                      backgroundColor:
+                        colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
+                      borderColor: theme.colors.border,
+                    }}
+                    placeholder={DEFAULT_API_BASE_URL}
+                    placeholderTextColor={theme.colors.border}
+                    value={apiBaseUrl}
+                    onChangeText={setApiBaseUrl}
+                    onBlur={handleApplyApiBaseUrl}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>
