@@ -96,8 +96,8 @@ jobs:
         platform: [android]
         include:
           - platform: ios
-            runs-on: macos-latest
-    runs-on: ${{ matrix.platform == 'ios' && 'macos-latest' || 'ubuntu-latest' }}
+            runs-on: macos-15
+    runs-on: ${{ matrix.platform == 'ios' && 'macos-15' || 'ubuntu-latest' }}
     steps:
       - name: 🏗 Checkout repository
         uses: actions/checkout@v4
@@ -153,7 +153,6 @@ jobs:
       - name: 📱 Build Preview APK
         if: github.event_name == 'push' && (matrix.platform == 'android' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'android')
         run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
           export EXPO_PUBLIC_SENTRY_DSN=${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
           export EXPO_PUBLIC_SUPABASE_URL=${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
@@ -166,7 +165,6 @@ jobs:
       - name: 📱 Build iOS Preview
         if: github.event_name == 'push' && (matrix.platform == 'ios' || github.event.inputs.platform == 'all' || github.event.inputs.platform == 'ios')
         run: |
-          export NODE_OPTIONS="--openssl-legacy-provider --max_old_space_size=4096"
           export SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
           export EXPO_PUBLIC_SENTRY_DSN=${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
           export EXPO_PUBLIC_SUPABASE_URL=${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
