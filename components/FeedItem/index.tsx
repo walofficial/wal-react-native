@@ -97,9 +97,10 @@ function FeedItem({
   const { closeLightbox } = useLightboxControls();
 
   // This can be used for real time information as this is actually polling the data from the server
-  const { data: verification } = useVerificationById(verificationId, false, {
+  const { data: verification } = useVerificationById(verificationId, !!isLive, {
     refetchInterval: 5000,
   });
+
   const handleProfilePress = () => {
     if (user?.id === posterId) {
       return;
@@ -140,7 +141,7 @@ function FeedItem({
     return (
       <MediaContent
         videoUrl={videoUrl}
-        isLive={isLive}
+        isLive={verification?.is_live}
         isVisible={isVisible}
         verificationId={verificationId}
         feedId={feedId}
@@ -149,7 +150,9 @@ function FeedItem({
         }
         name={name}
         text={text || ''}
-        livekitRoomName={livekitRoomName || ''}
+        livekitRoomName={
+          verification?.livekit_room_name || livekitRoomName || ''
+        }
         time={time}
         avatarUrl={avatarUrl}
         thumbnail={thumbnail}
@@ -161,7 +164,7 @@ function FeedItem({
           fact_check_data?.factuality ||
           verification?.fact_check_data?.factuality
         }
-        liveEndedAt={liveEndedAt || undefined}
+        liveEndedAt={verification?.live_ended_at || liveEndedAt || undefined}
       />
     );
   }, [
