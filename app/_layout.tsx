@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Slot } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
@@ -34,7 +33,7 @@ import {
 } from '@react-navigation/native';
 import { appLocaleAtom } from '@/hooks/useAppLocalization';
 import { getCurrentLocale, setLocale } from '@/lib/i18n';
-
+import StatusBarRenderer from '@/components/StatusBarRenderer';
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
   const [appLocale, setAppLocale] = useAtom(appLocaleAtom);
 
@@ -228,14 +227,7 @@ export default function RootLayout() {
                             <Slot />
                             <AppStateHandler />
                           </ShareIntentProvider>
-                          {Platform.OS === 'android' && (
-                            <StatusBar
-                              backgroundColor={
-                                colorScheme === 'dark' ? 'black' : '#efefef'
-                              }
-                              style={colorScheme === 'dark' ? 'light' : 'dark'}
-                            />
-                          )}
+                          <StatusBarRenderer />
                           <Lightbox />
                           <PortalHost />
                         </GestureHandlerRootView>
