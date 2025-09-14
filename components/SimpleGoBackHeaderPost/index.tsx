@@ -14,6 +14,7 @@ import NewsSourcesBottomSheet from '../FeedItem/NewsSourcesBottomSheet';
 import BottomSheet from '@gorhom/bottom-sheet';
 import PostLanguageSwitcher from './PostLanguageSwitcher';
 import { trackEvent } from '@/lib/analytics';
+import { t } from '@/lib/i18n';
 
 function SimpleGoBackHeaderPost({
   verificationId,
@@ -117,7 +118,7 @@ function SimpleGoBackHeaderPost({
               { color: theme.colors.text, opacity: 0.7 },
             ]}
           >
-            {sourcesLength} წყარო
+            {sourcesLength} {t('common.sources')}
           </Text>
         </View>
       </TouchableOpacity>

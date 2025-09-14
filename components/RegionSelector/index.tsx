@@ -74,7 +74,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
   return (
     <RNMenuView
       ref={menuRef}
-      title={t('settings.preferred_region')}
+      title={t('settings.preferred_country')}
       onPressAction={({ nativeEvent }) => {
         const selectedRegion = nativeEvent.event as Region;
         if (
@@ -112,7 +112,7 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
       >
         <Ionicons size={28} name="globe-outline" color={theme.colors.icon} />
         <Text style={[styles.buttonText, { color: theme.colors.text }]}>
-          {t('settings.preferred_region')}
+          {t('settings.preferred_country')}
         </Text>
         <View style={styles.flagContainer}>
           <Image

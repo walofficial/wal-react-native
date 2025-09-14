@@ -5,10 +5,10 @@
     "change_photo": "ფოტოს შეცვლა",
     "telegram_channel": "Telegram არხი",
     "blocked_users": "დაბლოკილი მომხმარებლები",
-    "preferred_region": "რეგიონი",
+    "preferred_country": "ქვეყანა",
     "preferred_content_language": "სიახლის ენა",
-    "language_and_region": "ენა და რეგიონი",
-    "region_explanation": "აირჩიეთ ქვეყანა ან რეგიონი, რომლიდანაც გსურთ ადგილობრივი სიახლეების კონტენტის და გადამოწმებული ინფორმაციის მიღება.",
+    "language_and_region": "ენა და ქვეყანა",
+    "region_explanation": "აირჩიეთ ქვეყანა, რომლიდანაც გსურთ ადგილობრივი სიახლეების კონტენტის და გადამოწმებული ინფორმაციის მიღება.",
     "content_language_explanation": "აირჩიეთ ენა, რომლითაც გსურთ სიახლეების და კონტენტის წაკითხვა. ეს საშუალებას გაძლევთ ინფორმაციის მიღება თქვენი სასურველი ენით.",
     "terms_of_service": "Terms of Service",
     "privacy_policy": "Privacy Policy"

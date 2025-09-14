@@ -5,10 +5,10 @@
     "change_photo": "Change Photo",
     "telegram_channel": "Telegram Channel",
     "blocked_users": "Blocked Users",
-    "preferred_region": "Region",
+    "preferred_country": "Country",
     "preferred_content_language": "Content Language",
     "language_and_region": "Language & Region",
-    "region_explanation": "Select the country or region from which you want to receive local news content and fact-checked information.",
+    "region_explanation": "Select the country from which you want to receive local news content and fact-checked information.",
     "content_language_explanation": "Choose the language in which you want to read news and content. This allows you to consume information in your preferred language.",
     "terms_of_service": "Terms of Service",
     "privacy_policy": "Privacy Policy"
