@@ -298,6 +298,13 @@ export default function TabLayout() {
             >
               <Tabs.Screen
                 name="(news)"
+                listeners={() => ({
+                  tabPress: (e) => {
+                    if (router.canGoBack()) {
+                      router.dismissAll();
+                    }
+                  },
+                })}
                 options={{
                   href: newsFeedId
                     ? {
@@ -321,6 +328,13 @@ export default function TabLayout() {
               />
               <Tabs.Screen
                 name="(fact-check)"
+                listeners={() => ({
+                  tabPress: (e) => {
+                    if (router.canGoBack()) {
+                      router.dismissAll();
+                    }
+                  },
+                })}
                 options={{
                   href: factCheckFeedId
                     ? {
@@ -348,6 +362,13 @@ export default function TabLayout() {
               />
               <Tabs.Screen
                 name="(home)"
+                // listeners={() => ({
+                //   tabPress: (e) => {
+                //     if (router.canGoBack()) {
+                //       router.dismissAll();
+                //     }
+                //   },
+                // })}
                 options={{
                   tabBarLabelStyle: {
                     fontSize: 18,
@@ -373,6 +394,16 @@ export default function TabLayout() {
               />
               <Tabs.Screen
                 name="(user)"
+                listeners={() => ({
+                  tabPress: (e) => {
+                    if (router.canGoBack()) {
+                      router.dismissAll();
+                      router.navigate({
+                        pathname: '/(tabs)/(user)',
+                      });
+                    }
+                  },
+                })}
                 options={{
                   title: '',
                   tabBarIcon: ({ color, focused }) => (
