@@ -24,6 +24,7 @@
     "georgian": "Georgian"
   },
   "common": {
+    "retry": "Retry",
     "save": "Save",
     "live_stream_started": "Live stream started",
     "live_stream_started_description": "You are now live",

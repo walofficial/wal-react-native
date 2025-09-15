@@ -502,6 +502,7 @@ export default function CameraPage(): React.ReactElement {
           style={styles.button}
           onPress={() => {
             dismiss('all');
+            router.dismissAll();
             router.navigate({
               pathname: '/(tabs)/(home)/[feedId]',
               params: {

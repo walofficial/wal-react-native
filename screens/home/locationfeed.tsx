@@ -5,13 +5,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNotifications } from '@/components/EnableNotifications/useNotifications';
 import { useTheme, Theme } from '@/lib/theme';
 import ScrollableFeedProvider from '@/components/ScrollableFeedProvider';
-import { useLocalSearchParams } from 'expo-router';
+import {
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  usePathname,
+} from 'expo-router';
 
 function LocationFeedScreen() {
-  // Extract navigation params at screen level, outside scroll context
-  const { feedId, content_type } = useLocalSearchParams<{
+  const { feedId } = useGlobalSearchParams<{
     feedId: string;
-    content_type: 'last24h' | 'youtube_only' | 'social_media_only';
   }>();
 
   const { enableNotifications } = useNotifications();
@@ -28,12 +30,8 @@ function LocationFeedScreen() {
         <ScrollableFeedProvider>
           <LocationFeed
             feedId={feedId as string}
-            content_type={
-              (content_type as
-                | 'last24h'
-                | 'youtube_only'
-                | 'social_media_only') || 'last24h'
-            }
+            isFactCheckFeed={false}
+            isNewsFeed={false}
           />
         </ScrollableFeedProvider>
       </GestureHandlerRootView>

@@ -49,10 +49,6 @@ const LanguageSelectionOverlay: React.FC = () => {
     <View
       style={[styles.overlay, { backgroundColor: theme.colors.background }]}
     >
-      <Text style={[styles.title, { color: theme.colors.text }]}>
-        Choose app language
-      </Text>
-
       <View style={styles.optionsRow}>
         <Pressable
           style={[

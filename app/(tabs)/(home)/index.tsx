@@ -1,15 +1,13 @@
 import React, { useEffect } from 'react';
 import { Text } from '@/components/ui/text';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
-import { useRouter } from 'expo-router';
 import useLocationsInfo from '@/hooks/useLocationsInfo';
-import useGoLive from '@/hooks/useGoLive';
 import { FontSizes, useTheme } from '@/lib/theme';
-import { isWeb } from '@/lib/platform';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useFeeds from '@/hooks/useFeeds';
 import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Redirect } from 'expo-router';
 
 export default function TaskScrollableView() {
   const { t } = useTranslation();
@@ -17,57 +15,16 @@ export default function TaskScrollableView() {
   const {
     data: data,
     isFetching,
-    location,
     errorMsg,
+    defaultFeedId,
   } = useLocationsInfo(categoryId);
   const { headerHeight } = useFeeds();
   const theme = useTheme();
-  const router = useRouter();
-  const { goLiveMutation } = useGoLive();
   const insets = useSafeAreaInsets();
 
-  // Auto-navigate to the appropriate task when data is loaded
-  useEffect(() => {
-    if (!isFetching && data) {
-      // First try to navigate to a task at location
-      if (data.feeds_at_location && data.feeds_at_location.length > 0) {
-        const firstTask = data.feeds_at_location[0];
-        router.replace({
-          pathname: '/(tabs)/(home)/[feedId]',
-          params: {
-            feedId: firstTask.id,
-          },
-        });
-        if (!isWeb) {
-          goLiveMutation.mutateAsync({
-            body: {
-              feed_id: firstTask.id,
-            },
-          });
-        }
-        return;
-      }
-
-      // If no tasks at location, try nearest tasks
-      if (data.nearest_feeds && data.nearest_feeds.length > 0) {
-        const firstNearTask = data.nearest_feeds[0];
-        router.replace({
-          pathname: '/(tabs)/(home)/[feedId]',
-          params: {
-            feedId: firstNearTask.feed.id,
-          },
-        });
-        if (!isWeb && !errorMsg) {
-          goLiveMutation.mutateAsync({
-            body: {
-              feed_id: firstNearTask.feed.id,
-            },
-          });
-        }
-        return;
-      }
-    }
-  }, [data, isFetching, goLiveMutation, errorMsg]);
+  if (!isFetching && !errorMsg && !!defaultFeedId) {
+    return <Redirect href={`/(tabs)/(home)/${defaultFeedId}`} />;
+  }
 
   return (
     <View

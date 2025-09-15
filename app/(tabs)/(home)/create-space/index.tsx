@@ -127,7 +127,7 @@ export default function CreateSpace() {
                 onPress={async () => {
                   await haptic('Light');
                   router.push({
-                    pathname: `/(tabs)/(home)/[feedId]/create-space/schedule-space`,
+                    pathname: `/(tabs)/(home)/create-space/schedule-space`,
                     params: { feedId, description },
                   });
                 }}

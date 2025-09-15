@@ -27,6 +27,8 @@ function LocationFeedScreen() {
     <Suspense fallback={<ActivityIndicator />}>
       <GestureHandlerRootView style={styles.container}>
         <LocationFeed
+          isFactCheckFeed={false}
+          isNewsFeed={false}
           feedId={feedId as string}
           content_type={
             (content_type as

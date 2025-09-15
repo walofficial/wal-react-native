@@ -3,15 +3,16 @@ import * as Location from 'expo-location';
 import { isWeb } from '@/lib/platform';
 import { t } from '@/lib/i18n';
 import { useToast } from '@/lib/context/ToastContext';
+import { useSegments } from 'expo-router';
 
 export default function useLocation() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
     null,
   );
+  const segments = useSegments();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(true);
   const { error: errorToast } = useToast();
-
   // Use the location permission hook instead of directly requesting permissions
   const [permissionResponse, requestPermission] =
     Location.useForegroundPermissions();
@@ -20,6 +21,9 @@ export default function useLocation() {
     let locationSubscription: Location.LocationSubscription | null = null;
 
     (async () => {
+      if (!segments.includes('(home)') && !segments.includes('record')) {
+        return;
+      }
       try {
         // Check if we already have permissions, if not request them
         if (!permissionResponse || !permissionResponse.granted) {
@@ -86,7 +90,7 @@ export default function useLocation() {
         }
       }
     };
-  }, [permissionResponse, requestPermission]);
+  }, [permissionResponse, requestPermission, segments]);
 
   useEffect(() => {
     if (errorMsg) {

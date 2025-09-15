@@ -54,7 +54,7 @@ const SimpleGoBackHeader = ({
               return;
             }
             if (user) {
-              router.replace(`/(tabs)/(news)/${NEWS_FEED_ID}`);
+              router.replace(`/(tabs)/(user)`);
             } else {
               router.navigate('/(auth)/sign-in');
             }
