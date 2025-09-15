@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import {
   Link,
-  useLocalSearchParams,
   useRouter,
   useGlobalSearchParams,
   usePathname,
@@ -57,6 +56,7 @@ function ProfileHeader({
   showSearch = false,
   showLocationTabs = false,
   showTabs = false,
+  feedId,
 }: {
   customTitle?: string;
   customTitleComponent?: React.ReactNode;
@@ -65,6 +65,7 @@ function ProfileHeader({
   showSearch?: boolean;
   showLocationTabs?: boolean;
   showTabs?: boolean;
+  feedId?: string;
 }) {
   const pathname = usePathname();
 
@@ -72,8 +73,7 @@ function ProfileHeader({
   const setHeaderHeight = useSetAtom(HEADER_HEIGHT);
   const setHeaderHeightWithTabs = useSetAtom(HEADER_HEIGHT_WITH_TABS);
   const { isDarkColorScheme } = useColorScheme();
-  const { feedId, content_type } = useGlobalSearchParams<{
-    feedId: string;
+  const { content_type } = useGlobalSearchParams<{
     content_type: string;
   }>();
 

@@ -8,7 +8,12 @@ import {
   StyleSheet,
   Platform,
 } from 'react-native';
-import { useRouter, useLocalSearchParams, usePathname } from 'expo-router';
+import {
+  useRouter,
+  useLocalSearchParams,
+  usePathname,
+  useGlobalSearchParams,
+} from 'expo-router';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -114,14 +119,16 @@ const styles = StyleSheet.create({
 });
 
 export default function CreatePost() {
+  const { feedId, content_type } = useGlobalSearchParams<{
+    feedId: string;
+    content_type: 'last24h' | 'youtube_only' | 'social_media_only';
+  }>();
   const {
-    feedId,
     disableImagePicker,
     disableRoomCreation,
     sharedContent,
     sharedImages,
   } = useLocalSearchParams<{
-    feedId: string;
     disableImagePicker?: string;
     disableRoomCreation?: string;
     sharedContent?: string;
@@ -204,10 +211,6 @@ export default function CreatePost() {
       }, 100);
     }
   }, [selectedImages.length]);
-
-  const { content_type } = useLocalSearchParams<{
-    content_type: 'last24h' | 'youtube_only' | 'social_media_only';
-  }>();
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
@@ -333,17 +336,15 @@ export default function CreatePost() {
       if (navigationTargetContentType) {
         router.back();
         router.replace({
-          pathname: `/(tabs)/(fact-check)/[feedId]`,
+          pathname: `/(tabs)/(fact-check)`,
           params: {
-            feedId,
             content_type: 'last24h',
           },
         });
       } else if (isShareIntent) {
         router.navigate({
-          pathname: `/(tabs)/(fact-check)/[feedId]`,
+          pathname: `/(tabs)/(fact-check)`,
           params: {
-            feedId,
             content_type: 'social_media_only', // Default for share intent if no specific link
           },
         });

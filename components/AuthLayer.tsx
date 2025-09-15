@@ -69,16 +69,13 @@ async function handleUserNotFound(supabaseUser: any) {
 }
 
 export default function AuthLayer({ children }: { children: React.ReactNode }) {
-  const queryClient = useQueryClient();
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(!isWeb);
   const [userIsLoading, setUserIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User>();
-  const router = useRouter();
   const { sendPublicKey } = useSendPublicKey();
   const { error: errorToast, success: successToast, dismissAll } = useToast();
-
   useEffect(() => {
     // Update the API client configuration whenever the Accept-Language header changes
     updateAcceptLanguageHeader(user?.preferred_content_language || '');

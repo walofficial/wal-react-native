@@ -73,7 +73,7 @@ export default function PostControls({
             <TouchableOpacity
               onPress={() => {
                 router.replace({
-                  pathname: "/(tabs)/(home)/[feedId]/create-space",
+                  pathname: "/(tabs)/(home)/create-space",
                   params: { feedId },
                 });
               }}

@@ -40,7 +40,7 @@ export default function CreatePostGlobal({
       ]}
       onPress={() => {
         router.push({
-          pathname: `/(tabs)/(fact-check)/[feedId]/create-post`,
+          pathname: `/(tabs)/(fact-check)/create-post`,
           params: {
             feedId,
             disableRoomCreation: 'true',
