@@ -10,7 +10,7 @@ export default function SignIn() {
     return <FullScreenLoader />;
   }
   if (user && isUserRegistered(user)) {
-    return <Redirect href={`/(tabs)/(news)/${user.preferred_news_feed_id}`} />;
+    return <Redirect href={`/(tabs)/(news)`} />;
   }
 
   if (user && !isUserRegistered(user)) {

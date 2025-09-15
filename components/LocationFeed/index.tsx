@@ -26,7 +26,6 @@ import { useRouter, usePathname } from 'expo-router';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import { shouldFocusCommentInputAtom } from '@/atoms/comments';
 import useFeeds from '@/hooks/useFeeds';
-import { getUserVerificationOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { ThemedText } from '../ThemedText';
 import { getCurrentLocale } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
@@ -42,20 +41,19 @@ type Location = {
 
 interface LocationFeedProps {
   feedId: string;
-  content_type: 'last24h' | 'youtube_only' | 'social_media_only';
+  content_type?: 'last24h' | 'youtube_only' | 'social_media_only';
+  isFactCheckFeed: boolean;
+  isNewsFeed: boolean;
 }
 
 export default function LocationFeed({
   feedId,
   content_type,
+  isFactCheckFeed,
+  isNewsFeed,
 }: LocationFeedProps) {
-  const {
-    isUserInSelectedLocation,
-    selectedLocation,
-    isGettingLocation,
-    isFactCheckFeed,
-    isNewsFeed,
-  } = useIsUserInSelectedLocation();
+  const { isUserInSelectedLocation, selectedLocation, isGettingLocation } =
+    useIsUserInSelectedLocation();
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -80,7 +78,7 @@ export default function LocationFeed({
 
   const locationUserListSheetRef = useRef<BottomSheet>(null);
   const { headerHeight } = useFeeds();
-
+  console.log(headerHeight);
   const flashListRef = useRef<any>(null);
 
   const defaultStoryIndex = 0;
@@ -308,13 +306,16 @@ export default function LocationFeed({
           ) : undefined
         }
         ListEmptyComponent={
-          <ListEmptyComponent
-            isFetching={isFetching}
-            isGettingLocation={isGettingLocation}
-            isUserInSelectedLocation={isUserInSelectedLocation}
-            selectedLocation={selectedLocation as Location}
-            handleOpenMap={handleOpenMap}
-          />
+          !isNewsFeed &&
+          !isFactCheckFeed && (
+            <ListEmptyComponent
+              isFetching={isFetching}
+              isGettingLocation={isGettingLocation}
+              isUserInSelectedLocation={isUserInSelectedLocation}
+              selectedLocation={selectedLocation as Location}
+              handleOpenMap={handleOpenMap}
+            />
+          )
         }
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         loadMore={loadMore}

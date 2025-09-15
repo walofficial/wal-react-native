@@ -118,7 +118,7 @@ const FactCheckSourcesDisplay = ({
         ]}
       >
         <Text style={[styles.sourcesLabelText, { color: theme.colors.text }]}>
-          {references.length} {t('common.based_on_sources')}
+          {references.length} {t('common.sources')}
         </Text>
       </View>
     </View>

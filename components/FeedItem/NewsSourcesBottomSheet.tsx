@@ -22,6 +22,7 @@ import { useTheme } from '@/lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isAndroid } from '@/lib/platform';
 import { Portal } from '@/components/primitives/portal';
+import { t } from '@/lib/i18n';
 interface NewsSourcesBottomSheetProps {
   bottomSheetRef: React.RefObject<BottomSheet>;
 }
@@ -91,7 +92,7 @@ export default function NewsSourcesBottomSheet({
         <BottomSheetScrollView>
           <View style={styles.container}>
             <Text style={[styles.title, { color: theme.colors.text }]}>
-              წყარო
+              {t('common.sources')}
             </Text>
             {activeSources?.map((source, index) => (
               <TouchableOpacity

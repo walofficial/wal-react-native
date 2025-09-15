@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Slot } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import * as React from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
@@ -34,7 +33,7 @@ import {
 } from '@react-navigation/native';
 import { appLocaleAtom } from '@/hooks/useAppLocalization';
 import { getCurrentLocale, setLocale } from '@/lib/i18n';
-
+import StatusBarRenderer from '@/components/StatusBarRenderer';
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
   const [appLocale, setAppLocale] = useAtom(appLocaleAtom);
 
@@ -128,6 +127,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
 import { Lightbox } from '@/components/Lightbox/Lightbox';
 import { ToastProviderWithViewport } from '@/components/ToastUsage';
+import LocationProvider from '@/components/LocationProvider';
 
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
@@ -211,35 +211,30 @@ export default function RootLayout() {
                 <ToastProviderWithViewport>
                   <Provider store={myStore}>
                     <AppLocaleGate>
-                      <AuthLayer>
-                        <GestureHandlerRootView
-                          key={appLocale || 'default'}
-                          style={{
-                            flex: 1,
-                            backgroundColor: theme.colors.background,
-                          }}
-                        >
-                          <ShareIntentProvider
-                            options={{
-                              debug: false,
-                              resetOnBackground: true,
+                      <LocationProvider>
+                        <AuthLayer>
+                          <GestureHandlerRootView
+                            key={appLocale || 'default'}
+                            style={{
+                              flex: 1,
+                              backgroundColor: theme.colors.background,
                             }}
                           >
-                            <Slot />
-                            <AppStateHandler />
-                          </ShareIntentProvider>
-                          {Platform.OS === 'android' && (
-                            <StatusBar
-                              backgroundColor={
-                                colorScheme === 'dark' ? 'black' : '#efefef'
-                              }
-                              style={colorScheme === 'dark' ? 'light' : 'dark'}
-                            />
-                          )}
-                          <Lightbox />
-                          <PortalHost />
-                        </GestureHandlerRootView>
-                      </AuthLayer>
+                            <ShareIntentProvider
+                              options={{
+                                debug: false,
+                                resetOnBackground: true,
+                              }}
+                            >
+                              <Slot />
+                              <AppStateHandler />
+                            </ShareIntentProvider>
+                            <StatusBarRenderer />
+                            <Lightbox />
+                            <PortalHost />
+                          </GestureHandlerRootView>
+                        </AuthLayer>
+                      </LocationProvider>
                     </AppLocaleGate>
                   </Provider>
                 </ToastProviderWithViewport>

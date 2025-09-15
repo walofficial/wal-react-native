@@ -9,7 +9,6 @@ import { isUserRegistered, useSession } from '@/components/AuthLayer';
 import DbUserGetter from '@/components/DbUserGetter';
 import SidebarLayout from '@/components/SidebarLayout';
 import { isAndroid, isWeb } from '@/lib/platform';
-import LocationProvider from '@/components/LocationProvider';
 import useFeeds from '@/hooks/useFeeds';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import { useShareIntentContext } from 'expo-share-intent';
@@ -96,7 +95,7 @@ const styles = StyleSheet.create({
 export default function TabLayout() {
   const pathname = usePathname();
   const isRecord = pathname.includes('record');
-  const { factCheckFeedId, newsFeedId } = useFeeds();
+  const { factCheckFeedId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
 
   // Track screen changes and update user properties
@@ -107,6 +106,7 @@ export default function TabLayout() {
       app_language: getCurrentLocale?.() || 'en',
     });
   }, [pathname]);
+
   const theme = useTheme();
   // Theme-aware tab colors
   const TAB_COLORS = {
@@ -189,7 +189,7 @@ export default function TabLayout() {
 
         // Navigate to create-post-shareintent for any shared content (text or images)
         router.navigate({
-          pathname: `/(tabs)/(fact-check)/[feedId]/create-post-shareintent`,
+          pathname: `/(tabs)/(fact-check)/create-post-shareintent`,
           params,
         });
       }
@@ -209,7 +209,6 @@ export default function TabLayout() {
       };
     }
   }, [pathname]);
-
   // You can keep the splash screen open, or render a loading screen like we do here.
   if (isLoading) {
     return null;
@@ -251,26 +250,23 @@ export default function TabLayout() {
     return (
       <SidebarLayout>
         <DbUserGetter>
-          <LocationProvider>
-            <BottomSheetModalProvider>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                  headerStyle: {
-                    backgroundColor: 'transparent',
-                  },
-                  contentStyle: {
-                    backgroundColor: theme.colors.background,
-                  },
-                }}
-              />
-            </BottomSheetModalProvider>
-          </LocationProvider>
+          <BottomSheetModalProvider>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                headerStyle: {
+                  backgroundColor: 'transparent',
+                },
+                contentStyle: {
+                  backgroundColor: theme.colors.background,
+                },
+              }}
+            />
+          </BottomSheetModalProvider>
         </DbUserGetter>
       </SidebarLayout>
     );
   }
-
   // Otherwise, default to existing tabs on mobile.
   return (
     <DbUserGetter>
@@ -278,7 +274,6 @@ export default function TabLayout() {
         <HeaderTransformProvider>
           <BottomSheetModalProvider>
             <Tabs
-              // initialRouteName={`(news)`}
               backBehavior="initialRoute"
               screenOptions={{
                 lazy: true,
@@ -298,15 +293,15 @@ export default function TabLayout() {
             >
               <Tabs.Screen
                 name="(news)"
+                listeners={() => ({
+                  tabPress: (e) => {
+                    if (router.canGoBack()) {
+                      router.dismissAll();
+                    }
+                    router.setParams({ feedId: undefined });
+                  },
+                })}
                 options={{
-                  href: newsFeedId
-                    ? {
-                        pathname: '/(tabs)/(news)/[feedId]',
-                        params: {
-                          feedId: newsFeedId,
-                        },
-                      }
-                    : null,
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
                       size={24}
@@ -321,15 +316,15 @@ export default function TabLayout() {
               />
               <Tabs.Screen
                 name="(fact-check)"
+                listeners={() => ({
+                  tabPress: (e) => {
+                    if (router.canGoBack()) {
+                      router.dismissAll();
+                    }
+                    router.setParams({ feedId: undefined });
+                  },
+                })}
                 options={{
-                  href: factCheckFeedId
-                    ? {
-                        pathname: '/(tabs)/(fact-check)/[feedId]',
-                        params: {
-                          feedId: factCheckFeedId,
-                        },
-                      }
-                    : null,
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
                       size={24}
@@ -348,6 +343,13 @@ export default function TabLayout() {
               />
               <Tabs.Screen
                 name="(home)"
+                // listeners={() => ({
+                //   tabPress: (e) => {
+                //     if (router.canGoBack()) {
+                //       router.dismissAll();
+                //     }
+                //   },
+                // })}
                 options={{
                   tabBarLabelStyle: {
                     fontSize: 18,
@@ -373,6 +375,16 @@ export default function TabLayout() {
               />
               <Tabs.Screen
                 name="(user)"
+                listeners={() => ({
+                  tabPress: (e) => {
+                    if (router.canGoBack()) {
+                      router.dismissAll();
+                      router.navigate({
+                        pathname: '/(tabs)/(user)',
+                      });
+                    }
+                  },
+                })}
                 options={{
                   title: '',
                   tabBarIcon: ({ color, focused }) => (
