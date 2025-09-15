@@ -10,19 +10,27 @@ import {
   useLocalSearchParams,
   usePathname,
 } from 'expo-router';
+import useGoLive from '@/hooks/useGoLive';
 
 function LocationFeedScreen() {
-  const { feedId } = useGlobalSearchParams<{
+  const { feedId } = useLocalSearchParams<{
     feedId: string;
   }>();
-
   const { enableNotifications } = useNotifications();
   const theme = useTheme();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
-
+  const { goLiveMutation } = useGoLive();
   useEffect(() => {
     enableNotifications();
   }, []);
+
+  useEffect(() => {
+    goLiveMutation.mutateAsync({
+      body: {
+        feed_id: feedId,
+      },
+    });
+  }, [feedId]);
 
   return (
     <Suspense fallback={<ActivityIndicator />}>

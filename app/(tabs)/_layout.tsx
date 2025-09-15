@@ -298,7 +298,6 @@ export default function TabLayout() {
                     if (router.canGoBack()) {
                       router.dismissAll();
                     }
-                    router.setParams({ feedId: undefined });
                   },
                 })}
                 options={{
@@ -321,7 +320,6 @@ export default function TabLayout() {
                     if (router.canGoBack()) {
                       router.dismissAll();
                     }
-                    router.setParams({ feedId: undefined });
                   },
                 })}
                 options={{
