@@ -7,7 +7,6 @@ function FactCheckScreen() {
   const { content_type } = useLocalSearchParams<{
     content_type: 'last24h' | 'youtube_only' | 'social_media_only';
   }>();
-
   return (
     <LocationFeed
       isFactCheckFeed={true}

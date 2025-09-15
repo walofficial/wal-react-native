@@ -78,7 +78,6 @@ export default function LocationFeed({
 
   const locationUserListSheetRef = useRef<BottomSheet>(null);
   const { headerHeight } = useFeeds();
-  console.log(headerHeight);
   const flashListRef = useRef<any>(null);
 
   const defaultStoryIndex = 0;

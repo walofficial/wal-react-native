@@ -11,14 +11,17 @@ export default function useFeeds() {
   const { feedId } = useGlobalSearchParams<{ feedId: string }>();
   const hhtabs = useAtomValue(HEADER_HEIGHT_WITH_TABS);
   const hh = useAtomValue(HEADER_HEIGHT);
-
+  const hasFeedId =
+    typeof feedId === 'string' &&
+    feedId.trim().length > 0 &&
+    feedId !== 'undefined' &&
+    feedId !== 'null';
   // Use user's preferred feed IDs instead of hardcoded constants
   const { factCheckFeedId, newsFeedId } = useUserFeedIds();
   // having feedID means it's part from (home)
-  const finalHeight = isFactCheckFeed || feedId
+  const finalHeight = !!isFactCheckFeed || hasFeedId
     ? hhtabs
     : hh
-  console.log(isFactCheckFeed || feedId, hhtabs, hh, finalHeight)
 
   return {
     // Add little padding
