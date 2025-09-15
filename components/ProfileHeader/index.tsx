@@ -88,7 +88,6 @@ function ProfileHeader({
     isFetching: isLocationFetching,
     errorMsg: locationError,
   } = useLocationsInfo(categoryId, showLocationTabs);
-  const { goLiveMutation } = useGoLive();
 
   // Search state
   const [isSearchActive, setIsSearchActive] = useAtom(isSearchActiveAtom);
@@ -140,13 +139,6 @@ function ProfileHeader({
           feedId: tabKey,
         },
       });
-      if (!isWeb && !locationError) {
-        goLiveMutation.mutateAsync({
-          body: {
-            feed_id: tabKey,
-          },
-        });
-      }
       return;
     }
 
@@ -163,13 +155,6 @@ function ProfileHeader({
             feedId: actualfeedId,
           },
         });
-        if (!isWeb && !locationError) {
-          goLiveMutation.mutateAsync({
-            body: {
-              feed_id: actualfeedId,
-            },
-          });
-        }
       }
     }
   };

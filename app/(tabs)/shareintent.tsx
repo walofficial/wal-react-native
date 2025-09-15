@@ -26,7 +26,6 @@ export default function ShareIntent() {
   const sharedFiles = shareIntent?.files;
   const router = useRouter();
   const { error } = useToast();
-
   useEffect(() => {
     if (shareIntent && !session) {
       error({ title: 'გთხოვთ შეხვიდეთ სისტემაში გასაგრძელებლად' });
@@ -80,13 +79,12 @@ export default function ShareIntent() {
 
         // Navigate to create-post-shareintent for any shared content (text or images)
         router.replace({
-          pathname:
-            `/(tabs)/(fact-check)/${factCheckFeedId}/create-post-shareintent` as any,
+          pathname: `/(tabs)/(fact-check)/create-post-shareintent` as any,
           params,
         });
       }
     }
-  }, [shareIntent, session, sharedContent, sharedFiles, factCheckFeedId]);
+  }, [shareIntent, session, sharedContent, sharedFiles]);
 
   if (isLoading) {
     return (
