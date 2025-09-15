@@ -10,7 +10,7 @@ export default function Register() {
   const theme = useTheme();
   const { user } = useSession();
   if (user && isUserRegistered(user)) {
-    return <Redirect href="/(tabs)" />;
+    return <Redirect href="/(tabs)/(news)" />;
   }
 
   return (

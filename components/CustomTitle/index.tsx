@@ -1,5 +1,4 @@
 import useFeed from '@/hooks/useFeed';
-import { useGlobalSearchParams } from 'expo-router';
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -11,11 +10,9 @@ import { useColorScheme } from '@/lib/useColorScheme';
 import { Text } from 'react-native';
 import { H1, H2 } from '../ui/typography';
 
-function TaskTitle() {
-  const { feedId } = useGlobalSearchParams<{ feedId: string }>();
+function TaskTitle({ feedId }: { feedId: string }) {
   const { task } = useFeed(feedId);
   const { isDarkColorScheme } = useColorScheme();
-
   const animatedStyle = useAnimatedStyle(() => {
     return {
       opacity: task ? withSpring(1) : 0,

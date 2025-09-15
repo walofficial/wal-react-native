@@ -31,8 +31,8 @@ export default function TakeVideo({ disabled }: { disabled: boolean }) {
           },
         });
       } else {
-        router.navigate({
-          pathname: `/(camera)/record`,
+        router.push({
+          pathname: `/record`,
           params: {
             feedId: feedId as string,
           },

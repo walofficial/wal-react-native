@@ -127,6 +127,7 @@ import NetInfo from '@react-native-community/netinfo';
 import { onlineManager } from '@tanstack/react-query';
 import { Lightbox } from '@/components/Lightbox/Lightbox';
 import { ToastProviderWithViewport } from '@/components/ToastUsage';
+import LocationProvider from '@/components/LocationProvider';
 
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
@@ -210,28 +211,30 @@ export default function RootLayout() {
                 <ToastProviderWithViewport>
                   <Provider store={myStore}>
                     <AppLocaleGate>
-                      <AuthLayer>
-                        <GestureHandlerRootView
-                          key={appLocale || 'default'}
-                          style={{
-                            flex: 1,
-                            backgroundColor: theme.colors.background,
-                          }}
-                        >
-                          <ShareIntentProvider
-                            options={{
-                              debug: false,
-                              resetOnBackground: true,
+                      <LocationProvider>
+                        <AuthLayer>
+                          <GestureHandlerRootView
+                            key={appLocale || 'default'}
+                            style={{
+                              flex: 1,
+                              backgroundColor: theme.colors.background,
                             }}
                           >
-                            <Slot />
-                            <AppStateHandler />
-                          </ShareIntentProvider>
-                          <StatusBarRenderer />
-                          <Lightbox />
-                          <PortalHost />
-                        </GestureHandlerRootView>
-                      </AuthLayer>
+                            <ShareIntentProvider
+                              options={{
+                                debug: false,
+                                resetOnBackground: true,
+                              }}
+                            >
+                              <Slot />
+                              <AppStateHandler />
+                            </ShareIntentProvider>
+                            <StatusBarRenderer />
+                            <Lightbox />
+                            <PortalHost />
+                          </GestureHandlerRootView>
+                        </AuthLayer>
+                      </LocationProvider>
                     </AppLocaleGate>
                   </Provider>
                 </ToastProviderWithViewport>
