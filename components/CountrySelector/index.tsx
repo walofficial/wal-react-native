@@ -27,7 +27,6 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const sortedCountries = getSortedCountries();
-
   const handleCountrySelect = (country: Country) => {
     onSelectCountry(country);
     onBack();
