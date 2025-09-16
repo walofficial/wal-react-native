@@ -204,11 +204,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
   );
   const locale = getCurrentLocale();
   const theme = useTheme();
-  const {
-    country: selectedCountry,
-    isLoading,
-    setCountry,
-  } = useDefaultCountry();
+  const { country: selectedCountry, setCountry } = useDefaultCountry();
 
   const [shouldStartTimer, setShouldStartTimer] = useState(0);
   const [shouldResetTimer, setShouldResetTimer] = useState(false);
