@@ -140,7 +140,8 @@
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
     "zod": "^3.23.8",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "@dev-plugins/react-navigation": "~0.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

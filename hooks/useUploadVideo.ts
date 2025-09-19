@@ -23,15 +23,14 @@ import { formDataBodySerializer } from '@/lib/utils/form-data';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
 import { dismiss } from 'expo-router/build/global-state/routing';
+import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 export const useUploadVideo = ({
   feedId,
   isPhoto,
-  isLocationUpload,
 }: {
   feedId: string;
   isPhoto: boolean;
-  isLocationUpload: boolean;
 }) => {
   const abortController = useRef<AbortController>(new AbortController());
 
@@ -39,9 +38,6 @@ export const useUploadVideo = ({
   const [refetchInterval, setRefetchInterval] = useAtom(
     verificationRefetchIntervalState,
   );
-  const { content_type } = useLocalSearchParams<{
-    content_type: 'last24h' | 'youtube_only' | 'social_media_only';
-  }>();
 
   // Get the current search term to match the query key
   const currentSearchTerm = useAtomValue(debouncedSearchValueAtom);
@@ -109,86 +105,82 @@ export const useUploadVideo = ({
     },
     retry: false,
     onSuccess: (data, variables) => {
-      // setStatus({
-      //   status: "verification-pending",
-      //   text: "ვერიფიცირდება...",
-      // });
 
       setRefetchInterval(1000);
       success({ title: 'გამოქვეყნდა' });
 
-      if (isLocationUpload) {
-        const optimisticVerification = {
-          ...(data as UploadToLocationResponse).verification,
-          assignee_user: user,
-        };
+      const optimisticVerification = {
+        ...(data as UploadToLocationResponse).verification,
+        assignee_user: user,
+      };
 
-        // Use the correct query key that includes the search term
+      // Use the correct query key that includes the search term
+      const queryOptions = getLocationFeedPaginatedInfiniteOptions({
+        query: {
+          page_size: LOCATION_FEED_PAGE_SIZE,
+          search_term: currentSearchTerm,
+          // Content type only exists for fact check page
+          content_type_filter: undefined,
+        },
+        path: {
+          feed_id: feedId,
+        },
+      });
+
+      const queryKey = queryOptions.queryKey;
+
+      try {
+        queryClient.setQueryData(queryKey, (data: any) => {
+          if (!data) {
+            data = {
+              pages: [],
+              index: 0,
+            };
+          }
+          return {
+            ...data,
+            pages: data.pages.map(
+              (
+                page: {
+                  data: LocationFeedPost[];
+                  page: number;
+                },
+                index: number,
+              ) => {
+                return index === 0
+                  ? {
+                    ...page,
+                    data: [optimisticVerification, ...page.data],
+                  }
+                  : page;
+              },
+            ),
+          };
+        });
+      } catch (error) {
+        console.error('Optimistic update error:', error);
+      }
+
+      // Invalidate all related queries to trigger proper refetch with animations
+      // Small delay to allow optimistic update to render first
+      setTimeout(() => {
         const queryOptions = getLocationFeedPaginatedInfiniteOptions({
           query: {
-            page_size: 15,
+            page_size: LOCATION_FEED_PAGE_SIZE,
             search_term: currentSearchTerm,
-            content_type_filter: content_type,
+            content_type_filter: undefined,
           },
           path: {
             feed_id: feedId,
           },
         });
 
-        const queryKey = queryOptions.queryKey;
+        queryClient.invalidateQueries({
+          queryKey: queryOptions.queryKey,
+          exact: false,
+        });
+      }, 100);
 
-        try {
-          queryClient.setQueryData(queryKey, (data: any) => {
-            if (!data) {
-              data = {
-                pages: [],
-                index: 0,
-              };
-            }
-            return {
-              ...data,
-              pages: data.pages.map(
-                (
-                  page: {
-                    data: LocationFeedPost[];
-                    page: number;
-                  },
-                  index: number,
-                ) => {
-                  return index === 0
-                    ? {
-                        ...page,
-                        data: [optimisticVerification, ...page.data],
-                      }
-                    : page;
-                },
-              ),
-            };
-          });
-        } catch (error) {
-          console.error('Optimistic update error:', error);
-        }
-
-        // Invalidate all related queries to trigger proper refetch with animations
-        // Small delay to allow optimistic update to render first
-        setTimeout(() => {
-          const queryOptions = getLocationFeedPaginatedInfiniteOptions({
-            query: {
-              page_size: 15,
-              search_term: '',
-              content_type_filter: 'last24h',
-            },
-            path: {
-              feed_id: feedId,
-            },
-          });
-
-          queryClient.invalidateQueries({
-            queryKey: queryOptions.queryKey,
-            exact: false,
-          });
-        }, 100);
-      }
     },
     onError: (error) => {
       dismiss('all');

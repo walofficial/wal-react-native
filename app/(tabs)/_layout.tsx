@@ -322,6 +322,9 @@ export default function TabLayout() {
                     }
                   },
                 })}
+                initialParams={{
+                  content_type: 'last24h',
+                }}
                 options={{
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon

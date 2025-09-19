@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Slot } from 'expo-router';
+import { Slot, Stack, useNavigationContainerRef } from 'expo-router';
 import * as React from 'react';
 import { AppState, AppStateStatus, Platform } from 'react-native';
 import { NAV_THEME } from '~/lib/constants';
@@ -34,7 +34,13 @@ import {
 import { appLocaleAtom } from '@/hooks/useAppLocalization';
 import { getCurrentLocale, setLocale } from '@/lib/i18n';
 import StatusBarRenderer from '@/components/StatusBarRenderer';
+import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
+
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
+  const navigationRef = useNavigationContainerRef();
+
+  useReactNavigationDevTools(navigationRef);
+
   const [appLocale, setAppLocale] = useAtom(appLocaleAtom);
 
   useEffect(() => {
@@ -226,7 +232,32 @@ export default function RootLayout() {
                                 resetOnBackground: true,
                               }}
                             >
-                              <Slot />
+                              <Stack>
+                                <Stack.Screen
+                                  name="(camera)"
+                                  options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                  name="(tabs)"
+                                  options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                  name="(auth)/register"
+                                  options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                  name="(auth)/sign-in"
+                                  options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                  name="status/[verificationId]"
+                                  options={{ headerShown: false }}
+                                />
+                                <Stack.Screen
+                                  name="index"
+                                  options={{ headerShown: false }}
+                                />
+                              </Stack>
                               <AppStateHandler />
                             </ShareIntentProvider>
                             <StatusBarRenderer />

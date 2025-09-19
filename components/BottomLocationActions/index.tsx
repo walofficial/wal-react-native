@@ -31,7 +31,6 @@ export default function BottomLocationActions({
   const handlePress = () => {
     trackEvent('location_feed_live_users_button_pressed', {});
 
-    console.log('handlePress called with feedId:', feedId, data);
     setIsBottomSheetOpen(false);
     if (data && data.count > 0) {
       setfeedId(feedId);

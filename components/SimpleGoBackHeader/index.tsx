@@ -22,8 +22,6 @@ interface SimpleGoBackHeaderProps {
   verificationId?: string;
   timestamp?: string;
   middleSection?: React.ReactNode;
-  // If true, the back button will just go back because user is already auth and is in the global screen and not sharable status screen.
-  justInstantGoBack?: boolean;
 }
 
 const SimpleGoBackHeader = ({
@@ -32,7 +30,6 @@ const SimpleGoBackHeader = ({
   verificationId,
   timestamp,
   middleSection,
-  justInstantGoBack,
 }: SimpleGoBackHeaderProps) => {
   const { user } = useAuth();
   const router = useRouter();
@@ -49,14 +46,15 @@ const SimpleGoBackHeader = ({
         <CloseButton
           variant="back"
           onClick={() => {
-            if (justInstantGoBack) {
+            if (router.canGoBack()) {
               router.back();
               return;
-            }
-            if (user) {
-              router.replace(`/(tabs)/(user)`);
             } else {
-              router.navigate('/(auth)/sign-in');
+              if (user) {
+                router.replace(`/(tabs)/(news)`);
+              } else {
+                router.navigate('/(auth)/sign-in');
+              }
             }
           }}
           style={{ color: theme.colors.text }}
