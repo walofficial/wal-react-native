@@ -281,11 +281,6 @@ function MediaContent({
             crop="constrained"
             hideBadge={false}
           />
-          <View style={styles.lightboxButton} pointerEvents="none">
-            <View style={styles.lightboxButtonBackground}>
-              <Ionicons name="eye-outline" size={20} color="#FFFFFF" />
-            </View>
-          </View>
           {(badgeInfo || previewData) && (
             <>
               <LinearGradient

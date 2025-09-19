@@ -247,13 +247,6 @@ function FeedItem({
             <View style={themedStyles.headerLeft}>
               <View style={themedStyles.nameContainer}>
                 <Text style={[themedStyles.nameText]}>{name}</Text>
-                {/* {affiliatedIcon && (
-                  <Image
-                    source={{ uri: affiliatedIcon }}
-                    style={themedStyles.affiliatedIcon}
-                  />
-                )} */}
-
                 <Text style={themedStyles.timeText}>· {formattedTime}</Text>
                 {hasRecording && (
                   <Text style={themedStyles.recordingText}>
