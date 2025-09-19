@@ -59,7 +59,6 @@ export default function LocationFeed({
   const pathname = usePathname();
   const { closeLightbox } = useLightboxControls();
   const [_, setShouldFocusInput] = useAtom(shouldFocusCommentInputAtom);
-
   const {
     items,
     fetchNextPage,

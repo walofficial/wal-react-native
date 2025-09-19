@@ -91,7 +91,7 @@ export default function Photos({ redirectURL }: { redirectURL?: string }) {
       if (redirectURL) {
         const defaultCategoryId = '66e82cbf6cf36789fa525eaf';
 
-        router.replace({
+        router.navigate({
           pathname: redirectURL as any,
           params: {
             categoryId: defaultCategoryId,

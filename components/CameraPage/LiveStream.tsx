@@ -33,7 +33,6 @@ interface LiveStreamProps {
 }
 
 export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
-  const { error: errorToast, success: successToast } = useToast();
   const [isUserLive, setIsUserLive] = useAtom(isUserLiveState);
   const stopLive = useMutation({
     ...stopLiveMutation(),

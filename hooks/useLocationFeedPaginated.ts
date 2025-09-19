@@ -64,7 +64,16 @@ export function useLocationFeedPaginated({
   // Use the external search term if provided, otherwise use global search
   const finalSearchTerm =
     externalSearchTerm !== undefined ? debouncedLocalSearch : globalSearchTerm;
-
+  const options = getLocationFeedPaginatedInfiniteOptions({
+    query: {
+      page_size: pageSize,
+      search_term: finalSearchTerm,
+      content_type_filter: content_type,
+    },
+    path: {
+      feed_id: feedId,
+    },
+  });
   const {
     data,
     fetchNextPage,
@@ -78,16 +87,7 @@ export function useLocationFeedPaginated({
     hasPreviousPage,
     isPending,
   } = useInfiniteQuery({
-    ...getLocationFeedPaginatedInfiniteOptions({
-      query: {
-        page_size: pageSize,
-        search_term: finalSearchTerm,
-        content_type_filter: content_type,
-      },
-      path: {
-        feed_id: feedId,
-      },
-    }),
+    ...options,
     queryFn: async ({ pageParam, queryKey, signal }) => {
       const { data } = await getLocationFeedPaginated({
         ...queryKey,

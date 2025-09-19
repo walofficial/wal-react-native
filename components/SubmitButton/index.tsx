@@ -30,7 +30,6 @@ export default function SubmitButton({
   const { uploadBlob } = useUploadVideo({
     feedId: feedId as string,
     isPhoto,
-    isLocationUpload: true,
   });
   const handleSubmit = async () => {
     setIsProcessing(true);

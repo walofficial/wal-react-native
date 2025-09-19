@@ -207,12 +207,7 @@ export default function Layout({ segment }: { segment: string }) {
         options={{
           title: '',
           headerTransparent: true,
-          header: () => (
-            <SimpleGoBackHeader
-              justInstantGoBack
-              title={t('common.change_photo')}
-            />
-          ),
+          header: () => <SimpleGoBackHeader title={t('common.change_photo')} />,
           headerStyle: {
             backgroundColor: theme.colors.background,
           },
@@ -234,12 +229,7 @@ export default function Layout({ segment }: { segment: string }) {
         options={{
           title: '',
           headerTransparent: true,
-          header: () => (
-            <SimpleGoBackHeader
-              justInstantGoBack
-              title={t('common.settings')}
-            />
-          ),
+          header: () => <SimpleGoBackHeader title={t('common.settings')} />,
           headerStyle: {
             backgroundColor: theme.colors.background,
           },
@@ -264,10 +254,7 @@ export default function Layout({ segment }: { segment: string }) {
           title: '',
           headerTransparent: true,
           header: () => (
-            <SimpleGoBackHeader
-              justInstantGoBack
-              title={t('settings.language_and_region')}
-            />
+            <SimpleGoBackHeader title={t('settings.language_and_region')} />
           ),
           headerStyle: {
             backgroundColor: theme.colors.background,

@@ -182,7 +182,7 @@ export default function CameraPage(): React.ReactElement {
   }, []);
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
-      router.replace({
+      router.navigate({
         pathname: `/(camera)/mediapage`,
         params: {
           path: media.path,
@@ -455,8 +455,9 @@ export default function CameraPage(): React.ReactElement {
                 livekit_token: string;
                 room_name: string;
               }) => {
-                router.navigate({
-                  pathname: '/(tabs)/(home)/livestream',
+                // Replace so that when user disconnects from livestream page it no longer goes back to the camera page
+                router.replace({
+                  pathname: '/(camera)/livestream',
                   params: {
                     feedId: feedId as string,
                     livekit_token: livekit_token,
@@ -501,14 +502,12 @@ export default function CameraPage(): React.ReactElement {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            dismiss('all');
-            router.dismissAll();
-            router.navigate({
-              pathname: '/(tabs)/(home)/[feedId]',
-              params: {
-                feedId: feedId as string,
-              },
-            });
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.navigate('/(tabs)/(home)');
+              return;
+            }
           }}
         >
           <IonIcon name="arrow-back" color="white" size={24} />

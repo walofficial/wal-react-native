@@ -4,6 +4,7 @@ import { LiveStream } from '@/components/CameraPage/LiveStream';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SAFE_AREA_PADDING } from '@/components/CameraPage/Constants';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LiveStreamPage() {
   const { feedId, livekit_token, room_name } = useLocalSearchParams<{
@@ -11,22 +12,22 @@ export default function LiveStreamPage() {
     livekit_token: string;
     room_name: string;
   }>();
+  const inset = useSafeAreaInsets();
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: inset.top }]}>
       <StatusBar style="light" />
 
       <LiveStream
         token={livekit_token}
         roomName={room_name}
         onDisconnect={() => {
-          router.replace({
-            pathname: '/(tabs)/(home)/[feedId]',
-            params: {
-              feedId: feedId as string,
-            },
-          });
+          if (router.canGoBack()) {
+            router.back();
+          } else {
+            router.navigate('/(tabs)/(home)');
+          }
         }}
       />
     </View>
