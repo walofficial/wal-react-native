@@ -148,10 +148,10 @@ export default function RegisterView() {
     !errors.username &&
     !usernameQuery.error &&
     !usernameQuery.isFetching &&
-    !!usernameQuery.data;
+    !usernameQuery.data;
 
   useEffect(() => {
-    if (usernameQuery.data?.username === null) {
+    if (!usernameQuery.data?.username) {
       errorToast({
         title: t('errors.username_taken'),
         description: t('errors.username_taken'),
@@ -203,11 +203,11 @@ export default function RegisterView() {
       return '#ef4444'; // Red for validation errors
     }
 
-    if (usernameQuery.data?.username === null) {
+    if (!usernameQuery.data?.username) {
       return '#ef4444'; // Red for unavailable username
     }
 
-    if (isUsernameValid && usernameQuery.data?.username !== null) {
+    if (isUsernameValid && usernameQuery.data?.username) {
       return '#737373';
     }
     if (!isUsernameValid) {
@@ -281,7 +281,7 @@ export default function RegisterView() {
                         {errors.username.message}
                       </Text>
                     )}
-                    {usernameQuery.data?.username === null &&
+                    {!usernameQuery.data?.username &&
                       !hasNonLatinChars &&
                       !errors.username && (
                         <Text style={styles.errorText}>
