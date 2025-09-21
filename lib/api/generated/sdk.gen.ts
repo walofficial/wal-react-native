@@ -61,9 +61,6 @@ import type {
   GetLiveStreamTokenData,
   GetLiveStreamTokenResponses,
   GetLiveStreamTokenErrors,
-  RequestLivekitIngressData,
-  RequestLivekitIngressResponses,
-  RequestLivekitIngressErrors,
   StartLiveData,
   StartLiveResponses,
   StartLiveErrors,
@@ -674,27 +671,6 @@ export const getLiveStreamToken = <ThrowOnError extends boolean = false>(
     responseType: 'json',
     url: '/live/get-live-stream-token',
     ...options,
-  });
-};
-
-/**
- * Request Livekit Ingress
- */
-export const requestLivekitIngress = <ThrowOnError extends boolean = false>(
-  options: Options<RequestLivekitIngressData, ThrowOnError>,
-) => {
-  return (options.client ?? _heyApiClient).post<
-    RequestLivekitIngressResponses,
-    RequestLivekitIngressErrors,
-    ThrowOnError
-  >({
-    responseType: 'json',
-    url: '/live/request-livekit-ingress',
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
   });
 };
 

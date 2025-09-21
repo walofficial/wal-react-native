@@ -20,7 +20,6 @@ import {
   executeUserVideoVerificationLocationUpload,
   liveWebhook,
   getLiveStreamToken,
-  requestLivekitIngress,
   startLive,
   stopLive,
   createUser,
@@ -132,9 +131,6 @@ import type {
   LiveWebhookError,
   LiveWebhookResponse,
   GetLiveStreamTokenData,
-  RequestLivekitIngressData,
-  RequestLivekitIngressError,
-  RequestLivekitIngressResponse2,
   StartLiveData,
   StartLiveError,
   StartLiveResponse2,
@@ -1018,57 +1014,6 @@ export const getLiveStreamTokenOptions = (
     },
     queryKey: getLiveStreamTokenQueryKey(options),
   });
-};
-
-export const requestLivekitIngressQueryKey = (
-  options: Options<RequestLivekitIngressData>,
-) => createQueryKey('requestLivekitIngress', options);
-
-/**
- * Request Livekit Ingress
- */
-export const requestLivekitIngressOptions = (
-  options: Options<RequestLivekitIngressData>,
-) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await requestLivekitIngress({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: requestLivekitIngressQueryKey(options),
-  });
-};
-
-/**
- * Request Livekit Ingress
- */
-export const requestLivekitIngressMutation = (
-  options?: Partial<Options<RequestLivekitIngressData>>,
-): UseMutationOptions<
-  RequestLivekitIngressResponse2,
-  AxiosError<RequestLivekitIngressError>,
-  Options<RequestLivekitIngressData>
-> => {
-  const mutationOptions: UseMutationOptions<
-    RequestLivekitIngressResponse2,
-    AxiosError<RequestLivekitIngressError>,
-    Options<RequestLivekitIngressData>
-  > = {
-    mutationFn: async (localOptions) => {
-      const { data } = await requestLivekitIngress({
-        ...options,
-        ...localOptions,
-        throwOnError: true,
-      });
-      return data;
-    },
-  };
-  return mutationOptions;
 };
 
 export const startLiveQueryKey = (options: Options<StartLiveData>) =>
