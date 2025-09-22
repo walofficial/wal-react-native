@@ -191,6 +191,7 @@ export default function MessageConnectionWrapper({
             // @ts-ignore
             queryClient.setQueryData(
               queryOptions.queryKey,
+              // @ts-ignore
               (oldData: GetUserChatRoomsResponse['chat_rooms']) => {
                 if (!oldData) return oldData;
                 return oldData.map((chat) =>
