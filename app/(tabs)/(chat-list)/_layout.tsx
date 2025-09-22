@@ -1,15 +1,11 @@
 import { Stack } from 'expo-router';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
-import ChatTopbar from '@/components/Chat/chat-topbar';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import useKeyboardVerticalOffset from '@/hooks/useKeyboardVerticalOffset';
-import DbUserGetter from '@/components/DbUserGetter';
 
 function Layout() {
   const insets = useSafeAreaInsets();
   return (
-    <DbUserGetter showMessagePreview={false}>
       <View
         style={{
           flex: 1,
@@ -19,15 +15,14 @@ function Layout() {
       >
         <Stack>
           <Stack.Screen
-            name="[roomId]/index"
+            name="index"
             options={{
-              headerTransparent: true,
-              header: () => <ChatTopbar />,
+              title: 'ჩათი',
+              header: () => <SimpleGoBackHeader title="ჩათი" hideBackButton />,
             }}
           />
         </Stack>
       </View>
-    </DbUserGetter>
   );
 }
 

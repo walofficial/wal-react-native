@@ -22,6 +22,7 @@ interface SimpleGoBackHeaderProps {
   verificationId?: string;
   timestamp?: string;
   middleSection?: React.ReactNode;
+  hideBackButton?: boolean;
 }
 
 const SimpleGoBackHeader = ({
@@ -30,11 +31,12 @@ const SimpleGoBackHeader = ({
   verificationId,
   timestamp,
   middleSection,
+  hideBackButton,
 }: SimpleGoBackHeaderProps) => {
   const { user } = useAuth();
   const router = useRouter();
   const theme = useTheme();
-
+  const canGoBack = router.canGoBack(); 
   const Header = () =>
     !isWeb && (
       <View
@@ -43,7 +45,7 @@ const SimpleGoBackHeader = ({
           { backgroundColor: theme.colors.background },
         ]}
       >
-        <CloseButton
+        {!hideBackButton && <CloseButton
           variant="back"
           onClick={() => {
             if (router.canGoBack()) {
@@ -58,7 +60,7 @@ const SimpleGoBackHeader = ({
             }
           }}
           style={{ color: theme.colors.text }}
-        />
+        />}
         {middleSection ||
           ((title || timestamp) && (
             <Text

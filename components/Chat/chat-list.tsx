@@ -450,7 +450,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const onListLayout = React.useCallback(
     (e: LayoutChangeEvent) => {
       layoutHeight.value = e.nativeEvent.layout.height;
-      console.log("onListLayout",e.nativeEvent.layout.height)
       if ((isWeb || !keyboardIsOpening.value) && messageItems.length > 0) {
         flatListRef.current?.scrollToIndex({
           index: 0,
