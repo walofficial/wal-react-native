@@ -139,7 +139,12 @@ export default function RegisterView() {
     username && !/^[a-zA-Z0-9_\.]*$/.test(username),
   );
 
-  const userNameExists = usernameQuery.data && !usernameQuery.error && !!usernameQuery.dataUpdatedAt && !usernameQuery.isFetching && !!usernameQuery.data?.username;
+  const userNameExists =
+    usernameQuery.data &&
+    !usernameQuery.error &&
+    !!usernameQuery.dataUpdatedAt &&
+    !usernameQuery.isFetching &&
+    !!usernameQuery.data?.username;
 
   // Check if username is valid and available
   const isUsernameValid =
@@ -148,9 +153,9 @@ export default function RegisterView() {
     username.length <= MAX_USERNAME_LENGTH &&
     !hasNonLatinChars &&
     !errors.username &&
-    !userNameExists
+    !userNameExists;
 
-    useEffect(() => {
+  useEffect(() => {
     if (userNameExists) {
       errorToast({
         title: t('errors.username_taken'),
@@ -308,8 +313,9 @@ export default function RegisterView() {
             style={styles.submitButton}
             disabled={
               updateUserMutation.isPending ||
-                !isValid ||
-                !isUsernameValid  || debouncedUsername !== username
+              !isValid ||
+              !isUsernameValid ||
+              debouncedUsername !== username
             }
             size="lg"
             variant="secondary"
@@ -436,8 +442,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000000',
   },
-  nameInputWrapper: {
-  },
+  nameInputWrapper: {},
   nameInput: {
     fontSize: 18,
     borderRadius: 12,

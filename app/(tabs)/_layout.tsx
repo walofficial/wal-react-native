@@ -113,7 +113,6 @@ export default function TabLayout() {
     inactive: isDarkColorScheme ? '#777777' : '#999999', // Dark gray in dark mode, lighter gray in light mode
   };
 
-
   const { colorScheme } = useColorScheme();
 
   useEffect(() => {
@@ -243,19 +242,19 @@ export default function TabLayout() {
     // If on web, show a completely different layout with sidebar
     return (
       <SidebarLayout>
-          <BottomSheetModalProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                headerStyle: {
-                  backgroundColor: 'transparent',
-                },
-                contentStyle: {
-                  backgroundColor: theme.colors.background,
-                },
-              }}
-            />
-          </BottomSheetModalProvider>
+        <BottomSheetModalProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              headerStyle: {
+                backgroundColor: 'transparent',
+              },
+              contentStyle: {
+                backgroundColor: theme.colors.background,
+              },
+            }}
+          />
+        </BottomSheetModalProvider>
       </SidebarLayout>
     );
   }
@@ -406,7 +405,7 @@ export default function TabLayout() {
                   ),
                 }}
               />
-           
+
               <Tabs.Screen
                 name="shareintent"
                 options={{

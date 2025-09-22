@@ -28,7 +28,7 @@ export default function SharedChat() {
   }
   return (
     <>
-      <ChatList  selectedUser={selectedUser} />
+      <ChatList selectedUser={selectedUser} />
     </>
   );
 }

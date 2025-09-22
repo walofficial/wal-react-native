@@ -105,7 +105,6 @@ export const useUploadVideo = ({
     },
     retry: false,
     onSuccess: (data, variables) => {
-
       setRefetchInterval(1000);
       success({ title: 'გამოქვეყნდა' });
 
@@ -149,9 +148,9 @@ export const useUploadVideo = ({
               ) => {
                 return index === 0
                   ? {
-                    ...page,
-                    data: [optimisticVerification, ...page.data],
-                  }
+                      ...page,
+                      data: [optimisticVerification, ...page.data],
+                    }
                   : page;
               },
             ),
@@ -180,7 +179,6 @@ export const useUploadVideo = ({
           exact: false,
         });
       }, 100);
-
     },
     onError: (error) => {
       dismiss('all');

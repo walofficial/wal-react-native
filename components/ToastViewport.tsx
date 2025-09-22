@@ -28,10 +28,12 @@ export const ToastViewport: React.FC = () => {
           },
         ]}
       >
-        {topToasts.filter((toast) => !hideToasts).map((toast, arrayIndex) => {
-          const displayIndex = topToasts.length - 1 - arrayIndex;
-          return <Toast key={toast.id} toast={toast} index={displayIndex} />;
-        })}
+        {topToasts
+          .filter((toast) => !hideToasts)
+          .map((toast, arrayIndex) => {
+            const displayIndex = topToasts.length - 1 - arrayIndex;
+            return <Toast key={toast.id} toast={toast} index={displayIndex} />;
+          })}
       </View>
       <View
         style={[

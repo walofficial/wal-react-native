@@ -1,16 +1,9 @@
 import React from 'react';
-import {
-  Link,
-  Stack,
-} from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import ProfileHeader from '@/components/ProfileHeader';
 import { CustomTitle, TaskTitle } from '@/components/CustomTitle';
 import { ScrollReanimatedValueProvider } from '@/components/context/ScrollReanimatedValue';
-import {
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { isIOS, isWeb } from '@/lib/platform';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';

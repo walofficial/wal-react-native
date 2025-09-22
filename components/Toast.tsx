@@ -35,8 +35,6 @@ interface ToastProps {
   onHeightChange?: (id: string, height: number) => void;
 }
 
-
-
 const getIconForType = (type: ToastVariant) => {
   switch (type) {
     case 'success':
@@ -264,12 +262,10 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
         <View style={styles.contentContainer}>
           {typeof toast.content === 'string' ? (
             <Text style={styles.text}>{toast.content}</Text>
+          ) : React.isValidElement(toast.content) ? (
+            toast.content
           ) : (
-            React.isValidElement(toast.content) ? (
-              toast.content
-            ) : (
-              <Text style={styles.text}>{String(toast.content)}</Text>
-            )
+            <Text style={styles.text}>{String(toast.content)}</Text>
           )}
         </View>
         {toast.options.action && (

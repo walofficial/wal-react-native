@@ -1,5 +1,9 @@
 import { HEADER_HEIGHT, HEADER_HEIGHT_WITH_TABS } from '@/lib/constants';
-import { useGlobalSearchParams, useLocalSearchParams, useSegments } from 'expo-router';
+import {
+  useGlobalSearchParams,
+  useLocalSearchParams,
+  useSegments,
+} from 'expo-router';
 import { useAtomValue } from 'jotai';
 import { useUserFeedIds } from './useUserFeedIds';
 
@@ -21,9 +25,7 @@ export default function useFeeds() {
   // Use user's preferred feed IDs instead of hardcoded constants
   const { factCheckFeedId, newsFeedId } = useUserFeedIds();
   // having feedID means it's part from (home)
-  const finalHeight = !!isFactCheckFeed || hasFeedId
-    ? hhtabs
-    : hh
+  const finalHeight = !!isFactCheckFeed || hasFeedId ? hhtabs : hh;
 
   return {
     // Add little padding

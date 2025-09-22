@@ -68,14 +68,8 @@ export function ChatList({ selectedUser }: ChatListProps) {
   const socketContext = useContext(SocketContext);
 
   const { room, isFetching } = useMessageRoom(params.roomId, false);
-  const {
-    orderedPages,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useMessageFetching(
-    params.roomId,
-  );
+  const { orderedPages, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMessageFetching(params.roomId);
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const setMessage = useSetAtom(messageAtom);
   const { sendMessageIdsToBackend, addMessageToCache } = useMessageUpdates(
@@ -98,7 +92,6 @@ export function ChatList({ selectedUser }: ChatListProps) {
       clearInterval(intervalId);
     };
   }, [selectedUser.id, socketContext]);
-
 
   useEffect(() => {
     orderedPages.forEach((page) => {
@@ -156,10 +149,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
   );
 
   // Memoize the messageItems array to prevent recreation on every render
-  const messageItems = useMemo(
-    () => [...messages.flat()],
-    [messages],
-  );
+  const messageItems = useMemo(() => [...messages.flat()], [messages]);
 
   // Memoize the renderItem function to prevent recreation on every render
   const messageRenderItem = useCallback(
@@ -473,9 +463,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
         />
       </ScrollProvider>
       <Animated.View style={animatedStickyViewStyle}>
-        <ChatBottombar
-          sendMessage={onSendMessage}
-        />
+        <ChatBottombar sendMessage={onSendMessage} />
       </Animated.View>
     </View>
   );
