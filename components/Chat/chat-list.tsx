@@ -143,6 +143,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
       orderedPages.map((page, pageIndex) =>
         page.messages.map((message, messageIndex) => ({
           _id: message.id || message.temporary_id,
+          // @ts-ignore
           text: message.message,
           createdAt:
             message.id && !message.temporary_id
@@ -208,6 +209,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
         id: randomTemporaryMessageId,
         temporary_id: randomTemporaryMessageId,
         author_id: user.id,
+        // @ts-ignore
         message: messageToSend,
         room_id: params.roomId,
         message_state: 'SENT',

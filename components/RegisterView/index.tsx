@@ -139,6 +139,8 @@ export default function RegisterView() {
     username && !/^[a-zA-Z0-9_\.]*$/.test(username),
   );
 
+  const userNameExists = usernameQuery.data && !usernameQuery.error && !!usernameQuery.dataUpdatedAt && !usernameQuery.isFetching && !!usernameQuery.data?.username;
+
   // Check if username is valid and available
   const isUsernameValid =
     username &&
@@ -146,18 +148,16 @@ export default function RegisterView() {
     username.length <= MAX_USERNAME_LENGTH &&
     !hasNonLatinChars &&
     !errors.username &&
-    !usernameQuery.error &&
-    !usernameQuery.isFetching &&
-    !usernameQuery.data;
+    !userNameExists
 
-  useEffect(() => {
-    if (!usernameQuery.data?.username) {
+    useEffect(() => {
+    if (userNameExists) {
       errorToast({
         title: t('errors.username_taken'),
         description: t('errors.username_taken'),
       });
     }
-  }, [usernameQuery.data]);
+  }, [userNameExists]);
 
   useEffect(() => {
     if (username) {
@@ -203,10 +203,6 @@ export default function RegisterView() {
       return '#ef4444'; // Red for validation errors
     }
 
-    if (!usernameQuery.data?.username) {
-      return '#ef4444'; // Red for unavailable username
-    }
-
     if (isUsernameValid && usernameQuery.data?.username) {
       return '#737373';
     }
@@ -227,15 +223,13 @@ export default function RegisterView() {
   };
 
   const insets = useSafeAreaInsets();
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
       <View style={styles.container}>
-        <View style={styles.closeButtonContainer}>
-          <CloseButton onClick={() => handleLogout()} variant="back" />
-        </View>
         <View style={styles.formContainer}>
           <H4 style={styles.sectionTitle}>სახელი</H4>
           <Controller
@@ -281,11 +275,11 @@ export default function RegisterView() {
                         {errors.username.message}
                       </Text>
                     )}
-                    {!usernameQuery.data?.username &&
+                    {!usernameQuery.data &&
                       !hasNonLatinChars &&
                       !errors.username && (
                         <Text style={styles.errorText}>
-                          {usernameQuery.data.message}
+                          {usernameQuery.data?.message}
                         </Text>
                       )}
                   </View>
@@ -314,9 +308,8 @@ export default function RegisterView() {
             style={styles.submitButton}
             disabled={
               updateUserMutation.isPending ||
-              !isValid ||
-              !isUsernameValid ||
-              hasNonLatinChars
+                !isValid ||
+                !isUsernameValid  || debouncedUsername !== username
             }
             size="lg"
             variant="secondary"
@@ -358,7 +351,6 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   formContainer: {
-    paddingVertical: 30,
     paddingHorizontal: 20,
     flex: 1,
     marginTop: 40,
@@ -445,7 +437,6 @@ const styles = StyleSheet.create({
     color: '#000000',
   },
   nameInputWrapper: {
-    marginBottom: 8,
   },
   nameInput: {
     fontSize: 18,

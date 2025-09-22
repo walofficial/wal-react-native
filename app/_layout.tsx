@@ -137,6 +137,8 @@ import { Lightbox } from '@/components/Lightbox/Lightbox';
 import { ToastProviderWithViewport } from '@/components/ToastUsage';
 import LocationProvider from '@/components/LocationProvider';
 import Constants from 'expo-constants';
+import SimplifiedVideoPlayback from '@/components/SimplifiedVideoPlayback';
+import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 // Import Platform for React Native or use other platform detection for web/desktop
 
 onlineManager.setEventListener((setOnline) => {
@@ -280,11 +282,7 @@ const hostIP =
                                   options={{ headerShown: false }}
                                 />
                                 <Stack.Screen
-                                  name="(auth)/register"
-                                  options={{ headerShown: false }}
-                                />
-                                <Stack.Screen
-                                  name="(auth)/sign-in"
+                                  name="(auth)"
                                   options={{ headerShown: false }}
                                 />
                                 <Stack.Screen

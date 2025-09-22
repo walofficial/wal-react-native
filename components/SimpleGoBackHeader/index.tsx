@@ -23,6 +23,8 @@ interface SimpleGoBackHeaderProps {
   timestamp?: string;
   middleSection?: React.ReactNode;
   hideBackButton?: boolean;
+  logoutOnClick?: boolean;
+  withInsets?: boolean;
 }
 
 const SimpleGoBackHeader = ({
@@ -32,22 +34,29 @@ const SimpleGoBackHeader = ({
   timestamp,
   middleSection,
   hideBackButton,
+  logoutOnClick,
+  withInsets,
 }: SimpleGoBackHeaderProps) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const theme = useTheme();
-  const canGoBack = router.canGoBack(); 
+  const insets = useSafeAreaInsets();
   const Header = () =>
     !isWeb && (
       <View
         style={[
           styles.headerContainer,
-          { backgroundColor: theme.colors.background },
+          { backgroundColor: theme.colors.background, marginTop: withInsets ? insets.top : 0 },
         ]}
       >
         {!hideBackButton && <CloseButton
           variant="back"
           onClick={() => {
+            if (logoutOnClick) {
+              logout();
+              router.replace('/(auth)/sign-in');
+              return;
+            }
             if (router.canGoBack()) {
               router.back();
               return;

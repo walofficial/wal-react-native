@@ -187,6 +187,7 @@ export default function MessageConnectionWrapper({
               duration: 5000,
             });
             const queryOptions = getUserChatRoomsOptions();
+            // @ts-ignore
             queryClient.setQueryData(queryOptions.queryKey, (oldData: GetUserChatRoomsResponse["chat_rooms"]) => {
               if (!oldData) return oldData;
               return oldData.map((chat) => chat.id === newMessage.room_id ? { ...chat, last_message: {
