@@ -136,6 +136,7 @@ export const CHAT_PAGE_SIZE = 15;
 // @ts-ignore
 export const decryptMessages =
   (user: User) =>
+  // @ts-ignore
   async ({ pageParam, queryKey, signal }) => {
     const one = queryKey[0];
 
