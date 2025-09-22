@@ -105,7 +105,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
   return (
     <Link
       href={{
-        pathname: '/chatrooms/[roomId]',
+        pathname: '/(chat)/[roomId]',
         params: { roomId: item.id },
       }}
       asChild

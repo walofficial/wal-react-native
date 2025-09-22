@@ -25,13 +25,9 @@ import { isIOS, isWeb } from '@/lib/platform';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 import SimpleGoBackHeaderPost from '@/components/SimpleGoBackHeaderPost';
 import { ProfilePageUsername } from '@/components/ProfilePageUsername';
-import { t } from '@/lib/i18n';
-import useGoLive from '@/hooks/useGoLive';
 import useFeeds from '@/hooks/useFeeds';
-import useLocationsInfo from '@/hooks/useLocationsInfo';
 import { useTheme } from '@/lib/theme';
 import useTranslation from '@/hooks/useTranslation';
-import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 import { FontSizes } from '@/lib/theme';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import useAuth from '@/hooks/useAuth';
@@ -44,7 +40,6 @@ export const unstable_settings = {
 export default function Layout({ segment }: { segment: string }) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { categoryId } = useUserFeedIds();
   const { factCheckFeedId, newsFeedId } = useFeeds();
   const isNewsFeed = segment === '(news)';
   const isFactCheckFeed = segment === '(fact-check)';
@@ -108,21 +103,6 @@ export default function Layout({ segment }: { segment: string }) {
       options={{
         headerTransparent: true,
         header: () => <SimpleGoBackHeader title="ფოტო" />,
-      }}
-    />,
-
-    <Stack.Screen
-      name="chatrooms/index"
-      options={{
-        header: () => <SimpleGoBackHeader title="ჩათი" />,
-      }}
-    />,
-
-    <Stack.Screen
-      name="chatrooms/[roomId]/index"
-      options={{
-        headerTransparent: true,
-        header: () => <ChatTopbar />,
       }}
     />,
   ];

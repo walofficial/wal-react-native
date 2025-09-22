@@ -139,7 +139,7 @@ export function useNotificationHandler() {
     if (type === 'new_message' && roomId) {
       console.log('Navigating to chat room:', roomId);
       router.navigate({
-        pathname: '/(tabs)/(home)/chatrooms/[roomId]',
+        pathname: '/(chat)/[roomId]',
         params: {
           roomId: roomId,
         },

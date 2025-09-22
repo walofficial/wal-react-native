@@ -12,7 +12,7 @@ function useLiveUser() {
       // Send keys to server along with room creation
 
       // This actuallys gets the key and doesn't generate it
-      const { identityKeyPair, registrationId } =
+      const { identityKeyPair } =
         await ProtocolService.generateIdentityKeyPair();
 
       const response = await createChatRoom({
@@ -36,7 +36,7 @@ function useLiveUser() {
     onSuccess: (data, variables) => {
       if (data.data.chat_room_id) {
         router.navigate({
-          pathname: '/(tabs)/(home)/chatrooms/[roomId]',
+          pathname: '/(chat)/[roomId]',
           params: {
             roomId: data.data.chat_room_id,
           },
@@ -68,7 +68,7 @@ function useLiveUser() {
     onSuccess: (data, variables) => {
       if (data.data.chat_room_id) {
         router.navigate({
-          pathname: '/chatrooms/[roomId]',
+          pathname: '/(chat)/[roomId]',
           params: {
             roomId: data.data.chat_room_id,
           },

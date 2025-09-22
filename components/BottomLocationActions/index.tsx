@@ -26,14 +26,12 @@ export default function BottomLocationActions({
   const { data } = useCountAnonList(feedId);
   const { isDarkColorScheme } = useColorScheme();
   const setIsBottomSheetOpen = useSetAtom(locationUserListSheetState);
-  const setfeedId = useSetAtom(locationUserListfeedIdState);
 
   const handlePress = () => {
     trackEvent('location_feed_live_users_button_pressed', {});
 
     setIsBottomSheetOpen(false);
     if (data && data.count > 0) {
-      setfeedId(feedId);
       setIsBottomSheetOpen(true);
     }
   };
