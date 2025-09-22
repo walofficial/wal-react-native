@@ -3,6 +3,7 @@ import type {
   Toast,
   ToastContextValue,
   ToastOptions,
+  MessageToastOptions,
 } from '@/lib/types/Toast.types';
 import React, {
   createContext,
@@ -11,6 +12,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { MessageToast } from '@/components/MessageToast';
 import { useColorScheme } from '../useColorScheme';
 
 const DEFAULT_TOAST_OPTIONS: Required<ToastOptions> = {
@@ -105,6 +107,27 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     [isDarkColorScheme],
   );
 
+  const message = useCallback(
+    (options: MessageToastOptions) => {
+      const content = (
+        <MessageToast
+          message={options.message || ''}
+          senderUsername={options.senderUsername || ''}
+          senderProfilePicture={options.senderProfilePicture || ''}
+          senderId={options.senderId || ''}
+          roomId={options.roomId || ''}
+        />
+      );
+      return show(content, {
+        ...options,
+        type: 'message',
+        position: 'top',
+        duration: options.duration || 5000,
+      });
+    },
+    [],
+  );
+
   const update = useCallback(
     (id: string, content: React.ReactNode | string, options?: ToastOptions) => {
       setToasts((prevToasts) =>
@@ -162,6 +185,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     error,
     success,
     info,
+    message,
   };
 
   return (

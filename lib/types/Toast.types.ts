@@ -1,4 +1,4 @@
-export type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info';
+export type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info' | 'message';
 
 export type ToastPosition = 'top' | 'bottom';
 
@@ -14,6 +14,14 @@ export interface ToastOptions {
     label?: string;
     onPress?: () => void;
   } | null;
+}
+
+export interface MessageToastOptions extends Omit<ToastOptions, 'type'> {
+  message?: string;
+  senderUsername?: string;
+  senderProfilePicture?: string;
+  senderId?: string;
+  roomId?: string;
 }
 
 export interface Toast {
@@ -46,6 +54,7 @@ export interface ToastContextValue {
     title: string;
     description?: string;
   }) => string;
+  message: (options: MessageToastOptions) => string;
   update: (
     id: string,
     content: React.ReactNode | string,

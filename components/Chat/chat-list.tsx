@@ -25,7 +25,7 @@ import { SocketContext } from './socket/context';
 import useMessageUpdates from './useMessageUpdates';
 import useMessageFetching from './useMessageFetching';
 import { format } from 'date-fns';
-import Sentry from '@sentry/react-native';
+import * as Sentry from '@sentry/react-native';
 import { useKeyboardHandler } from 'react-native-keyboard-controller';
 require('dayjs/locale/ka');
 
@@ -88,7 +88,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
     params.roomId,
     refetchInterval,
     false,
-    selectedUser.id,
   );
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const setMessage = useSetAtom(messageAtom);
@@ -121,12 +120,12 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       }
 
       if (!scrolledFirstTime.current) {
-        messagesContainerRef.current.scrollToEnd({ animated: false });
+        messagesContainerRef.current.scrollTo({ y: 0, animated: false });
         scrolledFirstTime.current = true;
         return;
       }
 
-      messagesContainerRef.current.scrollToEnd({ animated: true });
+      messagesContainerRef.current.scrollTo({ y: 0, animated: true });
     }
   }, [firstPage?.messages.length]);
 
@@ -286,26 +285,27 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
   const didBackground = useRef(false);
 
-  // Create a safe scroll handler function
-  const handleScrollToOffset = useCallback(
-    (offset: number, animated: boolean) => {
-      if (flatListRef.current) {
-        flatListRef.current.scrollToOffset({
-          offset,
-          animated,
-        });
-      }
-    },
-    [],
-  );
+  // // Create a safe scroll handler function
+  // const handleScrollToOffset = useCallback(
+  //   (offset: number, animated: boolean) => {
+  //     if (flatListRef.current) {
+  //       flatListRef.current.scrollToOffset({
+  //         offset,
+  //         animated,
+  //       });
+  //     }
+  //   },
+  //   [],
+  // );
 
   const handleScrollToEnd = useCallback((animated: boolean) => {
-    if (flatListRef.current) {
-      flatListRef.current.scrollToEnd({
+    if (flatListRef.current && messageItems.length > 0) {
+      flatListRef.current.scrollToIndex({
+        index: 0,
         animated,
       });
     }
-  }, []);
+  }, [messageItems.length]);
 
   const onContentSizeChange = useCallback(
     (_: number, height: number) => {
@@ -330,9 +330,9 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
             offset: prevContentHeight.current - 65,
             animated: true,
           });
-        } else {
-          flatListRef.current?.scrollToOffset({
-            offset: height,
+        } else if (messageItems.length > 0) {
+          flatListRef.current?.scrollToIndex({
+            index: 0,
             animated: hasScrolled && height > prevContentHeight.current,
           });
 
@@ -359,6 +359,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       isAtTop.value,
       isAtBottom.value,
       layoutHeight.value,
+      handleScrollToEnd,
     ],
   );
 
@@ -385,9 +386,9 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
     },
     [layoutHeight, isAtBottom, isAtTop, hasScrolled, setHasScrolled],
   );
-
+  const insets = useSafeAreaInsets();
   const bottomOffset = isWeb ? 0 : 0;
-  const keyboardOffsetValue = isIOS ? 80 : 50;
+  const keyboardOffsetValue = insets.bottom;
 
   const keyboardHeight = useSharedValue(0);
   const keyboardIsOpening = useSharedValue(false);
@@ -449,9 +450,10 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const onListLayout = React.useCallback(
     (e: LayoutChangeEvent) => {
       layoutHeight.value = e.nativeEvent.layout.height;
-
-      if (isWeb || !keyboardIsOpening.value) {
-        flatListRef.current?.scrollToEnd({
+      console.log("onListLayout",e.nativeEvent.layout.height)
+      if ((isWeb || !keyboardIsOpening.value) && messageItems.length > 0) {
+        flatListRef.current?.scrollToIndex({
+          index: 0,
           animated: !layoutScrollWithoutAnimation.value,
         });
         layoutScrollWithoutAnimation.value = false;
@@ -462,6 +464,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       keyboardIsOpening.value,
       layoutScrollWithoutAnimation.value,
       layoutHeight,
+      messageItems.length,
     ],
   );
 
@@ -471,6 +474,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         <List
           ref={flatListRef}
           data={messageItems}
+          inverted={true}
           renderItem={messageRenderItem}
           scrollEventThrottle={100}
           style={animatedListStyle}

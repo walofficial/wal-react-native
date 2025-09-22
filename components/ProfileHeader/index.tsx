@@ -14,6 +14,7 @@ import {
   useRouter,
   useGlobalSearchParams,
   usePathname,
+  useLocalSearchParams,
 } from 'expo-router';
 import { TabBarIcon } from '../navigation/TabBarIcon';
 import { Text } from '../ui/text';
@@ -56,7 +57,6 @@ function ProfileHeader({
   showSearch = false,
   showLocationTabs = false,
   showTabs = false,
-  feedId,
 }: {
   customTitle?: string;
   customTitleComponent?: React.ReactNode;
@@ -65,17 +65,14 @@ function ProfileHeader({
   showSearch?: boolean;
   showLocationTabs?: boolean;
   showTabs?: boolean;
-  feedId?: string;
 }) {
+  const { feedId, content_type } = useGlobalSearchParams<{ feedId: string, content_type: string }>();
   const pathname = usePathname();
 
   const iconTranslateX = useSharedValue(0);
   const setHeaderHeight = useSetAtom(HEADER_HEIGHT);
   const setHeaderHeightWithTabs = useSetAtom(HEADER_HEIGHT_WITH_TABS);
   const { isDarkColorScheme } = useColorScheme();
-  const { content_type } = useGlobalSearchParams<{
-    content_type: string;
-  }>();
 
   const router = useRouter();
   const activeTab = content_type;

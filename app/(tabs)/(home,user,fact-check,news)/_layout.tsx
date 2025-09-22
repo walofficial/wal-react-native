@@ -1,31 +1,21 @@
 import React from 'react';
 import {
   Link,
-  Redirect,
   Stack,
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  usePathname,
-  useRouter,
 } from 'expo-router';
 import ProfileHeader from '@/components/ProfileHeader';
 import { CustomTitle, TaskTitle } from '@/components/CustomTitle';
 import { ScrollReanimatedValueProvider } from '@/components/context/ScrollReanimatedValue';
 import {
   View,
-  Text,
-  Platform,
-  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ChatTopbar from '@/components/Chat/chat-topbar';
 import { isIOS, isWeb } from '@/lib/platform';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 import SimpleGoBackHeaderPost from '@/components/SimpleGoBackHeaderPost';
 import { ProfilePageUsername } from '@/components/ProfilePageUsername';
-import useFeeds from '@/hooks/useFeeds';
 import { useTheme } from '@/lib/theme';
 import useTranslation from '@/hooks/useTranslation';
 import { FontSizes } from '@/lib/theme';
@@ -40,21 +30,12 @@ export const unstable_settings = {
 export default function Layout({ segment }: { segment: string }) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { factCheckFeedId, newsFeedId } = useFeeds();
   const isNewsFeed = segment === '(news)';
   const isFactCheckFeed = segment === '(fact-check)';
   const isHomeFeed = segment === '(home)';
   const isUserFeed = segment === '(user)';
   const { user } = useAuth();
-  const { feedId: homeFeedId } = useGlobalSearchParams<{ feedId: string }>();
   const theme = useTheme();
-  const feedId = isNewsFeed
-    ? newsFeedId
-    : isFactCheckFeed
-      ? factCheckFeedId
-      : isHomeFeed
-        ? homeFeedId
-        : '';
   const screens = [
     <Stack.Screen
       name="profile"
@@ -115,9 +96,8 @@ export default function Layout({ segment }: { segment: string }) {
           animation: 'fade',
           header: () => (
             <ProfileHeader
-              feedId={feedId}
               showTabs={true}
-              customTitleComponent={<TaskTitle feedId={feedId} />}
+              customTitleComponent={<TaskTitle />}
               showLocationTabs={true}
             />
           ),
@@ -137,9 +117,8 @@ export default function Layout({ segment }: { segment: string }) {
             ? undefined
             : () => (
                 <ProfileHeader
-                  feedId={feedId}
                   isAnimated
-                  customTitleComponent={<TaskTitle feedId={feedId} />}
+                  customTitleComponent={<TaskTitle />}
                   showSearch={!isUserFeed}
                   showLocationTabs={!isNewsFeed && !isFactCheckFeed}
                   showTabs={!isNewsFeed && !isUserFeed}

@@ -4,6 +4,7 @@ import {
   getMessagesChatMessagesGetInfiniteOptions,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { ChatMessage } from '@/lib/api/generated';
+import { CHAT_PAGE_SIZE } from '@/lib/utils';
 
 const useMessageUpdates = (
   roomId: string,
@@ -13,10 +14,9 @@ const useMessageUpdates = (
   const mutateUpdateMessages = useMutation({
     ...updateMessageStateChatUpdateMessagesPostMutation(),
   });
-  const pageSize = 15;
   const messageOptions = getMessagesChatMessagesGetInfiniteOptions({
     query: {
-      page_size: pageSize,
+      page_size: CHAT_PAGE_SIZE,
       room_id: roomId,
     },
   });
@@ -46,7 +46,7 @@ const useMessageUpdates = (
         if (page.page === 1) {
           return {
             ...page,
-            messages: [...page.messages, newMessage],
+            messages: [newMessage,...page.messages],
           };
         }
         return page;

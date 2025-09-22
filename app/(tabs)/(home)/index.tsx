@@ -23,7 +23,12 @@ export default function TaskScrollableView() {
   const insets = useSafeAreaInsets();
 
   if (!isFetching && !errorMsg && !!defaultFeedId) {
-    return <Redirect href={`/(tabs)/(home)/${defaultFeedId}`} />;
+    return <Redirect href={{
+      pathname: '/(tabs)/(home)/[feedId]',
+      params: {
+        feedId: defaultFeedId,
+      },
+    }} />;
   }
 
   return (

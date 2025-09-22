@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
 export default function TabLayout() {
   const pathname = usePathname();
   const isRecord = pathname.includes('record');
-  const { factCheckFeedId } = useFeeds();
+  const { factCheckFeedId, newsFeedId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
 
   // Track screen changes and update user properties
@@ -298,6 +298,9 @@ export default function TabLayout() {
                     }
                   },
                 })}
+                initialParams={{
+                  feedId: newsFeedId,
+                }}
                 options={{
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
@@ -322,6 +325,7 @@ export default function TabLayout() {
                 })}
                 initialParams={{
                   content_type: 'last24h',
+                  feedId: factCheckFeedId,
                 }}
                 options={{
                   tabBarIcon: ({ color, focused }) => (

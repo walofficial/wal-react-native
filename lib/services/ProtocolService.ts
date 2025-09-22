@@ -20,7 +20,7 @@ interface KeyPair {
 }
 
 class SignalProtocolService {
-  constructor() {}
+  constructor() { }
 
   public async clearKeys(): Promise<void> {
     await AsyncStorage.removeItem(KEYS_STORAGE);

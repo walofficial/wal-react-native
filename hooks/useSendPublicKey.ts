@@ -12,8 +12,14 @@ export default function useSendPublicKey() {
     isSuccess,
   } = useMutation({
     mutationFn: async ({ userId }: { userId: string }) => {
-      const { identityKeyPair } =
+      const { identityKeyPair, isCached } =
         await ProtocolService.generateIdentityKeyPair();
+
+      if (isCached) {
+        // Avoid resetting the timestamp of the public key and setting new public key
+        setPublicKey(identityKeyPair.publicKey);
+        return;
+      }
 
       await sendPublicKeyChatSendPublicKeyPost({
         body: {

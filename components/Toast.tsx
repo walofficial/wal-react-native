@@ -35,20 +35,7 @@ interface ToastProps {
   onHeightChange?: (id: string, height: number) => void;
 }
 
-const getBackgroundColor = (type: ToastVariant) => {
-  switch (type) {
-    case 'success':
-      return 'rgba(16, 185, 129, 0.95)';
-    case 'error':
-      return 'rgba(239, 68, 68, 0.95)';
-    case 'warning':
-      return 'rgba(245, 158, 11, 0.95)';
-    case 'info':
-      return 'rgba(59, 130, 246, 0.95)';
-    default:
-      return 'rgba(38, 38, 38, 0.95)';
-  }
-};
+
 
 const getIconForType = (type: ToastVariant) => {
   switch (type) {
@@ -60,14 +47,14 @@ const getIconForType = (type: ToastVariant) => {
       return '⚠';
     case 'info':
       return 'ℹ';
+    case 'message':
+      return '';
     default:
       return '';
   }
 };
 
 export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
-  const prevContentRef = useRef<string | React.ReactNode | null>(null);
-  const prevTypeRef = useRef<ToastVariant | null>(null);
   const prevIndexRef = useRef<number>(-1);
 
   const { dismiss } = useToast();
@@ -77,8 +64,6 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
   );
   const scale = useSharedValue(0.9);
   const rotateZ = useSharedValue(0);
-  const height = useSharedValue(0);
-  const viewRef = useRef<View>(null);
 
   const getStackOffset = () => {
     const baseOffset = 4;
@@ -241,7 +226,6 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
     }, 250);
   };
 
-  const backgroundColor = getBackgroundColor(toast.options.type);
   const icon = getIconForType(toast.options.type);
 
   return (
@@ -281,7 +265,11 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
           {typeof toast.content === 'string' ? (
             <Text style={styles.text}>{toast.content}</Text>
           ) : (
-            toast.content
+            React.isValidElement(toast.content) ? (
+              toast.content
+            ) : (
+              <Text style={styles.text}>{String(toast.content)}</Text>
+            )
           )}
         </View>
         {toast.options.action && (
