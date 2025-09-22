@@ -228,10 +228,6 @@ export type ChatMessage = {
    */
   recipient_id: string;
   /**
-   * Message
-   */
-  message?: string | null;
-  /**
    * Encrypted Content
    */
   encrypted_content: string | null;
@@ -3437,9 +3433,10 @@ export type GetUserProfileByUsernameError =
 
 export type GetUserProfileByUsernameResponses = {
   /**
+   * Response Get User Profile By Username
    * Successful Response
    */
-  200: User;
+  200: User | null;
 };
 
 export type GetUserProfileByUsernameResponse =

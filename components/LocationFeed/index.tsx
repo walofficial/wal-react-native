@@ -303,6 +303,7 @@ export default function LocationFeed({
             </ThemedText>
           ) : undefined
         }
+        // @ts-ignore
         ListEmptyComponent={
           !isNewsFeed &&
           !isFactCheckFeed && (

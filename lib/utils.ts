@@ -136,6 +136,7 @@ export function formatNumber(num: number): string {
 
 export const CHAT_PAGE_SIZE = 15;
 
+// @ts-ignore
 export const decryptMessages =  (user: User) => async ({ pageParam, queryKey, signal }) => {
   const one = queryKey[0];
 
