@@ -14,7 +14,6 @@ const useMessageFetching = (
   roomId: string,
   refetchInterval: number | undefined,
   idle: boolean,
-  recipientId: string,
 ) => {
   const { user } = useAuth();
   const pageSize = 15;
@@ -72,10 +71,10 @@ const useMessageFetching = (
                 }
                 return message;
               } catch (decryptError) {
-                // console.error(
-                //   `Failed to decrypt message ${message.id}:`,
-                //   decryptError
-                // );
+                console.error(
+                  `Failed to decrypt message ${message.id}:`,
+                  decryptError
+                );
                 return null; // Return null for failed messages
               }
             }),
@@ -119,10 +118,10 @@ const useMessageFetching = (
       getPreviousPageParam: (firstPage) =>
         firstPage.previous_cursor || undefined,
       refetchOnMount: true,
-      staleTime: 1000 * 30, // Consider data fresh for 30 seconds
+      staleTime: 1000 * 5, // Consider data fresh for 30 seconds
       gcTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
       refetchInterval: idle ? false : refetchInterval,
-      refetchOnWindowFocus: !idle,
+      refetchOnWindowFocus: true,
       refetchIntervalInBackground: false,
       placeholderData: {
         pages: [

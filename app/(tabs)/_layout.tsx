@@ -249,7 +249,6 @@ export default function TabLayout() {
     // If on web, show a completely different layout with sidebar
     return (
       <SidebarLayout>
-        <DbUserGetter>
           <BottomSheetModalProvider>
             <Stack
               screenOptions={{
@@ -263,13 +262,12 @@ export default function TabLayout() {
               }}
             />
           </BottomSheetModalProvider>
-        </DbUserGetter>
       </SidebarLayout>
     );
   }
   // Otherwise, default to existing tabs on mobile.
   return (
-    <DbUserGetter>
+    <DbUserGetter showMessagePreview={true}>
       <ReactionsOverlayProvider>
         <HeaderTransformProvider>
           <BottomSheetModalProvider>

@@ -301,7 +301,7 @@ function ProfileHeader({
                 <>
                   {customButtons}
                   {!customButtons && (
-                    <Link href={'/chatrooms'} asChild>
+                    <Link href={'/(chat)'} asChild>
                       <TouchableOpacity style={styles.buttonWrapper}>
                         <Animated.View style={iconAnimatedStyle}>
                           <TabBarIcon
