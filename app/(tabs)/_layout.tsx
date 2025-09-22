@@ -33,7 +33,6 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
-import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 
 function LivePulseIcon({ children }: { children: React.ReactNode }) {
   const scale = useSharedValue(1);
@@ -95,7 +94,6 @@ const styles = StyleSheet.create({
 
 export default function TabLayout() {
   const pathname = usePathname();
-  const isRecord = pathname.includes('record');
   const { factCheckFeedId, newsFeedId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
 
@@ -115,11 +113,6 @@ export default function TabLayout() {
     inactive: isDarkColorScheme ? '#777777' : '#999999', // Dark gray in dark mode, lighter gray in light mode
   };
 
-  const recordingTabStyles = {
-    tabBarButton: () => null,
-    tabBarButtonComponent: () => null,
-    tabBarLabel: () => null,
-  };
 
   const { colorScheme } = useColorScheme();
 
@@ -279,7 +272,6 @@ export default function TabLayout() {
                 header: () => null,
                 freezeOnBlur: true,
                 headerTransparent: true,
-                ...(isRecord && recordingTabStyles),
                 tabBarActiveTintColor: TAB_COLORS.active,
                 tabBarInactiveTintColor: TAB_COLORS.inactive,
                 tabBarShowLabel: false,
@@ -287,7 +279,6 @@ export default function TabLayout() {
                   backgroundColor: theme.colors.background,
                   borderTopColor: theme.colors.border,
                 },
-                // tabBarHideOnKeyboard: isIOS,
               }}
             >
               <Tabs.Screen
