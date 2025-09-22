@@ -1,13 +1,9 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import useAuth from '@/hooks/useAuth';
-import {
-  getMessagesChatMessagesGetInfiniteOptions,
-} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { getMessagesChatMessagesGetInfiniteOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { decryptMessages } from '@/lib/utils';
 
-const useMessageFetching = (
-  roomId: string,
-) => {
+const useMessageFetching = (roomId: string) => {
   const { user } = useAuth();
   const pageSize = 15;
   const queryOptions = getMessagesChatMessagesGetInfiniteOptions({

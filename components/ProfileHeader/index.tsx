@@ -66,7 +66,10 @@ function ProfileHeader({
   showLocationTabs?: boolean;
   showTabs?: boolean;
 }) {
-  const { feedId, content_type } = useGlobalSearchParams<{ feedId: string, content_type: string }>();
+  const { feedId, content_type } = useGlobalSearchParams<{
+    feedId: string;
+    content_type: string;
+  }>();
   const pathname = usePathname();
 
   const iconTranslateX = useSharedValue(0);
@@ -294,11 +297,7 @@ function ProfileHeader({
               />
 
               {/* Only show other buttons when search is not active */}
-              {!isSearchActive && !showSearch && (
-                <>
-                  {customButtons}
-                </>
-              )}
+              {!isSearchActive && !showSearch && <>{customButtons}</>}
             </View>
           )}
         </Animated.View>

@@ -21,7 +21,7 @@ export const MessageToast: React.FC<MessageToastProps> = ({
   roomId,
 }) => {
   const { colors } = useTheme();
-  const {dismissAll} = useToast();
+  const { dismissAll } = useToast();
   const handlePress = () => {
     // Navigate to the chat room
     router.push({
@@ -31,7 +31,6 @@ export const MessageToast: React.FC<MessageToastProps> = ({
       },
     });
     dismissAll();
-
   };
   return (
     <TouchableOpacity
@@ -44,8 +43,10 @@ export const MessageToast: React.FC<MessageToastProps> = ({
         style={styles.profilePicture}
       />
       <View style={styles.content}>
-        <Text style={[styles.username, { color: colors.text }]}>{senderUsername}</Text>
-        <Text 
+        <Text style={[styles.username, { color: colors.text }]}>
+          {senderUsername}
+        </Text>
+        <Text
           style={[styles.message, { color: colors.text }]}
           numberOfLines={2}
           ellipsizeMode="tail"

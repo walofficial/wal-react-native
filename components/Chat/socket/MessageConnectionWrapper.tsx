@@ -38,7 +38,7 @@ export default function MessageConnectionWrapper({
   children: React.ReactNode;
   publicKey: string;
   showMessagePreview: boolean;
-  }) {
+}) {
   const [isConnected, setIsConnected] = useState(false);
   const { user } = useAuth();
   const { roomId } = useGlobalSearchParams<{ roomId: string }>();
@@ -46,10 +46,11 @@ export default function MessageConnectionWrapper({
   const socketRef = useRef(getSocket(user.id, publicKey));
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const isFocused = useIsFocused();
-  const { canShowMessagePreview, recordMessage, getSenderTimeout } = useMessageSpamPrevention({
-    timeoutMs: 5000, // 5 seconds timeout
-    maxMessages: 3, // Max 3 messages in 5 seconds
-  });
+  const { canShowMessagePreview, recordMessage, getSenderTimeout } =
+    useMessageSpamPrevention({
+      timeoutMs: 5000, // 5 seconds timeout
+      maxMessages: 3, // Max 3 messages in 5 seconds
+    });
   const messageOptions = getMessagesChatMessagesGetInfiniteOptions({
     query: {
       page_size: CHAT_PAGE_SIZE,
@@ -143,7 +144,7 @@ export default function MessageConnectionWrapper({
       sender_username: string;
       id: string;
       temporary_id: string;
-      room_id: string
+      room_id: string;
     }) => {
       const addIncomingMessage = async (newMessage: {
         encrypted_content: string;
@@ -188,21 +189,32 @@ export default function MessageConnectionWrapper({
             });
             const queryOptions = getUserChatRoomsOptions();
             // @ts-ignore
-            queryClient.setQueryData(queryOptions.queryKey, (oldData: GetUserChatRoomsResponse["chat_rooms"]) => {
-              if (!oldData) return oldData;
-              return oldData.map((chat) => chat.id === newMessage.room_id ? { ...chat, last_message: {
-                  ...chat.last_message, 
-                  sent_date: new Date().toISOString(),
-                  message: decryptedMessage,
-                } } : chat);
-            });
+            queryClient.setQueryData(
+              queryOptions.queryKey,
+              (oldData: GetUserChatRoomsResponse['chat_rooms']) => {
+                if (!oldData) return oldData;
+                return oldData.map((chat) =>
+                  chat.id === newMessage.room_id
+                    ? {
+                        ...chat,
+                        last_message: {
+                          ...chat.last_message,
+                          sent_date: new Date().toISOString(),
+                          message: decryptedMessage,
+                        },
+                      }
+                    : chat,
+                );
+              },
+            );
             recordMessage(newMessage.sender);
-
           } else {
             // Optional: Show a different toast indicating spam prevention is active
             const timeout = getSenderTimeout(newMessage.sender);
             if (timeout > 0) {
-              console.log(`Message preview blocked for sender ${newMessage.sender} due to spam prevention. Timeout: ${timeout}ms`);
+              console.log(
+                `Message preview blocked for sender ${newMessage.sender} due to spam prevention. Timeout: ${timeout}ms`,
+              );
             }
           }
         }
@@ -214,7 +226,6 @@ export default function MessageConnectionWrapper({
               return {
                 ...page,
                 messages: [
-           
                   ...page.messages,
                   {
                     temporary_id: newMessage.temporary_id,
@@ -260,7 +271,15 @@ export default function MessageConnectionWrapper({
       socket.off('user_public_key', handlePublicKey);
       socket.off('notify_single_message_seen', handleMessageSeen);
     };
-  }, [queryClient, roomId, showMessagePreview, isFocused, canShowMessagePreview, recordMessage, getSenderTimeout]);
+  }, [
+    queryClient,
+    roomId,
+    showMessagePreview,
+    isFocused,
+    canShowMessagePreview,
+    recordMessage,
+    getSenderTimeout,
+  ]);
 
   return (
     <SocketContext.Provider value={socketRef.current}>

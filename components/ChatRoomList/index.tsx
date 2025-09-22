@@ -11,7 +11,12 @@ import { useQueryClient } from '@tanstack/react-query';
 import useUserChats from '@/hooks/useUserChats';
 import ChatItem from '../ChatItem';
 import useAuth from '@/hooks/useAuth';
-import { getMessageChatRoomOptions, getMessagesChatMessagesGetInfiniteOptions, getUserChatRoomsOptions, getUserChatRoomsQueryKey } from '@/lib/api/generated/@tanstack/react-query.gen';
+import {
+  getMessageChatRoomOptions,
+  getMessagesChatMessagesGetInfiniteOptions,
+  getUserChatRoomsOptions,
+  getUserChatRoomsQueryKey,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
 import { CHAT_PAGE_SIZE, decryptMessages } from '@/lib/utils';
 import { ChatRoom } from '@/lib/api/generated';
 
@@ -46,7 +51,7 @@ export default function ChatRoomList() {
             room_id: chat.id,
           },
         });
-      
+
         // Prefetch first page of messages
         queryClient.prefetchInfiniteQuery({
           ...messageOptions,
@@ -78,9 +83,7 @@ export default function ChatRoomList() {
         ) : (
           <>
             {renderList()}
-            {!isFetching && !chats?.length && (
-              <View style={{ height: 100 }} />
-            )}
+            {!isFetching && !chats?.length && <View style={{ height: 100 }} />}
           </>
         )}
       </ScrollView>

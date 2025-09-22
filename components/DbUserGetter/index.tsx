@@ -4,7 +4,13 @@ import { publicKeyState } from '@/lib/state/auth';
 import { isWeb } from '@/lib/platform';
 import { useNotificationHandler } from './useNotficationHandler';
 
-function DbUserGetter({ children, showMessagePreview }: { children: React.ReactNode, showMessagePreview: boolean }) {
+function DbUserGetter({
+  children,
+  showMessagePreview,
+}: {
+  children: React.ReactNode;
+  showMessagePreview: boolean;
+}) {
   const publicKey = useAtomValue(publicKeyState);
   useNotificationHandler();
 
@@ -12,7 +18,10 @@ function DbUserGetter({ children, showMessagePreview }: { children: React.ReactN
     return children;
   }
   return (
-    <MessageConnectionWrapper publicKey={publicKey} showMessagePreview={showMessagePreview}>
+    <MessageConnectionWrapper
+      publicKey={publicKey}
+      showMessagePreview={showMessagePreview}
+    >
       {children}
     </MessageConnectionWrapper>
   );

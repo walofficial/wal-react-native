@@ -46,30 +46,35 @@ const SimpleGoBackHeader = ({
       <View
         style={[
           styles.headerContainer,
-          { backgroundColor: theme.colors.background, marginTop: withInsets ? insets.top : 0 },
+          {
+            backgroundColor: theme.colors.background,
+            marginTop: withInsets ? insets.top : 0,
+          },
         ]}
       >
-        {!hideBackButton && <CloseButton
-          variant="back"
-          onClick={() => {
-            if (logoutOnClick) {
-              logout();
-              router.replace('/(auth)/sign-in');
-              return;
-            }
-            if (router.canGoBack()) {
-              router.back();
-              return;
-            } else {
-              if (user) {
-                router.replace(`/(tabs)/(news)`);
-              } else {
-                router.navigate('/(auth)/sign-in');
+        {!hideBackButton && (
+          <CloseButton
+            variant="back"
+            onClick={() => {
+              if (logoutOnClick) {
+                logout();
+                router.replace('/(auth)/sign-in');
+                return;
               }
-            }
-          }}
-          style={{ color: theme.colors.text }}
-        />}
+              if (router.canGoBack()) {
+                router.back();
+                return;
+              } else {
+                if (user) {
+                  router.replace(`/(tabs)/(news)`);
+                } else {
+                  router.navigate('/(auth)/sign-in');
+                }
+              }
+            }}
+            style={{ color: theme.colors.text }}
+          />
+        )}
         {middleSection ||
           ((title || timestamp) && (
             <Text

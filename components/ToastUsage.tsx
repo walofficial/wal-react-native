@@ -1,5 +1,9 @@
 import { ToastProvider, useToast } from '@/lib/context/ToastContext';
-import type { ToastOptions, ToastProps, MessageToastOptions } from '@/lib/types/Toast.types';
+import type {
+  ToastOptions,
+  ToastProps,
+  MessageToastOptions,
+} from '@/lib/types/Toast.types';
 import * as React from 'react';
 import { ToastViewport } from './ToastViewport';
 type ToastRef = {

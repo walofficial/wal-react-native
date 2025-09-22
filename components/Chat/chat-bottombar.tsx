@@ -28,9 +28,7 @@ interface ChatBottombarProps {
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
-export default function ChatBottombar({
-  sendMessage,
-}: ChatBottombarProps) {
+export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const setMessage = useSetAtom(messageAtom);
   const message = useAtomValue(messageAtom);
@@ -142,7 +140,7 @@ export function SendButton({
 
   return (
     <TouchableOpacity
-      disabled={ !hasText}
+      disabled={!hasText}
       style={[
         styles.sendButton,
         { backgroundColor: sendButtonColor },

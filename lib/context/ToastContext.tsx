@@ -107,26 +107,23 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     [isDarkColorScheme],
   );
 
-  const message = useCallback(
-    (options: MessageToastOptions) => {
-      const content = (
-        <MessageToast
-          message={options.message || ''}
-          senderUsername={options.senderUsername || ''}
-          senderProfilePicture={options.senderProfilePicture || ''}
-          senderId={options.senderId || ''}
-          roomId={options.roomId || ''}
-        />
-      );
-      return show(content, {
-        ...options,
-        type: 'message',
-        position: 'top',
-        duration: options.duration || 5000,
-      });
-    },
-    [],
-  );
+  const message = useCallback((options: MessageToastOptions) => {
+    const content = (
+      <MessageToast
+        message={options.message || ''}
+        senderUsername={options.senderUsername || ''}
+        senderProfilePicture={options.senderProfilePicture || ''}
+        senderId={options.senderId || ''}
+        roomId={options.roomId || ''}
+      />
+    );
+    return show(content, {
+      ...options,
+      type: 'message',
+      position: 'top',
+      duration: options.duration || 5000,
+    });
+  }, []);
 
   const update = useCallback(
     (id: string, content: React.ReactNode | string, options?: ToastOptions) => {

@@ -11,7 +11,13 @@ function Layout() {
         name="register"
         options={{
           headerTransparent: true,
-          header: () => <SimpleGoBackHeader title="რეგისტრაცია" logoutOnClick={true} withInsets={true} />,
+          header: () => (
+            <SimpleGoBackHeader
+              title="რეგისტრაცია"
+              logoutOnClick={true}
+              withInsets={true}
+            />
+          ),
         }}
       />
       <Stack.Screen
