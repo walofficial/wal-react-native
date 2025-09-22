@@ -46,7 +46,7 @@ const useMessageUpdates = (
         if (page.page === 1) {
           return {
             ...page,
-            messages: [newMessage,...page.messages],
+            messages: [...page.messages, newMessage],
           };
         }
         return page;

@@ -1,14 +1,9 @@
-import Chat from '@/components/Chat';
-import ChatTopbar from '@/components/Chat/chat-topbar';
 import ScreenLoader from '@/components/ScreenLoader';
 import useAuth from '@/hooks/useAuth';
 import useMessageRoom from '@/hooks/useMessageRoom';
-import { publicKeyState } from '@/lib/state/auth';
-import { useAtom } from 'jotai';
-import { Stack, useGlobalSearchParams } from 'expo-router';
-import MessageConnectionWrapper from '@/components/Chat/socket/MessageConnectionWrapper';
+import { Redirect, Stack, useGlobalSearchParams } from 'expo-router';
 import ErrorMessageCard from '@/components/ErrorMessageCard';
-// THis component only used for the navigation from notification to not brake routing
+import { ChatList } from '@/components/Chat/chat-list';
 
 export default function SharedChat() {
   const { roomId } = useGlobalSearchParams();
@@ -29,11 +24,11 @@ export default function SharedChat() {
 
   const selectedUser = room?.participants.find((p) => p.id !== user.id) || null;
   if (!selectedUser) {
-    return <ScreenLoader />;
+    return <Redirect href="/(chat)" />;
   }
   return (
     <>
-      <Chat canText={true} isMobile={true} selectedUser={selectedUser} />
+      <ChatList  selectedUser={selectedUser} />
     </>
   );
 }

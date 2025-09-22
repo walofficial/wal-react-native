@@ -2,7 +2,6 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import useAuth from '@/hooks/useAuth';
 import {
   getMessagesChatMessagesGetInfiniteOptions,
-  getMessagesChatMessagesGetOptions,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { getMessagesChatMessagesGet } from '@/lib/api/generated';
 import { ChatMessage, GetMessagesResponse } from '@/lib/api/generated';
@@ -12,8 +11,6 @@ type ChatMessages = ChatMessage[];
 
 const useMessageFetching = (
   roomId: string,
-  refetchInterval: number | undefined,
-  idle: boolean,
 ) => {
   const { user } = useAuth();
   const pageSize = 15;
@@ -104,6 +101,7 @@ const useMessageFetching = (
 
         return response;
       },
+      staleTime: Infinity,
       getNextPageParam: (lastPage, allPages) => {
         if (!lastPage.next_cursor) {
           return undefined;
@@ -118,9 +116,8 @@ const useMessageFetching = (
       getPreviousPageParam: (firstPage) =>
         firstPage.previous_cursor || undefined,
       refetchOnMount: true,
-      staleTime: 1000 * 5, // Consider data fresh for 30 seconds
-      gcTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
-      refetchInterval: idle ? false : refetchInterval,
+      // staleTime: 1000 * 5, // Consider data fresh for 30 seconds
+      // gcTime: 1000 * 60 * 5, // Keep data in cache for 5 minutes
       refetchOnWindowFocus: true,
       refetchIntervalInBackground: false,
       placeholderData: {
@@ -134,14 +131,12 @@ const useMessageFetching = (
         pageParams: [],
       },
     });
-  const firstPage = data?.pages.find((item) => item.page === 1);
-  let orderedPages = data?.pages.sort((a, b) => a.page - b.page) || [];
+  let orderedPages = data?.pages.sort((a, b) => b.page - a.page) || [];
 
   return {
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    firstPage,
     orderedPages,
   };
 };
