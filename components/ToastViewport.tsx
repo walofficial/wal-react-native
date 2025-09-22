@@ -3,9 +3,12 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Toast } from './Toast';
+import { usePathname, useSegments } from 'expo-router';
 
 export const ToastViewport: React.FC = () => {
   const { toasts } = useToast();
+  const segments = useSegments() as string[];
+  const hideToasts = segments.includes('(chat-list)');
   const insets = useSafeAreaInsets();
 
   const topToasts = toasts.filter((toast) => toast.options.position === 'top');
@@ -25,7 +28,7 @@ export const ToastViewport: React.FC = () => {
           },
         ]}
       >
-        {topToasts.map((toast, arrayIndex) => {
+        {topToasts.filter((toast) => !hideToasts).map((toast, arrayIndex) => {
           const displayIndex = topToasts.length - 1 - arrayIndex;
           return <Toast key={toast.id} toast={toast} index={displayIndex} />;
         })}

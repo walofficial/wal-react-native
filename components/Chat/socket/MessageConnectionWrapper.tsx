@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { getSocket } from './socket';
 import { SocketContext } from './context';
-import { ChatMessage } from '@/lib/api/generated';
+import { ChatMessage, GetUserChatRoomsResponse } from '@/lib/api/generated';
 import { useSetAtom } from 'jotai';
 import { isChatUserOnlineState } from '@/lib/state/chat';
 import useAuth from '@/hooks/useAuth';
@@ -24,6 +24,7 @@ import { useIsFocused } from '@react-navigation/native';
 import {
   getMessagesChatMessagesGetInfiniteOptions,
   getMessagesChatMessagesGetInfiniteQueryKey,
+  getUserChatRoomsOptions,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { CHAT_PAGE_SIZE } from '@/lib/utils';
 import { Toast } from '@/components/ToastUsage';
@@ -185,7 +186,17 @@ export default function MessageConnectionWrapper({
               roomId: newMessage.room_id || '',
               duration: 5000,
             });
+            const queryOptions = getUserChatRoomsOptions();
+            queryClient.setQueryData(queryOptions.queryKey, (oldData: GetUserChatRoomsResponse["chat_rooms"]) => {
+              if (!oldData) return oldData;
+              return oldData.map((chat) => chat.id === newMessage.room_id ? { ...chat, last_message: {
+                  ...chat.last_message, 
+                  sent_date: new Date().toISOString(),
+                  message: decryptedMessage,
+                } } : chat);
+            });
             recordMessage(newMessage.sender);
+
           } else {
             // Optional: Show a different toast indicating spam prevention is active
             const timeout = getSenderTimeout(newMessage.sender);
