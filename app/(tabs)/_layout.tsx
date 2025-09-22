@@ -33,6 +33,7 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 
 function LivePulseIcon({ children }: { children: React.ReactNode }) {
   const scale = useSharedValue(1);
@@ -377,6 +378,18 @@ export default function TabLayout() {
                 }}
               />
               <Tabs.Screen
+                name="(chat-list)"
+                options={{
+                  tabBarIcon: ({ focused }) => (
+                    <TabBarIcon
+                      size={24}
+                      name={focused ? 'chatbubble' : 'chatbubble-outline'}
+                      color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
+                    />
+                  ),
+                }}
+              />
+              <Tabs.Screen
                 name="(user)"
                 listeners={() => ({
                   tabPress: (e) => {
@@ -402,6 +415,7 @@ export default function TabLayout() {
                   ),
                 }}
               />
+           
               <Tabs.Screen
                 name="shareintent"
                 options={{

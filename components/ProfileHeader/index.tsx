@@ -297,18 +297,6 @@ function ProfileHeader({
               {!isSearchActive && !showSearch && (
                 <>
                   {customButtons}
-                  {!customButtons && (
-                    <Link href={'/(chat)'} asChild>
-                      <TouchableOpacity style={styles.buttonWrapper}>
-                        <Animated.View style={iconAnimatedStyle}>
-                          <TabBarIcon
-                            color={isDarkColorScheme ? 'white' : 'black'}
-                            name="paper-plane-outline"
-                          />
-                        </Animated.View>
-                      </TouchableOpacity>
-                    </Link>
-                  )}
                 </>
               )}
             </View>
