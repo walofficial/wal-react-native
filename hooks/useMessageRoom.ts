@@ -27,10 +27,5 @@ export default function useMessageRoom(
     refetchOnWindowFocus: true,
   });
 
-  useEffect(() => {
-    if (error instanceof AxiosError) {
-      // Error handling can be implemented here
-    }
-  }, [error, room]);
   return { room, isFetching: isFetching && !isRefetching, error };
 }

@@ -9,30 +9,23 @@ import React, {
 import {
   View,
   ScrollView,
-  Keyboard,
   LayoutChangeEvent,
-  FlatList,
-  LayoutAnimation,
   Platform,
   UIManager,
   InteractionManager,
 } from 'react-native';
 import ChatBottombar from './chat-bottombar';
-import { useQueryClient } from '@tanstack/react-query';
 import { User, ChatMessage } from '@/lib/api/generated';
 import useAuth from '@/hooks/useAuth';
 import { SocketContext } from './socket/context';
 import useMessageUpdates from './useMessageUpdates';
 import useMessageFetching from './useMessageFetching';
-import { format } from 'date-fns';
 import * as Sentry from '@sentry/react-native';
 import { useKeyboardHandler } from 'react-native-keyboard-controller';
 require('dayjs/locale/ka');
 
 interface ChatListProps {
   selectedUser: User;
-  isMobile: boolean;
-  canText?: boolean;
 }
 import { useAtomValue, useSetAtom } from 'jotai';
 import { isChatUserOnlineState, messageAtom } from '@/lib/state/chat';
@@ -65,8 +58,7 @@ if (Platform.OS === 'android') {
   }
 }
 
-export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
-  const messagesContainerRef = useRef<ScrollView>(null);
+export function ChatList({ selectedUser }: ChatListProps) {
   const trackedMessageIdsRef = useRef<Set<string>>(new Set());
 
   const params = useLocalSearchParams<{
@@ -74,20 +66,15 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   }>();
   const { user } = useAuth();
   const socketContext = useContext(SocketContext);
-  const scrolledFirstTime = useRef(false);
 
-  const [refetchInterval, setRefetchInterval] = useState(0);
   const { room, isFetching } = useMessageRoom(params.roomId, false);
   const {
     orderedPages,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-    firstPage,
   } = useMessageFetching(
     params.roomId,
-    refetchInterval,
-    false,
   );
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const setMessage = useSetAtom(messageAtom);
@@ -112,22 +99,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
     };
   }, [selectedUser.id, socketContext]);
 
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      const lastMessage = firstPage?.messages[firstPage.messages.length - 1];
-      if (!lastMessage) {
-        return;
-      }
-
-      if (!scrolledFirstTime.current) {
-        messagesContainerRef.current.scrollTo({ y: 0, animated: false });
-        scrolledFirstTime.current = true;
-        return;
-      }
-
-      messagesContainerRef.current.scrollTo({ y: 0, animated: true });
-    }
-  }, [firstPage?.messages.length]);
 
   useEffect(() => {
     orderedPages.forEach((page) => {
@@ -167,7 +138,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   }
 
   // Memoize the converted messages to prevent recreation on every render
-  const convertedMessagesForGiftedChat = useMemo(
+  const messages = useMemo(
     () =>
       orderedPages.map((page, pageIndex) =>
         page.messages.map((message, messageIndex) => ({
@@ -185,8 +156,8 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
 
   // Memoize the messageItems array to prevent recreation on every render
   const messageItems = useMemo(
-    () => [...convertedMessagesForGiftedChat.flat()],
-    [convertedMessagesForGiftedChat],
+    () => [...messages.flat()],
+    [messages],
   );
 
   // Memoize the renderItem function to prevent recreation on every render
@@ -285,27 +256,26 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const [hasScrolled, setHasScrolled] = useState(false);
   const didBackground = useRef(false);
 
-  // // Create a safe scroll handler function
-  // const handleScrollToOffset = useCallback(
-  //   (offset: number, animated: boolean) => {
-  //     if (flatListRef.current) {
-  //       flatListRef.current.scrollToOffset({
-  //         offset,
-  //         animated,
-  //       });
-  //     }
-  //   },
-  //   [],
-  // );
+  // Create a safe scroll handler function
+  const handleScrollToOffset = useCallback(
+    (offset: number, animated: boolean) => {
+      if (flatListRef.current) {
+        flatListRef.current.scrollToOffset({
+          offset,
+          animated,
+        });
+      }
+    },
+    [],
+  );
 
   const handleScrollToEnd = useCallback((animated: boolean) => {
-    if (flatListRef.current && messageItems.length > 0) {
-      flatListRef.current.scrollToIndex({
-        index: 0,
+    if (flatListRef.current) {
+      flatListRef.current.scrollToEnd({
         animated,
       });
     }
-  }, [messageItems.length]);
+  }, []);
 
   const onContentSizeChange = useCallback(
     (_: number, height: number) => {
@@ -330,9 +300,9 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
             offset: prevContentHeight.current - 65,
             animated: true,
           });
-        } else if (messageItems.length > 0) {
-          flatListRef.current?.scrollToIndex({
-            index: 0,
+        } else {
+          flatListRef.current?.scrollToOffset({
+            offset: height,
             animated: hasScrolled && height > prevContentHeight.current,
           });
 
@@ -359,7 +329,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       isAtTop.value,
       isAtBottom.value,
       layoutHeight.value,
-      handleScrollToEnd,
     ],
   );
 
@@ -450,9 +419,9 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   const onListLayout = React.useCallback(
     (e: LayoutChangeEvent) => {
       layoutHeight.value = e.nativeEvent.layout.height;
-      if ((isWeb || !keyboardIsOpening.value) && messageItems.length > 0) {
-        flatListRef.current?.scrollToIndex({
-          index: 0,
+
+      if (isWeb || !keyboardIsOpening.value) {
+        flatListRef.current?.scrollToEnd({
           animated: !layoutScrollWithoutAnimation.value,
         });
         layoutScrollWithoutAnimation.value = false;
@@ -463,7 +432,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       keyboardIsOpening.value,
       layoutScrollWithoutAnimation.value,
       layoutHeight,
-      messageItems.length,
     ],
   );
 
@@ -473,7 +441,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         <List
           ref={flatListRef}
           data={messageItems}
-          inverted={true}
           renderItem={messageRenderItem}
           scrollEventThrottle={100}
           style={animatedListStyle}
@@ -481,7 +448,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
           disableVirtualization={true}
           onContentSizeChange={onContentSizeChange}
           onLayout={onListLayout}
-          keyExtractor={(item) => item._id.toString()}
+          keyExtractor={(item) => item._id}
           initialNumToRender={isNative ? 32 : 62}
           maxToRenderPerBatch={isNative ? 32 : 62}
           keyboardDismissMode="on-drag"
@@ -505,10 +472,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       </ScrollProvider>
       <Animated.View style={animatedStickyViewStyle}>
         <ChatBottombar
-          isMobile={isMobile}
-          onFocus={() => {}}
-          onBlur={() => {}}
-          canText={canText}
           sendMessage={onSendMessage}
         />
       </Animated.View>

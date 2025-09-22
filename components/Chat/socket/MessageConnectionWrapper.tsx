@@ -202,6 +202,8 @@ export default function MessageConnectionWrapper({
               return {
                 ...page,
                 messages: [
+           
+                  ...page.messages,
                   {
                     temporary_id: newMessage.temporary_id,
                     id: newMessage.id,
@@ -214,8 +216,6 @@ export default function MessageConnectionWrapper({
                     message_state: 'SENT',
                     sent_date: new Date().toISOString(),
                   } as ChatMessage,
-                  ...page.messages,
-                
                 ],
               };
             }
