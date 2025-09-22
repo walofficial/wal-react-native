@@ -5,7 +5,9 @@ import { useUserFeedIds } from './useUserFeedIds';
 
 export default function useFeeds() {
   const segments = useSegments();
+  // @ts-ignore
   const isFactCheckFeed = segments[1] === '(fact-check)';
+  // @ts-ignore
   const isNewsFeed = segments[1] === '(news)';
   // This component should be used carefully as useGlobalSearchParams causes rerender everywhere when params change.
   const { feedId } = useLocalSearchParams<{ feedId: string }>();
