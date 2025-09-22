@@ -96,6 +96,10 @@ export default function ChatBottombar({
               backgroundColor: inputBackground,
             },
           ]}
+          autoCorrect={false}
+          autoCapitalize="none"
+          returnKeyType="default"
+          enablesReturnKeyAutomatically={true}
           placeholder="მესიჯი"
           placeholderTextColor={placeholderColor}
           onFocus={() => {

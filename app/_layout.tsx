@@ -35,6 +35,8 @@ import { appLocaleAtom } from '@/hooks/useAppLocalization';
 import { getCurrentLocale, setLocale } from '@/lib/i18n';
 import StatusBarRenderer from '@/components/StatusBarRenderer';
 import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
+import { useSyncQueriesExternal } from "react-query-external-sync";
+import * as ExpoDevice from "expo-device";
 
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
   const navigationRef = useNavigationContainerRef();
@@ -134,20 +136,56 @@ import { onlineManager } from '@tanstack/react-query';
 import { Lightbox } from '@/components/Lightbox/Lightbox';
 import { ToastProviderWithViewport } from '@/components/ToastUsage';
 import LocationProvider from '@/components/LocationProvider';
+import Constants from 'expo-constants';
+// Import Platform for React Native or use other platform detection for web/desktop
 
 onlineManager.setEventListener((setOnline) => {
   return NetInfo.addEventListener((state) => {
     setOnline(!!state.isConnected);
   });
 });
+// Get the host IP address dynamically
+const hostIP =
+  Constants.expoGoConfig?.debuggerHost?.split(`:`)[0] ||
+  Constants.expoConfig?.hostUri?.split(`:`)[0];
 
-export default function RootLayout() {
+  export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useAtom(appIsReadyState);
   const theme = useTheme();
   const { colorScheme } = useColorScheme();
   // Initialize and keep app localization in sync
   const [appLocale, setAppLocale] = useAtom(appLocaleAtom);
 
+  // Create your query client
+    // Set up the sync hook - automatically disabled in production!
+    useSyncQueriesExternal({
+      queryClient,
+      socketURL: `http://${hostIP}:42831`, // Use local network IP
+      // Default port for React Native DevTools
+      deviceName: Platform?.OS || "web", // Platform detection
+      platform: Platform?.OS || "web", // Use appropriate platform identifier
+      deviceId: Platform?.OS || "web", // Use a PERSISTENT identifier (see note below)
+      isDevice: ExpoDevice.isDevice, // Automatically detects real devices vs emulators
+      extraDeviceInfo: {
+        // Optional additional info about your device
+        appVersion: "1.0.0",
+        // Add any relevant platform info
+      },
+      enableLogs: true,
+      envVariables: {
+        NODE_ENV: process.env.NODE_ENV,
+        // Add any private environment variables you want to monitor
+        // Public environment variables are automatically loaded
+      },
+      // Storage monitoring with CRUD operations
+      asyncStorage: AsyncStorage, // AsyncStorage for ['#storage', 'async', 'key'] queries + monitoring
+      secureStorageKeys: [
+        "userToken",
+        "refreshToken",
+        "biometricKey",
+        "deviceId",
+      ], // SecureStore keys to monitor
+    });
   // Use the new OTA updates hook
   useOTAUpdates();
 

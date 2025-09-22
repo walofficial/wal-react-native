@@ -27,9 +27,8 @@ import usePokeLiveUser from '@/hooks/usePokeUser';
 import { User } from 'lucide-react-native';
 
 export default function ChatTopbar() {
-  const { roomId, feedId } = useGlobalSearchParams<{
+  const { roomId } = useGlobalSearchParams<{
     roomId: string;
-    feedId: string;
   }>();
   const { room, isFetching } = useMessageRoom(roomId);
   const { user } = useAuth();
@@ -140,7 +139,6 @@ export default function ChatTopbar() {
                 router.navigate({
                   pathname: '/(tabs)/(home)/profile-picture',
                   params: {
-                    feedId: feedId,
                     roomId: roomId,
                     imageUrl: userPhoto,
                   },

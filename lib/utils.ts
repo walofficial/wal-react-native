@@ -130,3 +130,6 @@ export function formatNumber(num: number): string {
   }
   return num.toString();
 }
+
+
+export const CHAT_PAGE_SIZE = 15;

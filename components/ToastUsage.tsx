@@ -1,5 +1,5 @@
 import { ToastProvider, useToast } from '@/lib/context/ToastContext';
-import type { ToastOptions, ToastProps } from '@/lib/types/Toast.types';
+import type { ToastOptions, ToastProps, MessageToastOptions } from '@/lib/types/Toast.types';
 import * as React from 'react';
 import { ToastViewport } from './ToastViewport';
 type ToastRef = {
@@ -11,6 +11,7 @@ type ToastRef = {
   ) => void;
   dismiss?: (id: string) => void;
   dismissAll?: () => void;
+  message?: (options: MessageToastOptions) => string;
 };
 
 const toastRef: ToastRef = {};
@@ -22,6 +23,7 @@ const ToastController: React.FC = () => {
   toastRef.update = toast.update;
   toastRef.dismiss = toast.dismiss;
   toastRef.dismissAll = toast.dismissAll;
+  toastRef.message = toast.message;
 
   return null;
 };
@@ -79,6 +81,15 @@ export const Toast = {
     }
     return toastRef.dismissAll();
   },
+  message: (options: MessageToastOptions): string => {
+    if (!toastRef.message) {
+      console.warn(
+        'Toast provider not initialized. Make sure you have wrapped your app with ToastProviderWithViewport.',
+      );
+      return '';
+    }
+    return toastRef.message(options);
+  },
 };
 
 export { ToastProvider, useToast } from '@/lib/context/ToastContext';
@@ -86,4 +97,5 @@ export type {
   ToastOptions,
   ToastPosition,
   ToastType,
+  MessageToastOptions,
 } from '@/lib/types/Toast.types';
