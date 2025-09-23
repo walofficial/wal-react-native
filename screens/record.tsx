@@ -11,7 +11,9 @@ export const permissionGrantedState = atom(false);
 
 export default function RecordPage() {
   const router = useRouter();
-  const [permissionsGranted, setPermissionsGranted] = useAtom(permissionGrantedState);
+  const [permissionsGranted, setPermissionsGranted] = useAtom(
+    permissionGrantedState,
+  );
   const { error, dismiss } = useToast();
 
   useEffect(() => {
@@ -38,9 +40,7 @@ export default function RecordPage() {
   }, []);
 
   if (!permissionsGranted) {
-    return (
-      <ScreenLoader/>
-    );
+    return <ScreenLoader />;
   }
 
   return (

@@ -276,7 +276,7 @@ export default function RootLayout() {
                                 resetOnBackground: true,
                               }}
                             >
-                              <Stack initialRouteName="index" >
+                              <Stack initialRouteName="index">
                                 <Stack.Screen
                                   name="(camera)"
                                   options={{ headerShown: false }}
@@ -287,7 +287,11 @@ export default function RootLayout() {
                                 />
                                 <Stack.Screen
                                   name="(auth)"
-                                  options={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: "black" } }}
+                                  options={{
+                                    headerShown: false,
+                                    animation: 'fade',
+                                    contentStyle: { backgroundColor: 'black' },
+                                  }}
                                 />
                                 <Stack.Screen
                                   name="status/[verificationId]"

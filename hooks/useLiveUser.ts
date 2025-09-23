@@ -8,7 +8,7 @@ import { t } from '@/lib/i18n';
 
 function useLiveUser() {
   const router = useRouter();
-  const {error: errorToast} = useToast();
+  const { error: errorToast } = useToast();
   const joinChat = useMutation({
     mutationFn: async ({ targetUserId }: { targetUserId: string }) => {
       // Send keys to server along with room creation

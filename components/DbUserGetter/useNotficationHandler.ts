@@ -28,8 +28,6 @@ export function useNotificationHandler() {
       );
       if (hasCheckedInitialNotification.current) return;
       hasCheckedInitialNotification.current = true;
-
-     
     };
 
     checkInitialNotification();

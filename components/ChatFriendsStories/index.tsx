@@ -27,7 +27,7 @@ export default function ChatFriendsStories() {
 
   return (
     <View style={styles.container}>
-        <FriendRequests hideMyRequests limit={5} horizontal />
+      <FriendRequests hideMyRequests limit={5} horizontal />
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}

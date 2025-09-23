@@ -23,9 +23,7 @@ function Layout() {
           name="index"
           options={{
             title: 'ჩათი',
-            header: () => (
-              <SimpleGoBackHeader title="ჩათი" hideBackButton />
-            ),
+            header: () => <SimpleGoBackHeader title="ჩათი" hideBackButton />,
           }}
         />
       </Stack>
