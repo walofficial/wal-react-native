@@ -122,7 +122,7 @@ export function TabBar({
       ),
     },
   ];
-  
+
   const displayTabItems = showLocationTabs ? tabItems : contentTabItems;
 
   // Cleanup effect

@@ -18,18 +18,18 @@ import LocationProvider from '@/components/LocationProvider';
 
 export const unstable_settings = {
   initialRouteName: 'index',
-  "fact-check": {
-    initialRouteName: "(index)"
+  'fact-check': {
+    initialRouteName: '(index)',
   },
-  "news": {
-    initialRouteName: "(index)"
+  news: {
+    initialRouteName: '(index)',
   },
-  "home": {
-    initialRouteName: "(index)"
+  home: {
+    initialRouteName: '(index)',
   },
-  "user": {
-    initialRouteName: "(index)"
-  }
+  user: {
+    initialRouteName: '(index)',
+  },
 };
 
 export default function Layout({ segment }: { segment: string }) {
@@ -96,14 +96,16 @@ export default function Layout({ segment }: { segment: string }) {
     screens.push(
       <Stack.Screen
         name="[feedId]/index"
-        options={({route}) =>   ({
+        options={({ route }) => ({
           headerTransparent: !isWeb,
           animation: 'fade',
           header: () => (
             <ProfileHeader
               showTabs={true}
+              //@ts-ignore
               customTitleComponent={<TaskTitle feedId={route.params?.feedId} />}
               showLocationTabs={true}
+              //@ts-ignore
               feedId={route.params?.feedId}
             />
           ),
@@ -121,14 +123,30 @@ export default function Layout({ segment }: { segment: string }) {
           headerTransparent: !isWeb,
           header: isHomeFeed
             ? undefined
-            : ({route}) => (
+            : ({ route }) => (
                 <ProfileHeader
                   isAnimated
-                  customTitleComponent={<TaskTitle feedId={isFactCheckFeed ?  user.preferred_fact_check_feed_id: isNewsFeed ? user.preferred_news_feed_id: user.preferred_home_feed_id} />}
+                  customTitleComponent={
+                    <TaskTitle
+                      //@ts-ignore
+                      feedId={
+                        isFactCheckFeed
+                          ? user.preferred_fact_check_feed_id
+                          : isNewsFeed
+                            ? user.preferred_news_feed_id
+                            : user.preferred_fact_check_feed_id
+                      }
+                    />
+                  }
                   showSearch={!isUserFeed}
                   showLocationTabs={!isNewsFeed && !isFactCheckFeed}
                   showTabs={!isNewsFeed && !isUserFeed}
-                  feedId={isFactCheckFeed ?  user.preferred_fact_check_feed_id: user.preferred_news_feed_id}
+                  feedId={
+                    isFactCheckFeed
+                      ? user.preferred_fact_check_feed_id
+                      : user.preferred_news_feed_id
+                  }
+                  //@ts-ignore
                   content_type={route.params?.content_type || 'last24h'}
                 />
               ),

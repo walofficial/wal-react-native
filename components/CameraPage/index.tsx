@@ -386,7 +386,14 @@ export default function CameraPage(): React.ReactElement {
       {selectedMode === 'live' && (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={[styles.liveInputContainer, { width: '80%', marginTop: safePadding.paddingTop, marginLeft: safePadding.paddingLeft }]}
+          style={[
+            styles.liveInputContainer,
+            {
+              width: '80%',
+              marginTop: safePadding.paddingTop,
+              marginLeft: safePadding.paddingLeft,
+            },
+          ]}
         >
           <TextInput
             style={styles.liveTextInput}
@@ -400,7 +407,13 @@ export default function CameraPage(): React.ReactElement {
         </KeyboardAvoidingView>
       )}
 
-      <KeyboardAvoidingView behavior="padding" style={[styles.captureButton, { marginBottom: safePadding.paddingBottom }]}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        style={[
+          styles.captureButton,
+          { marginBottom: safePadding.paddingBottom },
+        ]}
+      >
         <View style={styles.captureButtonContainer}>
           {shouldShowMediaTypeSwitch && (
             <View
@@ -494,7 +507,10 @@ export default function CameraPage(): React.ReactElement {
       <View
         style={[
           styles.rightButtonRow,
-          { paddingTop: safePadding.paddingTop, paddingRight: safePadding.paddingRight },
+          {
+            paddingTop: safePadding.paddingTop,
+            paddingRight: safePadding.paddingRight,
+          },
 
           {
             opacity: 1,

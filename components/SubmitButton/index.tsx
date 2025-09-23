@@ -109,7 +109,6 @@ export default function SubmitButton({
           borderWidth: StyleSheet.hairlineWidth,
         },
       ]}
-      accessibilityLabel="Submit"
     />
   );
 }

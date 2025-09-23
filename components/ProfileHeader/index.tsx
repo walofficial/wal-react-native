@@ -312,6 +312,7 @@ function ProfileHeader({
       <TabBar
         showTabs={showTabs}
         tabItems={locationTabItems}
+        //@ts-ignore
         activeTab={activeTab}
         showLocationTabs={showLocationTabs}
         onTabPress={handleTabPress}
