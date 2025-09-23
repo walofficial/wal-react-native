@@ -17,27 +17,22 @@ import {
   checkRegisteredUsersQueryKey,
   getBlockedFriendsOptions,
   getFriendsListInfiniteOptions,
+  getFriendsListOptions,
   getFriendsListQueryKey,
   removeFriendMutation,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { t } from '@/lib/i18n';
 import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
-const PAGE_SIZE = LOCATION_FEED_PAGE_SIZE;
 
 const FriendsList: React.FC = () => {
   const queryClient = useQueryClient();
   const setCheckedCount = useSetAtom(checkedCountAtom);
   const setDisplayedContacts = useSetAtom(displayedContactsAtom);
   const isFocused = useIsFocused();
-  const { data, isFetchingNextPage } = useInfiniteQuery({
-    ...getFriendsListInfiniteOptions(),
-    getNextPageParam: (lastPage, pages) => {
-      const nextPage = pages.length + 1;
-      return lastPage.length === PAGE_SIZE ? nextPage : undefined;
-    },
-    initialPageParam: 1,
+  const { data, isFetching } = useQuery({
+    ...getFriendsListOptions(),
     refetchInterval: isFocused ? 10000 : false,
-    subscribed: isFocused,
+    // subscribed: isFocused,
   });
   const deleteFriendMutation = useMutation({
     ...removeFriendMutation(),
@@ -70,7 +65,7 @@ const FriendsList: React.FC = () => {
     });
   };
 
-  const friends = data?.pages.flatMap((page) => page) || [];
+  const friends = data || [];
 
   if (friends.length === 0) {
     return null;
@@ -98,7 +93,7 @@ const FriendsList: React.FC = () => {
           }
         />
       ))}
-      {isFetchingNextPage && <ActivityIndicator />}
+      {isFetching && <ActivityIndicator />}
     </View>
   );
 };

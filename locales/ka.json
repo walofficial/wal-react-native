@@ -36,6 +36,8 @@
     "search_by_name_or_number": "მოძებნე სახელით ან ნომრით",
     "add_friends": "მეგობრების დამატება",
     "add_friends_from_contacts": "დაიმატე კონტაქტებიდან",
+  "add_friends_from_stories": "დაიმატე მეგობრები ან მოძებნე ისინი ლოკაციიდან",
+    "no_chats_yet": "სად არიან?",
     "add": "დამატება",
     "from_searched_contacts": "მოძებნილი კონტაქტებიდან",
     "searched_users": "მოძებნილი მომხმარებლები",
@@ -207,6 +209,7 @@
     "delete": "წაშლა"
   },
   "errors": {
+    "failed_to_join_chat": "ვერ შემოვიდა ჩათში",
     "post_publish_failed": "პოსტი ვერ გამოქვეყნდა",
     "post_empty": "არ უნდა იყოს ცარიელი",
     "general_error": "დაფიქსირდა შეცდომა. გთხოვთ სცადოთ თავიდან",

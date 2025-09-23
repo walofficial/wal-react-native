@@ -1,9 +1,10 @@
 import { Stack } from 'expo-router';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 function Layout() {
   return (
-    <Stack screenOptions={{ animation: 'fade' }}>
+    <Stack screenOptions={{contentStyle: { backgroundColor: 'black' } }}>
       <Stack.Screen
         name="register"
         options={{

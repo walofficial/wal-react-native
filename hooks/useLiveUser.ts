@@ -3,10 +3,12 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import ProtocolService from '@/lib/services/ProtocolService';
 import { createChatRoom } from '@/lib/api/generated';
+import { useToast } from '@/components/ToastUsage';
+import { t } from '@/lib/i18n';
 
 function useLiveUser() {
   const router = useRouter();
-
+  const {error: errorToast} = useToast();
   const joinChat = useMutation({
     mutationFn: async ({ targetUserId }: { targetUserId: string }) => {
       // Send keys to server along with room creation
@@ -32,6 +34,13 @@ function useLiveUser() {
       }
 
       return response;
+    },
+    onError: (error) => {
+      console.log(error);
+      errorToast({
+        title: t('errors.failed_to_join_chat'),
+        description: t('errors.failed_to_join_chat'),
+      });
     },
     onSuccess: (data, variables) => {
       if (data.data.chat_room_id) {
