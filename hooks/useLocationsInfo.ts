@@ -27,7 +27,7 @@ export default function useLocationsInfo(
     }),
     enabled: !!categoryId && enabled && (!!location || !!errorMsg),
     placeholderData: keepPreviousData,
-    subscribed: isFocused,
+    // subscribed: isFocused,
     staleTime: 1000 * 60 * 5,
   });
 

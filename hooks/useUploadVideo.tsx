@@ -21,8 +21,9 @@ import {
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { formDataBodySerializer } from '@/lib/utils/form-data';
 import { useToast } from '@/components/ToastUsage';
+import { UploadingToast as UploadingToastComponent } from '@/components/UploadingToast';
 import { t } from '@/lib/i18n';
-import { dismiss } from 'expo-router/build/global-state/routing';
+// remove conflicting dismiss import; use toast.dismiss / toast.dismissAll instead
 import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 export const useUploadVideo = ({
@@ -44,12 +45,29 @@ export const useUploadVideo = ({
 
   const { user } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { success, dismiss } = useToast();
+  const { success, error, info, dismiss, dismissAll, uploading, update } = useToast();
+  const uploadingToastIdRef = useRef<string | null>(null);
 
   const uploadBlob = useMutation({
     mutationKey: ['upload-blob', feedId, isPhoto],
     onMutate: () => {
-      success({ title: t('common.uploading') });
+      // Show persistent uploading toast with cancel
+      uploadingToastIdRef.current = uploading({
+        label: t('common.uploading'),
+        mediaKind: isPhoto ? 'photo' : 'video',
+        progress: 0,
+        cancellable: true,
+        onCancel: () => {
+          try {
+            abortController.current.abort();
+          } catch {}
+          if (uploadingToastIdRef.current) {
+            dismiss(uploadingToastIdRef.current);
+            uploadingToastIdRef.current = null;
+          }
+          info({ title: t('common.canceled') });
+        },
+      });
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -94,10 +112,27 @@ export const useUploadVideo = ({
       return uploadVideo({
         video,
         setProgress: (progress) => {
-          success({
-            title:
-              t('common.uploading') + ' ' + Math.round(progress * 100) + '%',
-          });
+          if (!uploadingToastIdRef.current) return;
+          update(
+            uploadingToastIdRef.current,
+            <UploadingToastComponent
+              label={t('common.uploading')}
+              mediaKind={isPhoto ? 'photo' : 'video'}
+              progress={progress}
+              cancellable
+              onCancel={() => {
+                try {
+                  abortController.current.abort();
+                } catch {}
+                if (uploadingToastIdRef.current) {
+                  dismiss(uploadingToastIdRef.current);
+                  uploadingToastIdRef.current = null;
+                }
+                info({ title: t('common.canceled') });
+              }}
+            />,
+            { type: 'uploading', position: 'top', duration: 0 },
+          );
         },
         signal: abortController.current.signal,
         params,
@@ -105,8 +140,12 @@ export const useUploadVideo = ({
     },
     retry: false,
     onSuccess: (data, variables) => {
+      if (uploadingToastIdRef.current) {
+        dismiss(uploadingToastIdRef.current);
+        uploadingToastIdRef.current = null;
+      }
       setRefetchInterval(1000);
-      success({ title: 'გამოქვეყნდა' });
+      // success({ title: 'გამოქვეყნდა' });
 
       const optimisticVerification = {
         ...(data as UploadToLocationResponse).verification,
@@ -180,13 +219,18 @@ export const useUploadVideo = ({
         });
       }, 100);
     },
-    onError: (error) => {
-      dismiss('all');
-      if (error) {
-        console.log('error', error);
+    onError: (err) => {
+      if (uploadingToastIdRef.current) {
+        dismiss(uploadingToastIdRef.current);
+        uploadingToastIdRef.current = null;
+      }
+      dismissAll();
+      if (err) {
+        console.log('error', err);
         Alert.alert(isPhoto ? 'ფოტო ვერ აიტვირთა' : 'ვიდეო ვერ აიტვირთა');
       }
-      console.error(error);
+      console.error(err);
+      error({ title: t('common.error') });
     },
   });
 
