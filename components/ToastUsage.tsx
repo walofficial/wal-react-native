@@ -3,6 +3,7 @@ import type {
   ToastOptions,
   ToastProps,
   MessageToastOptions,
+  UploadingToastOptions,
 } from '@/lib/types/Toast.types';
 import * as React from 'react';
 import { ToastViewport } from './ToastViewport';
@@ -16,6 +17,7 @@ type ToastRef = {
   dismiss?: (id: string) => void;
   dismissAll?: () => void;
   message?: (options: MessageToastOptions) => string;
+  uploading?: (options: UploadingToastOptions) => string;
 };
 
 const toastRef: ToastRef = {};
@@ -28,6 +30,7 @@ const ToastController: React.FC = () => {
   toastRef.dismiss = toast.dismiss;
   toastRef.dismissAll = toast.dismissAll;
   toastRef.message = toast.message;
+  toastRef.uploading = toast.uploading;
 
   return null;
 };
@@ -93,6 +96,15 @@ export const Toast = {
       return '';
     }
     return toastRef.message(options);
+  },
+  uploading: (options: UploadingToastOptions): string => {
+    if (!toastRef.uploading) {
+      console.warn(
+        'Toast provider not initialized. Make sure you have wrapped your app with ToastProviderWithViewport.',
+      );
+      return '';
+    }
+    return toastRef.uploading(options);
   },
 };
 

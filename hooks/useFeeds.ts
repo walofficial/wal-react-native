@@ -17,11 +17,7 @@ export default function useFeeds() {
   const { feedId } = useLocalSearchParams<{ feedId: string }>();
   const hhtabs = useAtomValue(HEADER_HEIGHT_WITH_TABS);
   const hh = useAtomValue(HEADER_HEIGHT);
-  const hasFeedId =
-    typeof feedId === 'string' &&
-    feedId.trim().length > 0 &&
-    feedId !== 'undefined' &&
-    feedId !== 'null';
+  const hasFeedId = feedId !== undefined && feedId !== null && feedId !== '';
   // Use user's preferred feed IDs instead of hardcoded constants
   const { factCheckFeedId, newsFeedId } = useUserFeedIds();
   // having feedID means it's part from (home)

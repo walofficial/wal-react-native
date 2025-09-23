@@ -4,6 +4,7 @@ import type {
   ToastContextValue,
   ToastOptions,
   MessageToastOptions,
+  UploadingToastOptions,
 } from '@/lib/types/Toast.types';
 import React, {
   createContext,
@@ -13,6 +14,7 @@ import React, {
   useState,
 } from 'react';
 import { MessageToast } from '@/components/MessageToast';
+import { UploadingToast } from '@/components/UploadingToast';
 import { useColorScheme } from '../useColorScheme';
 
 const DEFAULT_TOAST_OPTIONS: Required<ToastOptions> = {
@@ -125,6 +127,25 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, []);
 
+  const uploading = useCallback((options: UploadingToastOptions) => {
+    const content = (
+      <UploadingToast
+        label={options.label || 'Uploading…'}
+        progress={typeof options.progress === 'number' ? options.progress : 0}
+        mediaKind={options.mediaKind}
+        cancellable={options.cancellable}
+        onCancel={options.onCancel}
+      />
+    );
+    // uploading toasts are persistent by default; caller should dismiss when done
+    return show(content, {
+      ...options,
+      type: 'uploading',
+      position: options.position || 'top',
+      duration: 0,
+    });
+  }, [show]);
+
   const update = useCallback(
     (id: string, content: React.ReactNode | string, options?: ToastOptions) => {
       setToasts((prevToasts) =>
@@ -176,6 +197,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
   const value: ToastContextValue = {
     toasts,
     show,
+    uploading,
     update,
     dismiss,
     dismissAll,

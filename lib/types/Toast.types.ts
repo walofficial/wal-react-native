@@ -4,7 +4,8 @@ export type ToastType =
   | 'error'
   | 'warning'
   | 'info'
-  | 'message';
+  | 'message'
+  | 'uploading';
 
 export type ToastPosition = 'top' | 'bottom';
 
@@ -20,6 +21,15 @@ export interface ToastOptions {
     label?: string;
     onPress?: () => void;
   } | null;
+}
+
+export interface UploadingToastOptions
+  extends Omit<ToastOptions, 'type' | 'duration'> {
+  label?: string;
+  mediaKind: 'photo' | 'video';
+  progress?: number; // 0..1
+  cancellable?: boolean;
+  onCancel?: () => void;
 }
 
 export interface MessageToastOptions extends Omit<ToastOptions, 'type'> {
@@ -39,6 +49,7 @@ export interface Toast {
 export interface ToastContextValue {
   toasts: Toast[];
   show: (content: React.ReactNode | string, options?: ToastOptions) => string;
+  uploading: (options: UploadingToastOptions) => string;
   error: ({
     title,
     description,
