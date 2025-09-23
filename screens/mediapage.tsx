@@ -382,7 +382,8 @@ export default function MediaPage(): React.ReactElement {
                 disabled={savingState !== 'none'}
                 loading={savingState === 'saving'}
                 icon={savingState === 'saved' ? 'checkmark' : 'download'}
-                variant="outline"
+                variant="default"
+                iconColor="#333"
                 size="medium"
                 style={styles.actionButton}
               />
@@ -390,7 +391,8 @@ export default function MediaPage(): React.ReactElement {
               <Button
                 onPress={onSharePressed}
                 icon="share-social"
-                variant="outline"
+                variant="default"
+                iconColor="#333"
                 size="medium"
                 style={styles.actionButton}
               />

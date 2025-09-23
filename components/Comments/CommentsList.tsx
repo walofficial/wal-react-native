@@ -7,6 +7,8 @@ import {
   useInfiniteQuery,
   useQueryClient,
   useMutation,
+  QueryClient,
+  InfiniteData,
 } from '@tanstack/react-query';
 import {
   deleteCommentMutation,
@@ -20,6 +22,7 @@ import {
 import useAuth from '@/hooks/useAuth';
 import {
   CommentResponse,
+  GetVerificationCommentsCountData,
   GetVerificationCommentsResponse,
 } from '@/lib/api/generated';
 import CommentItem from './CommentItem';
@@ -57,24 +60,6 @@ interface CommentsListProps {
   onFocusChange?: (focused: boolean) => void;
 }
 
-const updateCommentsCache = (
-  queryClient: any,
-  postId: string,
-  activeTab: string,
-  updateFn: (pages: CommentResponse[]) => CommentResponse[],
-) => {
-  const commentsQueryKey = getVerificationCommentsInfiniteQueryKey({
-    path: { verification_id: postId },
-    query: { sort_by: activeTab as any },
-  });
-  queryClient.setQueryData(commentsQueryKey, (old: any) => {
-    if (!old) return old;
-    return {
-      ...old,
-      pages: old.pages.map((page: CommentResponse[]) => updateFn(page)),
-    };
-  });
-};
 
 const CommentsList = memo(
   ({ postId, ListHeaderComponent }: CommentsListProps) => {
@@ -86,6 +71,26 @@ const CommentsList = memo(
       path: { verification_id: postId },
       query: { sort_by: activeTab as any },
     });
+
+    const updateCommentsCache = (
+      postId: string,
+      activeTab: 'recent' | 'top',
+      updateFn: (pages: CommentResponse[]) => CommentResponse[],
+    ) => {
+      const commentsQueryKey = getVerificationCommentsInfiniteQueryKey({
+        path: { verification_id: postId },
+        query: { sort_by: activeTab },
+      });
+      queryClient.setQueryData(commentsQueryKey, (old: InfiniteData<GetVerificationCommentsResponse>) => {
+        if (!old) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page) => ({ comments: updateFn(page.comments) })),
+
+        };
+      });
+    };
+    
 
     const {
       data,
@@ -122,7 +127,7 @@ const CommentsList = memo(
       );
 
       // Remove the comment optimistically
-      updateCommentsCache(queryClient, postId, activeTab, (page) =>
+      updateCommentsCache( postId, activeTab, (page) =>
         page.filter((comment) => comment.comment.id !== commentId),
       );
 
@@ -144,7 +149,7 @@ const CommentsList = memo(
       if (!user) return;
 
       // Optimistic update
-      updateCommentsCache(queryClient, postId, activeTab, (page) =>
+      updateCommentsCache( postId, activeTab, (page) =>
         page.map((comment) =>
           comment.comment.id === commentId
             ? {
@@ -214,7 +219,7 @@ const CommentsList = memo(
       },
       [handleLikeComment, handleDeleteComment, user?.id, postId],
     );
-
+    console.log('data', JSON.stringify(data, null, 2));
     const allComments = data?.pages.flatMap((page) => page.comments) || [];
     if (error) {
       return (

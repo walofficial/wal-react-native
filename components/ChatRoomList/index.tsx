@@ -78,9 +78,7 @@ export default function ChatRoomList() {
           <RefreshControl refreshing={isFetching} onRefresh={onRefresh} />
         }
       >
-        {isFetching ? (
-          <ActivityIndicator style={styles.loader} color="white" />
-        ) : (
+        {isFetching ? null : (
           <>
             {renderList()}
             {!isFetching && !chats?.length && <View style={{ height: 100 }} />}
