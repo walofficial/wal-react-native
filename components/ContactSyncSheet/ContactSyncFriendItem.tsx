@@ -46,7 +46,7 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
         },
         {
           text: t('common.block'),
-          onPress: () => blockUser.mutate(user.id),
+          onPress: () => blockUser.mutate({ path: { target_id: user.id } }),
           style: 'destructive',
         },
       ],
