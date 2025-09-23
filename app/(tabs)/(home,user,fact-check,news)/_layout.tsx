@@ -18,6 +18,18 @@ import LocationProvider from '@/components/LocationProvider';
 
 export const unstable_settings = {
   initialRouteName: 'index',
+  "fact-check": {
+    initialRouteName: "(index)"
+  },
+  "news": {
+    initialRouteName: "(index)"
+  },
+  "home": {
+    initialRouteName: "(index)"
+  },
+  "user": {
+    initialRouteName: "(index)"
+  }
 };
 
 export default function Layout({ segment }: { segment: string }) {
@@ -84,17 +96,18 @@ export default function Layout({ segment }: { segment: string }) {
     screens.push(
       <Stack.Screen
         name="[feedId]/index"
-        options={{
+        options={({route}) =>   ({
           headerTransparent: !isWeb,
           animation: 'fade',
           header: () => (
             <ProfileHeader
               showTabs={true}
-              customTitleComponent={<TaskTitle />}
+              customTitleComponent={<TaskTitle feedId={route.params?.feedId} />}
               showLocationTabs={true}
+              feedId={route.params?.feedId}
             />
           ),
-        }}
+        })}
       />,
     );
   }
@@ -108,13 +121,15 @@ export default function Layout({ segment }: { segment: string }) {
           headerTransparent: !isWeb,
           header: isHomeFeed
             ? undefined
-            : () => (
+            : ({route}) => (
                 <ProfileHeader
                   isAnimated
-                  customTitleComponent={<TaskTitle />}
+                  customTitleComponent={<TaskTitle feedId={isFactCheckFeed ?  user.preferred_fact_check_feed_id: isNewsFeed ? user.preferred_news_feed_id: user.preferred_home_feed_id} />}
                   showSearch={!isUserFeed}
                   showLocationTabs={!isNewsFeed && !isFactCheckFeed}
                   showTabs={!isNewsFeed && !isUserFeed}
+                  feedId={isFactCheckFeed ?  user.preferred_fact_check_feed_id: user.preferred_news_feed_id}
+                  content_type={route.params?.content_type || 'last24h'}
                 />
               ),
         }}

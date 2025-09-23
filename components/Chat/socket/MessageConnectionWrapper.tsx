@@ -41,7 +41,7 @@ export default function MessageConnectionWrapper({
 }) {
   const [isConnected, setIsConnected] = useState(false);
   const { user } = useAuth();
-  const { roomId } = useGlobalSearchParams<{ roomId: string }>();
+  const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const queryClient = useQueryClient();
   const socketRef = useRef(getSocket(user.id, publicKey));
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
