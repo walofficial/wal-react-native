@@ -9,10 +9,9 @@ import { FontSizes, useTheme } from '@/lib/theme';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { Text } from 'react-native';
 import { H1 } from '../ui/typography';
-import { useGlobalSearchParams } from 'expo-router';
+import {  useLocalSearchParams } from 'expo-router';
 
-function TaskTitle() {
-  const { feedId } = useGlobalSearchParams<{ feedId: string }>();
+function TaskTitle({feedId}: {feedId: string}) {
   const { task } = useFeed(feedId);
   const { isDarkColorScheme } = useColorScheme();
   const animatedStyle = useAnimatedStyle(() => {

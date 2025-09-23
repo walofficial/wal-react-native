@@ -335,73 +335,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  waitlistContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  successText: {
-    fontSize: 20,
-    color: '#22c55e',
-    marginBottom: 8,
-  },
-  centerText: {
-    textAlign: 'center',
-  },
-  closeButtonContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 10,
-    padding: 8,
-  },
   formContainer: {
     paddingHorizontal: 20,
     flex: 1,
     marginTop: 40,
   },
-  inputWrapper: {
-    marginBottom: 16,
-  },
-  inputContainer: {
-    backgroundColor: 'rgba(38, 38, 38, 0.8)',
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 12,
-    position: 'relative',
-  },
-  floatingLabel: {
-    position: 'absolute',
-    left: 6,
-    top: 24,
-    fontSize: 16,
-    color: '#9ca3af',
-    fontWeight: '500',
-  },
-  usernameInput: {
-    color: 'white',
-    fontSize: 18,
-    backgroundColor: 'transparent',
-    height: 30,
-    padding: 0,
-    fontWeight: '500',
-    marginTop: 10,
-  },
-  inputFooter: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 2,
-  },
   inputFeedback: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: 4,
-  },
-  charCounter: {
-    fontSize: 14,
-    fontWeight: '500',
   },
   errorText: {
     color: '#ef4444',
@@ -411,22 +353,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginVertical: 6,
-  },
-  genderContainer: {
-    flexDirection: 'column',
-    marginVertical: 12,
-  },
-  genderTitle: {
-    marginBottom: 8,
-  },
-  genderButtonsContainer: {
-    flexDirection: 'row',
-  },
-  genderButton: {
-    marginBottom: 12,
-  },
-  femaleButton: {
-    marginLeft: 12,
   },
   submitButtonContainer: {
     paddingHorizontal: 20,

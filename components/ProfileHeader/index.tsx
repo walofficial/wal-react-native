@@ -50,6 +50,7 @@ import { TabBar } from './TabBar';
 import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 
 function ProfileHeader({
+  feedId,
   customTitle,
   customTitleComponent,
   isAnimated = true,
@@ -57,6 +58,7 @@ function ProfileHeader({
   showSearch = false,
   showLocationTabs = false,
   showTabs = false,
+  content_type,
 }: {
   customTitle?: string;
   customTitleComponent?: React.ReactNode;
@@ -65,11 +67,9 @@ function ProfileHeader({
   showSearch?: boolean;
   showLocationTabs?: boolean;
   showTabs?: boolean;
+  feedId?: string;
+  content_type?: string;
 }) {
-  const { feedId, content_type } = useGlobalSearchParams<{
-    feedId: string;
-    content_type: string;
-  }>();
   const pathname = usePathname();
 
   const iconTranslateX = useSharedValue(0);

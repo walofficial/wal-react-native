@@ -1,12 +1,9 @@
 import { Stack } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
-import { View } from 'react-native';
 
 function Layout() {
-  const insets = useSafeAreaInsets();
   return (
-    <Stack>
+    <Stack screenOptions={{ animation: 'fade' }}>
       <Stack.Screen
         name="register"
         options={{
