@@ -59,7 +59,6 @@ const CommentItem = ({
   const colorScheme = useColorScheme() ?? 'light';
   const textColor = useThemeColor({}, 'text');
   const iconColor = useThemeColor({}, 'icon');
-  const theme = useTheme();
   const borderColor =
     colorScheme === 'dark'
       ? 'rgba(31, 41, 55, 0.5)'
@@ -171,7 +170,7 @@ const CommentItem = ({
                   ]
             }
           >
-            <TouchableOpacity hitSlop={10}>
+            <TouchableOpacity hitSlop={20}>
               <Ionicons
                 name="ellipsis-horizontal"
                 size={16}
@@ -212,6 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingRight: 4
   },
   userInfoContainer: {
     flexDirection: 'row',

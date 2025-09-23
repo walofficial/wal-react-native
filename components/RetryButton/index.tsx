@@ -6,11 +6,20 @@ import { useNavigation, useLocalSearchParams } from 'expo-router';
 import { Alert, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { t } from '@/lib/i18n';
+import { useTheme } from '@/lib/theme';
 
 export default function RetryButton() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { feedId } = useLocalSearchParams<{ feedId: string }>();
+  const theme = useTheme();
+
+  const isDarkMode = theme.colors.text === '#FFFFFF';
+  const iconTint = isDarkMode ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.9)';
+  const surfaceBg = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.06)';
+  const surfaceBorder = isDarkMode
+    ? 'rgba(255,255,255,0.18)'
+    : 'rgba(0,0,0,0.12)';
 
   // Note: Using feedId from params
   const handleRetry = async () => {
@@ -42,9 +51,17 @@ export default function RetryButton() {
     <Button
       onPress={handleRetry}
       icon="refresh"
-      variant="outline"
+      variant="subtle"
       size="medium"
-      style={styles.button}
+      iconColor={iconTint}
+      style={[
+        styles.button,
+        {
+          backgroundColor: surfaceBg,
+          borderColor: surfaceBorder,
+          borderWidth: StyleSheet.hairlineWidth,
+        },
+      ]}
     />
   );
 }

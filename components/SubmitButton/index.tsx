@@ -26,6 +26,12 @@ export default function SubmitButton({
     feedId: string;
   }>();
   const theme = useTheme();
+  const isDarkMode = theme.colors.text === '#FFFFFF';
+  const iconTint = isDarkMode ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.95)';
+  const surfaceBg = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.06)';
+  const surfaceBorder = isDarkMode
+    ? 'rgba(255,255,255,0.18)'
+    : 'rgba(0,0,0,0.12)';
   const [isProcessing, setIsProcessing] = React.useState(false);
   const { uploadBlob } = useUploadVideo({
     feedId: feedId as string,
@@ -87,14 +93,22 @@ export default function SubmitButton({
 
   return (
     <Button
-      variant="primary"
+      variant="subtle"
       size="medium"
       onPress={handleSubmit}
       disabled={isProcessing || uploadBlob.isPending}
       loading={isProcessing || uploadBlob.isPending}
       icon="checkmark"
-      style={styles.button}
-      glassy
+      iconColor={iconTint}
+      style={[
+        styles.button,
+        {
+          backgroundColor: surfaceBg,
+          borderColor: surfaceBorder,
+          borderWidth: StyleSheet.hairlineWidth,
+        },
+      ]}
+      accessibilityLabel="Submit"
     />
   );
 }
