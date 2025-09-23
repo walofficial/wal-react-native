@@ -1,5 +1,10 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,7 +32,8 @@ const FriendRequestChip: React.FC<FriendRequestChipProps> = ({
 }) => {
   const theme = useTheme();
   const imageUrl = user.photos?.[0]?.image_url?.[0];
-  const isPendingIncoming = request.status === 'pending' && request.sender_id === user.id;
+  const isPendingIncoming =
+    request.status === 'pending' && request.sender_id === user.id;
 
   if (!isPendingIncoming) {
     return null;
@@ -37,20 +43,33 @@ const FriendRequestChip: React.FC<FriendRequestChipProps> = ({
     <View style={styles.container}>
       <View>
         <Avatar
-          style={[styles.avatar, { borderColor: theme.colors.border, width: AVATAR_SIZE + 8, height: AVATAR_SIZE + 8, borderRadius: (AVATAR_SIZE + 8) / 2 }]}
+          style={[
+            styles.avatar,
+            {
+              borderColor: theme.colors.border,
+              width: AVATAR_SIZE + 8,
+              height: AVATAR_SIZE + 8,
+              borderRadius: (AVATAR_SIZE + 8) / 2,
+            },
+          ]}
           alt="Avatar"
         >
           <View
             style={[
               styles.avatarInner,
               {
-                backgroundColor: !imageUrl ? theme.colors.card.background : 'transparent',
+                backgroundColor: !imageUrl
+                  ? theme.colors.card.background
+                  : 'transparent',
                 borderRadius: AVATAR_SIZE / 2,
               },
             ]}
           >
             {imageUrl ? (
-              <AvatarImage style={{ borderRadius: AVATAR_SIZE / 2 }} source={{ uri: imageUrl }} />
+              <AvatarImage
+                style={{ borderRadius: AVATAR_SIZE / 2 }}
+                source={{ uri: imageUrl }}
+              />
             ) : (
               <Text style={[styles.initials, { color: theme.colors.text }]}>
                 {user.username?.charAt(0)?.toUpperCase() || ''}
@@ -62,32 +81,55 @@ const FriendRequestChip: React.FC<FriendRequestChipProps> = ({
         <View style={styles.actionsOverlay} pointerEvents="box-none">
           <TouchableOpacity
             accessibilityLabel="Accept friend request"
-            style={[styles.actionBtn, { backgroundColor: theme.colors.primary, right: 0 }]}
+            style={[
+              styles.actionBtn,
+              { backgroundColor: theme.colors.primary, right: 0 },
+            ]}
             onPress={() => onAccept(request.id)}
             disabled={isAccepting || isRejecting}
           >
             {isAccepting ? (
-              <ActivityIndicator size="small" color={theme.colors.button.text} />
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.button.text}
+              />
             ) : (
-              <Ionicons name="checkmark" size={16} color={theme.colors.button.text} />
+              <Ionicons
+                name="checkmark"
+                size={16}
+                color={theme.colors.button.text}
+              />
             )}
           </TouchableOpacity>
           <TouchableOpacity
             accessibilityLabel="Reject friend request"
-            style={[styles.actionBtn, { backgroundColor: theme.colors.accent, left: 0 }]}
+            style={[
+              styles.actionBtn,
+              { backgroundColor: theme.colors.accent, left: 0 },
+            ]}
             onPress={() => onReject(request.id)}
             disabled={isAccepting || isRejecting}
           >
             {isRejecting ? (
-              <ActivityIndicator size="small" color={theme.colors.button.text} />
+              <ActivityIndicator
+                size="small"
+                color={theme.colors.button.text}
+              />
             ) : (
-              <Ionicons name="close" size={16} color={theme.colors.button.text} />
+              <Ionicons
+                name="close"
+                size={16}
+                color={theme.colors.button.text}
+              />
             )}
           </TouchableOpacity>
         </View>
       </View>
 
-      <Text numberOfLines={1} style={[styles.username, { color: theme.colors.text }]}>
+      <Text
+        numberOfLines={1}
+        style={[styles.username, { color: theme.colors.text }]}
+      >
         {user.username || ''}
       </Text>
     </View>
@@ -138,5 +180,3 @@ const styles = StyleSheet.create({
 });
 
 export default FriendRequestChip;
-
-

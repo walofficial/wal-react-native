@@ -27,7 +27,7 @@ export default function ChatRoomList({ header }: { header?: React.ReactNode }) {
   const { user } = useAuth();
   const queryOptions = getUserChatRoomsOptions();
   const friendsQueryKey = getFriendsListQueryKey();
-  const friendsRequests  = getFriendRequestsQueryKey();
+  const friendsRequests = getFriendRequestsQueryKey();
   const { chats, isFetching, refetch } = useUserChats({ poolMs: 5000 });
   const prefetchedChatsRef = useRef(new Set());
   const onRefresh = useCallback(() => {
@@ -97,9 +97,7 @@ export default function ChatRoomList({ header }: { header?: React.ReactNode }) {
                   size={56}
                   color={theme.colors.feedItem.secondaryText}
                 />
-                <Text
-                  style={[styles.emptyTitle, { color: theme.colors.text }]}
-                >
+                <Text style={[styles.emptyTitle, { color: theme.colors.text }]}>
                   {t('common.no_chats_yet')}
                 </Text>
                 <Text

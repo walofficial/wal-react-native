@@ -4,7 +4,7 @@ import { useColorScheme } from '@/lib/useColorScheme';
 
 function Layout() {
   return (
-    <Stack screenOptions={{contentStyle: { backgroundColor: 'black' } }}>
+    <Stack screenOptions={{ contentStyle: { backgroundColor: 'black' } }}>
       <Stack.Screen
         name="register"
         options={{

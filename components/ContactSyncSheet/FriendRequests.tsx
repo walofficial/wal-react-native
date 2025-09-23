@@ -51,13 +51,13 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
   if (horizontal) {
     return (
       <View
-        style={[styles.container, { backgroundColor: theme.colors.background, marginBottom: 15 }]}
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background, marginBottom: 15 },
+        ]}
       >
-        <View style={{paddingHorizontal: 14}}>
-        <ContactListHeader
-          icon="person-add-outline"
-          title="მოთხოვნები"
-        />
+        <View style={{ paddingHorizontal: 14 }}>
+          <ContactListHeader icon="person-add-outline" title="მოთხოვნები" />
         </View>
         <FlatList
           horizontal

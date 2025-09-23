@@ -25,7 +25,6 @@ export const useFriendRequestActions = () => {
     ...acceptFriendRequestMutation(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: getFriendRequestsQueryKey() });
-      
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: getFriendsListQueryKey() });
