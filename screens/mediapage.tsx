@@ -22,7 +22,7 @@ import {
   Alert,
 } from 'react-native';
 import { Video, AVPlaybackStatus, ResizeMode } from 'expo-av';
-import { SAFE_AREA_PADDING } from '@/components/CameraPage/Constants';
+import { useSafeAreaPadding } from '@/components/CameraPage/Constants';
 import Share from 'react-native-share';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import { Ionicons as IonIcon } from '@expo/vector-icons';
@@ -60,6 +60,7 @@ const isVideoOnLoadEvent = (
 ): event is AVPlaybackStatus => 'isLoaded' in event && event.isLoaded;
 
 export default function MediaPage(): React.ReactElement {
+  const safePadding = useSafeAreaPadding();
   const { path, type, feedId, recordingTime } = useLocalSearchParams<{
     path: string;
     type: 'photo' | 'video';
@@ -332,8 +333,8 @@ export default function MediaPage(): React.ReactElement {
             styles.actionButton,
             {
               position: 'absolute',
-              top: SAFE_AREA_PADDING.paddingTop,
-              left: SAFE_AREA_PADDING.paddingLeft,
+              top: safePadding.paddingTop,
+              left: safePadding.paddingLeft,
               backgroundColor: floatingBg,
             },
           ]}
