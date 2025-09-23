@@ -1,12 +1,13 @@
 import ScreenLoader from '@/components/ScreenLoader';
 import useAuth from '@/hooks/useAuth';
 import useMessageRoom from '@/hooks/useMessageRoom';
-import { Redirect, Stack, useGlobalSearchParams } from 'expo-router';
+import { Redirect, Stack, useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
 import ErrorMessageCard from '@/components/ErrorMessageCard';
 import { ChatList } from '@/components/Chat/chat-list';
+import { Alert } from 'react-native';
 
 export default function SharedChat() {
-  const { roomId } = useGlobalSearchParams();
+  const { roomId } = useLocalSearchParams();
   const { room, isFetching } = useMessageRoom(roomId as string);
   const { user } = useAuth();
 

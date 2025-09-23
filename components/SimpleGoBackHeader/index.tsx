@@ -19,7 +19,6 @@ import { FACT_CHECK_FEED_ID, NEWS_FEED_ID } from '@/lib/constants';
 interface SimpleGoBackHeaderProps {
   title?: string;
   rightSection?: React.ReactNode;
-  verificationId?: string;
   timestamp?: string;
   middleSection?: React.ReactNode;
   hideBackButton?: boolean;
@@ -30,7 +29,6 @@ interface SimpleGoBackHeaderProps {
 const SimpleGoBackHeader = ({
   title,
   rightSection,
-  verificationId,
   timestamp,
   middleSection,
   hideBackButton,
@@ -52,7 +50,7 @@ const SimpleGoBackHeader = ({
           },
         ]}
       >
-        {!hideBackButton && (
+        {!hideBackButton ? (
           <CloseButton
             variant="back"
             onClick={() => {
@@ -74,6 +72,8 @@ const SimpleGoBackHeader = ({
             }}
             style={{ color: theme.colors.text }}
           />
+        ) : (
+          <View style={styles.backButton} />
         )}
         {middleSection ||
           ((title || timestamp) && (

@@ -1,17 +1,17 @@
 import React, { useCallback, useEffect, useRef } from 'react';
-import {
-  ScrollView,
-  View,
-  RefreshControl,
-  ActivityIndicator,
-  StyleSheet,
-} from 'react-native';
+import { ScrollView, View, RefreshControl, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { Text } from '@/components/ui/text';
+import { useTheme } from '@/lib/theme';
 import { useQueryClient } from '@tanstack/react-query';
 
 import useUserChats from '@/hooks/useUserChats';
 import ChatItem from '../ChatItem';
 import useAuth from '@/hooks/useAuth';
 import {
+  getFriendRequestsQueryKey,
+  getFriendsListInfiniteQueryKey,
+  getFriendsListQueryKey,
   getMessageChatRoomOptions,
   getMessagesChatMessagesGetInfiniteOptions,
   getUserChatRoomsOptions,
@@ -19,18 +19,26 @@ import {
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { CHAT_PAGE_SIZE, decryptMessages } from '@/lib/utils';
 import { ChatRoom } from '@/lib/api/generated';
+import { t } from '@/lib/i18n';
 
-export default function ChatRoomList() {
+export default function ChatRoomList({ header }: { header?: React.ReactNode }) {
+  const theme = useTheme();
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const queryOptions = getUserChatRoomsOptions();
-
+  const friendsQueryKey = getFriendsListQueryKey();
+  const friendsRequests  = getFriendRequestsQueryKey();
   const { chats, isFetching, refetch } = useUserChats({ poolMs: 5000 });
   const prefetchedChatsRef = useRef(new Set());
-
   const onRefresh = useCallback(() => {
     queryClient.invalidateQueries({
       queryKey: queryOptions.queryKey,
+    });
+    queryClient.invalidateQueries({
+      queryKey: friendsQueryKey,
+    });
+    queryClient.invalidateQueries({
+      queryKey: friendsRequests,
     });
     refetch();
   }, [queryClient, refetch]);
@@ -80,8 +88,30 @@ export default function ChatRoomList() {
       >
         {isFetching ? null : (
           <>
+            {header}
             {renderList()}
-            {!isFetching && !chats?.length && <View style={{ height: 100 }} />}
+            {!isFetching && !chats?.length && (
+              <View style={styles.emptyContainer}>
+                <Ionicons
+                  name="chatbubbles-outline"
+                  size={56}
+                  color={theme.colors.feedItem.secondaryText}
+                />
+                <Text
+                  style={[styles.emptyTitle, { color: theme.colors.text }]}
+                >
+                  {t('common.no_chats_yet')}
+                </Text>
+                <Text
+                  style={[
+                    styles.emptySubtitle,
+                    { color: theme.colors.feedItem.secondaryText },
+                  ]}
+                >
+                  {t('common.add_friends_from_stories')}
+                </Text>
+              </View>
+            )}
           </>
         )}
       </ScrollView>
@@ -93,7 +123,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loader: {
-    marginTop: 40,
+  emptyContainer: {
+    paddingVertical: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: {
+    marginTop: 12,
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  emptySubtitle: {
+    marginTop: 6,
+    fontSize: 14,
+    textAlign: 'center',
+    paddingHorizontal: 40,
   },
 });

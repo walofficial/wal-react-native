@@ -181,7 +181,6 @@ const TimerButton = React.memo(
         style={{ marginTop: 12 }}
         onPress={onPress}
         disabled={isButtonDisabled && !isDev}
-        variant="outline"
         size="large"
         glassy={true}
         loading={isPending}

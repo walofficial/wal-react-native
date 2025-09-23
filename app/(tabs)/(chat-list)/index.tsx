@@ -1,12 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
 import ChatRoomList from '@/components/ChatRoomList';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import ChatFriendsStories from '@/components/ChatFriendsStories';
 
 export default function TabTwoScreen() {
   return (
     <View style={{ flex: 1 }}>
-      <ChatRoomList />
+      <ChatRoomList header={<ChatFriendsStories />} />
     </View>
   );
 }

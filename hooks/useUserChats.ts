@@ -33,7 +33,9 @@ function useUserChats({ poolMs }: { poolMs?: number } = {}) {
           if (!lastMessage) {
             return chat;
           }
-          const decryptedMessage = await ProtocolService.decryptMessage(
+          let decryptedMessage = "";
+          try {
+           decryptedMessage = await ProtocolService.decryptMessage(
             user.id === lastMessage?.author_id
               ? lastMessage.recipient_id
               : lastMessage.author_id,
@@ -42,6 +44,10 @@ function useUserChats({ poolMs }: { poolMs?: number } = {}) {
               nonce: lastMessage.nonce || '',
             },
           );
+        } catch (error) {
+          console.log(error);
+          decryptedMessage = ''
+        }
           return {
             ...chat,
             last_message: {
@@ -76,7 +82,11 @@ function useUserChats({ poolMs }: { poolMs?: number } = {}) {
   }, [chats, queryClient]);
 
   return {
-    chats,
+    chats: chats?.sort((a, b) => {
+      const aDate = a.last_message?.sent_date ? new Date(a.last_message.sent_date).getTime() : 0;
+      const bDate = b.last_message?.sent_date ? new Date(b.last_message.sent_date).getTime() : 0;
+      return bDate - aDate;
+    }),
     isFetching: isFetching && !isRefetching,
     error,
     refetch,
