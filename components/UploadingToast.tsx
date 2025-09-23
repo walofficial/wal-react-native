@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -8,6 +8,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '@/lib/theme';
 import { Image as ImageIcon, Film, X } from 'lucide-react-native';
+import { Video, ResizeMode } from 'expo-av';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 type MediaKind = 'photo' | 'video';
 
@@ -17,6 +19,7 @@ interface UploadingToastProps {
   mediaKind: MediaKind;
   cancellable?: boolean;
   onCancel?: () => void;
+  previewUri?: string;
 }
 
 export const UploadingToast: React.FC<UploadingToastProps> = ({
@@ -25,7 +28,9 @@ export const UploadingToast: React.FC<UploadingToastProps> = ({
   mediaKind,
   cancellable = true,
   onCancel,
+  previewUri,
 }) => {
+  const colorScheme = useColorScheme();
   const { colors } = useTheme();
   const clampedProgress = useMemo(() => {
     return Math.max(0, Math.min(1, progress));
@@ -46,13 +51,36 @@ export const UploadingToast: React.FC<UploadingToastProps> = ({
 
   const Icon = mediaKind === 'photo' ? ImageIcon : Film;
 
+  // Apple-like gray color for progress bar
+  const progressColor = colorScheme.isDarkColorScheme ? '#8E8E93' : '#8E8E93';
+
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.headerRow}>
         <View style={styles.leftRow}>
-          <View style={[styles.iconWrap, { borderColor: colors.border }]}>
-            <Icon size={18} color={colors.text} />
-          </View>
+          {typeof previewUri === 'string' && previewUri.length > 0 ? (
+            <View style={[styles.previewWrap, { borderColor: colors.border }]}>
+              {mediaKind === 'photo' ? (
+                <Image
+                  source={{ uri: previewUri }}
+                  style={styles.previewMedia}
+                />
+              ) : (
+                <Video
+                  source={{ uri: previewUri }}
+                  style={styles.previewMedia}
+                  resizeMode={ResizeMode.COVER}
+                  isMuted
+                  shouldPlay={false}
+                  useNativeControls={false}
+                />
+              )}
+            </View>
+          ) : (
+            <View style={[styles.iconWrap, { borderColor: colors.border }]}>
+              <Icon size={18} color={colors.text} />
+            </View>
+          )}
           <Text style={[styles.title, { color: colors.text }]}>{label}</Text>
         </View>
         <View style={styles.rightRow}>
@@ -86,7 +114,7 @@ export const UploadingToast: React.FC<UploadingToastProps> = ({
           style={[
             styles.progressFill,
             {
-              backgroundColor: colors.primary,
+              backgroundColor: progressColor,
             },
             fillStyle,
           ]}
@@ -127,6 +155,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
+  },
+  previewWrap: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+    overflow: 'hidden',
+    borderWidth: 1,
+    marginRight: 10,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+  },
+  previewMedia: {
+    width: '100%',
+    height: '100%',
   },
   title: {
     fontSize: 16,

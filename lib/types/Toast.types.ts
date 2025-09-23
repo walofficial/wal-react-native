@@ -30,6 +30,7 @@ export interface UploadingToastOptions
   progress?: number; // 0..1
   cancellable?: boolean;
   onCancel?: () => void;
+  previewUri?: string; // optional local uri to render preview in toast
 }
 
 export interface MessageToastOptions extends Omit<ToastOptions, 'type'> {

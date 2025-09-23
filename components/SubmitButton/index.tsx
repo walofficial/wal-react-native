@@ -7,7 +7,7 @@ import { useLocalSearchParams } from 'expo-router';
 import Button from '@/components/Button';
 import { compressVideo } from '@/lib/media/video/compress';
 import { compressIfNeeded } from '@/lib/media/manip';
-import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 export default function SubmitButton({
   mediaBlob,
@@ -25,13 +25,14 @@ export default function SubmitButton({
   const { feedId } = useLocalSearchParams<{
     feedId: string;
   }>();
-  const theme = useTheme();
-  const isDarkMode = theme.colors.text === '#FFFFFF';
-  const iconTint = isDarkMode ? 'rgba(255,255,255,0.95)' : 'rgba(0,0,0,0.95)';
-  const surfaceBg = isDarkMode ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.06)';
-  const surfaceBorder = isDarkMode
-    ? 'rgba(255,255,255,0.18)'
-    : 'rgba(0,0,0,0.12)';
+  const { isDarkColorScheme } = useColorScheme();
+  const iconTint = isDarkColorScheme ? '#FFFFFF' : '#000000';
+  const surfaceBg = isDarkColorScheme
+    ? 'rgba(0, 0, 0, 0.5)'
+    : 'rgba(255, 255, 255, 0.85)';
+  const surfaceBorder = isDarkColorScheme
+    ? 'rgba(255,255,255,0.25)'
+    : 'rgba(0,0,0,0.15)';
   const [isProcessing, setIsProcessing] = React.useState(false);
   const { uploadBlob } = useUploadVideo({
     feedId: feedId as string,

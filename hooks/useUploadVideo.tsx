@@ -47,16 +47,31 @@ export const useUploadVideo = ({
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { success, error, info, dismiss, dismissAll, uploading, update } = useToast();
   const uploadingToastIdRef = useRef<string | null>(null);
+  const previewUriRef = useRef<string | null>(null);
 
   const uploadBlob = useMutation({
     mutationKey: ['upload-blob', feedId, isPhoto],
-    onMutate: () => {
+    onMutate: (variables) => {
       // Show persistent uploading toast with cancel
+      // Compute a preview URI from variables if available
+      try {
+        const candidate =
+          variables?.photo?.uri ||
+          (variables?.video?.uri
+            ? variables.video.uri.startsWith('file://')
+              ? variables.video.uri
+              : `file://${variables.video.uri}`
+            : undefined);
+        previewUriRef.current = candidate || null;
+      } catch {
+        previewUriRef.current = null;
+      }
       uploadingToastIdRef.current = uploading({
         label: t('common.uploading'),
         mediaKind: isPhoto ? 'photo' : 'video',
         progress: 0,
         cancellable: true,
+        previewUri: previewUriRef.current ?? undefined,
         onCancel: () => {
           try {
             abortController.current.abort();
@@ -120,6 +135,7 @@ export const useUploadVideo = ({
               mediaKind={isPhoto ? 'photo' : 'video'}
               progress={progress}
               cancellable
+              previewUri={previewUriRef.current ?? undefined}
               onCancel={() => {
                 try {
                   abortController.current.abort();

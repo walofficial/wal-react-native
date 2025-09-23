@@ -124,7 +124,7 @@ export function TabBar({
   ];
   
   const displayTabItems = showLocationTabs ? tabItems : contentTabItems;
-  console.log('displayTabItems', displayTabItems.length,showLocationTabs);
+
   // Cleanup effect
   useEffect(() => {
     return () => {
