@@ -142,7 +142,6 @@ function SimpleGoBackHeaderPost({
   return (
     <>
       <SimpleGoBackHeader
-        verificationId={verificationId}
         timestamp={!isGeneratedNews ? timestamp : undefined}
         rightSection={
           isGeneratedNews ? (
