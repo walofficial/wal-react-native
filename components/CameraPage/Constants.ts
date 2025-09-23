@@ -1,30 +1,23 @@
 import { Dimensions, Platform } from 'react-native';
-import StaticSafeAreaInsets from 'react-native-static-safe-area-insets';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const CONTENT_SPACING = 15;
 
-// Use zero insets on web, otherwise use StaticSafeAreaInsets
-const safeAreaInsets =
-  Platform.OS === 'web'
-    ? {
-        safeAreaInsetsLeft: 0,
-        safeAreaInsetsTop: 0,
-        safeAreaInsetsRight: 0,
-        safeAreaInsetsBottom: 0,
-      }
-    : StaticSafeAreaInsets;
+export const useSafeAreaPadding = () => {
+  const insets = useSafeAreaInsets();
+  const safeBottom =
+    Platform.select({
+      ios: insets.bottom,
+      web: 0, // no insets on web
+      default: insets.bottom,
+    }) ?? 0;
 
-const SAFE_BOTTOM =
-  Platform.select({
-    ios: safeAreaInsets.safeAreaInsetsBottom,
-    web: 0, // no insets on web
-  }) ?? 0;
-
-export const SAFE_AREA_PADDING = {
-  paddingLeft: safeAreaInsets.safeAreaInsetsLeft + CONTENT_SPACING,
-  paddingTop: safeAreaInsets.safeAreaInsetsTop + CONTENT_SPACING,
-  paddingRight: safeAreaInsets.safeAreaInsetsRight + CONTENT_SPACING,
-  paddingBottom: SAFE_BOTTOM + CONTENT_SPACING,
+  return {
+    paddingLeft: insets.left + CONTENT_SPACING,
+    paddingTop: insets.top + CONTENT_SPACING,
+    paddingRight: insets.right + CONTENT_SPACING,
+    paddingBottom: safeBottom + CONTENT_SPACING,
+  };
 };
 
 // The maximum zoom _factor_ you should be able to zoom in
@@ -34,8 +27,7 @@ export const SCREEN_WIDTH = Dimensions.get('window').width;
 
 // For web, fall back to Dimensions.get("window").height
 export const SCREEN_HEIGHT = Platform.select<number>({
-  android:
-    Dimensions.get('screen').height - safeAreaInsets.safeAreaInsetsBottom,
+  android: Dimensions.get('screen').height,
   ios: Dimensions.get('window').height,
   web: Dimensions.get('window').height,
 }) as number;

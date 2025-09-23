@@ -3,7 +3,6 @@ import { View, StyleSheet } from 'react-native';
 import { LiveStream } from '@/components/CameraPage/LiveStream';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { SAFE_AREA_PADDING } from '@/components/CameraPage/Constants';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LiveStreamPage() {
@@ -41,8 +40,8 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     position: 'absolute',
-    top: SAFE_AREA_PADDING.paddingTop,
-    left: SAFE_AREA_PADDING.paddingLeft,
+    top: 16,
+    left: 16,
     width: 40,
     height: 40,
     zIndex: 1,

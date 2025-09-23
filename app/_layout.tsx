@@ -37,6 +37,7 @@ import StatusBarRenderer from '@/components/StatusBarRenderer';
 import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 import { useSyncQueriesExternal } from 'react-query-external-sync';
 import * as ExpoDevice from 'expo-device';
+import * as NavigationBar from "expo-navigation-bar";
 
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
   const navigationRef = useNavigationContainerRef();
@@ -192,6 +193,7 @@ export default function RootLayout() {
   useOTAUpdates();
 
   useEffect(() => {
+    NavigationBar.setVisibilityAsync("hidden");
     SplashScreen.hideAsync();
   }, [appIsReady]);
 
