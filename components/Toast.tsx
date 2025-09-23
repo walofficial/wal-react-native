@@ -252,7 +252,6 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
             },
             shadowOpacity: 0.3,
             shadowRadius: 4,
-            elevation: 5,
           },
         ]}
         onPress={handlePress}
@@ -299,7 +298,6 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 12,
-    elevation: 12,
   },
   toast: {
     flexDirection: 'row',
