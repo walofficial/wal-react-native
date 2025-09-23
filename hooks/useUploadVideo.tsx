@@ -45,7 +45,8 @@ export const useUploadVideo = ({
 
   const { user } = useAuth();
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const { success, error, info, dismiss, dismissAll, uploading, update } = useToast();
+  const { success, error, info, dismiss, dismissAll, uploading, update } =
+    useToast();
   const uploadingToastIdRef = useRef<string | null>(null);
   const previewUriRef = useRef<string | null>(null);
 

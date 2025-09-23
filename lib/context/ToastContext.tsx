@@ -127,25 +127,28 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
     });
   }, []);
 
-  const uploading = useCallback((options: UploadingToastOptions) => {
-    const content = (
-      <UploadingToast
-        label={options.label || 'Uploading…'}
-        progress={typeof options.progress === 'number' ? options.progress : 0}
-        mediaKind={options.mediaKind}
-        cancellable={options.cancellable}
-        onCancel={options.onCancel}
-        previewUri={options.previewUri}
-      />
-    );
-    // uploading toasts are persistent by default; caller should dismiss when done
-    return show(content, {
-      ...options,
-      type: 'uploading',
-      position: options.position || 'top',
-      duration: 0,
-    });
-  }, [show]);
+  const uploading = useCallback(
+    (options: UploadingToastOptions) => {
+      const content = (
+        <UploadingToast
+          label={options.label || 'Uploading…'}
+          progress={typeof options.progress === 'number' ? options.progress : 0}
+          mediaKind={options.mediaKind}
+          cancellable={options.cancellable}
+          onCancel={options.onCancel}
+          previewUri={options.previewUri}
+        />
+      );
+      // uploading toasts are persistent by default; caller should dismiss when done
+      return show(content, {
+        ...options,
+        type: 'uploading',
+        position: options.position || 'top',
+        duration: 0,
+      });
+    },
+    [show],
+  );
 
   const update = useCallback(
     (id: string, content: React.ReactNode | string, options?: ToastOptions) => {

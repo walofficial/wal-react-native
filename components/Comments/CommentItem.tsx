@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingRight: 4
+    paddingRight: 4,
   },
   userInfoContainer: {
     flexDirection: 'row',

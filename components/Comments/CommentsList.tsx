@@ -60,7 +60,6 @@ interface CommentsListProps {
   onFocusChange?: (focused: boolean) => void;
 }
 
-
 const CommentsList = memo(
   ({ postId, ListHeaderComponent }: CommentsListProps) => {
     const [activeTab, setActiveTab] = useAtom(activeTabAtom);
@@ -81,16 +80,19 @@ const CommentsList = memo(
         path: { verification_id: postId },
         query: { sort_by: activeTab },
       });
-      queryClient.setQueryData(commentsQueryKey, (old: InfiniteData<GetVerificationCommentsResponse>) => {
-        if (!old) return old;
-        return {
-          ...old,
-          pages: old.pages.map((page) => ({ comments: updateFn(page.comments) })),
-
-        };
-      });
+      queryClient.setQueryData(
+        commentsQueryKey,
+        (old: InfiniteData<GetVerificationCommentsResponse>) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              comments: updateFn(page.comments),
+            })),
+          };
+        },
+      );
     };
-    
 
     const {
       data,
@@ -127,7 +129,7 @@ const CommentsList = memo(
       );
 
       // Remove the comment optimistically
-      updateCommentsCache( postId, activeTab, (page) =>
+      updateCommentsCache(postId, activeTab, (page) =>
         page.filter((comment) => comment.comment.id !== commentId),
       );
 
@@ -149,7 +151,7 @@ const CommentsList = memo(
       if (!user) return;
 
       // Optimistic update
-      updateCommentsCache( postId, activeTab, (page) =>
+      updateCommentsCache(postId, activeTab, (page) =>
         page.map((comment) =>
           comment.comment.id === commentId
             ? {
