@@ -135,6 +135,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
         mediaKind={options.mediaKind}
         cancellable={options.cancellable}
         onCancel={options.onCancel}
+        previewUri={options.previewUri}
       />
     );
     // uploading toasts are persistent by default; caller should dismiss when done
