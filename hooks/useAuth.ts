@@ -10,22 +10,10 @@ function useAuth() {
       setSession(null);
       setAuthUser(null);
       await logout();
-
-      queryClient.resetQueries({
-        queryKey: ['user-matches'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['user-matches'],
-      });
+    
       queryClient.clear();
     },
     reset: () => {
-      queryClient.resetQueries({
-        queryKey: ['user-matches'],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ['user-matches'],
-      });
       queryClient.clear();
     },
     setAuthUser,

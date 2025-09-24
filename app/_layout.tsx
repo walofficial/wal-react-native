@@ -191,9 +191,6 @@ export default function RootLayout() {
   // });
   // Use the new OTA updates hook
   useOTAUpdates();
-  useEffect(() => {
-    NavigationBar.setVisibilityAsync('hidden');
-  }, []);
 
   useEffect(() => {
     SplashScreen.hideAsync();

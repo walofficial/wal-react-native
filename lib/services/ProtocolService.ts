@@ -33,6 +33,7 @@ class SignalProtocolService {
   }> {
     // Check if keys already exist
     const existingKeys = await AsyncStorage.getItem(KEYS_STORAGE);
+    console.log('existingKeys', existingKeys);
     if (existingKeys) {
       const keys = JSON.parse(existingKeys);
       return {
@@ -48,7 +49,8 @@ class SignalProtocolService {
     // Generate new keys only if they don't exist
     const keyPair = crypto_box_keypair();
     const registrationId = Math.floor(Math.random() * 16383) + 1;
-
+    console.log('keyPair', keyPair);
+    console.log('registrationId', registrationId);
     // Store keys locally
     await AsyncStorage.setItem(
       KEYS_STORAGE,

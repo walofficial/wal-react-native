@@ -3,6 +3,8 @@ import ProtocolService from '@/lib/services/ProtocolService';
 import { publicKeyState } from '@/lib/state/auth';
 import { useAtom } from 'jotai';
 import { sendPublicKeyChatSendPublicKeyPost } from '@/lib/api/generated';
+import { getDeviceId } from '../lib/device-id';
+// dynamic import inside mutation to avoid type resolution before file is ready
 
 export default function useSendPublicKey() {
   const [_, setPublicKey] = useAtom(publicKeyState);
@@ -11,7 +13,7 @@ export default function useSendPublicKey() {
     isPending,
     isSuccess,
   } = useMutation({
-    mutationFn: async ({ userId }: { userId: string }) => {
+  mutationFn: async ({ userId, deviceId: providedDeviceId }: { userId: string; deviceId?: string }) => {
       const { identityKeyPair, isCached } =
         await ProtocolService.generateIdentityKeyPair();
 
@@ -21,10 +23,13 @@ export default function useSendPublicKey() {
         return;
       }
 
+      const deviceId = providedDeviceId || (await getDeviceId());
       await sendPublicKeyChatSendPublicKeyPost({
         body: {
           user_id: userId,
           public_key: identityKeyPair.publicKey,
+          // @ts-ignore - extend request with device_id until openapi is updated
+          device_id: deviceId,
         },
       });
 

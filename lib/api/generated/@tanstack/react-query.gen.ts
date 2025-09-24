@@ -7,7 +7,6 @@ import {
   getLiveUsers,
   countLiveUsers,
   getSingleFeed,
-  checkLocation,
   goLive,
   publishPost,
   getCountryFeed,
@@ -104,7 +103,6 @@ import type {
   GetLiveUsersData,
   CountLiveUsersData,
   GetSingleFeedData,
-  CheckLocationData,
   GoLiveData,
   GoLiveError,
   GoLiveResponse,
@@ -456,27 +454,6 @@ export const getSingleFeedOptions = (options: Options<GetSingleFeedData>) => {
       return data;
     },
     queryKey: getSingleFeedQueryKey(options),
-  });
-};
-
-export const checkLocationQueryKey = (options: Options<CheckLocationData>) =>
-  createQueryKey('checkLocation', options);
-
-/**
- * Check Location
- */
-export const checkLocationOptions = (options: Options<CheckLocationData>) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await checkLocation({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: checkLocationQueryKey(options),
   });
 };
 

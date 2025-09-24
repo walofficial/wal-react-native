@@ -22,9 +22,6 @@ import type {
   GetSingleFeedData,
   GetSingleFeedResponses,
   GetSingleFeedErrors,
-  CheckLocationData,
-  CheckLocationResponses,
-  CheckLocationErrors,
   GoLiveData,
   GoLiveResponses,
   GoLiveErrors,
@@ -375,23 +372,6 @@ export const getSingleFeed = <ThrowOnError extends boolean = false>(
   >({
     responseType: 'json',
     url: '/feeds/single/{feed_id}',
-    ...options,
-  });
-};
-
-/**
- * Check Location
- */
-export const checkLocation = <ThrowOnError extends boolean = false>(
-  options: Options<CheckLocationData, ThrowOnError>,
-) => {
-  return (options.client ?? _heyApiClient).get<
-    CheckLocationResponses,
-    CheckLocationErrors,
-    ThrowOnError
-  >({
-    responseType: 'json',
-    url: '/feeds/check-location',
     ...options,
   });
 };
