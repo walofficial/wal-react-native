@@ -22,10 +22,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { getBottomSheetBackgroundStyle } from '@/lib/styles';
 import { useTheme } from '@/lib/theme';
 import { useAtom } from 'jotai';
-import {
-  locationUserListSheetState,
-  locationUserListfeedIdState,
-} from '@/lib/atoms/location';
+import { locationUserListSheetState } from '@/lib/atoms/location';
 import { NativeEventSubscription } from 'react-native';
 import { t } from '@/lib/i18n';
 
@@ -42,7 +39,7 @@ const LocationUserListSheet = ({
   const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
     locationUserListSheetState,
   );
-  const [feedId] = useAtom(locationUserListfeedIdState);
+  const { feedId } = useLocalSearchParams<{ feedId: string }>();
   const backHandlerSubscriptionRef = useRef<NativeEventSubscription | null>(
     null,
   );

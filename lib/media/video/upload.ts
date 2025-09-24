@@ -25,7 +25,7 @@ const uploadVideosToLocation = async (
   }
 
   return FileSystem.createUploadTask(
-    API_BASE_URL + 'verify-videos/upload-to-location',
+    API_BASE_URL + '/verify-videos/upload-to-location',
     video.uri,
     {
       headers: {

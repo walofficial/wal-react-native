@@ -19,48 +19,62 @@ import { FACT_CHECK_FEED_ID, NEWS_FEED_ID } from '@/lib/constants';
 interface SimpleGoBackHeaderProps {
   title?: string;
   rightSection?: React.ReactNode;
-  verificationId?: string;
   timestamp?: string;
   middleSection?: React.ReactNode;
-  // If true, the back button will just go back because user is already auth and is in the global screen and not sharable status screen.
-  justInstantGoBack?: boolean;
+  hideBackButton?: boolean;
+  logoutOnClick?: boolean;
+  withInsets?: boolean;
 }
 
 const SimpleGoBackHeader = ({
   title,
   rightSection,
-  verificationId,
   timestamp,
   middleSection,
-  justInstantGoBack,
+  hideBackButton,
+  logoutOnClick,
+  withInsets,
 }: SimpleGoBackHeaderProps) => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const theme = useTheme();
-
+  const insets = useSafeAreaInsets();
   const Header = () =>
     !isWeb && (
       <View
         style={[
           styles.headerContainer,
-          { backgroundColor: theme.colors.background },
+          {
+            backgroundColor: theme.colors.background,
+            marginTop: withInsets ? insets.top : 0,
+          },
         ]}
       >
-        <CloseButton
-          variant="back"
-          onClick={() => {
-            if (justInstantGoBack) {
-              router.back();
-              return;
-            }
-            if (user) {
-              router.replace(`/(tabs)/(user)`);
-            } else {
-              router.navigate('/(auth)/sign-in');
-            }
-          }}
-          style={{ color: theme.colors.text }}
-        />
+        {!hideBackButton ? (
+          <CloseButton
+            variant="back"
+            onClick={() => {
+              if (logoutOnClick) {
+                logout();
+                router.replace('/(auth)/sign-in');
+                return;
+              }
+              if (router.canGoBack()) {
+                router.back();
+                return;
+              } else {
+                if (user) {
+                  router.replace(`/(tabs)/(news)`);
+                } else {
+                  router.navigate('/(auth)/sign-in');
+                }
+              }
+            }}
+            style={{ color: theme.colors.text }}
+          />
+        ) : (
+          <View style={styles.backButton} />
+        )}
         {middleSection ||
           ((title || timestamp) && (
             <Text

@@ -5,10 +5,15 @@ import CameraPage from '@/components/CameraPage';
 import { Text, View, StyleSheet } from 'react-native';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
+import ScreenLoader from '@/components/ScreenLoader';
+import { atom, useAtom } from 'jotai';
+export const permissionGrantedState = atom(false);
 
 export default function RecordPage() {
   const router = useRouter();
-  const [permissionsGranted, setPermissionsGranted] = useState(false);
+  const [permissionsGranted, setPermissionsGranted] = useAtom(
+    permissionGrantedState,
+  );
   const { error, dismiss } = useToast();
 
   useEffect(() => {
@@ -35,11 +40,7 @@ export default function RecordPage() {
   }, []);
 
   if (!permissionsGranted) {
-    return (
-      <View style={styles.centered}>
-        <Text>{t('common.permission_needed_for_photo_and_video')}</Text>
-      </View>
-    );
+    return <ScreenLoader />;
   }
 
   return (

@@ -1,4 +1,11 @@
-export type ToastType = 'default' | 'success' | 'error' | 'warning' | 'info';
+export type ToastType =
+  | 'default'
+  | 'success'
+  | 'error'
+  | 'warning'
+  | 'info'
+  | 'message'
+  | 'uploading';
 
 export type ToastPosition = 'top' | 'bottom';
 
@@ -16,6 +23,24 @@ export interface ToastOptions {
   } | null;
 }
 
+export interface UploadingToastOptions
+  extends Omit<ToastOptions, 'type' | 'duration'> {
+  label?: string;
+  mediaKind: 'photo' | 'video';
+  progress?: number; // 0..1
+  cancellable?: boolean;
+  onCancel?: () => void;
+  previewUri?: string; // optional local uri to render preview in toast
+}
+
+export interface MessageToastOptions extends Omit<ToastOptions, 'type'> {
+  message?: string;
+  senderUsername?: string;
+  senderProfilePicture?: string;
+  senderId?: string;
+  roomId?: string;
+}
+
 export interface Toast {
   id: string;
   content: React.ReactNode | string;
@@ -25,6 +50,7 @@ export interface Toast {
 export interface ToastContextValue {
   toasts: Toast[];
   show: (content: React.ReactNode | string, options?: ToastOptions) => string;
+  uploading: (options: UploadingToastOptions) => string;
   error: ({
     title,
     description,
@@ -46,6 +72,7 @@ export interface ToastContextValue {
     title: string;
     description?: string;
   }) => string;
+  message: (options: MessageToastOptions) => string;
   update: (
     id: string,
     content: React.ReactNode | string,

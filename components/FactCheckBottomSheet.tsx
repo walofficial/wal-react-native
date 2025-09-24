@@ -24,10 +24,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import SourceIcon from './SourceIcon';
-import { router, useGlobalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { isAndroid } from '@/lib/platform';
-import { FactCheckRating } from './FactCheckRating';
-import { User } from '@/lib/api/generated';
 import { NativeEventSubscription } from 'react-native';
 import { useTheme } from '@/lib/theme';
 import { Portal } from '@/components/primitives/portal';
@@ -39,7 +37,6 @@ interface FactCheckBottomSheetProps {
 
 const CustomBackground: React.FC<BottomSheetBackgroundProps> = ({ style }) => {
   const colorScheme = useColorScheme();
-  const theme = useTheme();
 
   if (Platform.OS === 'ios') {
     return (
@@ -87,9 +84,6 @@ const STATUS_COLORS = {
 export default function FactCheckBottomSheet({
   bottomSheetRef,
 }: FactCheckBottomSheetProps) {
-  const { verificationId } = useGlobalSearchParams<{
-    verificationId: string;
-  }>();
   const theme = useTheme();
 
   const [factCheckData, setFactCheckData] = useAtom(activeFactCheckData);

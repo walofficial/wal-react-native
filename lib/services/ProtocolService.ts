@@ -150,12 +150,6 @@ class SignalProtocolService {
     }
     return null;
   }
-
-  async getRemotePublicKey(userId: string): Promise<string | null> {
-    const remoteKeyBundle = await AsyncStorage.getItem(`remote_key_${userId}`);
-    return remoteKeyBundle ? JSON.parse(remoteKeyBundle).publicKey : null;
-  }
-
   async storeRemotePublicKey(userId: string, publicKey: string): Promise<void> {
     await AsyncStorage.setItem(
       `remote_key_${userId}`,

@@ -402,7 +402,7 @@ const PostContent = memo(
             )
           )}
           <FeedItemMediaContent
-            videoUrl={mediaSource}
+            videoUrl={mediaSource || undefined}
             imageGalleryWithDims={verification.image_gallery_with_dims || []}
             isLive={isLive}
             isVisible={true}

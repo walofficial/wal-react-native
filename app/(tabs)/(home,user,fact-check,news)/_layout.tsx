@@ -1,37 +1,16 @@
 import React from 'react';
-import {
-  Link,
-  Redirect,
-  Stack,
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  usePathname,
-  useRouter,
-} from 'expo-router';
+import { Link, Stack } from 'expo-router';
 import ProfileHeader from '@/components/ProfileHeader';
 import { CustomTitle, TaskTitle } from '@/components/CustomTitle';
 import { ScrollReanimatedValueProvider } from '@/components/context/ScrollReanimatedValue';
-import {
-  View,
-  Text,
-  Platform,
-  ActivityIndicator,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import ChatTopbar from '@/components/Chat/chat-topbar';
 import { isIOS, isWeb } from '@/lib/platform';
 import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 import SimpleGoBackHeaderPost from '@/components/SimpleGoBackHeaderPost';
 import { ProfilePageUsername } from '@/components/ProfilePageUsername';
-import { t } from '@/lib/i18n';
-import useGoLive from '@/hooks/useGoLive';
-import useFeeds from '@/hooks/useFeeds';
-import useLocationsInfo from '@/hooks/useLocationsInfo';
 import { useTheme } from '@/lib/theme';
 import useTranslation from '@/hooks/useTranslation';
-import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 import { FontSizes } from '@/lib/theme';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import useAuth from '@/hooks/useAuth';
@@ -39,27 +18,29 @@ import LocationProvider from '@/components/LocationProvider';
 
 export const unstable_settings = {
   initialRouteName: 'index',
+  'fact-check': {
+    initialRouteName: '(index)',
+  },
+  news: {
+    initialRouteName: '(index)',
+  },
+  home: {
+    initialRouteName: '(index)',
+  },
+  user: {
+    initialRouteName: '(index)',
+  },
 };
 
 export default function Layout({ segment }: { segment: string }) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const { categoryId } = useUserFeedIds();
-  const { factCheckFeedId, newsFeedId } = useFeeds();
   const isNewsFeed = segment === '(news)';
   const isFactCheckFeed = segment === '(fact-check)';
   const isHomeFeed = segment === '(home)';
   const isUserFeed = segment === '(user)';
   const { user } = useAuth();
-  const { feedId: homeFeedId } = useGlobalSearchParams<{ feedId: string }>();
   const theme = useTheme();
-  const feedId = isNewsFeed
-    ? newsFeedId
-    : isFactCheckFeed
-      ? factCheckFeedId
-      : isHomeFeed
-        ? homeFeedId
-        : '';
   const screens = [
     <Stack.Screen
       name="profile"
@@ -110,38 +91,25 @@ export default function Layout({ segment }: { segment: string }) {
         header: () => <SimpleGoBackHeader title="ფოტო" />,
       }}
     />,
-
-    <Stack.Screen
-      name="chatrooms/index"
-      options={{
-        header: () => <SimpleGoBackHeader title="ჩათი" />,
-      }}
-    />,
-
-    <Stack.Screen
-      name="chatrooms/[roomId]/index"
-      options={{
-        headerTransparent: true,
-        header: () => <ChatTopbar />,
-      }}
-    />,
   ];
   if (isHomeFeed) {
     screens.push(
       <Stack.Screen
         name="[feedId]/index"
-        options={{
+        options={({ route }) => ({
           headerTransparent: !isWeb,
           animation: 'fade',
           header: () => (
             <ProfileHeader
-              feedId={feedId}
               showTabs={true}
-              customTitleComponent={<TaskTitle feedId={feedId} />}
+              //@ts-ignore
+              customTitleComponent={<TaskTitle feedId={route.params?.feedId} />}
               showLocationTabs={true}
+              //@ts-ignore
+              feedId={route.params?.feedId}
             />
           ),
-        }}
+        })}
       />,
     );
   }
@@ -155,14 +123,31 @@ export default function Layout({ segment }: { segment: string }) {
           headerTransparent: !isWeb,
           header: isHomeFeed
             ? undefined
-            : () => (
+            : ({ route }) => (
                 <ProfileHeader
-                  feedId={feedId}
                   isAnimated
-                  customTitleComponent={<TaskTitle feedId={feedId} />}
+                  customTitleComponent={
+                    <TaskTitle
+                      //@ts-ignore
+                      feedId={
+                        isFactCheckFeed
+                          ? user.preferred_fact_check_feed_id
+                          : isNewsFeed
+                            ? user.preferred_news_feed_id
+                            : user.preferred_fact_check_feed_id
+                      }
+                    />
+                  }
                   showSearch={!isUserFeed}
                   showLocationTabs={!isNewsFeed && !isFactCheckFeed}
                   showTabs={!isNewsFeed && !isUserFeed}
+                  feedId={
+                    isFactCheckFeed
+                      ? user.preferred_fact_check_feed_id
+                      : user.preferred_news_feed_id
+                  }
+                  //@ts-ignore
+                  content_type={route.params?.content_type || 'last24h'}
                 />
               ),
         }}
@@ -207,12 +192,7 @@ export default function Layout({ segment }: { segment: string }) {
         options={{
           title: '',
           headerTransparent: true,
-          header: () => (
-            <SimpleGoBackHeader
-              justInstantGoBack
-              title={t('common.change_photo')}
-            />
-          ),
+          header: () => <SimpleGoBackHeader title={t('common.change_photo')} />,
           headerStyle: {
             backgroundColor: theme.colors.background,
           },
@@ -234,12 +214,7 @@ export default function Layout({ segment }: { segment: string }) {
         options={{
           title: '',
           headerTransparent: true,
-          header: () => (
-            <SimpleGoBackHeader
-              justInstantGoBack
-              title={t('common.settings')}
-            />
-          ),
+          header: () => <SimpleGoBackHeader title={t('common.settings')} />,
           headerStyle: {
             backgroundColor: theme.colors.background,
           },
@@ -264,10 +239,7 @@ export default function Layout({ segment }: { segment: string }) {
           title: '',
           headerTransparent: true,
           header: () => (
-            <SimpleGoBackHeader
-              justInstantGoBack
-              title={t('settings.language_and_region')}
-            />
+            <SimpleGoBackHeader title={t('settings.language_and_region')} />
           ),
           headerStyle: {
             backgroundColor: theme.colors.background,

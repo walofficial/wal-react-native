@@ -19,13 +19,13 @@ export const useDefaultCountry = () => {
   // Fallback to Georgia if country not found or API fails
   const country = defaultCountry ||
     getCountryByCode('GE') || {
-    name: 'Georgia',
-    nameGeo: 'საქართველო',
-    code: 'GE',
-    callingCode: '+995',
-    flag: 'ge',
-    priority: 3,
-  };
+      name: 'Georgia',
+      nameGeo: 'საქართველო',
+      code: 'GE',
+      callingCode: '+995',
+      flag: 'ge',
+      priority: 3,
+    };
   return {
     country,
     isLoading,

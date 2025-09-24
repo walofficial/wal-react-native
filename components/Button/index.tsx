@@ -36,6 +36,8 @@ export interface ButtonProps {
   icon?: React.ComponentProps<typeof Ionicons>['name'];
   /** Where to render the icon relative to the text. */
   iconPosition?: 'left' | 'right';
+  /** Ionicons icon color. */
+  iconColor?: string;
   /** Disables the button. */
   disabled?: boolean;
   /** Loading state replaces contents with ActivityIndicator. */
@@ -54,6 +56,7 @@ export default function Button({
   fullWidth = false,
   icon,
   iconPosition = 'left',
+  iconColor = 'white',
   disabled = false,
   loading = false,
   glassy = false,
@@ -210,7 +213,7 @@ export default function Button({
             <Ionicons
               name={icon}
               size={sizeStyle.iconSize}
-              color={variantColour.text}
+              color={iconColor || variantColour.text}
               style={title ? { marginRight: 8 } : undefined}
             />
           )}
@@ -231,7 +234,7 @@ export default function Button({
             <Ionicons
               name={icon}
               size={sizeStyle.iconSize}
-              color={variantColour.text}
+              color={iconColor || variantColour.text}
               style={title ? { marginLeft: 8 } : undefined}
             />
           )}

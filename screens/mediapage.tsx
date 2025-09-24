@@ -22,7 +22,7 @@ import {
   Alert,
 } from 'react-native';
 import { Video, AVPlaybackStatus, ResizeMode } from 'expo-av';
-import { SAFE_AREA_PADDING } from '@/components/CameraPage/Constants';
+import { useSafeAreaPadding } from '@/components/CameraPage/Constants';
 import Share from 'react-native-share';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import { Ionicons as IonIcon } from '@expo/vector-icons';
@@ -37,6 +37,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 const requestSavePermission = async (): Promise<boolean> => {
   // On Android 13 and above, scoped storage is used instead and no permission is needed
@@ -59,6 +60,7 @@ const isVideoOnLoadEvent = (
 ): event is AVPlaybackStatus => 'isLoaded' in event && event.isLoaded;
 
 export default function MediaPage(): React.ReactElement {
+  const safePadding = useSafeAreaPadding();
   const { path, type, feedId, recordingTime } = useLocalSearchParams<{
     path: string;
     type: 'photo' | 'video';
@@ -257,6 +259,11 @@ export default function MediaPage(): React.ReactElement {
   }, []);
 
   const insets = useSafeAreaInsets();
+  const { isDarkColorScheme } = useColorScheme();
+  const floatingBg = isDarkColorScheme
+    ? 'rgba(0, 0, 0, 0.5)'
+    : 'rgba(255, 255, 255, 0.85)';
+  const floatingIconColor = isDarkColorScheme ? '#FFFFFF' : '#000000';
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -321,12 +328,14 @@ export default function MediaPage(): React.ReactElement {
           icon="close"
           variant="outline"
           size="medium"
+          iconColor={floatingIconColor}
           style={[
             styles.actionButton,
             {
               position: 'absolute',
-              top: SAFE_AREA_PADDING.paddingTop,
-              left: SAFE_AREA_PADDING.paddingLeft,
+              top: safePadding.paddingTop,
+              left: safePadding.paddingLeft,
+              backgroundColor: floatingBg,
             },
           ]}
         />
@@ -382,17 +391,19 @@ export default function MediaPage(): React.ReactElement {
                 disabled={savingState !== 'none'}
                 loading={savingState === 'saving'}
                 icon={savingState === 'saved' ? 'checkmark' : 'download'}
-                variant="outline"
+                variant="default"
+                iconColor={floatingIconColor}
                 size="medium"
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: floatingBg }]}
               />
 
               <Button
                 onPress={onSharePressed}
                 icon="share-social"
-                variant="outline"
+                variant="default"
+                iconColor={floatingIconColor}
                 size="medium"
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: floatingBg }]}
               />
             </View>
 

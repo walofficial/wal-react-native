@@ -28,7 +28,8 @@
     "save": "Save",
     "live_stream_started": "Live stream started",
     "live_stream_started_description": "You are now live",
-    "profile_update_failed": "Profile update failed",
+  
+      "profile_update_failed": "Profile update failed",
     "system_error": "System error",
     "session_expired": "Session expired",
     "short_recording_error": "Recording too short",
@@ -37,6 +38,8 @@
     "search_by_name_or_number": "Search by name or number",
     "add_friends": "Add friends",
     "add_friends_from_contacts": "Add friends from contacts",
+    "add_friends_from_stories": "Add friends or find them from locations",
+    "no_chats_yet": "Where are they?",
     "add": "Add",
     "from_searched_contacts": "From searched contacts",
     "searched_users": "Searched users",
@@ -211,6 +214,7 @@
     "limitations_description": "While our fact-checking system is comprehensive, it has limitations. Results depend on available online information, and some topics may have limited or conflicting sources. We recommend reviewing the provided sources to make your own assessment."
   },
   "errors": {
+    "failed_to_join_chat": "Failed to join chat",
     "post_publish_failed": "Failed to publish post",
     "post_empty": "Post cannot be empty",
     "general_error": "An error occurred. Please try again",

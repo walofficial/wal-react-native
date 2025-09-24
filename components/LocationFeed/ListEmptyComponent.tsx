@@ -43,28 +43,7 @@ export function ListEmptyComponent({
     return null;
   }
 
-  const mainView = isUserInSelectedLocation ? (
-    <Text style={styles.emptyText}>{'...'}</Text>
-  ) : (
-    <View style={styles.mainContainer}>
-      <Text style={styles.instructionText}>
-        {t('common.go_to_location_to_post')}
-      </Text>
-      {selectedLocation &&
-        selectedLocation.task &&
-        selectedLocation.nearest_location && (
-          <TouchableOpacity
-            style={styles.locationButton}
-            onPress={handleOpenMap}
-          >
-            <LocationLabel
-              locationName={selectedLocation?.task.display_name}
-              address={selectedLocation?.nearest_location.address}
-            />
-          </TouchableOpacity>
-        )}
-    </View>
-  );
+  const mainView = <Text style={styles.emptyText}>{'🥲'}</Text>;
 
   return !isFetching && <View style={styles.container}>{mainView}</View>;
 }
@@ -91,6 +70,7 @@ const createStyles = (theme: Theme) =>
       height: 400,
       textAlign: 'center',
       marginBottom: theme.spacing.md * 1.5, // 24px
+      marginTop: theme.spacing.md * 1.5, // 24px
     },
     instructionText: {
       color: theme.colors.text,

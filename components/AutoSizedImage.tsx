@@ -122,59 +122,6 @@ export function AutoSizedImage({
           }
         }}
       />
-
-      {(hasAlt || isCropped) && !hideBadge ? (
-        <View
-          accessible={false}
-          style={{
-            position: 'absolute',
-            bottom: 8,
-            right: 8,
-            flexDirection: 'row',
-            gap: 3,
-          }}
-        >
-          {isCropped && (
-            <View
-              style={{
-                borderRadius: 4,
-                backgroundColor: 'rgba(0,0,0,0.25)',
-                padding: 3,
-                opacity: 0.8,
-              }}
-            >
-              {/* Fullscreen icon placeholder */}
-              <View
-                style={{
-                  width: 12,
-                  height: 12,
-                  backgroundColor: 'white',
-                }}
-              />
-            </View>
-          )}
-          {hasAlt && (
-            <View
-              style={{
-                justifyContent: 'center',
-                borderRadius: 4,
-                backgroundColor: 'rgba(0,0,0,0.25)',
-                padding: 3,
-                opacity: 0.8,
-              }}
-            >
-              {/* ALT text placeholder */}
-              <View
-                style={{
-                  width: 20,
-                  height: 8,
-                  backgroundColor: 'white',
-                }}
-              />
-            </View>
-          )}
-        </View>
-      ) : null}
     </View>
   );
 

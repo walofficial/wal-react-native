@@ -1,12 +1,14 @@
-// @ts-nocheck
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
-import { LocationFeedPost, Task, UserVerification } from './interfaces';
+import { UserVerification } from './interfaces';
 import * as Sentry from '@sentry/react-native';
+import { FeedPost, getMessagesChatMessagesGet, User } from './api/generated';
+import { ChatMessage, GetMessagesResponse } from './api/generated';
+import ProtocolService from './services/ProtocolService';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -105,9 +107,7 @@ export const convertToCDNUrl = (url: string) => {
     );
 };
 
-export const getVideoSrc = (
-  verification: UserVerification | LocationFeedPost,
-) => {
+export const getVideoSrc = (verification: UserVerification | FeedPost) => {
   const streamSrc =
     Platform.OS === 'ios'
       ? verification?.verified_media_playback?.hls
@@ -130,3 +130,88 @@ export function formatNumber(num: number): string {
   }
   return num.toString();
 }
+
+export const CHAT_PAGE_SIZE = 15;
+
+// @ts-ignore
+export const decryptMessages =
+  (user: User) =>
+  // @ts-ignore
+  async ({ pageParam, queryKey, signal }) => {
+    const one = queryKey[0];
+
+    const { data } = await getMessagesChatMessagesGet({
+      query: {
+        page_size: one.query.page_size,
+        room_id: one.query.room_id,
+        page: pageParam as number,
+      },
+      signal,
+      throwOnError: true,
+    });
+
+    // Decrypt messages
+    const localUserId = user?.id;
+
+    if (!localUserId) {
+      return data;
+    }
+
+    let decryptedMessages: ChatMessage[] = [];
+    try {
+      const processedMessages = await Promise.all(
+        data.messages.map(async (message: ChatMessage) => {
+          try {
+            if (message.encrypted_content && message.nonce) {
+              let decryptedMessage = '';
+
+              decryptedMessage = await ProtocolService.decryptMessage(
+                localUserId === message.author_id
+                  ? message.recipient_id
+                  : message.author_id,
+                {
+                  encryptedMessage: message.encrypted_content,
+                  nonce: message.nonce,
+                },
+              );
+
+              return {
+                ...message,
+                message: decryptedMessage,
+              };
+            }
+            return message;
+          } catch (decryptError) {
+            console.error(
+              `Failed to decrypt message ${message.id}:`,
+              decryptError,
+            );
+            return null; // Return null for failed messages
+          }
+        }),
+      );
+
+      // Filter out null values from failed decryption attempts
+      decryptedMessages = processedMessages.filter(
+        (msg): msg is ChatMessage => msg !== null,
+      );
+    } catch (error) {
+      console.error('Error processing messages', error);
+      decryptedMessages = data.messages
+        .map((message: ChatMessage) => {
+          if (message.encrypted_content) {
+            return null;
+          }
+          return message;
+        })
+        .filter((msg): msg is ChatMessage => msg !== null);
+    }
+
+    // Return the same structure as GetMessagesResponse but with decrypted messages
+    const response: GetMessagesResponse = {
+      ...data,
+      messages: decryptedMessages,
+    };
+
+    return response;
+  };

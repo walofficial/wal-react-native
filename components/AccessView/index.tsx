@@ -87,7 +87,7 @@ export const CustomBottomSheetBackground = ({ style }: any) => {
       style={[
         style,
         {
-          backgroundColor: isDark ? 'black' : '#efefef', // Dark background for both modes
+          backgroundColor: isDark ? 'black' : '#ddd', // Dark background for both modes
           borderTopLeftRadius: 10,
           borderTopRightRadius: 10,
         },
@@ -181,7 +181,6 @@ const TimerButton = React.memo(
         style={{ marginTop: 12 }}
         onPress={onPress}
         disabled={isButtonDisabled && !isDev}
-        variant="outline"
         size="large"
         glassy={true}
         loading={isPending}

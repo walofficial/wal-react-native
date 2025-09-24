@@ -3,16 +3,18 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import ProtocolService from '@/lib/services/ProtocolService';
 import { createChatRoom } from '@/lib/api/generated';
+import { useToast } from '@/components/ToastUsage';
+import { t } from '@/lib/i18n';
 
 function useLiveUser() {
   const router = useRouter();
-
+  const { error: errorToast } = useToast();
   const joinChat = useMutation({
     mutationFn: async ({ targetUserId }: { targetUserId: string }) => {
       // Send keys to server along with room creation
 
       // This actuallys gets the key and doesn't generate it
-      const { identityKeyPair, registrationId } =
+      const { identityKeyPair } =
         await ProtocolService.generateIdentityKeyPair();
 
       const response = await createChatRoom({
@@ -33,10 +35,17 @@ function useLiveUser() {
 
       return response;
     },
+    onError: (error) => {
+      console.log(error);
+      errorToast({
+        title: t('errors.failed_to_join_chat'),
+        description: t('errors.failed_to_join_chat'),
+      });
+    },
     onSuccess: (data, variables) => {
       if (data.data.chat_room_id) {
         router.navigate({
-          pathname: '/(tabs)/(home)/chatrooms/[roomId]',
+          pathname: '/(chat)/[roomId]',
           params: {
             roomId: data.data.chat_room_id,
           },
@@ -68,7 +77,7 @@ function useLiveUser() {
     onSuccess: (data, variables) => {
       if (data.data.chat_room_id) {
         router.navigate({
-          pathname: '/chatrooms/[roomId]',
+          pathname: '/(chat)/[roomId]',
           params: {
             roomId: data.data.chat_room_id,
           },

@@ -94,8 +94,7 @@ const styles = StyleSheet.create({
 
 export default function TabLayout() {
   const pathname = usePathname();
-  const isRecord = pathname.includes('record');
-  const { factCheckFeedId } = useFeeds();
+  const { factCheckFeedId, newsFeedId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
 
   // Track screen changes and update user properties
@@ -112,12 +111,6 @@ export default function TabLayout() {
   const TAB_COLORS = {
     active: isDarkColorScheme ? '#FFFFFF' : '#121212', // White in dark mode, near black in light mode
     inactive: isDarkColorScheme ? '#777777' : '#999999', // Dark gray in dark mode, lighter gray in light mode
-  };
-
-  const recordingTabStyles = {
-    tabBarButton: () => null,
-    tabBarButtonComponent: () => null,
-    tabBarLabel: () => null,
   };
 
   const { colorScheme } = useColorScheme();
@@ -249,27 +242,25 @@ export default function TabLayout() {
     // If on web, show a completely different layout with sidebar
     return (
       <SidebarLayout>
-        <DbUserGetter>
-          <BottomSheetModalProvider>
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                headerStyle: {
-                  backgroundColor: 'transparent',
-                },
-                contentStyle: {
-                  backgroundColor: theme.colors.background,
-                },
-              }}
-            />
-          </BottomSheetModalProvider>
-        </DbUserGetter>
+        <BottomSheetModalProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
+              headerStyle: {
+                backgroundColor: 'transparent',
+              },
+              contentStyle: {
+                backgroundColor: theme.colors.background,
+              },
+            }}
+          />
+        </BottomSheetModalProvider>
       </SidebarLayout>
     );
   }
   // Otherwise, default to existing tabs on mobile.
   return (
-    <DbUserGetter>
+    <DbUserGetter showMessagePreview={true}>
       <ReactionsOverlayProvider>
         <HeaderTransformProvider>
           <BottomSheetModalProvider>
@@ -280,7 +271,6 @@ export default function TabLayout() {
                 header: () => null,
                 freezeOnBlur: true,
                 headerTransparent: true,
-                ...(isRecord && recordingTabStyles),
                 tabBarActiveTintColor: TAB_COLORS.active,
                 tabBarInactiveTintColor: TAB_COLORS.inactive,
                 tabBarShowLabel: false,
@@ -288,7 +278,6 @@ export default function TabLayout() {
                   backgroundColor: theme.colors.background,
                   borderTopColor: theme.colors.border,
                 },
-                // tabBarHideOnKeyboard: isIOS,
               }}
             >
               <Tabs.Screen
@@ -300,6 +289,9 @@ export default function TabLayout() {
                     }
                   },
                 })}
+                initialParams={{
+                  feedId: newsFeedId,
+                }}
                 options={{
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
@@ -322,6 +314,10 @@ export default function TabLayout() {
                     }
                   },
                 })}
+                initialParams={{
+                  content_type: 'last24h',
+                  feedId: factCheckFeedId,
+                }}
                 options={{
                   tabBarIcon: ({ color, focused }) => (
                     <TabBarIcon
@@ -372,6 +368,18 @@ export default function TabLayout() {
                 }}
               />
               <Tabs.Screen
+                name="(chat-list)"
+                options={{
+                  tabBarIcon: ({ focused }) => (
+                    <TabBarIcon
+                      size={24}
+                      name={focused ? 'chatbubble' : 'chatbubble-outline'}
+                      color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
+                    />
+                  ),
+                }}
+              />
+              <Tabs.Screen
                 name="(user)"
                 listeners={() => ({
                   tabPress: (e) => {
@@ -397,6 +405,7 @@ export default function TabLayout() {
                   ),
                 }}
               />
+
               <Tabs.Screen
                 name="shareintent"
                 options={{
