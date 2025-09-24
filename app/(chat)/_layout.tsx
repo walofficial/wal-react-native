@@ -25,6 +25,13 @@ function Layout() {
               header: () => <ChatTopbar />,
             }}
           />
+          <Stack.Screen
+            name="[roomId]/profile-picture"
+            options={{
+              headerTransparent: true,
+              header: () => <SimpleGoBackHeader title="ფოტო" />,
+            }}
+          />
         </Stack>
       </View>
     </DbUserGetter>
