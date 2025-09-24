@@ -14,6 +14,7 @@ import {
   useRouter,
   useGlobalSearchParams,
   usePathname,
+  useLocalSearchParams,
 } from 'expo-router';
 import { TabBarIcon } from '../navigation/TabBarIcon';
 import { Text } from '../ui/text';
@@ -49,6 +50,7 @@ import { TabBar } from './TabBar';
 import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 
 function ProfileHeader({
+  feedId,
   customTitle,
   customTitleComponent,
   isAnimated = true,
@@ -56,7 +58,7 @@ function ProfileHeader({
   showSearch = false,
   showLocationTabs = false,
   showTabs = false,
-  feedId,
+  content_type,
 }: {
   customTitle?: string;
   customTitleComponent?: React.ReactNode;
@@ -66,6 +68,7 @@ function ProfileHeader({
   showLocationTabs?: boolean;
   showTabs?: boolean;
   feedId?: string;
+  content_type?: string;
 }) {
   const pathname = usePathname();
 
@@ -73,9 +76,6 @@ function ProfileHeader({
   const setHeaderHeight = useSetAtom(HEADER_HEIGHT);
   const setHeaderHeightWithTabs = useSetAtom(HEADER_HEIGHT_WITH_TABS);
   const { isDarkColorScheme } = useColorScheme();
-  const { content_type } = useGlobalSearchParams<{
-    content_type: string;
-  }>();
 
   const router = useRouter();
   const activeTab = content_type;
@@ -297,23 +297,7 @@ function ProfileHeader({
               />
 
               {/* Only show other buttons when search is not active */}
-              {!isSearchActive && !showSearch && (
-                <>
-                  {customButtons}
-                  {!customButtons && (
-                    <Link href={'/chatrooms'} asChild>
-                      <TouchableOpacity style={styles.buttonWrapper}>
-                        <Animated.View style={iconAnimatedStyle}>
-                          <TabBarIcon
-                            color={isDarkColorScheme ? 'white' : 'black'}
-                            name="paper-plane-outline"
-                          />
-                        </Animated.View>
-                      </TouchableOpacity>
-                    </Link>
-                  )}
-                </>
-              )}
+              {!isSearchActive && !showSearch && <>{customButtons}</>}
             </View>
           )}
         </Animated.View>
@@ -328,6 +312,7 @@ function ProfileHeader({
       <TabBar
         showTabs={showTabs}
         tabItems={locationTabItems}
+        //@ts-ignore
         activeTab={activeTab}
         showLocationTabs={showLocationTabs}
         onTabPress={handleTabPress}

@@ -154,8 +154,6 @@ export default function CreatePost() {
     handleCopyImage,
     removeImage,
     setSelectedImages,
-    hasClipboardImageAvailable,
-    isPastingImage,
   } = useImagePicker();
 
   // Handle shared images from share intent
@@ -262,40 +260,33 @@ export default function CreatePost() {
       });
     },
     onSuccess: (publishedDoc) => {
-      let navigationTargetContentType:
-        | 'youtube_only'
-        | 'social_media_only'
-        | null = null;
       // Initialize cacheUpdateContentType with the content_type from local search params
       // content_type is guaranteed to be one of "last24h" | "youtube_only" | "social_media_only" by its type definition
-      let cacheUpdateContentType:
+      let navigationTargetContentType:
         | 'last24h'
         | 'youtube_only'
         | 'social_media_only' = content_type;
-
-      if (previewData?.url) {
-        if (
-          previewData.url.includes('youtube.com') ||
-          previewData.url.includes('youtu.be')
-        ) {
-          navigationTargetContentType = 'youtube_only';
-          cacheUpdateContentType = 'youtube_only';
-        } else if (
-          previewData.url.includes('facebook.com') ||
-          previewData.url.includes('fb.com')
-        ) {
-          navigationTargetContentType = 'social_media_only';
-          cacheUpdateContentType = 'social_media_only';
+      if (!navigationTargetContentType) {
+        if (previewData?.url) {
+          if (
+            previewData.url.includes('youtube.com') ||
+            previewData.url.includes('youtu.be')
+          ) {
+            navigationTargetContentType = 'youtube_only';
+          } else if (
+            previewData.url.includes('facebook.com') ||
+            previewData.url.includes('fb.com')
+          ) {
+            navigationTargetContentType = 'social_media_only';
+          } else {
+            navigationTargetContentType = 'last24h';
+          }
         }
       }
-      if (!cacheUpdateContentType) {
-        cacheUpdateContentType = 'last24h';
-      }
-
       const queryOptions = getLocationFeedPaginatedInfiniteOptions({
         query: {
           page_size: LOCATION_FEED_PAGE_SIZE,
-          content_type_filter: cacheUpdateContentType,
+          content_type_filter: navigationTargetContentType,
         },
         path: {
           feed_id: feedId,
@@ -333,19 +324,19 @@ export default function CreatePost() {
         exact: false,
       });
 
-      if (navigationTargetContentType) {
+      if (navigationTargetContentType && !isShareIntent) {
         router.back();
         router.replace({
           pathname: `/(tabs)/(fact-check)`,
           params: {
-            content_type: 'last24h',
+            content_type: navigationTargetContentType,
           },
         });
       } else if (isShareIntent) {
         router.navigate({
           pathname: `/(tabs)/(fact-check)`,
           params: {
-            content_type: 'social_media_only', // Default for share intent if no specific link
+            content_type: navigationTargetContentType, // Default for share intent if no specific link
           },
         });
       } else {
@@ -356,32 +347,35 @@ export default function CreatePost() {
         // For share intents, ensure all relevant feeds are refreshed
         // as the user might navigate between them.
         // The cacheUpdateContentType is already invalidated above.
-        if (cacheUpdateContentType !== 'social_media_only') {
+        if (navigationTargetContentType !== 'social_media_only') {
           queryClient.invalidateQueries({
             queryKey: getLocationFeedPaginatedInfiniteQueryKey({
               path: { feed_id: feedId },
               query: {
+                page_size: LOCATION_FEED_PAGE_SIZE,
                 content_type_filter: 'social_media_only',
               },
             }),
           });
         }
-        if (cacheUpdateContentType !== 'youtube_only') {
+        if (navigationTargetContentType !== 'youtube_only') {
           queryClient.invalidateQueries({
             queryKey: getLocationFeedPaginatedInfiniteQueryKey({
               path: { feed_id: feedId },
               query: {
+                page_size: LOCATION_FEED_PAGE_SIZE,
                 content_type_filter: 'youtube_only',
               },
             }),
           });
         }
         // Always invalidate last24h for share intents if it wasn't the primary updated one
-        if (cacheUpdateContentType !== 'last24h') {
+        if (navigationTargetContentType !== 'last24h') {
           queryClient.invalidateQueries({
             queryKey: getLocationFeedPaginatedInfiniteQueryKey({
               path: { feed_id: feedId },
               query: {
+                page_size: LOCATION_FEED_PAGE_SIZE,
                 content_type_filter: 'last24h',
               },
             }),

@@ -74,7 +74,7 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
   const { onboardingState, markTutorialAsSeen } = useOnboarding();
 
   // Add user search query
-  const { data: searchedUsers, isLoading: isSearching } = useQuery({
+  const { data: foundUser, isLoading: isSearching } = useQuery({
     ...getUserProfileByUsernameOptions({
       path: {
         username: searchQuery,
@@ -237,9 +237,10 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
           { backgroundColor: theme.colors.icon },
         ]}
       >
-        <BottomSheetView
+        <View
           style={[
             styles.searchContainer,
+            {},
             {
               backgroundColor:
                 theme.colors.card.background === '#F2F2F7'
@@ -261,13 +262,8 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
             placeholderTextColor={theme.colors.feedItem.secondaryText}
             placeholder={t('common.search_by_name_or_number')}
           />
-        </BottomSheetView>
+        </View>
         <BottomSheetScrollView style={{ paddingHorizontal: 10 }}>
-          {/* {contactsPermissionGranted && (
-            <Text style={[styles.headerText, { color: theme.colors.text }]}>
-              {t("common.add_friends")}
-            </Text>
-          )} */}
           {!searchQuery && <AddUserFromOtherApps />}
           {!searchQuery && <FriendRequests />}
           {!searchQuery && <FriendsList />}
@@ -298,28 +294,28 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
           ))}
           <View style={{ height: 20 }} />
           {/* Display searched users */}
-          {searchQuery && searchedUsers && (
+          {searchQuery && foundUser && (
             <>
               <ContactListHeader
                 icon="search-outline"
                 title={t('common.searched_users')}
               />
               <ContactItem
-                key={searchedUsers.id}
+                key={foundUser.id}
                 buttonText={t('common.add')}
-                id={searchedUsers.id}
+                id={foundUser.id}
                 alreadyOnApp={true}
-                name={searchedUsers.username || ''}
+                name={foundUser.username || ''}
                 phone_number=""
-                image={searchedUsers.photos?.[0]?.image_url?.[0] || ''}
-                onAddPress={() => handleAddSearchedUser(searchedUsers.id)}
-                friendRequestSent={sentRequests.has(searchedUsers.id)}
+                image={foundUser.photos?.[0]?.image_url?.[0] || ''}
+                onAddPress={() => handleAddSearchedUser(foundUser.id)}
+                friendRequestSent={sentRequests.has(foundUser.id)}
                 isLoading={isSendingRequest}
               />
             </>
           )}
 
-          {filteredContacts.length === 0 && !searchedUsers && (
+          {filteredContacts.length === 0 && !foundUser && (
             <>
               <Text
                 style={[

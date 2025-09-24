@@ -139,6 +139,13 @@ export default function RegisterView() {
     username && !/^[a-zA-Z0-9_\.]*$/.test(username),
   );
 
+  const userNameExists =
+    usernameQuery.data &&
+    !usernameQuery.error &&
+    !!usernameQuery.dataUpdatedAt &&
+    !usernameQuery.isFetching &&
+    !!usernameQuery.data?.username;
+
   // Check if username is valid and available
   const isUsernameValid =
     username &&
@@ -146,18 +153,16 @@ export default function RegisterView() {
     username.length <= MAX_USERNAME_LENGTH &&
     !hasNonLatinChars &&
     !errors.username &&
-    !usernameQuery.error &&
-    !usernameQuery.isFetching &&
-    !!usernameQuery.data;
+    !userNameExists;
 
   useEffect(() => {
-    if (usernameQuery.data?.username === null) {
+    if (userNameExists) {
       errorToast({
         title: t('errors.username_taken'),
         description: t('errors.username_taken'),
       });
     }
-  }, [usernameQuery.data]);
+  }, [userNameExists]);
 
   useEffect(() => {
     if (username) {
@@ -203,11 +208,7 @@ export default function RegisterView() {
       return '#ef4444'; // Red for validation errors
     }
 
-    if (usernameQuery.data?.username === null) {
-      return '#ef4444'; // Red for unavailable username
-    }
-
-    if (isUsernameValid && usernameQuery.data?.username !== null) {
+    if (isUsernameValid && usernameQuery.data?.username) {
       return '#737373';
     }
     if (!isUsernameValid) {
@@ -227,15 +228,13 @@ export default function RegisterView() {
   };
 
   const insets = useSafeAreaInsets();
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
       <View style={styles.container}>
-        <View style={styles.closeButtonContainer}>
-          <CloseButton onClick={() => handleLogout()} variant="back" />
-        </View>
         <View style={styles.formContainer}>
           <H4 style={styles.sectionTitle}>სახელი</H4>
           <Controller
@@ -281,11 +280,11 @@ export default function RegisterView() {
                         {errors.username.message}
                       </Text>
                     )}
-                    {usernameQuery.data?.username === null &&
+                    {!usernameQuery.data &&
                       !hasNonLatinChars &&
                       !errors.username && (
                         <Text style={styles.errorText}>
-                          {usernameQuery.data.message}
+                          {usernameQuery.data?.message}
                         </Text>
                       )}
                   </View>
@@ -316,7 +315,7 @@ export default function RegisterView() {
               updateUserMutation.isPending ||
               !isValid ||
               !isUsernameValid ||
-              hasNonLatinChars
+              debouncedUsername !== username
             }
             size="lg"
             variant="secondary"
@@ -336,74 +335,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  waitlistContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 16,
-  },
-  successText: {
-    fontSize: 20,
-    color: '#22c55e',
-    marginBottom: 8,
-  },
-  centerText: {
-    textAlign: 'center',
-  },
-  closeButtonContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 10,
-    padding: 8,
-  },
   formContainer: {
-    paddingVertical: 30,
     paddingHorizontal: 20,
     flex: 1,
     marginTop: 40,
-  },
-  inputWrapper: {
-    marginBottom: 16,
-  },
-  inputContainer: {
-    backgroundColor: 'rgba(38, 38, 38, 0.8)',
-    borderRadius: 10,
-    paddingHorizontal: 16,
-    paddingTop: 24,
-    paddingBottom: 12,
-    position: 'relative',
-  },
-  floatingLabel: {
-    position: 'absolute',
-    left: 6,
-    top: 24,
-    fontSize: 16,
-    color: '#9ca3af',
-    fontWeight: '500',
-  },
-  usernameInput: {
-    color: 'white',
-    fontSize: 18,
-    backgroundColor: 'transparent',
-    height: 30,
-    padding: 0,
-    fontWeight: '500',
-    marginTop: 10,
-  },
-  inputFooter: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    marginTop: 2,
   },
   inputFeedback: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     marginTop: 4,
-  },
-  charCounter: {
-    fontSize: 14,
-    fontWeight: '500',
   },
   errorText: {
     color: '#ef4444',
@@ -413,22 +353,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     marginVertical: 6,
-  },
-  genderContainer: {
-    flexDirection: 'column',
-    marginVertical: 12,
-  },
-  genderTitle: {
-    marginBottom: 8,
-  },
-  genderButtonsContainer: {
-    flexDirection: 'row',
-  },
-  genderButton: {
-    marginBottom: 12,
-  },
-  femaleButton: {
-    marginLeft: 12,
   },
   submitButtonContainer: {
     paddingHorizontal: 20,
@@ -444,9 +368,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#000000',
   },
-  nameInputWrapper: {
-    marginBottom: 8,
-  },
+  nameInputWrapper: {},
   nameInput: {
     fontSize: 18,
     borderRadius: 12,

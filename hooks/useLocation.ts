@@ -21,6 +21,7 @@ export default function useLocation() {
     let locationSubscription: Location.LocationSubscription | null = null;
 
     (async () => {
+      // @ts-ignore
       if (!segments.includes('(home)') && !segments.includes('record')) {
         return;
       }

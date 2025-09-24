@@ -27,7 +27,7 @@ export default function useLocationsInfo(
     }),
     enabled: !!categoryId && enabled && (!!location || !!errorMsg),
     placeholderData: keepPreviousData,
-    subscribed: isFocused,
+    // subscribed: isFocused,
     staleTime: 1000 * 60 * 5,
   });
 
@@ -36,7 +36,10 @@ export default function useLocationsInfo(
       nearest_feeds: [],
       feeds_at_location: [],
     },
-    defaultFeedId: locations?.feeds_at_location?.[0]?.id || locations?.nearest_feeds?.[0]?.feed?.id || '',
+    defaultFeedId:
+      locations?.feeds_at_location?.[0]?.id ||
+      locations?.nearest_feeds?.[0]?.feed?.id ||
+      '',
     location,
     errorMsg,
     isFetching: locationsIsFetching || isGettingLocation,

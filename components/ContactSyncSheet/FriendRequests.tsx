@@ -1,19 +1,22 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import ContactListHeader from './ContactListHeader';
 import FriendRequestItem from './FriendRequestItem';
 import { useFriendRequestActions } from '@/hooks/useFriendRequestActions';
 import { useFriendRequests } from '@/hooks/useFriendRequests';
 import { useTheme } from '@/lib/theme';
+import FriendRequestChip from './FriendRequestChip';
 
 interface FriendRequestsProps {
   hideMyRequests?: boolean;
   limit?: number;
+  horizontal?: boolean;
 }
 
 const FriendRequests: React.FC<FriendRequestsProps> = ({
   hideMyRequests = false,
   limit = 999,
+  horizontal = false,
 }) => {
   const theme = useTheme();
   const { friendRequests } = useFriendRequests();
@@ -45,6 +48,38 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
     return null;
   }
 
+  if (horizontal) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: theme.colors.background, marginBottom: 15 },
+        ]}
+      >
+        <View style={{ paddingHorizontal: 14 }}>
+          <ContactListHeader icon="person-add-outline" title="მოთხოვნები" />
+        </View>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.horizontalList}
+          data={filteredRequests.slice(0, limit)}
+          keyExtractor={({ request }) => request.id}
+          renderItem={({ item: { user, request } }) => (
+            <FriendRequestChip
+              user={user}
+              request={request}
+              onAccept={handleAccept}
+              onReject={handleReject}
+              isAccepting={isAccepting}
+              isRejecting={isRejecting}
+            />
+          )}
+        />
+      </View>
+    );
+  }
+
   return (
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -71,6 +106,9 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 0,
+  },
+  horizontalList: {
+    paddingHorizontal: 8,
   },
 });
 

@@ -51,7 +51,7 @@ function VerificationView() {
           paddingBottom: insets.bottom,
         }}
       >
-        <SimpleGoBackHeader title="ფოსტი" verificationId={verificationId} />
+        <SimpleGoBackHeader title="ფოსტი" />
         <CommentsView
           verification={verification}
           verificationId={verificationId}

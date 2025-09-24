@@ -28,43 +28,6 @@ export function useNotificationHandler() {
       );
       if (hasCheckedInitialNotification.current) return;
       hasCheckedInitialNotification.current = true;
-
-      try {
-        const response = await Notifications.getLastNotificationResponseAsync();
-        if (response) {
-          console.log(
-            'App launched from notification:',
-            response.notification.request.content.data,
-          );
-          const { type, verificationId, roomId, feedId } =
-            response.notification.request.content.data;
-
-          // Check if app is ready for immediate navigation
-          const isAppReady = !isLoading && !userIsLoading && session && user;
-          console.log('App ready status:', isAppReady);
-          if (isAppReady) {
-            handleNotificationNavigation({
-              type,
-              verificationId,
-              roomId,
-              feedId,
-            });
-          } else {
-            console.log(
-              'App not ready, storing initial notification for:',
-              type,
-            );
-            pendingNavigation.current = {
-              type,
-              verificationId,
-              roomId,
-              feedId,
-            };
-          }
-        }
-      } catch (error) {
-        console.error('Error checking initial notification:', error);
-      }
     };
 
     checkInitialNotification();
@@ -137,9 +100,8 @@ export function useNotificationHandler() {
     }
 
     if (type === 'new_message' && roomId) {
-      console.log('Navigating to chat room:', roomId);
       router.navigate({
-        pathname: '/(tabs)/(home)/chatrooms/[roomId]',
+        pathname: '/(chat)/[roomId]',
         params: {
           roomId: roomId,
         },
@@ -177,7 +139,7 @@ export function useNotificationHandler() {
 
     if (type === 'friend_request_sent') {
       router.navigate({
-        pathname: '/(tabs)/(home)',
+        pathname: '/(tabs)/(chat-list)',
       });
     }
   };

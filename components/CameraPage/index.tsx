@@ -33,7 +33,7 @@ import {
   CONTENT_SPACING,
   CONTROL_BUTTON_SIZE,
   MAX_ZOOM_FACTOR,
-  SAFE_AREA_PADDING,
+  useSafeAreaPadding,
   SCREEN_HEIGHT,
   SCREEN_WIDTH,
 } from './Constants';
@@ -93,7 +93,7 @@ export default function CameraPage(): React.ReactElement {
   const [liveDescription, setLiveDescription] = useState('');
 
   const shouldShowMediaTypeSwitch = true;
-
+  const safePadding = useSafeAreaPadding();
   const camera = useRef<Camera>(null);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
   const microphone = useMicrophonePermission();
@@ -182,7 +182,7 @@ export default function CameraPage(): React.ReactElement {
   }, []);
   const onMediaCaptured = useCallback(
     (media: PhotoFile | VideoFile, type: 'photo' | 'video') => {
-      router.replace({
+      router.navigate({
         pathname: `/(camera)/mediapage`,
         params: {
           path: media.path,
@@ -386,7 +386,14 @@ export default function CameraPage(): React.ReactElement {
       {selectedMode === 'live' && (
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={[styles.liveInputContainer, { width: '80%', paddingTop: 30 }]}
+          style={[
+            styles.liveInputContainer,
+            {
+              width: '80%',
+              marginTop: safePadding.paddingTop,
+              marginLeft: safePadding.paddingLeft,
+            },
+          ]}
         >
           <TextInput
             style={styles.liveTextInput}
@@ -400,7 +407,13 @@ export default function CameraPage(): React.ReactElement {
         </KeyboardAvoidingView>
       )}
 
-      <KeyboardAvoidingView behavior="padding" style={styles.captureButton}>
+      <KeyboardAvoidingView
+        behavior="padding"
+        style={[
+          styles.captureButton,
+          { marginBottom: safePadding.paddingBottom },
+        ]}
+      >
         <View style={styles.captureButtonContainer}>
           {shouldShowMediaTypeSwitch && (
             <View
@@ -455,8 +468,9 @@ export default function CameraPage(): React.ReactElement {
                 livekit_token: string;
                 room_name: string;
               }) => {
-                router.navigate({
-                  pathname: '/(tabs)/(home)/livestream',
+                // Replace so that when user disconnects from livestream page it no longer goes back to the camera page
+                router.replace({
+                  pathname: '/(camera)/livestream',
                   params: {
                     feedId: feedId as string,
                     livekit_token: livekit_token,
@@ -494,6 +508,11 @@ export default function CameraPage(): React.ReactElement {
         style={[
           styles.rightButtonRow,
           {
+            paddingTop: safePadding.paddingTop,
+            paddingRight: safePadding.paddingRight,
+          },
+
+          {
             opacity: 1,
           },
         ]}
@@ -501,14 +520,12 @@ export default function CameraPage(): React.ReactElement {
         <TouchableOpacity
           style={styles.button}
           onPress={() => {
-            dismiss('all');
-            router.dismissAll();
-            router.navigate({
-              pathname: '/(tabs)/(home)/[feedId]',
-              params: {
-                feedId: feedId as string,
-              },
-            });
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.navigate('/(tabs)/(home)');
+              return;
+            }
           }}
         >
           <IonIcon name="arrow-back" color="white" size={24} />
@@ -558,7 +575,7 @@ const styles = StyleSheet.create({
   captureButton: {
     position: 'absolute',
     alignSelf: 'center',
-    bottom: SAFE_AREA_PADDING.paddingBottom,
+    bottom: 0,
   },
   captureButtonContainer: {
     flexDirection: 'column',
@@ -582,8 +599,8 @@ const styles = StyleSheet.create({
   },
   rightButtonRow: {
     position: 'absolute',
-    right: SAFE_AREA_PADDING.paddingRight,
-    top: SAFE_AREA_PADDING.paddingTop + 20 + 40,
+    right: 0,
+    top: 0,
   },
   text: {
     color: 'white',
@@ -599,7 +616,7 @@ const styles = StyleSheet.create({
   recordingTimer: {
     position: 'absolute',
     alignSelf: 'center',
-    bottom: SAFE_AREA_PADDING.paddingBottom + 50,
+    bottom: 0,
   },
   recordingTimerText: {
     color: 'white',
@@ -626,9 +643,9 @@ const styles = StyleSheet.create({
   },
   liveInputContainer: {
     position: 'absolute',
-    top: SAFE_AREA_PADDING.paddingTop + 20,
-    left: SAFE_AREA_PADDING.paddingLeft,
-    right: SAFE_AREA_PADDING.paddingRight,
+    top: 0,
+    left: 0,
+    right: 0,
     zIndex: 1,
   },
   liveTextInput: {

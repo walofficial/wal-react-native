@@ -14,30 +14,15 @@ export default function TakeVideo({ disabled }: { disabled: boolean }) {
   const { isDarkColorScheme } = useColorScheme();
   const { dismiss } = useToast();
   const onTakeVideoClick = async () => {
-    // Dismiss previous toasts if any
     dismiss('all');
 
     try {
-      const cachedVideoPath = await AsyncStorage.getItem(
-        `lastRecordedVideoPath_${feedId}`,
-      );
-      if (cachedVideoPath) {
-        router.navigate({
-          pathname: `/(camera)/mediapage`,
-          params: {
-            feedId: feedId as string,
-            path: cachedVideoPath,
-            type: 'video',
-          },
-        });
-      } else {
-        router.push({
-          pathname: `/record`,
-          params: {
-            feedId: feedId as string,
-          },
-        });
-      }
+      router.navigate({
+        pathname: `/record`,
+        params: {
+          feedId: feedId as string,
+        },
+      });
     } catch (e) {
       console.error('Error accessing camera or cached video:', e);
     }

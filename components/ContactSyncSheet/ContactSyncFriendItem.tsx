@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState } from 'react';
 import {
   View,
@@ -47,7 +46,7 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
         },
         {
           text: t('common.block'),
-          onPress: () => blockUser.mutate(user.id),
+          onPress: () => blockUser.mutate({ path: { target_id: user.id } }),
           style: 'destructive',
         },
       ],
@@ -70,20 +69,20 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
           <View
             style={[
               styles.avatarContainer,
-              !user.profile_picture && {
+              !user.photos?.[0]?.image_url?.[0] && {
                 backgroundColor: theme.colors.card.background,
               },
-              !user.profile_picture && styles.roundedFull,
+              !user.photos?.[0]?.image_url?.[0] && styles.roundedFull,
             ]}
           >
-            {user.profile_picture ? (
+            {user.photos?.[0]?.image_url?.[0] ? (
               <AvatarImage
                 style={styles.avatarImage}
-                source={{ uri: user.profile_picture }}
+                source={{ uri: user.photos?.[0]?.image_url?.[0] }}
               />
             ) : (
               <Text style={[styles.avatarText, { color: theme.colors.text }]}>
-                {user.username.charAt(0).toUpperCase()}
+                {user.username?.charAt(0).toUpperCase()}
               </Text>
             )}
           </View>

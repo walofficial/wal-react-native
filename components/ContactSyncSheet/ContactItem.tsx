@@ -36,7 +36,6 @@ const ContactItem: React.FC<ContactItemProps> = ({
 }) => {
   const auth = useAuth();
   const theme = useTheme();
-
   const handlePress = async () => {
     if (alreadyOnApp) {
       onAddPress();

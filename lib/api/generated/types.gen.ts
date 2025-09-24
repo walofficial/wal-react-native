@@ -116,20 +116,6 @@ export type BodyPublishPost = {
 };
 
 /**
- * Body_request_livekit_ingress
- */
-export type BodyRequestLivekitIngress = {
-  /**
-   * Feed Id
-   */
-  feed_id: string;
-  /**
-   * Text Content
-   */
-  text_content?: string | null;
-};
-
-/**
  * Body_send_user_notification_feeds_send_user_notification_post
  */
 export type BodySendUserNotificationFeedsSendUserNotificationPost = {
@@ -241,10 +227,6 @@ export type ChatMessage = {
    * Recipient Id
    */
   recipient_id: string;
-  /**
-   * Message
-   */
-  message?: string | null;
   /**
    * Encrypted Content
    */
@@ -437,7 +419,8 @@ export type CommentTag = {
 export type ContentTypeFilter =
   | 'last24h'
   | 'youtube_only'
-  | 'social_media_only';
+  | 'social_media_only'
+  | 'with_image_and_high_score';
 
 /**
  * CreateChatRoomRequest
@@ -672,7 +655,7 @@ export type FactCheckingReference = {
    * Source Title
    * Title of the reference source
    */
-  source_title?: string;
+  source_title?: string | null;
   /**
    * Key Quote
    * Key quote from the source supporting the fact check
@@ -1718,36 +1701,6 @@ export type ReportRequest = {
 };
 
 /**
- * RequestLivekitIngressResponse
- */
-export type RequestLivekitIngressResponse = {
-  /**
-   * Livekit Token
-   */
-  livekit_token: string;
-  /**
-   * Room Name
-   */
-  room_name: string;
-  /**
-   * Ingress Url
-   */
-  ingress_url: string;
-  /**
-   * Ingress Id
-   */
-  ingress_id: string;
-  /**
-   * Ingress Name
-   */
-  ingress_name: string;
-  /**
-   * Ingress Key
-   */
-  ingress_key: string;
-};
-
-/**
  * RoomPreviewData
  */
 export type RoomPreviewData = {
@@ -1859,6 +1812,10 @@ export type SocialMediaScrapeStatus =
  * Source
  */
 export type Source = {
+  /**
+   * External Id
+   */
+  external_id?: string | null;
   /**
    * Title
    */
@@ -2801,33 +2758,6 @@ export type GetLiveStreamTokenResponses = {
 export type GetLiveStreamTokenResponse2 =
   GetLiveStreamTokenResponses[keyof GetLiveStreamTokenResponses];
 
-export type RequestLivekitIngressData = {
-  body: BodyRequestLivekitIngress;
-  path?: never;
-  query?: never;
-  url: '/live/request-livekit-ingress';
-};
-
-export type RequestLivekitIngressErrors = {
-  /**
-   * Validation Error
-   */
-  422: HttpValidationError;
-};
-
-export type RequestLivekitIngressError =
-  RequestLivekitIngressErrors[keyof RequestLivekitIngressErrors];
-
-export type RequestLivekitIngressResponses = {
-  /**
-   * Successful Response
-   */
-  200: RequestLivekitIngressResponse;
-};
-
-export type RequestLivekitIngressResponse2 =
-  RequestLivekitIngressResponses[keyof RequestLivekitIngressResponses];
-
 export type StartLiveData = {
   body: BodyStartLive;
   path?: never;
@@ -3506,9 +3436,7 @@ export type GetUserProfileByUsernameResponses = {
    * Response Get User Profile By Username
    * Successful Response
    */
-  200: {
-    [key: string]: unknown;
-  };
+  200: User | null;
 };
 
 export type GetUserProfileByUsernameResponse =

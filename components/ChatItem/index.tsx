@@ -19,7 +19,6 @@ function ChatItem({ item }: { item: ChatRoom }) {
   const targetUser = item.participants.find(
     (user) => user.id !== authorizedUser.id,
   );
-
   const isNavigationEnabled = !!targetUser?.username;
 
   // Prefetch chat data when user interacts with chat item
@@ -101,11 +100,10 @@ function ChatItem({ item }: { item: ChatRoom }) {
     }
     return null;
   };
-
   return (
     <Link
       href={{
-        pathname: '/chatrooms/[roomId]',
+        pathname: '/(chat)/[roomId]',
         params: { roomId: item.id },
       }}
       asChild

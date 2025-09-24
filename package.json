@@ -1,7 +1,7 @@
 {
   "name": "ment-app",
   "main": "index.js",
-  "version": "1.0.26",
+  "version": "1.0.27",
   "scripts": {
     "start": "node ./scripts/start-with-local-ip.js",
     "reset-project": "node ./scripts/reset-project.js",
@@ -36,6 +36,7 @@
   "dependencies": {
     "@bacons/apple-targets": "^0.2.1",
     "@config-plugins/react-native-webrtc": "^10.0.0",
+    "@dev-plugins/react-navigation": "~0.2.0",
     "@expo/config-plugins": "^9.0.0",
     "@expo/vector-icons": "~14.0.4",
     "@gorhom/bottom-sheet": "^5.1.8",
@@ -140,7 +141,8 @@
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
     "zod": "^3.23.8",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "react-query-external-sync": "^2.2.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

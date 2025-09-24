@@ -5,9 +5,7 @@ import {
   TouchableOpacity,
   TextInput,
   Text,
-  useWindowDimensions,
   StyleSheet,
-  Platform,
   useColorScheme,
 } from 'react-native';
 import { FileImage, Paperclip, Mic, ArrowUp } from '@/lib/icons';
@@ -26,20 +24,11 @@ const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
 interface ChatBottombarProps {
   sendMessage: (newMessage: string) => void;
-  isMobile: boolean;
-  onFocus: () => void;
-  onBlur: () => void;
-  canText?: boolean;
 }
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
-export default function ChatBottombar({
-  onFocus,
-  canText,
-  onBlur,
-  sendMessage,
-}: ChatBottombarProps) {
+export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);
   const setMessage = useSetAtom(messageAtom);
   const message = useAtomValue(messageAtom);
@@ -96,15 +85,17 @@ export default function ChatBottombar({
               backgroundColor: inputBackground,
             },
           ]}
+          autoCorrect={false}
+          autoCapitalize="none"
+          returnKeyType="default"
+          enablesReturnKeyAutomatically={true}
           placeholder="მესიჯი"
           placeholderTextColor={placeholderColor}
           onFocus={() => {
             setIsFocused(true);
-            onFocus();
           }}
           onBlur={() => {
             setIsFocused(false);
-            onBlur();
           }}
           onContentSizeChange={(event) => {
             const newHeight =
@@ -119,7 +110,7 @@ export default function ChatBottombar({
           }}
         />
         <View style={styles.sendButtonContainer}>
-          <SendButton canText={!!canText} sendMessage={sendMessage} />
+          <SendButton sendMessage={sendMessage} />
         </View>
       </View>
     </View>
@@ -127,10 +118,8 @@ export default function ChatBottombar({
 }
 
 export function SendButton({
-  canText,
   sendMessage,
 }: {
-  canText: boolean;
   sendMessage: (message: string) => void;
 }) {
   const message = useAtomValue(messageAtom);
@@ -151,12 +140,11 @@ export function SendButton({
 
   return (
     <TouchableOpacity
-      disabled={!canText || !hasText}
+      disabled={!hasText}
       style={[
         styles.sendButton,
         { backgroundColor: sendButtonColor },
         !hasText && styles.sendButtonDisabled,
-        !canText && styles.disabledContainer,
       ]}
       onPress={handleSend}
     >

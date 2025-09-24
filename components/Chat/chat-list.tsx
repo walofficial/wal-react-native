@@ -9,30 +9,23 @@ import React, {
 import {
   View,
   ScrollView,
-  Keyboard,
   LayoutChangeEvent,
-  FlatList,
-  LayoutAnimation,
   Platform,
   UIManager,
   InteractionManager,
 } from 'react-native';
 import ChatBottombar from './chat-bottombar';
-import { useQueryClient } from '@tanstack/react-query';
 import { User, ChatMessage } from '@/lib/api/generated';
 import useAuth from '@/hooks/useAuth';
 import { SocketContext } from './socket/context';
 import useMessageUpdates from './useMessageUpdates';
 import useMessageFetching from './useMessageFetching';
-import { format } from 'date-fns';
-import Sentry from '@sentry/react-native';
+import * as Sentry from '@sentry/react-native';
 import { useKeyboardHandler } from 'react-native-keyboard-controller';
 require('dayjs/locale/ka');
 
 interface ChatListProps {
   selectedUser: User;
-  isMobile: boolean;
-  canText?: boolean;
 }
 import { useAtomValue, useSetAtom } from 'jotai';
 import { isChatUserOnlineState, messageAtom } from '@/lib/state/chat';
@@ -65,8 +58,7 @@ if (Platform.OS === 'android') {
   }
 }
 
-export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
-  const messagesContainerRef = useRef<ScrollView>(null);
+export function ChatList({ selectedUser }: ChatListProps) {
   const trackedMessageIdsRef = useRef<Set<string>>(new Set());
 
   const params = useLocalSearchParams<{
@@ -74,22 +66,10 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   }>();
   const { user } = useAuth();
   const socketContext = useContext(SocketContext);
-  const scrolledFirstTime = useRef(false);
 
-  const [refetchInterval, setRefetchInterval] = useState(0);
   const { room, isFetching } = useMessageRoom(params.roomId, false);
-  const {
-    orderedPages,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    firstPage,
-  } = useMessageFetching(
-    params.roomId,
-    refetchInterval,
-    false,
-    selectedUser.id,
-  );
+  const { orderedPages, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMessageFetching(params.roomId);
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const setMessage = useSetAtom(messageAtom);
   const { sendMessageIdsToBackend, addMessageToCache } = useMessageUpdates(
@@ -112,23 +92,6 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
       clearInterval(intervalId);
     };
   }, [selectedUser.id, socketContext]);
-
-  useEffect(() => {
-    if (messagesContainerRef.current) {
-      const lastMessage = firstPage?.messages[firstPage.messages.length - 1];
-      if (!lastMessage) {
-        return;
-      }
-
-      if (!scrolledFirstTime.current) {
-        messagesContainerRef.current.scrollToEnd({ animated: false });
-        scrolledFirstTime.current = true;
-        return;
-      }
-
-      messagesContainerRef.current.scrollToEnd({ animated: true });
-    }
-  }, [firstPage?.messages.length]);
 
   useEffect(() => {
     orderedPages.forEach((page) => {
@@ -168,11 +131,12 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   }
 
   // Memoize the converted messages to prevent recreation on every render
-  const convertedMessagesForGiftedChat = useMemo(
+  const messages = useMemo(
     () =>
       orderedPages.map((page, pageIndex) =>
         page.messages.map((message, messageIndex) => ({
           _id: message.id || message.temporary_id,
+          // @ts-ignore
           text: message.message,
           createdAt:
             message.id && !message.temporary_id
@@ -185,10 +149,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
   );
 
   // Memoize the messageItems array to prevent recreation on every render
-  const messageItems = useMemo(
-    () => [...convertedMessagesForGiftedChat.flat()],
-    [convertedMessagesForGiftedChat],
-  );
+  const messageItems = useMemo(() => [...messages.flat()], [messages]);
 
   // Memoize the renderItem function to prevent recreation on every render
   const messageRenderItem = useCallback(
@@ -238,6 +199,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         id: randomTemporaryMessageId,
         temporary_id: randomTemporaryMessageId,
         author_id: user.id,
+        // @ts-ignore
         message: messageToSend,
         room_id: params.roomId,
         message_state: 'SENT',
@@ -385,9 +347,9 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
     },
     [layoutHeight, isAtBottom, isAtTop, hasScrolled, setHasScrolled],
   );
-
+  const insets = useSafeAreaInsets();
   const bottomOffset = isWeb ? 0 : 0;
-  const keyboardOffsetValue = isIOS ? 80 : 50;
+  const keyboardOffsetValue = insets.bottom;
 
   const keyboardHeight = useSharedValue(0);
   const keyboardIsOpening = useSharedValue(false);
@@ -478,7 +440,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
           disableVirtualization={true}
           onContentSizeChange={onContentSizeChange}
           onLayout={onListLayout}
-          keyExtractor={(item) => item._id.toString()}
+          keyExtractor={(item) => item._id}
           initialNumToRender={isNative ? 32 : 62}
           maxToRenderPerBatch={isNative ? 32 : 62}
           keyboardDismissMode="on-drag"
@@ -501,13 +463,7 @@ export function ChatList({ selectedUser, isMobile, canText }: ChatListProps) {
         />
       </ScrollProvider>
       <Animated.View style={animatedStickyViewStyle}>
-        <ChatBottombar
-          isMobile={isMobile}
-          onFocus={() => {}}
-          onBlur={() => {}}
-          canText={canText}
-          sendMessage={onSendMessage}
-        />
+        <ChatBottombar sendMessage={onSendMessage} />
       </Animated.View>
     </View>
   );

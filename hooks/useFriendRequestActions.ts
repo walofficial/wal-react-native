@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   acceptFriendRequestMutation,
   getFriendRequestsQueryKey,
+  getFriendsListQueryKey,
   rejectFriendRequestMutation,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 
@@ -26,6 +27,7 @@ export const useFriendRequestActions = () => {
       queryClient.invalidateQueries({ queryKey: getFriendRequestsQueryKey() });
     },
     onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: getFriendsListQueryKey() });
       queryClient.invalidateQueries({ queryKey: getFriendRequestsQueryKey() });
     },
   });
