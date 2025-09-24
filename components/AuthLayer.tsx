@@ -7,6 +7,7 @@ import { useRouter } from 'expo-router';
 import ProtocolService from '@/lib/services/ProtocolService';
 import { createUser, getUser, User } from '@/lib/api/generated';
 import useSendPublicKey from '@/hooks/useSendPublicKey';
+import { getDeviceId } from '@/lib/device-id';
 import { isWeb } from '@/lib/platform';
 import { useToast } from './ToastUsage';
 import { getCurrentLocale, getLanguageFromLocale, t } from '@/lib/i18n';
@@ -85,7 +86,10 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (user) {
       // Send public key when we have a user
-      sendPublicKey({ userId: user.id });
+      (async () => {
+        const deviceId = await getDeviceId();
+        sendPublicKey({ userId: user.id, deviceId });
+      })();
     }
   }, [user]);
 
