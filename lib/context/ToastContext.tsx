@@ -123,7 +123,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
       ...options,
       type: 'message',
       position: 'top',
-      duration: options.duration || 5000,
+      duration: 2000
     });
   }, []);
 

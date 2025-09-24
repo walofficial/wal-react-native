@@ -137,7 +137,7 @@ export default function ChatTopbar() {
             onPress={() => {
               if (userPhoto) {
                 router.navigate({
-                  pathname: '/(tabs)/(home)/profile-picture',
+                  pathname: '/(chat)/[roomId]/profile-picture',
                   params: {
                     roomId: roomId,
                     imageUrl: userPhoto,
