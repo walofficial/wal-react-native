@@ -22,6 +22,7 @@ import ProtocolService from '@/lib/services/ProtocolService';
 import { getDeviceId } from '@/lib/device-id';
 import useAuth from '@/hooks/useAuth';
 import { useIsFocused } from '@react-navigation/native';
+import { AppState } from 'react-native';
 import {
   getMessagesChatMessagesGetInfiniteOptions,
   getMessagesChatMessagesGetInfiniteQueryKey,
@@ -51,6 +52,7 @@ export default function MessageConnectionWrapper({
   const socketRef = useRef(getSocket(user.id, publicKey, deviceId));
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const isFocused = useIsFocused();
+  const appStateRef = useRef(AppState.currentState);
   const { canShowMessagePreview, recordMessage, getSenderTimeout } =
     useMessageSpamPrevention({
       timeoutMs: 5000, // 5 seconds timeout
@@ -64,14 +66,28 @@ export default function MessageConnectionWrapper({
   });
 
   useEffect(() => {
-      if (isFocused) {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      appStateRef.current = nextAppState;
+      const shouldConnect = isFocused && nextAppState === 'active';
+      if (shouldConnect) {
         socketRef.current.connect();
       } else {
-      socketRef.current.disconnect();
-      }
-      return () => {
         socketRef.current.disconnect();
       }
+    });
+
+    // Initial connect/disconnect based on current app state and focus
+    const shouldConnectInitially = isFocused && appStateRef.current === 'active';
+    if (shouldConnectInitially) {
+      socketRef.current.connect();
+    } else {
+      socketRef.current.disconnect();
+    }
+
+    return () => {
+      subscription.remove();
+      socketRef.current.disconnect();
+    };
   }, [isFocused]);
 
   useEffect(() => {

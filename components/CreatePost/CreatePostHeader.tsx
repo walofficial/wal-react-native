@@ -24,6 +24,7 @@ export default function CreatePostHeader({
   isPending,
   isFactCheckEnabled,
 }: CreatePostHeaderProps) {
+  const router = useRouter();
   const theme = useTheme();
 
   const getButtonColor = () => {
@@ -42,13 +43,11 @@ export default function CreatePostHeader({
 
   return (
     <View style={styles.container}>
-      <Link href={`../`} asChild>
-        <TouchableOpacity style={styles.cancelButton}>
+        <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
           <Text style={[styles.cancelText, { color: theme.colors.text }]}>
             {t('common.cancel')}
           </Text>
         </TouchableOpacity>
-      </Link>
 
       <TouchableOpacity
         disabled={isDisabled || isPending}

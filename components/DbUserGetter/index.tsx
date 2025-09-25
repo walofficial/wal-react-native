@@ -20,7 +20,6 @@ function DbUserGetter({
   }, []);
 
   const publicKey = useAtomValue(publicKeyState);
-  useNotificationHandler();
 
   if (isWeb) {
     return children;

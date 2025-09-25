@@ -9,7 +9,6 @@ import {
 import { Text } from '@/components/ui/text';
 import { User } from '@/lib/api/generated/types.gen';
 import { Ionicons } from '@expo/vector-icons';
-import UserAvatarChallange from '../UserAvatarAnimated';
 import { MenuView } from '@react-native-menu/menu';
 import useBlockUser from '@/hooks/useBlockUser';
 import { FontSizes, useTheme } from '@/lib/theme';

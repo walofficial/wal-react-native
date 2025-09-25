@@ -278,6 +278,10 @@ export type ChatRoom = {
    */
   user_public_key?: string;
   last_message?: ChatMessage | null;
+  /**
+   * Is Friend
+   */
+  is_friend?: boolean;
 };
 
 /**
@@ -1611,6 +1615,46 @@ export type ProfileInformationResponse = {
    * User Id
    */
   user_id: string;
+};
+
+/**
+ * PublicKeyEntry
+ */
+export type PublicKeyEntry = {
+  /**
+   * User Id
+   */
+  user_id: string;
+  /**
+   * Username
+   */
+  username?: string | null;
+  /**
+   * Public Key
+   */
+  public_key: string | null;
+  /**
+   * Timestamp
+   */
+  timestamp: string | null;
+  /**
+   * Active Device Id
+   */
+  active_device_id: string | null;
+  /**
+   * Is Connected
+   */
+  is_connected?: boolean;
+};
+
+/**
+ * PublicKeysResponse
+ */
+export type PublicKeysResponse = {
+  /**
+   * Keys
+   */
+  keys: Array<PublicKeyEntry>;
 };
 
 /**
@@ -3893,6 +3937,40 @@ export type GetMessageChatRoomResponses = {
 
 export type GetMessageChatRoomResponse =
   GetMessageChatRoomResponses[keyof GetMessageChatRoomResponses];
+
+export type ListPublicKeysChatPublicKeysGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/chat/public-keys';
+};
+
+export type ListPublicKeysChatPublicKeysGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: PublicKeysResponse;
+};
+
+export type ListPublicKeysChatPublicKeysGetResponse =
+  ListPublicKeysChatPublicKeysGetResponses[keyof ListPublicKeysChatPublicKeysGetResponses];
+
+export type PublicKeysUiChatPublicKeysUiGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/chat/public-keys/ui';
+};
+
+export type PublicKeysUiChatPublicKeysUiGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: string;
+};
+
+export type PublicKeysUiChatPublicKeysUiGetResponse =
+  PublicKeysUiChatPublicKeysUiGetResponses[keyof PublicKeysUiChatPublicKeysUiGetResponses];
 
 export type GetNotificationsData = {
   body?: never;
