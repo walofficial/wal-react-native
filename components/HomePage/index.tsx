@@ -24,14 +24,16 @@ const VIDEO_URI =
 
 export default function HomePage() {
   const userLoginRef = useRef<BottomSheet>(null);
-  const [appLocale] = useAtom(appLocaleAtom);
   const { t } = useTranslation();
 
   useEffect(() => {
     if (isAndroid) {
-      NavigationBar.setPositionAsync('absolute');
-      NavigationBar.setBackgroundColorAsync('transparent');
+      NavigationBar.setVisibilityAsync('hidden');
     }
+
+    return () => {
+      NavigationBar.setVisibilityAsync('visible');
+    };
   }, []);
 
   return (

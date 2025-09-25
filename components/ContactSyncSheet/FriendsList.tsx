@@ -22,7 +22,6 @@ import {
   removeFriendMutation,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { t } from '@/lib/i18n';
-import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 
 const FriendsList: React.FC = () => {
   const queryClient = useQueryClient();
@@ -93,7 +92,6 @@ const FriendsList: React.FC = () => {
           }
         />
       ))}
-      {isFetching && <ActivityIndicator />}
     </View>
   );
 };

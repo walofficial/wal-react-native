@@ -37,12 +37,19 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
   const stopLive = useMutation({
     ...stopLiveMutation(),
     onSuccess: (data) => {
-      if (onDisconnect) {
-        setIsUserLive(false);
-        onDisconnect();
-      }
+      setIsUserLive(false);
     },
   });
+
+  useEffect(() => {
+    return () => {
+      stopLive.mutate({
+        query: {
+          room_name: roomName,
+        },
+      });
+    };
+  }, []);
 
   return (
     <LiveKitRoom
@@ -69,6 +76,7 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
       audio={true}
       video={true}
       onDisconnected={() => {
+        console.log('onDisconnected');
         setIsUserLive(false);
         if (onDisconnect) {
           onDisconnect();

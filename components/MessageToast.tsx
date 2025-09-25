@@ -2,8 +2,6 @@ import React from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/lib/theme';
 import { router } from 'expo-router';
-import { MessageSquare } from 'lucide-react-native';
-import { useToast } from './ToastUsage';
 
 interface MessageToastProps {
   message: string;
@@ -21,7 +19,6 @@ export const MessageToast: React.FC<MessageToastProps> = ({
   roomId,
 }) => {
   const { colors } = useTheme();
-  const { dismissAll } = useToast();
   const handlePress = () => {
     // Navigate to the chat room
     router.push({
@@ -30,7 +27,6 @@ export const MessageToast: React.FC<MessageToastProps> = ({
         roomId: roomId,
       },
     });
-    dismissAll();
   };
   return (
     <TouchableOpacity

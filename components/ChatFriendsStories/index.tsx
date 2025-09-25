@@ -6,9 +6,6 @@ import { Text } from '@/components/ui/text';
 import UserAvatarLayout from '@/components/UserAvatar';
 import { useTheme } from '@/lib/theme';
 import { AvatarImage } from '../ui/avatar';
-import { Ionicons } from '@expo/vector-icons';
-import { useAtom } from 'jotai';
-import { contactSyncSheetState } from '@/lib/atoms/contactSync';
 import { t } from '@/lib/i18n';
 import useLiveUser from '@/hooks/useLiveUser';
 import FriendRequests from '../ContactSyncSheet/FriendRequests';
@@ -23,51 +20,25 @@ export default function ChatFriendsStories() {
   const handlePress = (friendId: string) => {
     joinChat.mutate({ targetUserId: friendId });
   };
-  const [isOpen, setIsOpen] = useAtom(contactSyncSheetState);
-
+  if (!friends || friends.length === 0) {
+    return (
+      <View style={styles.container}>
+        <FriendRequests hideMyRequests limit={5} horizontal />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
-      <FriendRequests hideMyRequests limit={5} horizontal />
+      <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+        {t('common.friends')}
+      </Text>
       <FlatList
         horizontal
         showsHorizontalScrollIndicator={false}
-        data={[{ id: '__add__' } as any, ...friends]}
+        data={friends}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => {
-          if (item.id === '__add__') {
-            return (
-              <TouchableOpacity
-                style={styles.storyItem}
-                activeOpacity={0.8}
-                onPress={() => setIsOpen(true)}
-              >
-                <UserAvatarLayout size="md" borderColor="gray">
-                  <View
-                    style={[
-                      styles.avatarInner,
-                      {
-                        backgroundColor: theme.colors.primary,
-                        borderRadius: 36,
-                      },
-                    ]}
-                  >
-                    <Ionicons
-                      name="add"
-                      size={32}
-                      color={theme.colors.button.text}
-                    />
-                  </View>
-                </UserAvatarLayout>
-                <Text
-                  numberOfLines={1}
-                  style={[styles.username, { color: theme.colors.text }]}
-                >
-                  {t('common.add')}
-                </Text>
-              </TouchableOpacity>
-            );
-          }
           const imageUrl = item.photos?.[0]?.image_url?.[0] || '';
           return (
             <TouchableOpacity
@@ -116,6 +87,13 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 8,
     marginBottom: 15,
+  },
+  sectionTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 12,
+    marginLeft: 16,
+    letterSpacing: -0.4,
   },
   listContent: {
     paddingHorizontal: 8,

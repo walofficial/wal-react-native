@@ -278,6 +278,10 @@ export type ChatRoom = {
    */
   user_public_key?: string;
   last_message?: ChatMessage | null;
+  /**
+   * Is Friend
+   */
+  is_friend?: boolean;
 };
 
 /**
@@ -778,6 +782,10 @@ export type Feed = {
    * Feed Language Code
    */
   feed_language_code?: string | null;
+  /**
+   * Nearby Feed
+   */
+  nearby_feed?: boolean | null;
 };
 
 /**
@@ -1610,6 +1618,46 @@ export type ProfileInformationResponse = {
 };
 
 /**
+ * PublicKeyEntry
+ */
+export type PublicKeyEntry = {
+  /**
+   * User Id
+   */
+  user_id: string;
+  /**
+   * Username
+   */
+  username?: string | null;
+  /**
+   * Public Key
+   */
+  public_key: string | null;
+  /**
+   * Timestamp
+   */
+  timestamp: string | null;
+  /**
+   * Active Device Id
+   */
+  active_device_id: string | null;
+  /**
+   * Is Connected
+   */
+  is_connected?: boolean;
+};
+
+/**
+ * PublicKeysResponse
+ */
+export type PublicKeysResponse = {
+  /**
+   * Keys
+   */
+  keys: Array<PublicKeyEntry>;
+};
+
+/**
  * RaiseHandRequest
  */
 export type RaiseHandRequest = {
@@ -1756,6 +1804,10 @@ export type SendPublicKeyRequest = {
    * Public Key
    */
   public_key: string;
+  /**
+   * Device Id
+   */
+  device_id?: string | null;
 };
 
 /**
@@ -2325,50 +2377,6 @@ export type GetSingleFeedResponses = {
 
 export type GetSingleFeedResponse =
   GetSingleFeedResponses[keyof GetSingleFeedResponses];
-
-export type CheckLocationData = {
-  body?: never;
-  path?: never;
-  query: {
-    /**
-     * Feed Id
-     */
-    feed_id: string;
-    /**
-     * Latitude
-     */
-    latitude: number;
-    /**
-     * Longitude
-     */
-    longitude: number;
-  };
-  url: '/feeds/check-location';
-};
-
-export type CheckLocationErrors = {
-  /**
-   * Not found
-   */
-  404: unknown;
-  /**
-   * Validation Error
-   */
-  422: HttpValidationError;
-};
-
-export type CheckLocationError = CheckLocationErrors[keyof CheckLocationErrors];
-
-export type CheckLocationResponses = {
-  /**
-   * Response Check Location
-   * Successful Response
-   */
-  200: [boolean, Location | null];
-};
-
-export type CheckLocationResponse =
-  CheckLocationResponses[keyof CheckLocationResponses];
 
 export type GoLiveData = {
   body: GoLiveRequest;
@@ -3929,6 +3937,40 @@ export type GetMessageChatRoomResponses = {
 
 export type GetMessageChatRoomResponse =
   GetMessageChatRoomResponses[keyof GetMessageChatRoomResponses];
+
+export type ListPublicKeysChatPublicKeysGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/chat/public-keys';
+};
+
+export type ListPublicKeysChatPublicKeysGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: PublicKeysResponse;
+};
+
+export type ListPublicKeysChatPublicKeysGetResponse =
+  ListPublicKeysChatPublicKeysGetResponses[keyof ListPublicKeysChatPublicKeysGetResponses];
+
+export type PublicKeysUiChatPublicKeysUiGetData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/chat/public-keys/ui';
+};
+
+export type PublicKeysUiChatPublicKeysUiGetResponses = {
+  /**
+   * Successful Response
+   */
+  200: string;
+};
+
+export type PublicKeysUiChatPublicKeysUiGetResponse =
+  PublicKeysUiChatPublicKeysUiGetResponses[keyof PublicKeysUiChatPublicKeysUiGetResponses];
 
 export type GetNotificationsData = {
   body?: never;

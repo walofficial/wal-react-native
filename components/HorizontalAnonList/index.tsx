@@ -75,8 +75,8 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
               >
                 <UserLiveItem
                   showName={item.user.id !== user.id}
-                  size="md"
-                  color={'pink'}
+                  size="lg"
+                  color={item.is_friend ? 'green' : 'pink'}
                   isLoading={
                     joinChat.isPending &&
                     joinChat.variables.targetUserId === item.user.id

@@ -182,26 +182,26 @@ export default function LinkPreview({
             style={[
               styles.image,
               styles.loadingDark,
-              { backgroundColor: borderColor },
+              { backgroundColor: cardBackgroundColor },
             ]}
-          />
-          <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.8)']}
-            style={styles.gradient}
           />
           <View style={styles.loadingTitleContainer}>
             <View
               style={[
                 styles.loadingTitle,
                 styles.loadingDark,
-                { backgroundColor: borderColor },
+                { backgroundColor: 'rgba(0,0,0,0.5)' },
               ]}
             />
             <View
               style={[
                 styles.loadingTitle,
                 styles.loadingDark,
-                { width: '60%', marginTop: 8, backgroundColor: borderColor },
+                {
+                  width: '60%',
+                  marginTop: 8,
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                },
               ]}
             />
           </View>

@@ -7,7 +7,6 @@ import {
   getLiveUsers,
   countLiveUsers,
   getSingleFeed,
-  checkLocation,
   goLive,
   publishPost,
   getCountryFeed,
@@ -55,6 +54,8 @@ import {
   expireChatRoomChatExpireChatRoomPost,
   sendPublicKeyChatSendPublicKeyPost,
   getMessageChatRoom,
+  listPublicKeysChatPublicKeysGet,
+  publicKeysUiChatPublicKeysUiGet,
   getNotifications,
   markNotificationsRead,
   getUnreadCount,
@@ -104,7 +105,6 @@ import type {
   GetLiveUsersData,
   CountLiveUsersData,
   GetSingleFeedData,
-  CheckLocationData,
   GoLiveData,
   GoLiveError,
   GoLiveResponse,
@@ -205,6 +205,8 @@ import type {
   SendPublicKeyChatSendPublicKeyPostData,
   SendPublicKeyChatSendPublicKeyPostError,
   GetMessageChatRoomData,
+  ListPublicKeysChatPublicKeysGetData,
+  PublicKeysUiChatPublicKeysUiGetData,
   GetNotificationsData,
   GetNotificationsError,
   GetNotificationsResponse,
@@ -456,27 +458,6 @@ export const getSingleFeedOptions = (options: Options<GetSingleFeedData>) => {
       return data;
     },
     queryKey: getSingleFeedQueryKey(options),
-  });
-};
-
-export const checkLocationQueryKey = (options: Options<CheckLocationData>) =>
-  createQueryKey('checkLocation', options);
-
-/**
- * Check Location
- */
-export const checkLocationOptions = (options: Options<CheckLocationData>) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await checkLocation({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: checkLocationQueryKey(options),
   });
 };
 
@@ -2473,6 +2454,54 @@ export const getMessageChatRoomOptions = (
       return data;
     },
     queryKey: getMessageChatRoomQueryKey(options),
+  });
+};
+
+export const listPublicKeysChatPublicKeysGetQueryKey = (
+  options?: Options<ListPublicKeysChatPublicKeysGetData>,
+) => createQueryKey('listPublicKeysChatPublicKeysGet', options);
+
+/**
+ * List Public Keys
+ */
+export const listPublicKeysChatPublicKeysGetOptions = (
+  options?: Options<ListPublicKeysChatPublicKeysGetData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listPublicKeysChatPublicKeysGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listPublicKeysChatPublicKeysGetQueryKey(options),
+  });
+};
+
+export const publicKeysUiChatPublicKeysUiGetQueryKey = (
+  options?: Options<PublicKeysUiChatPublicKeysUiGetData>,
+) => createQueryKey('publicKeysUiChatPublicKeysUiGet', options);
+
+/**
+ * Public Keys Ui
+ */
+export const publicKeysUiChatPublicKeysUiGetOptions = (
+  options?: Options<PublicKeysUiChatPublicKeysUiGetData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await publicKeysUiChatPublicKeysUiGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: publicKeysUiChatPublicKeysUiGetQueryKey(options),
   });
 };
 

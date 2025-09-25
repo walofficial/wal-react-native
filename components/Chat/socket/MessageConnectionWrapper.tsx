@@ -10,7 +10,6 @@ import { SocketContext } from './context';
 import { ChatMessage, GetUserChatRoomsResponse } from '@/lib/api/generated';
 import { useSetAtom } from 'jotai';
 import { isChatUserOnlineState } from '@/lib/state/chat';
-import useAuth from '@/hooks/useAuth';
 import { useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
 import * as Sentry from '@sentry/react-native';
 // Create a context for the socket
@@ -20,32 +19,40 @@ export function useSocket() {
 }
 import { useQueryClient } from '@tanstack/react-query';
 import ProtocolService from '@/lib/services/ProtocolService';
+import { getDeviceId } from '@/lib/device-id';
+import useAuth from '@/hooks/useAuth';
 import { useIsFocused } from '@react-navigation/native';
+import { AppState } from 'react-native';
 import {
   getMessagesChatMessagesGetInfiniteOptions,
   getMessagesChatMessagesGetInfiniteQueryKey,
   getUserChatRoomsOptions,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { CHAT_PAGE_SIZE } from '@/lib/utils';
-import { Toast } from '@/components/ToastUsage';
+import { Toast, useToast } from '@/components/ToastUsage';
 import { useMessageSpamPrevention } from '@/hooks/useMessageSpamPrevention';
+import { t } from '@/lib/i18n';
 
 export default function MessageConnectionWrapper({
+  deviceId,
   children,
   publicKey,
   showMessagePreview,
 }: {
+  deviceId: string;
   children: React.ReactNode;
   publicKey: string;
   showMessagePreview: boolean;
 }) {
   const [isConnected, setIsConnected] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const { error: errorToast } = useToast();
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const queryClient = useQueryClient();
-  const socketRef = useRef(getSocket(user.id, publicKey));
+  const socketRef = useRef(getSocket(user.id, publicKey, deviceId));
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
   const isFocused = useIsFocused();
+  const appStateRef = useRef(AppState.currentState);
   const { canShowMessagePreview, recordMessage, getSenderTimeout } =
     useMessageSpamPrevention({
       timeoutMs: 5000, // 5 seconds timeout
@@ -59,11 +66,29 @@ export default function MessageConnectionWrapper({
   });
 
   useEffect(() => {
-    if (isFocused) {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      appStateRef.current = nextAppState;
+      const shouldConnect = isFocused && nextAppState === 'active';
+      if (shouldConnect) {
+        socketRef.current.connect();
+      } else {
+        socketRef.current.disconnect();
+      }
+    });
+
+    // Initial connect/disconnect based on current app state and focus
+    const shouldConnectInitially =
+      isFocused && appStateRef.current === 'active';
+    if (shouldConnectInitially) {
       socketRef.current.connect();
     } else {
       socketRef.current.disconnect();
     }
+
+    return () => {
+      subscription.remove();
+      socketRef.current.disconnect();
+    };
   }, [isFocused]);
 
   useEffect(() => {
@@ -255,22 +280,42 @@ export default function MessageConnectionWrapper({
       addIncomingMessage(privateMessage);
     };
 
+    const handleForceLogout = async () => {
+      console.log('handleForceLogout');
+      try {
+        await ProtocolService.clearKeys();
+      } catch {}
+      try {
+        await logout();
+      } catch {}
+
+      errorToast({
+        title: t('common.forced_logout'),
+        description: t('common.forced_logout_description'),
+      });
+    };
+
     socket.on('user_connection_status', handleConnectionStatus);
     socket.on('user_public_key', handlePublicKey);
     socket.on('private_message', handlePrivateMessage);
     socket.on('notify_single_message_seen', handleMessageSeen);
+    socket.on('force_logout', handleForceLogout);
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
+    socket.on('error', onError);
     socket.on('connect_error', onError);
 
     return () => {
-      socket.off('connect', onConnect);
-      socket.off('private_message', handlePrivateMessage);
-      socket.off('disconnect', onDisconnect);
-      socket.off('connect_error', onError);
-      socket.off('user_connection_status', handleConnectionStatus);
-      socket.off('user_public_key', handlePublicKey);
-      socket.off('notify_single_message_seen', handleMessageSeen);
+      if (!socketRef.current) return;
+      socketRef.current.off('connect', onConnect);
+      socketRef.current.off('private_message', handlePrivateMessage);
+      socketRef.current.off('disconnect', onDisconnect);
+      socketRef.current.off('connect_error', onError);
+      socketRef.current.off('user_connection_status', handleConnectionStatus);
+      socketRef.current.off('user_public_key', handlePublicKey);
+      socketRef.current.off('notify_single_message_seen', handleMessageSeen);
+      socketRef.current.off('force_logout', handleForceLogout);
+      socketRef.current.off('error', onError);
     };
   }, [
     queryClient,

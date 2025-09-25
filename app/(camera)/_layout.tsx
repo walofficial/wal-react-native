@@ -1,6 +1,13 @@
+import { useSession } from '@/components/AuthLayer';
 import { Stack } from 'expo-router';
 
 function Layout() {
+  const { session, isLoading, user, userIsLoading } = useSession();
+
+  if (isLoading || userIsLoading) {
+    return null;
+  }
+
   return (
     <Stack>
       <Stack.Screen name="livestream" options={{ headerShown: false }} />

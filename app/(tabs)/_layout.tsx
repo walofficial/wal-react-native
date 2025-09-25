@@ -181,8 +181,8 @@ export default function TabLayout() {
         setIsFactCheckBottomSheetOpen(false);
 
         // Navigate to create-post-shareintent for any shared content (text or images)
-        router.navigate({
-          pathname: `/(tabs)/(fact-check)/create-post-shareintent`,
+        router.push({
+          pathname: `/(tabs)/(fact-check)/create-post`,
           params,
         });
       }
