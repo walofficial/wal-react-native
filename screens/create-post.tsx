@@ -554,7 +554,7 @@ export default function CreatePost() {
           </Animated.View>
         )} */}
 
-        <SourceInfoCard hide={!!text || !!previewData} />
+        <SourceInfoCard hide={!!text || !!previewData || selectedImages.length > 0} />
 
         <PostControls
           feedId={feedId}
