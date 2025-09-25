@@ -78,13 +78,6 @@ export default function Layout({ segment }: { segment: string }) {
       }}
     />,
     <Stack.Screen
-      name="create-post-shareintent"
-      options={{
-        header: () => null,
-        headerShown: false,
-      }}
-    />,
-    <Stack.Screen
       name="profile-picture"
       options={{
         headerTransparent: true,

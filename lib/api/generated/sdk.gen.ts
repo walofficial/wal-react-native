@@ -22,9 +22,6 @@ import type {
   GetSingleFeedData,
   GetSingleFeedResponses,
   GetSingleFeedErrors,
-  CheckLocationData,
-  CheckLocationResponses,
-  CheckLocationErrors,
   GoLiveData,
   GoLiveResponses,
   GoLiveErrors,
@@ -165,6 +162,10 @@ import type {
   GetMessageChatRoomData,
   GetMessageChatRoomResponses,
   GetMessageChatRoomErrors,
+  ListPublicKeysChatPublicKeysGetData,
+  ListPublicKeysChatPublicKeysGetResponses,
+  PublicKeysUiChatPublicKeysUiGetData,
+  PublicKeysUiChatPublicKeysUiGetResponses,
   GetNotificationsData,
   GetNotificationsResponses,
   GetNotificationsErrors,
@@ -375,23 +376,6 @@ export const getSingleFeed = <ThrowOnError extends boolean = false>(
   >({
     responseType: 'json',
     url: '/feeds/single/{feed_id}',
-    ...options,
-  });
-};
-
-/**
- * Check Location
- */
-export const checkLocation = <ThrowOnError extends boolean = false>(
-  options: Options<CheckLocationData, ThrowOnError>,
-) => {
-  return (options.client ?? _heyApiClient).get<
-    CheckLocationResponses,
-    CheckLocationErrors,
-    ThrowOnError
-  >({
-    responseType: 'json',
-    url: '/feeds/check-location',
     ...options,
   });
 };
@@ -1333,6 +1317,44 @@ export const getMessageChatRoom = <ThrowOnError extends boolean = false>(
   >({
     responseType: 'json',
     url: '/chat/message-chat-room',
+    ...options,
+  });
+};
+
+/**
+ * List Public Keys
+ */
+export const listPublicKeysChatPublicKeysGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: Options<ListPublicKeysChatPublicKeysGetData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    ListPublicKeysChatPublicKeysGetResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/chat/public-keys',
+    ...options,
+  });
+};
+
+/**
+ * Public Keys Ui
+ */
+export const publicKeysUiChatPublicKeysUiGet = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: Options<PublicKeysUiChatPublicKeysUiGetData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    PublicKeysUiChatPublicKeysUiGetResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'text',
+    url: '/chat/public-keys/ui',
     ...options,
   });
 };

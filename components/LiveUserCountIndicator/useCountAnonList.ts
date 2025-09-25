@@ -10,7 +10,7 @@ function useCountAnonList(feedId: string) {
         feed_id: feedId,
       },
     }),
-    refetchInterval: isFocused ? 60000 : false,
+    refetchInterval: isFocused ? 100000 : false,
     retry: 1,
     refetchOnWindowFocus: false,
     refetchOnMount: false,

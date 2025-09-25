@@ -25,6 +25,7 @@ import useMessageRoom from '@/hooks/useMessageRoom';
 import useAuth from '@/hooks/useAuth';
 import usePokeLiveUser from '@/hooks/usePokeUser';
 import { User } from 'lucide-react-native';
+import useDeleteFriendMutation from '@/hooks/useDeleteFriendMutation';
 
 export default function ChatTopbar() {
   const { roomId } = useGlobalSearchParams<{
@@ -37,6 +38,16 @@ export default function ChatTopbar() {
   const [isChatUserOnline, setIsChatUserOnline] = useAtom(
     isChatUserOnlineState,
   );
+
+  const deleteFriendMutation = useDeleteFriendMutation();
+
+  const handleDeleteFriend = () => {
+    deleteFriendMutation.mutate({
+      path: {
+        friend_id: selectedUser?.id || '',
+      },
+    });
+  };
 
   const selectedUser = room?.participants.find((p) => p.id !== user.id);
 
@@ -96,15 +107,25 @@ export default function ChatTopbar() {
       title: 'უჯიკე',
       imageColor: theme.colors.primary,
     },
-    {
-      id: 'addFriend',
-      title: 'მეგობრად დამატება',
-      image: Platform.select({
-        ios: 'person.badge.plus',
-        android: 'ic_menu_add_gray',
-      }),
-      imageColor: theme.colors.primary,
-    },
+    !room?.is_friend
+      ? {
+          id: 'addFriend',
+          title: 'მეგობრად დამატება',
+          image: Platform.select({
+            ios: 'person.badge.plus',
+            android: 'ic_menu_add_gray',
+          }),
+          imageColor: theme.colors.primary,
+        }
+      : {
+          id: 'deleteFriend',
+          title: 'მეგობრის წაშლა',
+          image: Platform.select({
+            ios: 'person.badge.minus',
+            android: 'ic_menu_add_gray',
+          }),
+          imageColor: theme.colors.primary,
+        },
   ];
 
   return (
@@ -137,7 +158,7 @@ export default function ChatTopbar() {
             onPress={() => {
               if (userPhoto) {
                 router.navigate({
-                  pathname: '/(tabs)/(home)/profile-picture',
+                  pathname: '/(chat)/[roomId]/profile-picture',
                   params: {
                     roomId: roomId,
                     imageUrl: userPhoto,
@@ -212,6 +233,8 @@ export default function ChatTopbar() {
                   handleAddFriend();
                 } else if (nativeEvent.event === 'poke') {
                   handlePoke();
+                } else if (nativeEvent.event === 'deleteFriend') {
+                  handleDeleteFriend();
                 }
               });
             }}

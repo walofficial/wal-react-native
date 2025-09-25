@@ -55,6 +55,8 @@
     "fact_check_loading": "ვამოწმებთ...",
     "error_colon": "შეცდომა: ",
     "live_stream_started": "ლაივი",
+    "forced_logout": "Forced logout",
+    "forced_logout_description": "Maybe you tried to login with another device?",
     "live_stream_started_description": "ლაივი დაწყებულია",
     "live_stream_disconnected": "ლაივ სტრიმი გაითიშა",
     "live_stream_unavailable": "პირდაპირი ეთერი დასრულდა, რამოდენიმე წუთში იხილავთ სრულ ვიდეოს",

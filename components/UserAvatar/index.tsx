@@ -44,7 +44,7 @@ const UserAvatarLayout = ({
 
 const styles = StyleSheet.create({
   avatar: {
-    padding: 4,
+    padding: 3,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',

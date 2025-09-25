@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'expo-router';
 import * as Notifications from 'expo-notifications';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSession } from '../AuthLayer';
 import { getUserVerificationOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 interface PendingNavigation {
@@ -15,44 +14,6 @@ interface PendingNavigation {
 export function useNotificationHandler() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { session, user, isLoading, userIsLoading } = useSession();
-  const pendingNavigation = useRef<PendingNavigation | null>(null);
-  const hasCheckedInitialNotification = useRef(false);
-
-  // Check for initial notification that launched the app
-  useEffect(() => {
-    const checkInitialNotification = async () => {
-      console.log(
-        'Checking for initial notification...',
-        hasCheckedInitialNotification.current,
-      );
-      if (hasCheckedInitialNotification.current) return;
-      hasCheckedInitialNotification.current = true;
-    };
-
-    checkInitialNotification();
-  }, [isLoading, userIsLoading, session, user]);
-
-  // Handle pending navigation when app is ready
-  useEffect(() => {
-    // Check if app is fully ready and we have pending navigation
-    const isAppReady = !isLoading && !userIsLoading && session && user;
-
-    if (isAppReady && pendingNavigation.current) {
-      const { type, verificationId, roomId, feedId } =
-        pendingNavigation.current;
-
-      console.log('Processing pending notification navigation:', type);
-
-      // Clear pending navigation first to prevent multiple executions
-      pendingNavigation.current = null;
-
-      // Small delay to ensure navigation is stable
-      setTimeout(() => {
-        handleNotificationNavigation({ type, verificationId, roomId, feedId });
-      }, 100);
-    }
-  }, [isLoading, userIsLoading, session, user]);
 
   const handleNotificationNavigation = ({
     type,
@@ -69,7 +30,7 @@ export function useNotificationHandler() {
       queryClient.invalidateQueries({
         queryKey: queryOptions.queryKey,
       });
-      router.navigate({
+      router.push({
         pathname: '/(tabs)/(home)/verification/[verificationId]',
         params: {
           verificationId,
@@ -90,7 +51,7 @@ export function useNotificationHandler() {
       queryClient.invalidateQueries({
         queryKey: queryOptions.queryKey,
       });
-      router.navigate({
+      router.push({
         pathname: '/(tabs)/(fact-check)/verification/[verificationId]',
         params: {
           verificationId,
@@ -100,7 +61,8 @@ export function useNotificationHandler() {
     }
 
     if (type === 'new_message' && roomId) {
-      router.navigate({
+      console.log('new_message', roomId);
+      router.push({
         pathname: '/(chat)/[roomId]',
         params: {
           roomId: roomId,
@@ -110,7 +72,7 @@ export function useNotificationHandler() {
     }
 
     if (feedId) {
-      router.navigate({
+      router.push({
         pathname: '/(tabs)/(home)/[feedId]',
         params: {
           feedId: feedId,
@@ -128,7 +90,7 @@ export function useNotificationHandler() {
       queryClient.invalidateQueries({
         queryKey: queryOptions.queryKey,
       });
-      router.navigate({
+      router.push({
         pathname: '/status/[verificationId]',
         params: {
           verificationId,
@@ -138,14 +100,27 @@ export function useNotificationHandler() {
     }
 
     if (type === 'friend_request_sent') {
-      router.navigate({
+      router.push({
         pathname: '/(tabs)/(chat-list)',
       });
     }
   };
 
   useEffect(() => {
+    let isMounted = true;
     // Set up background notification handler
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (!isMounted || !response?.notification) return;
+      const { type, verificationId, roomId, feedId } =
+        response.notification.request.content.data;
+      handleNotificationNavigation({
+        type,
+        verificationId,
+        roomId,
+        feedId,
+      });
+    });
     const backgroundSubscription =
       Notifications.addNotificationResponseReceivedListener((response) => {
         const { type, verificationId, roomId, feedId } =
@@ -157,26 +132,18 @@ export function useNotificationHandler() {
           feedId,
         });
 
-        // Check if app is ready for immediate navigation
-        const isAppReady = !isLoading && !userIsLoading && session && user;
-
-        if (isAppReady) {
-          // App is ready, navigate immediately
-          handleNotificationNavigation({
-            type,
-            verificationId,
-            roomId,
-            feedId,
-          });
-        } else {
-          // App not ready, store for deferred navigation
-          console.log('App not ready, storing pending navigation for:', type);
-          pendingNavigation.current = { type, verificationId, roomId, feedId };
-        }
+        // App is ready, navigate immediately
+        handleNotificationNavigation({
+          type,
+          verificationId,
+          roomId,
+          feedId,
+        });
       });
 
     return () => {
+      isMounted = false;
       backgroundSubscription.remove();
     };
-  }, [isLoading, userIsLoading, session, user]);
+  }, []);
 }

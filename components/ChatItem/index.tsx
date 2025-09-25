@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useCallback } from 'react';
 import { View, TouchableHighlight, StyleSheet } from 'react-native';
 import { Link } from 'expo-router';
@@ -6,7 +5,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import useAuth from '@/hooks/useAuth';
 import { Text } from '../ui/text';
 import { ChatRoom } from '@/lib/api/generated';
-import { CheckCircle2 } from 'lucide-react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { FontSizes } from '@/lib/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/lib/theme';
@@ -81,7 +80,8 @@ function ChatItem({ item }: { item: ChatRoom }) {
         return null;
       }
       return (
-        <CheckCircle2
+        <Ionicons
+          name="checkmark-circle"
           color={theme.colors.feedItem.secondaryText}
           size={16}
           style={styles.messageStatusIcon}
@@ -90,9 +90,10 @@ function ChatItem({ item }: { item: ChatRoom }) {
     }
     if (item.last_message?.message_state === 'READ') {
       return (
-        <CheckCircle2
+        <Ionicons
+          name="checkmark-circle"
           fill={theme.colors.primary}
-          stroke={theme.colors.background}
+          strokeWidth={2}
           size={16}
           style={styles.messageStatusIcon}
         />
@@ -137,7 +138,12 @@ function ChatItem({ item }: { item: ChatRoom }) {
 
             <View style={styles.messageContainer}>
               <View style={styles.headerContainer}>
-                <Text style={[styles.username, { color: theme.colors.text }]}>
+                <Text
+                  style={[
+                    styles.username,
+                    { color: theme.colors.text, maxWidth: '80%' },
+                  ]}
+                >
                   {targetUser?.username || '[deleted]'}
                 </Text>
                 <Text
@@ -146,7 +152,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
                     { color: theme.colors.feedItem.secondaryText },
                   ]}
                 >
-                  {formatDate(new Date(item.last_message?.sent_date))}
+                  {formatDate(new Date(item.last_message?.sent_date || ''))}
                 </Text>
               </View>
               <View style={styles.messageContent}>
@@ -157,7 +163,8 @@ function ChatItem({ item }: { item: ChatRoom }) {
                   ]}
                   numberOfLines={1}
                 >
-                  {item.last_message?.message}
+                  {/* @ts-ignore */}
+                  {item.last_message?.message || ''}
                 </Text>
                 <View style={styles.statusContainer}>
                   {renderMessageStatus()}
@@ -194,8 +201,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatarContainer: {
-    paddingTop: 6,
-    paddingBottom: 12,
+    paddingTop: 0,
+    paddingBottom: 15,
     paddingLeft: 12,
   },
   avatar: {

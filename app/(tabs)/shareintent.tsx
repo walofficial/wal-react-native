@@ -77,9 +77,8 @@ export default function ShareIntent() {
           params.sharedImages = encodedImages;
         }
 
-        // Navigate to create-post-shareintent for any shared content (text or images)
-        router.replace({
-          pathname: `/(tabs)/(fact-check)/create-post-shareintent` as any,
+        router.push({
+          pathname: `/(tabs)/(fact-check)/create-post`,
           params,
         });
       }
