@@ -48,8 +48,6 @@ class SignalProtocolService {
     // Generate new keys only if they don't exist
     const keyPair = crypto_box_keypair();
     const registrationId = Math.floor(Math.random() * 16383) + 1;
-    console.log('keyPair', keyPair);
-    console.log('registrationId', registrationId);
     // Store keys locally
     await AsyncStorage.setItem(
       KEYS_STORAGE,
