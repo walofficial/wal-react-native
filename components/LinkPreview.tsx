@@ -190,14 +190,18 @@ export default function LinkPreview({
               style={[
                 styles.loadingTitle,
                 styles.loadingDark,
-                { backgroundColor: "rgba(0,0,0,0.5)" },
+                { backgroundColor: 'rgba(0,0,0,0.5)' },
               ]}
             />
             <View
               style={[
                 styles.loadingTitle,
                 styles.loadingDark,
-                { width: '60%', marginTop: 8, backgroundColor: "rgba(0,0,0,0.5)" },
+                {
+                  width: '60%',
+                  marginTop: 8,
+                  backgroundColor: 'rgba(0,0,0,0.5)',
+                },
               ]}
             />
           </View>

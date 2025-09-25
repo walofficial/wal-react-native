@@ -34,7 +34,11 @@ function Layout() {
                     style={{ marginRight: 10, marginTop: 5 }}
                     onPress={() => contactSyncSheetRef.current?.expand()}
                   >
-                    <Ionicons name="add-circle" size={40} color={theme.colors.text} />
+                    <Ionicons
+                      name="add-circle"
+                      size={40}
+                      color={theme.colors.text}
+                    />
                   </TouchableOpacity>
                 }
               />

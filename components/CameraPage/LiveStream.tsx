@@ -37,7 +37,7 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
   const stopLive = useMutation({
     ...stopLiveMutation(),
     onSuccess: (data) => {
-        setIsUserLive(false);
+      setIsUserLive(false);
     },
   });
 

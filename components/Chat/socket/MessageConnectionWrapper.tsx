@@ -46,7 +46,7 @@ export default function MessageConnectionWrapper({
 }) {
   const [isConnected, setIsConnected] = useState(false);
   const { user, logout } = useAuth();
-  const {error: errorToast} = useToast();
+  const { error: errorToast } = useToast();
   const { roomId } = useLocalSearchParams<{ roomId: string }>();
   const queryClient = useQueryClient();
   const socketRef = useRef(getSocket(user.id, publicKey, deviceId));
@@ -77,7 +77,8 @@ export default function MessageConnectionWrapper({
     });
 
     // Initial connect/disconnect based on current app state and focus
-    const shouldConnectInitially = isFocused && appStateRef.current === 'active';
+    const shouldConnectInitially =
+      isFocused && appStateRef.current === 'active';
     if (shouldConnectInitially) {
       socketRef.current.connect();
     } else {

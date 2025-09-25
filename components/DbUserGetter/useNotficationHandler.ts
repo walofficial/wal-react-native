@@ -107,19 +107,19 @@ export function useNotificationHandler() {
   };
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
     // Set up background notification handler
 
     Notifications.getLastNotificationResponseAsync().then((response) => {
       if (!isMounted || !response?.notification) return;
       const { type, verificationId, roomId, feedId } =
-      response.notification.request.content.data;
-        handleNotificationNavigation({
-          type,
-          verificationId,
-          roomId,
-          feedId,
-        });
+        response.notification.request.content.data;
+      handleNotificationNavigation({
+        type,
+        verificationId,
+        roomId,
+        feedId,
+      });
     });
     const backgroundSubscription =
       Notifications.addNotificationResponseReceivedListener((response) => {
