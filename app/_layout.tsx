@@ -40,7 +40,7 @@ import * as ExpoDevice from 'expo-device';
 import * as NavigationBar from 'expo-navigation-bar';
 
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
-  useNotificationHandler()
+  useNotificationHandler();
   const navigationRef = useNavigationContainerRef();
 
   useReactNavigationDevTools(navigationRef);

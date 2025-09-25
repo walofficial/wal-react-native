@@ -138,7 +138,12 @@ function ChatItem({ item }: { item: ChatRoom }) {
 
             <View style={styles.messageContainer}>
               <View style={styles.headerContainer}>
-                <Text style={[styles.username, { color: theme.colors.text, maxWidth: '80%' }]}>
+                <Text
+                  style={[
+                    styles.username,
+                    { color: theme.colors.text, maxWidth: '80%' },
+                  ]}
+                >
                   {targetUser?.username || '[deleted]'}
                 </Text>
                 <Text
@@ -158,6 +163,7 @@ function ChatItem({ item }: { item: ChatRoom }) {
                   ]}
                   numberOfLines={1}
                 >
+                  {/* @ts-ignore */}
                   {item.last_message?.message || ''}
                 </Text>
                 <View style={styles.statusContainer}>

@@ -43,11 +43,14 @@ export default function CreatePostHeader({
 
   return (
     <View style={styles.container}>
-        <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
-          <Text style={[styles.cancelText, { color: theme.colors.text }]}>
-            {t('common.cancel')}
-          </Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.cancelButton}
+        onPress={() => router.back()}
+      >
+        <Text style={[styles.cancelText, { color: theme.colors.text }]}>
+          {t('common.cancel')}
+        </Text>
+      </TouchableOpacity>
 
       <TouchableOpacity
         disabled={isDisabled || isPending}

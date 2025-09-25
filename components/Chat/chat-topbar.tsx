@@ -107,23 +107,25 @@ export default function ChatTopbar() {
       title: 'უჯიკე',
       imageColor: theme.colors.primary,
     },
-    !room?.is_friend ? {
-      id: 'addFriend',
-      title: 'მეგობრად დამატება',
-      image: Platform.select({
-        ios: 'person.badge.plus',
-        android: 'ic_menu_add_gray',
-      }),
-      imageColor: theme.colors.primary,
-    } : {
-      id: 'deleteFriend',
-      title: 'მეგობრის წაშლა',
-      image: Platform.select({
-        ios: 'person.badge.minus',
-        android: 'ic_menu_add_gray',
-      }),
-      imageColor: theme.colors.primary,
-    },
+    !room?.is_friend
+      ? {
+          id: 'addFriend',
+          title: 'მეგობრად დამატება',
+          image: Platform.select({
+            ios: 'person.badge.plus',
+            android: 'ic_menu_add_gray',
+          }),
+          imageColor: theme.colors.primary,
+        }
+      : {
+          id: 'deleteFriend',
+          title: 'მეგობრის წაშლა',
+          image: Platform.select({
+            ios: 'person.badge.minus',
+            android: 'ic_menu_add_gray',
+          }),
+          imageColor: theme.colors.primary,
+        },
   ];
 
   return (

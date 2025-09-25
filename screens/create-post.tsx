@@ -184,7 +184,7 @@ export default function CreatePost() {
   const { previewData, isLoading: isPreviewLoading } = useLinkPreview(text);
 
   const router = useRouter();
-  const isShareIntent =  sharedContent || sharedImages;
+  const isShareIntent = sharedContent || sharedImages;
   const { headerMode } = useMinimalShellMode();
 
   const setMode = React.useCallback(
@@ -553,7 +553,9 @@ export default function CreatePost() {
           </Animated.View>
         )} */}
 
-        <SourceInfoCard hide={!!text || !!previewData || selectedImages.length > 0} />
+        <SourceInfoCard
+          hide={!!text || !!previewData || selectedImages.length > 0}
+        />
 
         <PostControls
           feedId={feedId}

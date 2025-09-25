@@ -10,7 +10,7 @@ function useAuth() {
       setSession(null);
       setAuthUser(null);
       await logout();
-    
+
       queryClient.clear();
     },
     reset: () => {

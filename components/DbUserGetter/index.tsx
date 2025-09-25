@@ -28,7 +28,7 @@ function DbUserGetter({
   if (!deviceId) {
     return null;
   }
-  
+
   return (
     <MessageConnectionWrapper
       deviceId={deviceId}

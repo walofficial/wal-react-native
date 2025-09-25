@@ -13,7 +13,13 @@ export default function useSendPublicKey() {
     isPending,
     isSuccess,
   } = useMutation({
-  mutationFn: async ({ userId, deviceId: providedDeviceId }: { userId: string; deviceId?: string }) => {
+    mutationFn: async ({
+      userId,
+      deviceId: providedDeviceId,
+    }: {
+      userId: string;
+      deviceId?: string;
+    }) => {
       const { identityKeyPair, isCached } =
         await ProtocolService.generateIdentityKeyPair();
 
