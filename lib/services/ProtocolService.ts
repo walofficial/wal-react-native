@@ -33,7 +33,6 @@ class SignalProtocolService {
   }> {
     // Check if keys already exist
     const existingKeys = await AsyncStorage.getItem(KEYS_STORAGE);
-    console.log('existingKeys', existingKeys);
     if (existingKeys) {
       const keys = JSON.parse(existingKeys);
       return {

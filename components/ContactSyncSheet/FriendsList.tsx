@@ -92,7 +92,6 @@ const FriendsList: React.FC = () => {
           }
         />
       ))}
-      {isFetching && <ActivityIndicator />}
     </View>
   );
 };

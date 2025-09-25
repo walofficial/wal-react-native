@@ -54,6 +54,8 @@ import {
   expireChatRoomChatExpireChatRoomPost,
   sendPublicKeyChatSendPublicKeyPost,
   getMessageChatRoom,
+  listPublicKeysChatPublicKeysGet,
+  publicKeysUiChatPublicKeysUiGet,
   getNotifications,
   markNotificationsRead,
   getUnreadCount,
@@ -203,6 +205,8 @@ import type {
   SendPublicKeyChatSendPublicKeyPostData,
   SendPublicKeyChatSendPublicKeyPostError,
   GetMessageChatRoomData,
+  ListPublicKeysChatPublicKeysGetData,
+  PublicKeysUiChatPublicKeysUiGetData,
   GetNotificationsData,
   GetNotificationsError,
   GetNotificationsResponse,
@@ -2450,6 +2454,54 @@ export const getMessageChatRoomOptions = (
       return data;
     },
     queryKey: getMessageChatRoomQueryKey(options),
+  });
+};
+
+export const listPublicKeysChatPublicKeysGetQueryKey = (
+  options?: Options<ListPublicKeysChatPublicKeysGetData>,
+) => createQueryKey('listPublicKeysChatPublicKeysGet', options);
+
+/**
+ * List Public Keys
+ */
+export const listPublicKeysChatPublicKeysGetOptions = (
+  options?: Options<ListPublicKeysChatPublicKeysGetData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listPublicKeysChatPublicKeysGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listPublicKeysChatPublicKeysGetQueryKey(options),
+  });
+};
+
+export const publicKeysUiChatPublicKeysUiGetQueryKey = (
+  options?: Options<PublicKeysUiChatPublicKeysUiGetData>,
+) => createQueryKey('publicKeysUiChatPublicKeysUiGet', options);
+
+/**
+ * Public Keys Ui
+ */
+export const publicKeysUiChatPublicKeysUiGetOptions = (
+  options?: Options<PublicKeysUiChatPublicKeysUiGetData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await publicKeysUiChatPublicKeysUiGet({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: publicKeysUiChatPublicKeysUiGetQueryKey(options),
   });
 };
 

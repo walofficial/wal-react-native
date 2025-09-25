@@ -41,6 +41,16 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
     },
   });
 
+  useEffect(() => {
+    return () => {
+      stopLive.mutate({
+        query: {
+          room_name: roomName,
+        },
+      });
+    };
+  }, []);
+
   return (
     <LiveKitRoom
       serverUrl={'wss://ment-6gg5tj49.livekit.cloud'}
@@ -66,6 +76,7 @@ export function LiveStream({ token, roomName, onDisconnect }: LiveStreamProps) {
       audio={true}
       video={true}
       onDisconnected={() => {
+        console.log('onDisconnected');
         setIsUserLive(false);
         if (onDisconnect) {
           onDisconnect();

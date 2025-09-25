@@ -5,9 +5,16 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useKeyboardVerticalOffset from '@/hooks/useKeyboardVerticalOffset';
 import DbUserGetter from '@/components/DbUserGetter';
+import { useSession } from '@/components/AuthLayer';
 
 function Layout() {
+  const { session, isLoading, user, userIsLoading } = useSession();
+
   const insets = useSafeAreaInsets();
+  if (isLoading || userIsLoading) {
+    return null;
+  }
+
   return (
     <DbUserGetter showMessagePreview={false}>
       <View
