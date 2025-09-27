@@ -27,7 +27,6 @@ function SpaceView({ roomName, scheduledAt, description }: SpaceViewProps) {
   const [secondsLeftToStart, setSecondsLeftToStart] = useState<number>(0);
   const { subscribeToSpace } = useSubscribeToSpace();
   const { startStream, isPending: isStartingStream } = useStartStream();
-  console.log('roomName', roomName);
   const roomPreview = useQuery({
     ...getRoomPreviewDataOptions({
       path: {
@@ -176,14 +175,14 @@ function SpaceView({ roomName, scheduledAt, description }: SpaceViewProps) {
         onPress={() => subscribeToSpace(roomName)}
         style={[
           styles.listenButton,
-          (roomPreview.data?.is_subscribed as boolean ||
+          ((roomPreview.data?.is_subscribed as boolean) ||
             (!exists && space_state === 'ended')) &&
             styles.disabledButton,
         ]}
       >
         <View style={styles.buttonContent}>
           <Text style={styles.buttonText}>
-            {roomPreview.data?.is_subscribed as boolean
+            {(roomPreview.data?.is_subscribed as boolean)
               ? `დაიწყება ${formattedScheduledTime}`
               : 'დაიწყება'}
           </Text>

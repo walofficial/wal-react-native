@@ -11,7 +11,6 @@ export function useInviteToStage() {
     inviteToStage: (vars: {
       livekit_room_name: string;
       participant_identity: string;
-      user_id: string;
-    }) => (inviteToStage as any)({ body: vars }),
+    }) => (inviteToStage)({ body: vars }),
   };
 }
