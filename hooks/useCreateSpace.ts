@@ -5,14 +5,13 @@ import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
 
 export const useCreateSpace = () => {
-  const queryClient = useQueryClient();
   const router = useRouter();
   const { success, error: errorToast } = useToast();
 
   return useMutation({
     ...createSpaceMutation(),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['spaces'] });
+      // queryClient.invalidateQueries({ queryKey: ['spaces'] });
 
       // Different success message based on whether it's scheduled or not
       const successMessage = data.scheduled_at

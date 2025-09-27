@@ -21,7 +21,7 @@ import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { Provider as HeaderTransformProvider } from '@/lib/context/header-transform';
 import { Provider as ReactionsOverlayProvider } from '@/lib/reactionsOverlay/reactionsOverlay';
 import { ReactionsOverlay } from '@/components/ReactionsOverlay/ReactionsOverlay';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { factCheckBottomSheetState } from '@/lib/atoms/news';
 import { locationUserListSheetState } from '@/lib/atoms/location';
 import { isUserLiveState } from '@/components/CameraPage/atom';
@@ -33,6 +33,8 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated';
+import { activeLivekitRoomState } from '@/components/SpacesBottomSheet/atom';
+import SpacesBottomSheet from '@/components/SpacesBottomSheet';
 
 function LivePulseIcon({ children }: { children: React.ReactNode }) {
   const scale = useSharedValue(1);
@@ -96,7 +98,6 @@ export default function TabLayout() {
   const pathname = usePathname();
   const { factCheckFeedId, newsFeedId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
-
   // Track screen changes and update user properties
   useEffect(() => {
     const screenName = pathname.replace('/', '').split('?')[0] || 'root';
@@ -414,6 +415,7 @@ export default function TabLayout() {
               />
             </Tabs>
             <ReactionsOverlay />
+            <SpacesBottomSheet />
           </BottomSheetModalProvider>
         </HeaderTransformProvider>
       </ReactionsOverlayProvider>

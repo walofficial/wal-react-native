@@ -1,17 +1,16 @@
-// @ts-nocheck
 import { useMutation } from '@tanstack/react-query';
 import { useAtom, useSetAtom } from 'jotai';
 import { activeLivekitRoomState } from '@/components/SpacesBottomSheet/atom';
-import { startLiveMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { createStreamMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export function useStartStream() {
   const [activeLivekitRoom, setActiveLivekitRoom] = useAtom(
     activeLivekitRoomState,
   );
   const { mutate: startStream, isPending } = useMutation({
-    ...startLiveMutation(),
+    ...createStreamMutation(),
     onSuccess: (data) => {
-      setActiveLivekitRoom(data);
+      setActiveLivekitRoom(data as any);
     },
   });
 
@@ -23,8 +22,9 @@ export function useStartStream() {
       ) {
         setActiveLivekitRoom(null);
       } else {
+        console.log('startStream', livekitRoomName);
         // API expects body with feed_id/text_content; here treat room name as feed_id surrogate
-        startStream({ body: { feed_id: livekitRoomName } } as any);
+        startStream({ body: { livekit_room_name: livekitRoomName } });
       }
     },
     isPending,
