@@ -7,14 +7,12 @@ import Animated, {
   withTiming,
   withDelay,
   useSharedValue,
-  withSpring,
 } from 'react-native-reanimated';
 
 const WaveAudio = () => {
   const bars = Array(3)
     .fill(0)
     .map(() => useSharedValue(1));
-
   React.useEffect(() => {
     bars.forEach((bar, index) => {
       bar.value = withDelay(
@@ -38,11 +36,7 @@ const WaveAudio = () => {
         }));
 
         return (
-          <Animated.View
-            className={'bg-pink-800'}
-            key={index}
-            style={[styles.bar, animatedStyle]}
-          />
+          <Animated.View style={[styles.bar, animatedStyle]} key={index} />
         );
       })}
     </View>
@@ -55,13 +49,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: 24,
-    height: 10,
+    height: 14,
     marginTop: 7,
   },
   bar: {
     width: 6,
-    height: '100%',
-    borderRadius: 5,
+    height: 14,
+    borderRadius: 2,
+    backgroundColor: '#007AFF',
   },
 });
 

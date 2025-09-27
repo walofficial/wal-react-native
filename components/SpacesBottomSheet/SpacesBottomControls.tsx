@@ -43,7 +43,6 @@ function SpacesBottomControls({ isHost }: { isHost: boolean }) {
   const haptic = useHaptics();
   const canSpeak =
     isHost || (localMetadata?.invited_to_stage && localMetadata?.hand_raised);
-
   if (connectionState !== 'connected') return null;
 
   return (
@@ -51,7 +50,7 @@ function SpacesBottomControls({ isHost }: { isHost: boolean }) {
       style={[
         styles.container,
         {
-          paddingBottom: insets.bottom + 10,
+          width: '100%',
         },
       ]}
     >

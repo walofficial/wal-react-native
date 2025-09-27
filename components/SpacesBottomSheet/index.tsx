@@ -11,6 +11,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import SpacesBottomControls from './SpacesBottomControls';
 import { isWeb } from '@/lib/platform';
 import { getBottomSheetBackgroundStyle } from '@/lib/styles';
+import { Alert } from 'react-native';
 interface SpacesBottomSheetProps {
   isVisible?: boolean;
   onClose?: () => void;
@@ -41,16 +42,20 @@ const SpacesBottomSheet = React.forwardRef<
   );
 
   const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
-
   // renders
   const renderFooter = useCallback(
-    (props: any) => (
-      <BottomSheetFooter {...props} style={{ backgroundColor: 'black' }}>
-        {activeLivekitRoom && (
-          <SpacesBottomControls isHost={activeLivekitRoom?.is_host || false} />
-        )}
-      </BottomSheetFooter>
-    ),
+    (props: any) => {
+      const insets = useSafeAreaInsets();
+      return (
+        <BottomSheetFooter {...props} bottomInset={insets.bottom + 100}>
+          {activeLivekitRoom && (
+            <SpacesBottomControls
+              isHost={activeLivekitRoom?.is_host || false}
+            />
+          )}
+        </BottomSheetFooter>
+      );
+    },
     [activeLivekitRoom],
   );
 
@@ -64,7 +69,7 @@ const SpacesBottomSheet = React.forwardRef<
           serverUrl={'wss://ment-6gg5tj49.livekit.cloud'}
           token={activeLivekitRoom.livekit_token}
           onError={(error: Error) => {
-            console.log('onError', error);
+            Alert.alert('Error', error.message);
             // toast(error.message);
           }}
           connect={true}
@@ -91,7 +96,7 @@ const SpacesBottomSheet = React.forwardRef<
             android_keyboardInputMode={'adjustResize'}
             topInset={insets.top}
             snapPoints={snapPoints}
-            enableDynamicSizing={false}
+            enableDynamicSizing={true}
             enablePanDownToClose={true}
             backdropComponent={renderBackdrop}
             backgroundStyle={sheetBackgroundStyle}
