@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -108,7 +107,7 @@ export default function CreateSpace() {
                 size="default"
                 onPress={async () => {
                   await haptic('Medium');
-                  createSpace({ description, feedId });
+                  createSpace({body: { text_content: description, feed_id: feedId }});
                 }}
                 disabled={isPending}
                 isLoading={isPending}
@@ -128,7 +127,7 @@ export default function CreateSpace() {
                   await haptic('Light');
                   router.push({
                     pathname: `/(tabs)/(home)/create-space/schedule-space`,
-                    params: { feedId, description },
+                    params: { feedId, description: description },
                   });
                 }}
                 disabled={isPending}
@@ -147,7 +146,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-    padding: 16,
+    paddingTop: 100,
   },
   contentContainer: {
     flex: 1,

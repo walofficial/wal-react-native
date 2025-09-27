@@ -57,7 +57,6 @@ const SpacesBottomSheet = React.forwardRef<
   if (!activeLivekitRoom) {
     return null;
   }
-
   return (
     <>
       {!isWeb && (
@@ -65,6 +64,7 @@ const SpacesBottomSheet = React.forwardRef<
           serverUrl={'wss://ment-6gg5tj49.livekit.cloud'}
           token={activeLivekitRoom.livekit_token}
           onError={(error: Error) => {
+            console.log('onError', error);
             // toast(error.message);
           }}
           connect={true}

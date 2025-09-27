@@ -104,6 +104,15 @@ export default function Layout({ segment }: { segment: string }) {
           ),
         })}
       />,
+      <Stack.Screen
+        name="create-space/index"
+        options={({ route }) => ({
+          headerTransparent: !isWeb,
+          header: () => (
+            <SimpleGoBackHeader title="ოთახი" />
+          ),
+        })}
+      />,
     );
   }
 

@@ -68,24 +68,6 @@ export default function PostControls({
               </Text>
             </TouchableOpacity>
           )}
-
-          {/* {!disableRoomCreation && (
-            <TouchableOpacity
-              onPress={() => {
-                router.replace({
-                  pathname: "/(tabs)/(home)/create-space",
-                  params: { feedId },
-                });
-              }}
-              style={styles.roomButton}
-            >
-              <View style={styles.roomIconContainer}>
-                <View style={styles.activeIndicator} />
-                <Ionicons name="mic-outline" size={22} color="#007AFF" />
-              </View>
-              <Text style={styles.roomButtonText}>ოთახის შექმნა</Text>
-            </TouchableOpacity>
-          )} */}
         </>
       </View>
       <View style={styles.rightSection}>
@@ -157,11 +139,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 16,
   },
-  roomIconContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 8,
-  },
+
   activeIndicator: {
     width: 6,
     height: 6,
@@ -172,11 +150,7 @@ const styles = StyleSheet.create({
     right: -2,
     zIndex: 1,
   },
-  roomButtonText: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#007AFF',
-  },
+ 
   charactersLeft: {
     fontSize: 14,
   },

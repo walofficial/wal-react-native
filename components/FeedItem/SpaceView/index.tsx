@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -14,7 +13,7 @@ import { useSubscribeToSpace } from './useSubscribeToSpace';
 import { useStartStream } from './useStartStream';
 import { Headphones } from 'lucide-react-native';
 import { FontSizes } from '@/lib/theme';
-import { getRoomPreviewDataSpacePreviewLivekitRoomNameGetOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { getRoomPreviewDataOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { getCurrentLocale } from '@/lib/i18n';
 
 interface SpaceViewProps {
@@ -28,9 +27,9 @@ function SpaceView({ roomName, scheduledAt, description }: SpaceViewProps) {
   const [secondsLeftToStart, setSecondsLeftToStart] = useState<number>(0);
   const { subscribeToSpace } = useSubscribeToSpace();
   const { startStream, isPending: isStartingStream } = useStartStream();
-
+  console.log('roomName', roomName);
   const roomPreview = useQuery({
-    ...getRoomPreviewDataSpacePreviewLivekitRoomNameGetOptions({
+    ...getRoomPreviewDataOptions({
       path: {
         livekit_room_name: roomName,
       },
@@ -177,14 +176,14 @@ function SpaceView({ roomName, scheduledAt, description }: SpaceViewProps) {
         onPress={() => subscribeToSpace(roomName)}
         style={[
           styles.listenButton,
-          (roomPreview.data?.is_subscribed ||
+          (roomPreview.data?.is_subscribed as boolean ||
             (!exists && space_state === 'ended')) &&
             styles.disabledButton,
         ]}
       >
         <View style={styles.buttonContent}>
           <Text style={styles.buttonText}>
-            {roomPreview.data?.is_subscribed
+            {roomPreview.data?.is_subscribed as boolean
               ? `დაიწყება ${formattedScheduledTime}`
               : 'დაიწყება'}
           </Text>

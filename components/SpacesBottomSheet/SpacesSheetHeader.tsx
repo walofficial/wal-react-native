@@ -23,7 +23,7 @@ const SpacesSheetHeader: React.FC<SpacesSheetHeaderProps> = ({
   const roomPreview = useQuery({
     ...getRoomPreviewDataOptions({
       path: {
-        room_name: livekitRoom?.livekit_room_name,
+        livekit_room_name: livekitRoom?.livekit_room_name,
       },
     }),
     enabled: !!livekitRoom?.livekit_room_name,
