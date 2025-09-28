@@ -11,7 +11,12 @@ import { BottomSheetTextInput, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useHaptics } from '@/lib/haptics';
 import { t } from '@/lib/i18n';
+import { useMutation } from '@tanstack/react-query';
+import { invokeAgentMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
 function SpacesBottomControls({ isHost }: { isHost: boolean }) {
+  const { mutate: invokeAgent } = useMutation({
+    ...invokeAgentMutation(),
+  });
   const connectionState = useConnectionState();
   const livekitRoom = useAtomValue(activeLivekitRoomState);
   const { localParticipant } = useLocalParticipant();
@@ -46,14 +51,7 @@ function SpacesBottomControls({ isHost }: { isHost: boolean }) {
   if (connectionState !== 'connected') return null;
 
   return (
-    <BottomSheetView
-      style={[
-        styles.container,
-        {
-          width: '100%',
-        },
-      ]}
-    >
+    <BottomSheetView style={[styles.container]}>
       {showSearch && livekitRoom?.is_host && (
         <BottomSheetTextInput
           style={styles.input}
@@ -82,6 +80,25 @@ function SpacesBottomControls({ isHost }: { isHost: boolean }) {
                 name={micEnabled ? 'mic' : 'mic-off'}
                 size={35}
                 color={micEnabled ? 'white' : 'red'}
+              />
+            </Pressable>
+          )}
+          {livekitRoom?.is_host && (
+            <Pressable
+              onPress={async () => {
+                haptic('Light');
+                invokeAgent({
+                  query: {
+                    room_name: livekitRoom?.livekit_room_name || '',
+                  },
+                });
+              }}
+              style={styles.searchButton}
+            >
+              <Ionicons
+                name={'sparkles'}
+                size={35}
+                color={showSearch ? 'gray' : 'white'}
               />
             </Pressable>
           )}

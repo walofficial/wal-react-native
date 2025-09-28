@@ -5,6 +5,7 @@ import {
   useParticipantInfo,
   useParticipants,
   useRoomContext,
+  useTrackTranscription,
 } from '@livekit/react-native';
 import {
   View,
@@ -30,6 +31,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useHaptics } from '@/lib/haptics';
 import { FontSizes } from '@/lib/theme';
 import { t } from '@/lib/i18n';
+import { RemoteParticipant } from 'livekit-client';
 
 export default function PresenceDialog({
   isHost = false,
@@ -40,7 +42,6 @@ export default function PresenceDialog({
   const { localParticipant } = useLocalParticipant();
   const participants = useParticipants();
   const participantSearch = useAtomValue(participantSearchState);
-
   const room = useRoomContext();
   useIOSAudioManagement(room);
 
@@ -139,7 +140,7 @@ function ParticipantListItem({
   isSpeaker,
   isHost,
 }: {
-  participant: any;
+  participant: RemoteParticipant;
   metadata: {
     avatar_image: string;
     username: string;
@@ -151,7 +152,9 @@ function ParticipantListItem({
   isSpeaker: boolean;
   isHost: boolean;
 }) {
-  const imageUrl = metadata?.avatar_image;
+  const imageUrl =
+    metadata?.avatar_image ||
+    'https://media.springernature.com/full/springer-static/image/art%3A10.1038%2Fnature.2013.14108/MediaObjects/41586_2013_Article_BFnature201314108_Figb_HTML.jpg';
   const { removeFromStage } = useRemoveFromStage();
   const { inviteToStage } = useInviteToStage();
   const liveKitRoom = useAtomValue(activeLivekitRoomState);
@@ -215,9 +218,7 @@ function ParticipantListItem({
                   source={{ uri: convertToCDNUrl(imageUrl) }}
                 />
               ) : (
-                <Text style={styles.avatarText}>
-                  {metadata?.username?.[0] || 'N/A'}
-                </Text>
+                <Text style={styles.avatarText}>{'N/A'}</Text>
               )}
             </View>
           </Avatar>
@@ -229,7 +230,7 @@ function ParticipantListItem({
           )}
         </View>
         <Text style={styles.username} numberOfLines={1}>
-          {metadata?.username}
+          {metadata?.username || 'Robert'}
         </Text>
         {isSpeaking ? (
           <WaveAudio />

@@ -506,7 +506,7 @@ export type CreateSpaceResponse = {
   /**
    * Scheduled At
    */
-  scheduled_at: string;
+  scheduled_at?: string | null;
 };
 
 /**
@@ -1665,6 +1665,10 @@ export type RaiseHandRequest = {
    * Livekit Room Name
    */
   livekit_room_name: string;
+  /**
+   * Participant Identity
+   */
+  participant_identity: string;
 };
 
 /**
@@ -4706,6 +4710,38 @@ export type TriggerSpaceStartError =
   TriggerSpaceStartErrors[keyof TriggerSpaceStartErrors];
 
 export type TriggerSpaceStartResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type InvokeAgentData = {
+  body?: never;
+  path?: never;
+  query: {
+    /**
+     * Room Name
+     */
+    room_name: string;
+  };
+  url: '/space/invoke-agent';
+};
+
+export type InvokeAgentErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type InvokeAgentError = InvokeAgentErrors[keyof InvokeAgentErrors];
+
+export type InvokeAgentResponses = {
   /**
    * Successful Response
    */

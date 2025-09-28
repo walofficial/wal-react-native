@@ -163,34 +163,34 @@ export default function RootLayout() {
 
   // Create your query client
   // Set up the sync hook - automatically disabled in production!
-  useSyncQueriesExternal({
-    queryClient,
-    socketURL: `http://${hostIP}:42831`, // Use local network IP
-    // Default port for React Native DevTools
-    deviceName: Platform?.OS || 'web', // Platform detection
-    platform: Platform?.OS || 'web', // Use appropriate platform identifier
-    deviceId: Platform?.OS || 'web', // Use a PERSISTENT identifier (see note below)
-    isDevice: ExpoDevice.isDevice, // Automatically detects real devices vs emulators
-    extraDeviceInfo: {
-      // Optional additional info about your device
-      appVersion: '1.0.0',
-      // Add any relevant platform info
-    },
-    enableLogs: true,
-    envVariables: {
-      NODE_ENV: process.env.NODE_ENV,
-      // Add any private environment variables you want to monitor
-      // Public environment variables are automatically loaded
-    },
-    // Storage monitoring with CRUD operations
-    asyncStorage: AsyncStorage, // AsyncStorage for ['#storage', 'async', 'key'] queries + monitoring
-    secureStorageKeys: [
-      'userToken',
-      'refreshToken',
-      'biometricKey',
-      'deviceId',
-    ], // SecureStore keys to monitor
-  });
+  // useSyncQueriesExternal({
+  //   queryClient,
+  //   socketURL: `http://${hostIP}:42831`, // Use local network IP
+  //   // Default port for React Native DevTools
+  //   deviceName: Platform?.OS || 'web', // Platform detection
+  //   platform: Platform?.OS || 'web', // Use appropriate platform identifier
+  //   deviceId: Platform?.OS || 'web', // Use a PERSISTENT identifier (see note below)
+  //   isDevice: ExpoDevice.isDevice, // Automatically detects real devices vs emulators
+  //   extraDeviceInfo: {
+  //     // Optional additional info about your device
+  //     appVersion: '1.0.0',
+  //     // Add any relevant platform info
+  //   },
+  //   enableLogs: true,
+  //   envVariables: {
+  //     NODE_ENV: process.env.NODE_ENV,
+  //     // Add any private environment variables you want to monitor
+  //     // Public environment variables are automatically loaded
+  //   },
+  //   // Storage monitoring with CRUD operations
+  //   asyncStorage: AsyncStorage, // AsyncStorage for ['#storage', 'async', 'key'] queries + monitoring
+  //   secureStorageKeys: [
+  //     'userToken',
+  //     'refreshToken',
+  //     'biometricKey',
+  //     'deviceId',
+  //   ], // SecureStore keys to monitor
+  // });
   // Use the new OTA updates hook
   useOTAUpdates();
 
