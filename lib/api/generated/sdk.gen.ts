@@ -235,6 +235,9 @@ import type {
   TriggerSpaceStartData,
   TriggerSpaceStartResponses,
   TriggerSpaceStartErrors,
+  InvokeAgentData,
+  InvokeAgentResponses,
+  InvokeAgentErrors,
   CreateCommentCommentsPostData,
   CreateCommentCommentsPostResponses,
   CreateCommentCommentsPostErrors,
@@ -1804,6 +1807,23 @@ export const triggerSpaceStart = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+};
+
+/**
+ * Invoke Agent
+ */
+export const invokeAgent = <ThrowOnError extends boolean = false>(
+  options: Options<InvokeAgentData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    InvokeAgentResponses,
+    InvokeAgentErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/space/invoke-agent',
+    ...options,
   });
 };
 

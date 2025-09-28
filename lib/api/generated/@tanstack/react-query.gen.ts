@@ -79,6 +79,7 @@ import {
   raiseHand,
   subscribeSpace,
   triggerSpaceStart,
+  invokeAgent,
   createCommentCommentsPost,
   getVerificationComments,
   unlikeComment,
@@ -254,6 +255,8 @@ import type {
   SubscribeSpaceError,
   TriggerSpaceStartData,
   TriggerSpaceStartError,
+  InvokeAgentData,
+  InvokeAgentError,
   CreateCommentCommentsPostData,
   CreateCommentCommentsPostError,
   GetVerificationCommentsData,
@@ -3485,6 +3488,54 @@ export const triggerSpaceStartMutation = (
   > = {
     mutationFn: async (localOptions) => {
       const { data } = await triggerSpaceStart({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const invokeAgentQueryKey = (options: Options<InvokeAgentData>) =>
+  createQueryKey('invokeAgent', options);
+
+/**
+ * Invoke Agent
+ */
+export const invokeAgentOptions = (options: Options<InvokeAgentData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await invokeAgent({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: invokeAgentQueryKey(options),
+  });
+};
+
+/**
+ * Invoke Agent
+ */
+export const invokeAgentMutation = (
+  options?: Partial<Options<InvokeAgentData>>,
+): UseMutationOptions<
+  unknown,
+  AxiosError<InvokeAgentError>,
+  Options<InvokeAgentData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    unknown,
+    AxiosError<InvokeAgentError>,
+    Options<InvokeAgentData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await invokeAgent({
         ...options,
         ...localOptions,
         throwOnError: true,
