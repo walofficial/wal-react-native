@@ -49,24 +49,68 @@ export const isUserRegistered = (user: User) => {
   return !!user.date_of_birth && !!user.gender;
 };
 
+// Retry utility with exponential backoff
+async function retryWithBackoff<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 500,
+  shouldRetry: (error: any) => boolean = (error) => {
+    // Retry on network errors, 5xx server errors, and rate limiting
+    const status = error?.response?.status;
+    return !status || status >= 500 || status === 429;
+  },
+): Promise<T> {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      if (attempt === maxRetries || !shouldRetry(error)) {
+        throw error;
+      }
+
+      const backoff = baseDelay * Math.pow(2, attempt);
+      const jitter = Math.random() * 100;
+      const delay = backoff + jitter;
+
+      console.warn(
+        `Attempt ${attempt + 1} failed. Retrying in ${delay.toFixed(0)}ms...`,
+        error,
+      );
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+  throw new Error('Retry logic error'); // Should never reach here
+}
+
 async function handleUserNotFound(supabaseUser: any) {
   const currentLocale = getCurrentLocale();
   const language = getLanguageFromLocale(currentLocale);
-  return await createUser({
-    body: {
-      external_user_id: supabaseUser.id,
-      email: supabaseUser.email || supabaseUser?.phone,
-      phone_number: supabaseUser?.phone,
-      date_of_birth: '',
-      gender: null,
-      username: '',
-      photos: [],
-      interests: [],
-      city: null,
-      preferred_content_language: language,
+
+  return await retryWithBackoff(
+    () =>
+      createUser({
+        body: {
+          external_user_id: supabaseUser.id,
+          email: supabaseUser.email || supabaseUser?.phone,
+          phone_number: supabaseUser?.phone,
+          date_of_birth: '',
+          gender: null,
+          username: '',
+          photos: [],
+          interests: [],
+          city: null,
+          preferred_content_language: language,
+        },
+        throwOnError: true,
+      }),
+    15, // maxRetries
+    500, // baseDelay
+    (error) => {
+      // Only retry on system errors, not client errors
+      const status = error?.response?.status;
+      return !status || status >= 500 || status === 429;
     },
-    throwOnError: true,
-  });
+  );
 }
 
 export default function AuthLayer({ children }: { children: React.ReactNode }) {
@@ -77,6 +121,7 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>();
   const { sendPublicKey } = useSendPublicKey();
   const { error: errorToast, success: successToast, dismissAll } = useToast();
+
   useEffect(() => {
     // Update the API client configuration whenever the Accept-Language header changes
     updateAcceptLanguageHeader(user?.preferred_content_language || '');
@@ -99,9 +144,25 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
       if (!session) return;
       try {
         setUserIsLoading(true);
-        const dbUser = await getUser({
-          throwOnError: true,
-        });
+
+        const dbUser = await retryWithBackoff(
+          () => getUser({ throwOnError: true }),
+          15, // maxRetries
+          500, // baseDelay
+          (error) => {
+            // Only retry on system errors, not 404 or auth errors
+            const status = error?.response?.status;
+            return (
+              !status ||
+              (status >= 500 &&
+                status !== 404 &&
+                status !== 401 &&
+                status !== 403) ||
+              status === 429
+            );
+          },
+        );
+
         setUserIsLoading(false);
         setUser(dbUser.data);
         // Get region so that application knows which feed ids to load
@@ -119,7 +180,6 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
             setUserIsLoading(false);
           } catch (innerError) {
             dismissAll();
-            setUserIsLoading(false);
             errorToast({ title: t('common.system_error') });
             console.error('Error creating new user (inner):', innerError);
           }
@@ -128,12 +188,11 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
           errorToast({ title: t('common.session_expired') });
           await supabase.auth.signOut();
         } else {
-          setUserIsLoading(false);
           dismissAll();
-          errorToast({ title: t('common.session_expired') });
-
+          errorToast({ title: t('common.system_error') });
           console.error('Error fetching user:', e);
         }
+        setUserIsLoading(false);
       }
     }
     fetchUser();
