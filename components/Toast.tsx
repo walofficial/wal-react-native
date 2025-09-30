@@ -44,7 +44,7 @@ const getIconForType = (type: ToastVariant) => {
     case 'warning':
       return '⚠';
     case 'info':
-      return 'ℹ';
+      return '';
     case 'message':
       return '';
     default:

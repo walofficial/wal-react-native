@@ -16,7 +16,7 @@ import ErrorMessageCard from '@/components/ErrorMessageCard';
 import FullScreenLoader from '@/components/FullScreenLoader';
 import { useTheme } from '@/lib/theme';
 import { trackScreen, setUserProperties } from '@/lib/analytics';
-import { getCurrentLocale } from '@/lib/i18n';
+import { getCurrentLocale, t } from '@/lib/i18n';
 import { setAndroidNavigationBar } from '@/lib/android-navigation-bar';
 import { Provider as HeaderTransformProvider } from '@/lib/context/header-transform';
 import { Provider as ReactionsOverlayProvider } from '@/lib/reactionsOverlay/reactionsOverlay';
@@ -35,6 +35,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import { activeLivekitRoomState } from '@/components/SpacesBottomSheet/atom';
 import SpacesBottomSheet from '@/components/SpacesBottomSheet';
+import { useDefaultCountry } from '@/hooks/useDefaultCountry';
+import { toastStyles } from '@/lib/styles';
+import { useToast } from '@/components/ToastUsage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import CountryChangeToast from '@/components/CountryChangeToast';
+import { getCountryByCode } from '@/lib/countries';
+import { updateUser, UpdateUserRequest } from '@/lib/api/generated';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 function LivePulseIcon({ children }: { children: React.ReactNode }) {
   const scale = useSharedValue(1);
@@ -98,6 +106,7 @@ export default function TabLayout() {
   const pathname = usePathname();
   const { factCheckFeedId, newsFeedId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
+  const queryClient = useQueryClient();
   // Track screen changes and update user properties
   useEffect(() => {
     const screenName = pathname.replace('/', '').split('?')[0] || 'root';
@@ -120,7 +129,96 @@ export default function TabLayout() {
     setAndroidNavigationBar(colorScheme);
   }, [colorScheme]);
 
-  const { session, isLoading, user, userIsLoading } = useSession();
+  const { session, isLoading, user, userIsLoading, setAuthUser } = useSession();
+  const updateUserMutation = useMutation({
+    onMutate: ({ gender, username, date_of_birth }) => {
+      setAuthUser({
+        ...user,
+        date_of_birth,
+        gender,
+        username,
+      });
+    },
+    mutationFn: (values: UpdateUserRequest) =>
+      updateUser({
+        body: {
+          ...values,
+        },
+      }),
+    onSuccess: () => {
+      // queryClient.resetQueries();
+    },
+    onError: (error) => {},
+  });
+  const {
+    country: selectedCountry,
+    setCountry,
+    newsFeedId: countryNewsFeedId,
+    factCheckFeedId: countryFactCheckFeedId,
+  } = useDefaultCountry();
+  const { show, dismiss } = useToast();
+  useEffect(() => {
+    if (
+      countryNewsFeedId &&
+      user?.preferred_news_feed_id === countryNewsFeedId
+    ) {
+      // Do not show toast if user has the IP country
+      return;
+    }
+
+    if (!countryFactCheckFeedId || !countryNewsFeedId) {
+      // Do not show toast if country feed IDs are not available
+      return;
+    }
+
+    let toastId: string | null = null;
+    if (!selectedCountry?.code) return;
+
+    const storageKey = `country-toast-dismissed-${selectedCountry.code}`;
+
+    const maybeShowToast = async () => {
+      try {
+        const hasDismissed = await AsyncStorage.getItem(storageKey);
+        // if (hasDismissed === 'true') return;
+
+        const countryMeta = getCountryByCode(selectedCountry.code);
+        toastId = show(
+          <CountryChangeToast
+            countryCode={selectedCountry.code}
+            countryName={countryMeta?.name}
+            onAccept={async () => {
+              await AsyncStorage.setItem(storageKey, 'true');
+              if (toastId) dismiss(toastId);
+            }}
+            onDismiss={async () => {
+              await AsyncStorage.setItem(storageKey, 'true');
+              if (toastId) dismiss(toastId);
+            }}
+            onPress={() => {
+              updateUserMutation.mutate({
+                preferred_news_feed_id: countryNewsFeedId,
+                preferred_fact_check_feed_id: countryFactCheckFeedId,
+              });
+              // Optionally navigate to country settings in the future
+            }}
+          />,
+          {
+            position: 'top',
+            type: 'info',
+            duration: 0, // persistent until action
+          },
+        );
+      } catch (e) {
+        // ignore storage errors
+      }
+    };
+
+    maybeShowToast();
+
+    return () => {
+      if (toastId) dismiss(toastId);
+    };
+  }, [selectedCountry?.code]);
 
   const { closeLightbox } = useLightboxControls();
   const { shareIntent, resetShareIntent } = useShareIntentContext();

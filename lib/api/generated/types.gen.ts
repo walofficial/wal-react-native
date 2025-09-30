@@ -759,33 +759,25 @@ export type Feed = {
     [key: string]: unknown;
   }> | null;
   /**
-   * Feed Description
-   */
-  feed_description?: string | null;
-  /**
    * Hidden
    */
   hidden?: boolean | null;
-  /**
-   * Live User Count
-   */
-  live_user_count?: number | null;
-  /**
-   * Verification Count
-   */
-  verification_count?: number | null;
   /**
    * No Restrictions
    */
   no_restrictions?: boolean | null;
   /**
-   * Feed Language Code
+   * Feed Country Code
    */
-  feed_language_code?: string | null;
+  feed_country_code?: string | null;
   /**
    * Nearby Feed
    */
   nearby_feed?: boolean | null;
+  /**
+   * Feed Type
+   */
+  feed_type?: ('news' | 'fact_check' | 'location') | null;
 };
 
 /**
@@ -1041,6 +1033,10 @@ export type GetCountryResponse = {
    */
   country_code: string;
   /**
+   * Country Label
+   */
+  country_label: string;
+  /**
    * Ip Address
    */
   ip_address: string;
@@ -1048,6 +1044,14 @@ export type GetCountryResponse = {
    * Detection Method
    */
   detection_method: string;
+  /**
+   * News Feed Id
+   */
+  news_feed_id: string;
+  /**
+   * Fact Check Feed Id
+   */
+  fact_check_feed_id: string;
 };
 
 /**

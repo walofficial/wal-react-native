@@ -8,17 +8,20 @@ export default function AnimatedPressable({
   className,
   onPress,
   style,
+  disabled,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   className?: string;
   onPress?: () => void;
   style?: ViewStyle;
+  disabled?: boolean;
 }) {
   const [scale] = useState(new Animated.Value(1));
   const theme = useTheme();
 
   const handlePressIn = () => {
+    if (disabled) return;
     Animated.spring(scale, {
       toValue: 0.98,
       useNativeDriver: true,
@@ -27,6 +30,7 @@ export default function AnimatedPressable({
   };
 
   const handlePressOut = () => {
+    if (disabled) return;
     Animated.spring(scale, {
       toValue: 1,
       friction: 5,
@@ -39,14 +43,16 @@ export default function AnimatedPressable({
     <Pressable
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
-      onPress={onClick || onPress}
+      onPress={disabled ? undefined : onClick || onPress}
       style={[
         styles.button,
         {
           borderColor: theme.colors.border,
+          opacity: disabled ? 0.5 : 1,
         },
         style,
       ]}
+      disabled={disabled}
     >
       {children}
     </Pressable>

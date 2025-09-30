@@ -116,8 +116,8 @@ client.instance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config ?? {};
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+    if (error.response?.status === 401) {
+      // originalRequest._retry = true;
       const { data } = await supabase.auth.getSession();
       const token = data.session?.access_token;
       if (token) {

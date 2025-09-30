@@ -28,6 +28,8 @@ export const useDefaultCountry = () => {
     };
   return {
     country,
+    newsFeedId: data?.news_feed_id,
+    factCheckFeedId: data?.fact_check_feed_id,
     isLoading,
     error,
     countryCode: data,

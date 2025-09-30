@@ -21,6 +21,8 @@ import {
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { t } from '@/lib/i18n';
 import { trackEvent, setUserProperties } from '@/lib/analytics';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
 
 export const openNotificationSettings = () => {
   return Linking.openSettings();
@@ -31,6 +33,7 @@ export default function EnableNotifications({
 }: {
   hidden?: boolean;
 }) {
+  const colorScheme = useColorScheme();
   const queryClient = useQueryClient();
   const [expoPushToken, setExpoPushToken] = useAtom(expoPushTokenAtom);
   const [isSubscribed, setIsSubscribed] = useAtom(isSubscribedAtom);
@@ -163,7 +166,7 @@ export default function EnableNotifications({
       <Button
         glassy={true}
         style={styles.button}
-        variant={!isSubscribed ? 'default' : 'secondary'}
+        // variant={!isSubscribed ? 'default' : 'secondary'}
         size="large"
         onPress={toggleNotifications}
         disabled={saveToken.isPending}
@@ -176,6 +179,7 @@ export default function EnableNotifications({
         icon={
           isSubscribed ? 'notifications-off-outline' : 'notifications-outline'
         }
+        // iconColor={colorScheme.isDarkColorScheme ? '#333' : 'black'}
       />
       {isDev && (
         <Button
