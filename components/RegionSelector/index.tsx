@@ -85,30 +85,33 @@ const RegionSelector: React.FC<RegionSelectorProps> = ({ onRegionChange }) => {
         }
       }}
       shouldOpenOnLongPress={false}
-      actions={[
-        {
-          id: 'georgia',
-          title: `🇬🇪 ${getRegionDisplayName('georgia')}`,
-          state: preferredRegion === 'georgia' ? 'on' : 'off',
-        },
-        // {
-        //   id: "united_states",
-        //   title: `🇺🇸 ${getRegionDisplayName("united_states")}`,
-        //   state: preferredRegion === "united_states" ? "on" : "off",
-        // },
-        // {
-        //   id: "france",
-        //   title: `🇫🇷 ${getRegionDisplayName("france")}`,
-        //   state: preferredRegion === "france" ? "on" : "off",
-        // },
-      ]}
+      actions={
+        [
+          // {
+          //   id: 'georgia',
+          //   title: `🇬🇪 ${getRegionDisplayName('georgia')}`,
+          //   state: preferredRegion === 'georgia' ? 'on' : 'off',
+          // },
+          // {
+          //   id: "united_states",
+          //   title: `🇺🇸 ${getRegionDisplayName("united_states")}`,
+          //   state: preferredRegion === "united_states" ? "on" : "off",
+          // },
+          // {
+          //   id: "france",
+          //   title: `🇫🇷 ${getRegionDisplayName("france")}`,
+          //   state: preferredRegion === "france" ? "on" : "off",
+          // },
+        ]
+      }
     >
       <AnimatedPressable
         onClick={() => {
-          if (Platform.OS === 'android') {
-            menuRef.current?.show();
-          }
+          // if (Platform.OS === 'android') {
+          //   menuRef.current?.show();
+          // }
         }}
+        disabled
       >
         <Ionicons size={28} name="globe-outline" color={theme.colors.icon} />
         <Text style={[styles.buttonText, { color: theme.colors.text }]}>

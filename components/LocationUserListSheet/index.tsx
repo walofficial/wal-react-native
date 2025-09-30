@@ -124,7 +124,7 @@ const LocationUserListSheet = ({
           <Text style={[styles.headerText, { color: theme.colors.text }]}>
             {t('common.active')}
           </Text>
-            <TouchableOpacity
+          {/* <TouchableOpacity
               onPress={() => {
                 router.navigate({
                   pathname: "/(tabs)/(home)/create-space",
@@ -137,7 +137,7 @@ const LocationUserListSheet = ({
               <View style={styles.roomIconContainer}>
                 <Ionicons name="mic-outline" size={22} color="#007AFF" />
               </View>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
         {visible && feedId && <HorizontalAnonList feedId={feedId} />}
       </BottomSheet>

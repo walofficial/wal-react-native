@@ -32,7 +32,9 @@ export default function HomePage() {
     }
 
     return () => {
-      NavigationBar.setVisibilityAsync('visible');
+      if (isAndroid) {
+        NavigationBar.setVisibilityAsync('visible');
+      }
     };
   }, []);
 
