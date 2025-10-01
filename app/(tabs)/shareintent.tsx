@@ -77,7 +77,7 @@ export default function ShareIntent() {
           params.sharedImages = encodedImages;
         }
 
-        router.push({
+        router.navigate({
           pathname: `/(tabs)/(fact-check)/create-post`,
           params,
         });

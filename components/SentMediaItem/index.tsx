@@ -1,10 +1,19 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import MessageItemLayout from '../Chat/message-item-layout';
-import { Text, StyleSheet, View, useColorScheme } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  View,
+  useColorScheme,
+  Alert,
+  Pressable,
+} from 'react-native';
 import { FontSizes } from '@/lib/theme';
 import { formatDistanceToNow } from 'date-fns';
 import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
 import { t } from '@/lib/i18n';
+import * as Clipboard from 'expo-clipboard';
+import { useToast } from '../ToastUsage';
 
 interface MessageItemProps {
   id: string;
@@ -21,6 +30,7 @@ const AnimatedMessageLayout =
 const SentMediaItem: React.FC<MessageItemProps> = React.memo(
   ({ id, content, isAuthor, createdAt, isLastFromAuthor }) => {
     const colorScheme = useColorScheme();
+    const { success } = useToast();
     const isDark = colorScheme === 'dark';
     const formattedTime = createdAt
       ? formatDistanceToNow(new Date(createdAt), { addSuffix: false })
@@ -38,6 +48,16 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
           .replace('years', t('common.year_short'))
       : '';
 
+    const handleLongPress = React.useCallback(async () => {
+      if (typeof content !== 'string' || !content) return;
+      try {
+        await Clipboard.setStringAsync(content);
+        success({ title: t('common.copied_to_clipboard') });
+      } catch (error) {
+        // noop
+      }
+    }, [content]);
+
     return (
       <AnimatedMessageLayout
         isAuthor={isAuthor}
@@ -45,7 +65,11 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
           isAuthor ? FadeIn.duration(150) : FadeIn.duration(200).delay(50)
         }
       >
-        <View style={styles.contentContainer}>
+        <Pressable
+          onLongPress={handleLongPress}
+          delayLongPress={250}
+          style={styles.contentContainer}
+        >
           <Text
             style={[
               styles.contentText,
@@ -61,7 +85,7 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
           {isAuthor && isLastFromAuthor && createdAt && (
             <Text style={styles.timeText}>{formattedTime}</Text>
           )}
-        </View>
+        </Pressable>
       </AnimatedMessageLayout>
     );
   },

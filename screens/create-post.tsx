@@ -482,6 +482,7 @@ export default function CreatePost() {
           }
           isPending={isPending}
           isFactCheckEnabled={false}
+          isShareIntent={!!isShareIntent}
         />
 
         <ScrollView

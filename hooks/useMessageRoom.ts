@@ -17,9 +17,8 @@ export default function useMessageRoom(
       },
     }),
     refetchOnWindowFocus: true,
-    retry: false,
     enabled: enabled && !!roomId,
-    refetchIntervalInBackground: false,
+    retry: true,
   });
   return { room, isFetching: isFetching && !isRefetching, error };
 }

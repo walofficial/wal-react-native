@@ -77,6 +77,7 @@ export default function Layout({ segment }: { segment: string }) {
         headerShown: false,
       }}
     />,
+
     <Stack.Screen
       name="profile-picture"
       options={{
@@ -108,9 +109,7 @@ export default function Layout({ segment }: { segment: string }) {
         name="create-space/index"
         options={({ route }) => ({
           headerTransparent: !isWeb,
-          header: () => (
-            <SimpleGoBackHeader title="ოთახი" />
-          ),
+          header: () => <SimpleGoBackHeader title="ოთახი" />,
         })}
       />,
     );
