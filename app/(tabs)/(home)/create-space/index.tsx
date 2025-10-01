@@ -107,7 +107,9 @@ export default function CreateSpace() {
                 size="default"
                 onPress={async () => {
                   await haptic('Medium');
-                  createSpace({body: { text_content: description, feed_id: feedId }});
+                  createSpace({
+                    body: { text_content: description, feed_id: feedId },
+                  });
                 }}
                 disabled={isPending}
                 isLoading={isPending}

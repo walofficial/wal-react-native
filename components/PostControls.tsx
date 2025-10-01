@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
     right: -2,
     zIndex: 1,
   },
- 
+
   charactersLeft: {
     fontSize: 14,
   },

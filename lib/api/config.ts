@@ -92,7 +92,6 @@ supabase.auth.onAuthStateChange((_event, session) => {
 
 // Add request interceptor to always attach the latest token and handle multipart
 client.instance.interceptors.request.use((config) => {
-
   // Handle multipart/form-data requests on Android
   if (config.data instanceof FormData) {
     // Remove Content-Type to let Axios set the proper boundary

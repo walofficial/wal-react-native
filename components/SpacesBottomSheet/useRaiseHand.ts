@@ -41,7 +41,7 @@ export default function useRaiseHand() {
     setIsHandRaised,
     isPending,
     raiseHand: (roomName: string) =>
-      (raiseHand)({
+      raiseHand({
         body: {
           livekit_room_name: roomName,
           participant_identity: localParticipant.identity,
