@@ -31,6 +31,7 @@ const FriendsList: React.FC = () => {
   const { data, isFetching } = useQuery({
     ...getFriendsListOptions(),
     refetchInterval: isFocused ? 10000 : false,
+    refetchOnWindowFocus: true,
     // subscribed: isFocused,
   });
   const deleteFriendMutation = useMutation({

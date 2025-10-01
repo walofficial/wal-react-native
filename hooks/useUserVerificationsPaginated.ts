@@ -39,7 +39,6 @@ export function useUserVerificationsPaginated({
     retry: 2,
     refetchOnMount: false,
     refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
   });
 

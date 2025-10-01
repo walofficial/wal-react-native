@@ -9,7 +9,6 @@ export function useCommentCount(verificationId: string) {
       },
     }),
     staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false,
     refetchOnMount: false,
   });
 

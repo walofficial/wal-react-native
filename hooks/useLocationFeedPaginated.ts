@@ -129,7 +129,6 @@ export function useLocationFeedPaginated({
     retry: 2,
     refetchOnMount: false,
     refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
     // refetchInterval: (data) => {
     //   return false

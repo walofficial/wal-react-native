@@ -15,12 +15,12 @@ export function useFriendRequests() {
     subscribed: isFocused,
     enabled: isFocused,
     refetchInterval: isFocused ? 30000 : false,
-    refetchOnWindowFocus: false,
     refetchOnMount: false,
     gcTime: 1000 * 60 * 2,
     staleTime: 1000 * 30,
     refetchOnReconnect: false,
     refetchIntervalInBackground: false,
+    refetchOnWindowFocus: true,
     retry: 1,
     retryDelay: 1000,
   });
