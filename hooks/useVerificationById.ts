@@ -69,7 +69,6 @@ function useVerificationById(
       },
     }),
     enabled: enabled,
-    refetchOnWindowFocus: false,
     refetchOnMount: false,
     retryDelay: 1000,
     refetchInterval: (query) => {

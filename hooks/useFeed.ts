@@ -14,7 +14,6 @@ export default function useFeed(feedId: string) {
     }),
     enabled: !!feedId,
     refetchOnReconnect: false,
-    refetchOnWindowFocus: false,
     refetchIntervalInBackground: false,
   });
 

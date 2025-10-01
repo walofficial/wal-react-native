@@ -16,10 +16,10 @@ export default function useMessageRoom(
         room_id: roomId,
       },
     }),
+    refetchOnWindowFocus: true,
     retry: false,
     enabled: enabled && !!roomId,
     refetchIntervalInBackground: false,
-    refetchOnWindowFocus: false,
   });
   return { room, isFetching: isFetching && !isRefetching, error };
 }
