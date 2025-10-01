@@ -1,0 +1,8 @@
+[2025-10-01T23:10:56.969Z] Error: Request failed with status 200: 
+Stack:
+Error: Request failed with status 200: 
+    at Di (/Users/nikashelia/Documents/wal-react-native/node_modules/@hey-api/openapi-ts/dist/index.cjs:46:8003)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Promise.all (index 0)
+    at async jB (/Users/nikashelia/Documents/wal-react-native/node_modules/@hey-api/openapi-ts/dist/index.cjs:1342:6572)
+    at async start (/Users/nikashelia/Documents/wal-react-native/node_modules/@hey-api/openapi-ts/bin/index.cjs:139:21)
