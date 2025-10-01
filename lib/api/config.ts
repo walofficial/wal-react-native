@@ -92,12 +92,6 @@ supabase.auth.onAuthStateChange((_event, session) => {
 
 // Add request interceptor to always attach the latest token and handle multipart
 client.instance.interceptors.request.use((config) => {
-  if (supabaseUserToken) {
-    config.headers = {
-      ...config.headers,
-      Authorization: `Bearer ${supabaseUserToken}`,
-    } as any;
-  }
 
   // Handle multipart/form-data requests on Android
   if (config.data instanceof FormData) {
@@ -126,7 +120,7 @@ client.instance.interceptors.response.use(
           ...originalRequest.headers,
           Authorization: `Bearer ${token}`,
         };
-        return client.instance.request(originalRequest);
+        return client.instance(originalRequest);
       }
     }
     return Promise.reject(error);

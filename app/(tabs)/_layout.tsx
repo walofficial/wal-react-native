@@ -131,14 +131,6 @@ export default function TabLayout() {
 
   const { session, isLoading, user, userIsLoading, setAuthUser } = useSession();
   const updateUserMutation = useMutation({
-    onMutate: ({ gender, username, date_of_birth }) => {
-      setAuthUser({
-        ...user,
-        date_of_birth,
-        gender,
-        username,
-      });
-    },
     mutationFn: (values: UpdateUserRequest) =>
       updateUser({
         body: {
@@ -187,6 +179,10 @@ export default function TabLayout() {
             countryCode={selectedCountry.code}
             countryName={countryMeta?.name}
             onAccept={async () => {
+              updateUserMutation.mutate({
+                preferred_news_feed_id: countryNewsFeedId,
+                preferred_fact_check_feed_id: countryFactCheckFeedId,
+              });
               await AsyncStorage.setItem(storageKey, 'true');
               if (toastId) dismiss(toastId);
             }}
@@ -195,10 +191,6 @@ export default function TabLayout() {
               if (toastId) dismiss(toastId);
             }}
             onPress={() => {
-              updateUserMutation.mutate({
-                preferred_news_feed_id: countryNewsFeedId,
-                preferred_fact_check_feed_id: countryFactCheckFeedId,
-              });
               // Optionally navigate to country settings in the future
             }}
           />,
@@ -213,7 +205,7 @@ export default function TabLayout() {
       }
     };
 
-    maybeShowToast();
+    // maybeShowToast();
 
     return () => {
       if (toastId) dismiss(toastId);
@@ -278,9 +270,8 @@ export default function TabLayout() {
 
         setUserLocationBottomSheet(false);
         setIsFactCheckBottomSheetOpen(false);
-
         // Navigate to create-post-shareintent for any shared content (text or images)
-        router.push({
+        router.navigate({
           pathname: `/(tabs)/(fact-check)/create-post`,
           params,
         });

@@ -156,6 +156,7 @@
     "spaces_public_info": "When a space is public, anyone can join using a link or discover it via the app's public spaces list. Public spaces can be accessed by anyone, so ensure you are comfortable with your content being widely available.",
     "spaces_invite_info": "You can easily invite specific friends to join your space using a private invitation link. This feature allows for more focused and intimate discussions with people you choose to include.",
     "ok": "OK",
+    "copied_to_clipboard": "Copied to clipboard",
     "what_to_talk_about": "What do you want to talk about?",
     "processing": "Processing...",
     "start": "Start",

@@ -16,6 +16,7 @@ interface CreatePostHeaderProps {
   isDisabled: boolean;
   isPending: boolean;
   isFactCheckEnabled: boolean;
+  isShareIntent: boolean;
 }
 
 export default function CreatePostHeader({
@@ -23,6 +24,7 @@ export default function CreatePostHeader({
   isDisabled,
   isPending,
   isFactCheckEnabled,
+  isShareIntent,
 }: CreatePostHeaderProps) {
   const router = useRouter();
   const theme = useTheme();
@@ -45,7 +47,15 @@ export default function CreatePostHeader({
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.cancelButton}
-        onPress={() => router.back()}
+        onPress={() => {
+          if (isShareIntent) {
+            router.replace({
+              pathname: '/(tabs)/(fact-check)',
+            });
+          } else {
+            router.back();
+          }
+        }}
       >
         <Text style={[styles.cancelText, { color: theme.colors.text }]}>
           {t('common.cancel')}
