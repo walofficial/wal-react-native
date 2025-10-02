@@ -29,6 +29,9 @@ export default function ChatFriendsStories() {
   }
   return (
     <View style={styles.container}>
+      <View style={styles.container}>
+        <FriendRequests hideMyRequests limit={5} horizontal />
+      </View>
       <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
         {t('common.friends')}
       </Text>

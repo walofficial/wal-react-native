@@ -156,15 +156,6 @@ export default function RegisterView() {
     !userNameExists;
 
   useEffect(() => {
-    if (userNameExists) {
-      errorToast({
-        title: t('errors.username_taken'),
-        description: t('errors.username_taken'),
-      });
-    }
-  }, [userNameExists]);
-
-  useEffect(() => {
     if (username) {
       hasText.value = withTiming(1, { duration: 150 });
     } else {
@@ -273,6 +264,11 @@ export default function RegisterView() {
                     {hasNonLatinChars && (
                       <Text style={styles.errorText}>
                         {t('common.only_latin_letters')}
+                      </Text>
+                    )}
+                    {userNameExists && (
+                      <Text style={styles.errorText}>
+                        {t('errors.username_taken')}
                       </Text>
                     )}
                     {errors.username && !hasNonLatinChars && (
