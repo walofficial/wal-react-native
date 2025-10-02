@@ -2,6 +2,8 @@ import React from 'react';
 import { Image, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/lib/theme';
 import { router } from 'expo-router';
+import { useQueryClient } from '@tanstack/react-query';
+import { getUserChatRoomsOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 interface MessageToastProps {
   message: string;
@@ -18,14 +20,21 @@ export const MessageToast: React.FC<MessageToastProps> = ({
   senderId,
   roomId,
 }) => {
+  const queryClient = useQueryClient();
+
   const { colors } = useTheme();
   const handlePress = () => {
+    const queryOptions = getUserChatRoomsOptions();
+
     // Navigate to the chat room
     router.push({
       pathname: '/(chat)/[roomId]',
       params: {
         roomId: roomId,
       },
+    });
+    queryClient.invalidateQueries({
+      queryKey: queryOptions.queryKey,
     });
   };
   return (

@@ -47,7 +47,7 @@ export default function MessageConnectionWrapper({
   const [isConnected, setIsConnected] = useState(false);
   const { user, logout } = useAuth();
   const { error: errorToast } = useToast();
-  const { roomId } = useLocalSearchParams<{ roomId: string }>();
+  const { roomId } = useGlobalSearchParams<{ roomId: string }>();
   const queryClient = useQueryClient();
   const socketRef = useRef(getSocket(user.id, publicKey, deviceId));
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
@@ -76,14 +76,7 @@ export default function MessageConnectionWrapper({
       }
     });
 
-    // Initial connect/disconnect based on current app state and focus
-    const shouldConnectInitially =
-      isFocused && appStateRef.current === 'active';
-    if (shouldConnectInitially) {
-      socketRef.current.connect();
-    } else {
-      socketRef.current.disconnect();
-    }
+    socketRef.current.connect();
 
     return () => {
       subscription.remove();
@@ -200,10 +193,15 @@ export default function MessageConnectionWrapper({
         if (!decryptedMessage) {
           return;
         }
+        console.log(showMessagePreview);
         // Show message preview if enabled and user is not focused on chat
         if (showMessagePreview) {
           // Check spam prevention
           if (canShowMessagePreview(newMessage.sender)) {
+            console.log(roomId, privateMessage.room_id);
+            if (roomId === privateMessage.room_id) {
+              return;
+            }
             Toast.message({
               message: decryptedMessage,
               senderUsername: privateMessage.sender_username,
@@ -213,7 +211,15 @@ export default function MessageConnectionWrapper({
               duration: 5000,
             });
             const queryOptions = getUserChatRoomsOptions();
-            // @ts-ignore
+            const hasQueryData = queryClient.getQueryData(
+              queryOptions.queryKey,
+            );
+
+            if (!hasQueryData) {
+              await queryClient.invalidateQueries({
+                queryKey: queryOptions.queryKey,
+              });
+            }
             queryClient.setQueryData(
               queryOptions.queryKey,
               // @ts-ignore

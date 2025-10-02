@@ -29,7 +29,7 @@ interface ChatListProps {
 }
 import { useAtomValue, useSetAtom } from 'jotai';
 import { isChatUserOnlineState, messageAtom } from '@/lib/state/chat';
-import { useLocalSearchParams } from 'expo-router';
+import { useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import SentMediaItem from '../SentMediaItem';
 import useMessageRoom from '@/hooks/useMessageRoom';
@@ -61,7 +61,7 @@ if (Platform.OS === 'android') {
 export function ChatList({ selectedUser }: ChatListProps) {
   const trackedMessageIdsRef = useRef<Set<string>>(new Set());
 
-  const params = useLocalSearchParams<{
+  const params = useGlobalSearchParams<{
     roomId: string;
   }>();
   const { user } = useAuth();
