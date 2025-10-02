@@ -152,7 +152,7 @@ function MenuView({
       }
     >
       <Pressable
-        hitSlop={10}
+        hitSlop={40}
         style={styles.pressable}
         onPress={() => {
           if (Platform.OS === 'android') {

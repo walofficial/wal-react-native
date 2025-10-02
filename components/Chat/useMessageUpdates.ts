@@ -14,6 +14,7 @@ const useMessageUpdates = (
   const mutateUpdateMessages = useMutation({
     ...updateMessageStateChatUpdateMessagesPostMutation(),
   });
+
   const messageOptions = getMessagesChatMessagesGetInfiniteOptions({
     query: {
       page_size: CHAT_PAGE_SIZE,
