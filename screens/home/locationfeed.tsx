@@ -5,12 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNotifications } from '@/components/EnableNotifications/useNotifications';
 import { useTheme, Theme } from '@/lib/theme';
 import ScrollableFeedProvider from '@/components/ScrollableFeedProvider';
-import {
-  useGlobalSearchParams,
-  useLocalSearchParams,
-  usePathname,
-} from 'expo-router';
-import useGoLive from '@/hooks/useGoLive';
+import { useLocalSearchParams } from 'expo-router';
 
 function LocationFeedScreen() {
   const { feedId } = useLocalSearchParams<{
@@ -19,18 +14,10 @@ function LocationFeedScreen() {
   const { enableNotifications } = useNotifications();
   const theme = useTheme();
   const styles = React.useMemo(() => createStyles(theme), [theme]);
-  const { goLiveMutation } = useGoLive();
+
   useEffect(() => {
     enableNotifications();
   }, []);
-
-  useEffect(() => {
-    goLiveMutation.mutateAsync({
-      body: {
-        feed_id: feedId,
-      },
-    });
-  }, [feedId]);
 
   return (
     <Suspense fallback={<ActivityIndicator />}>

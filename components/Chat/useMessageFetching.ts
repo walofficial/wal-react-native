@@ -16,7 +16,7 @@ const useMessageFetching = (roomId: string) => {
     useInfiniteQuery({
       ...queryOptions,
       queryFn: decryptMessages(user),
-      staleTime: Infinity,
+      // staleTime: Infinity,
       getNextPageParam: (lastPage, allPages) => {
         if (!lastPage.next_cursor) {
           return undefined;
