@@ -28,7 +28,8 @@ const useMessageUpdates = (
       (mutateUpdateMessages.mutate as any)(
         {
           body: {
-            messages: messageIds.map((item) => ({ id: item, state: 'READ' })),
+            // TODO: investigate why messageIds has undefined on message send
+            messages: messageIds.filter(Boolean).map((item) => ({ id: item, state: 'READ' })),
           },
         },
         {
