@@ -27,6 +27,7 @@ import { locationUserListSheetState } from '@/lib/atoms/location';
 import { NativeEventSubscription } from 'react-native';
 import { t } from '@/lib/i18n';
 import { Ionicons } from '@expo/vector-icons';
+import { Portal } from '@/components/primitives/portal';
 
 interface LocationUserListSheetProps {
   bottomSheetRef: RefObject<BottomSheet>;
@@ -108,23 +109,24 @@ const LocationUserListSheet = ({
   );
   return (
     <>
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        animateOnMount={false}
-        snapPoints={snapPoints}
-        onChange={handleSheetChange}
-        backgroundStyle={sheetBackground}
-        enablePanDownToClose
-        enableDynamicSizing={false}
-        handleIndicatorStyle={{ backgroundColor: theme.colors.text }}
-        backdropComponent={renderBackdrop}
-      >
-        <View style={styles.headerContainer}>
-          <Text style={[styles.headerText, { color: theme.colors.text }]}>
-            {t('common.active')}
-          </Text>
-          {/* <TouchableOpacity
+      <Portal name="location-user-list-sheet">
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          animateOnMount={false}
+          snapPoints={snapPoints}
+          onChange={handleSheetChange}
+          backgroundStyle={sheetBackground}
+          enablePanDownToClose
+          enableDynamicSizing={false}
+          handleIndicatorStyle={{ backgroundColor: theme.colors.text }}
+          backdropComponent={renderBackdrop}
+        >
+          <View style={styles.headerContainer}>
+            <Text style={[styles.headerText, { color: theme.colors.text }]}>
+              {t('common.active')}
+            </Text>
+            {/* <TouchableOpacity
               onPress={() => {
                 router.navigate({
                   pathname: "/(tabs)/(home)/create-space",
@@ -138,9 +140,10 @@ const LocationUserListSheet = ({
                 <Ionicons name="mic-outline" size={22} color="#007AFF" />
               </View>
             </TouchableOpacity> */}
-        </View>
-        {visible && feedId && <HorizontalAnonList feedId={feedId} />}
-      </BottomSheet>
+          </View>
+          {visible && feedId && <HorizontalAnonList feedId={feedId} />}
+        </BottomSheet>
+      </Portal>
     </>
   );
 };

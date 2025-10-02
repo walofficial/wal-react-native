@@ -221,7 +221,6 @@ const CommentsList = memo(
       },
       [handleLikeComment, handleDeleteComment, user?.id, postId],
     );
-    console.log('data', JSON.stringify(data, null, 2));
     const allComments = data?.pages.flatMap((page) => page.comments) || [];
     if (error) {
       return (
