@@ -270,6 +270,7 @@ export default function TabLayout() {
 
         setUserLocationBottomSheet(false);
         setIsFactCheckBottomSheetOpen(false);
+        router.dismissAll();
         // Navigate to create-post-shareintent for any shared content (text or images)
         router.navigate({
           pathname: `/(tabs)/(fact-check)/create-post`,
@@ -374,9 +375,7 @@ export default function TabLayout() {
                 name="(news)"
                 listeners={() => ({
                   tabPress: (e) => {
-                    if (router.canGoBack()) {
-                      router.dismissAll();
-                    }
+                    router.dismissAll();
                   },
                 })}
                 initialParams={{
@@ -399,9 +398,7 @@ export default function TabLayout() {
                 name="(fact-check)"
                 listeners={() => ({
                   tabPress: (e) => {
-                    if (router.canGoBack()) {
-                      router.dismissAll();
-                    }
+                    router.dismissAll();
                   },
                 })}
                 initialParams={{
@@ -473,12 +470,10 @@ export default function TabLayout() {
                 name="(user)"
                 listeners={() => ({
                   tabPress: (e) => {
-                    if (router.canGoBack()) {
-                      router.dismissAll();
-                      router.navigate({
-                        pathname: '/(tabs)/(user)',
-                      });
-                    }
+                    router.dismissAll();
+                    router.navigate({
+                      pathname: '/(tabs)/(user)',
+                    });
                   },
                 })}
                 options={{
