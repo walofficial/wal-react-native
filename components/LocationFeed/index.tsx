@@ -42,15 +42,11 @@ type Location = {
 interface LocationFeedProps {
   feedId: string;
   content_type?: 'last24h' | 'youtube_only' | 'social_media_only';
-  isFactCheckFeed: boolean;
-  isNewsFeed: boolean;
 }
 
 export default function LocationFeed({
   feedId,
   content_type,
-  isFactCheckFeed,
-  isNewsFeed,
 }: LocationFeedProps) {
   const { isUserInSelectedLocation, selectedLocation, isGettingLocation } =
     useIsUserInSelectedLocation();
@@ -100,7 +96,7 @@ export default function LocationFeed({
       const first = viewableItems[0];
       if (first?.item?.id) {
         trackEvent('view_item', {
-          content_type: isNewsFeed ? 'news' : 'post',
+          content_type: 'post',
           item_id: String(first.item.id),
           feed_id: String(first.item.feed_id || feedId),
         });
@@ -276,11 +272,7 @@ export default function LocationFeed({
     // Track list view refresh as view_item_list
     trackEvent('view_item_list', {
       item_list_id: String(feedId),
-      item_list_name: isNewsFeed
-        ? 'news'
-        : isFactCheckFeed
-          ? 'fact_check'
-          : 'location',
+      item_list_name: 'location',
     });
   }, [refetch, queryClient, feedId]);
 
@@ -292,29 +284,22 @@ export default function LocationFeed({
         headerOffset={headerHeight}
         renderItem={renderItem}
         ListHeaderComponent={
-          isNewsFeed ? (
-            <ThemedText
-              style={{ fontSize: 24, padding: 20, fontWeight: 'bold' }}
-            >
-              {new Date().toLocaleDateString(getCurrentLocale(), {
-                month: 'long',
-                day: 'numeric',
-              })}
-            </ThemedText>
-          ) : undefined
+          <ThemedText style={{ fontSize: 24, padding: 20, fontWeight: 'bold' }}>
+            {new Date().toLocaleDateString(getCurrentLocale(), {
+              month: 'long',
+              day: 'numeric',
+            })}
+          </ThemedText>
         }
         // @ts-ignore
         ListEmptyComponent={
-          !isNewsFeed &&
-          !isFactCheckFeed && (
-            <ListEmptyComponent
-              isFetching={isFetching}
-              isGettingLocation={isGettingLocation}
-              isUserInSelectedLocation={isUserInSelectedLocation}
-              selectedLocation={selectedLocation as Location}
-              handleOpenMap={handleOpenMap}
-            />
-          )
+          <ListEmptyComponent
+            isFetching={isFetching}
+            isGettingLocation={isGettingLocation}
+            isUserInSelectedLocation={isUserInSelectedLocation}
+            selectedLocation={selectedLocation as Location}
+            handleOpenMap={handleOpenMap}
+          />
         }
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         loadMore={loadMore}
@@ -324,19 +309,18 @@ export default function LocationFeed({
         refetch={enhancedRefetch}
       />
 
-      {!isWeb && !isNewsFeed && (
+      {!isWeb && (
         <Suspense fallback={null}>
           <Animated.View style={bottomActionsStyle}>
             <BottomLocationActions
               feedId={feedId as string}
               isUserInSelectedLocation={isUserInSelectedLocation}
-              isFactCheckFeed={isFactCheckFeed}
             />
           </Animated.View>
         </Suspense>
       )}
 
-      {!isWeb && !isFactCheckFeed && !isNewsFeed && (
+      {!isWeb && (
         <LocationUserListSheet bottomSheetRef={locationUserListSheetRef} />
       )}
     </>

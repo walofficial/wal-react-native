@@ -17,7 +17,7 @@ function ErrorMessageCard({
   const theme = useTheme();
 
   const handleSignInPress = () => {
-    router.push('/(tabs)/(news)');
+    router.push('/(tabs)/(home)');
   };
 
   return (

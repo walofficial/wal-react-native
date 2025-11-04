@@ -23,11 +23,7 @@ function LocationFeedScreen() {
     <Suspense fallback={<ActivityIndicator />}>
       <GestureHandlerRootView style={styles.container}>
         <ScrollableFeedProvider>
-          <LocationFeed
-            feedId={feedId as string}
-            isFactCheckFeed={false}
-            isNewsFeed={false}
-          />
+          <LocationFeed feedId={feedId as string} />
         </ScrollableFeedProvider>
       </GestureHandlerRootView>
     </Suspense>

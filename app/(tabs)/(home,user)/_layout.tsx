@@ -35,8 +35,6 @@ export const unstable_settings = {
 export default function Layout({ segment }: { segment: string }) {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const isNewsFeed = segment === '(news)';
-  const isFactCheckFeed = segment === '(fact-check)';
   const isHomeFeed = segment === '(home)';
   const isUserFeed = segment === '(user)';
   const { user } = useAuth();
@@ -130,23 +128,13 @@ export default function Layout({ segment }: { segment: string }) {
                   customTitleComponent={
                     <TaskTitle
                       //@ts-ignore
-                      feedId={
-                        isFactCheckFeed
-                          ? user.preferred_fact_check_feed_id
-                          : isNewsFeed
-                            ? user.preferred_news_feed_id
-                            : user.preferred_fact_check_feed_id
-                      }
+                      feedId={null}
                     />
                   }
                   showSearch={!isUserFeed}
-                  showLocationTabs={!isNewsFeed && !isFactCheckFeed}
-                  showTabs={!isNewsFeed && !isUserFeed}
-                  feedId={
-                    isFactCheckFeed
-                      ? user.preferred_fact_check_feed_id
-                      : user.preferred_news_feed_id
-                  }
+                  showLocationTabs={false}
+                  showTabs={!isUserFeed}
+                  feedId={undefined}
                   //@ts-ignore
                   content_type={route.params?.content_type || 'last24h'}
                 />

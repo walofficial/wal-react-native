@@ -1,11 +1,9 @@
 import React from 'react';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { View, Text, ActivityIndicator } from 'react-native';
 import useVerificationById from '@/hooks/useVerificationById';
 import CommentsView from '@/components/VerificationView/CommentsView';
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { activeLivekitRoomState } from '@/components/SpacesBottomSheet/atom';
-import { useAtom } from 'jotai';
 
 function VerificationView() {
   const params = useLocalSearchParams<{

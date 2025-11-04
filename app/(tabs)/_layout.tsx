@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
 
 export default function TabLayout() {
   const pathname = usePathname();
-  const { factCheckFeedId, newsFeedId } = useFeeds();
+  const { categoryId } = useFeeds();
   const { isDarkColorScheme } = useColorScheme();
   const queryClient = useQueryClient();
   // Track screen changes and update user properties
@@ -213,74 +213,8 @@ export default function TabLayout() {
   }, [selectedCountry?.code]);
 
   const { closeLightbox } = useLightboxControls();
-  const { shareIntent, resetShareIntent } = useShareIntentContext();
   const router = useRouter();
-  const setUserLocationBottomSheet = useSetAtom(locationUserListSheetState);
-  const setIsFactCheckBottomSheetOpen = useSetAtom(factCheckBottomSheetState);
   const isUserLive = useAtomValue(isUserLiveState);
-  useEffect(() => {
-    if (shareIntent && session && isAndroid) {
-      // Check if we have images or text content to share
-      const hasContent =
-        shareIntent.text || (shareIntent.files && shareIntent.files.length > 0);
-
-      if (hasContent) {
-        // Filter for image files if any
-        const imageFiles =
-          shareIntent.files?.filter(
-            (file) =>
-              file.mimeType?.startsWith('image/') ||
-              file.fileName?.match(/\.(jpg|jpeg|png|gif|webp)$/i),
-          ) || [];
-
-        // Convert share intent files to the format expected by create-post
-        const convertedImages = imageFiles.map((file) => ({
-          uri: file.path,
-          width: file.width || 0,
-          height: file.height || 0,
-          fileSize: file.size,
-          type: 'image' as const,
-          fileName: file.fileName || `shared_image_${Date.now()}.jpg`,
-          mimeType: file.mimeType || 'image/jpeg',
-          exif: null,
-          assetId: null,
-          base64: null,
-          duration: null,
-        }));
-
-        // Encode the images as URL parameters if we have any
-        const encodedImages =
-          convertedImages.length > 0
-            ? encodeURIComponent(JSON.stringify(convertedImages))
-            : '';
-
-        // Build navigation params
-        const params: any = {
-          feedId: factCheckFeedId,
-          disableRoomCreation: 'true',
-        };
-
-        if (shareIntent.text) {
-          params.sharedContent = shareIntent.text;
-        }
-
-        if (encodedImages) {
-          params.sharedImages = encodedImages;
-        }
-
-        setUserLocationBottomSheet(false);
-        setIsFactCheckBottomSheetOpen(false);
-        router.dismissAll();
-        // Navigate to create-post-shareintent for any shared content (text or images)
-        router.navigate({
-          pathname: `/(tabs)/(fact-check)/create-post`,
-          params,
-        });
-      }
-
-      resetShareIntent();
-    }
-  }, [shareIntent, session]);
 
   useEffect(() => {
     if (isAndroid) {
@@ -372,65 +306,7 @@ export default function TabLayout() {
               }}
             >
               <Tabs.Screen
-                name="(news)"
-                listeners={() => ({
-                  tabPress: (e) => {
-                    router.dismissAll();
-                  },
-                })}
-                initialParams={{
-                  feedId: newsFeedId,
-                }}
-                options={{
-                  tabBarIcon: ({ color, focused }) => (
-                    <TabBarIcon
-                      size={24}
-                      name={focused ? 'newspaper' : 'newspaper-outline'}
-                      color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
-                      // style={
-                      //   focused ? { transform: [{ scale: 1.15 }] } : undefined
-                      // }
-                    />
-                  ),
-                }}
-              />
-              <Tabs.Screen
-                name="(fact-check)"
-                listeners={() => ({
-                  tabPress: (e) => {
-                    router.dismissAll();
-                  },
-                })}
-                initialParams={{
-                  content_type: 'last24h',
-                  feedId: factCheckFeedId,
-                }}
-                options={{
-                  tabBarIcon: ({ color, focused }) => (
-                    <TabBarIcon
-                      size={24}
-                      name={
-                        focused
-                          ? 'shield-checkmark'
-                          : 'shield-checkmark-outline'
-                      }
-                      color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
-                      // style={
-                      //   focused ? { transform: [{ scale: 1.15 }] } : undefined
-                      // }
-                    />
-                  ),
-                }}
-              />
-              <Tabs.Screen
                 name="(home)"
-                // listeners={() => ({
-                //   tabPress: (e) => {
-                //     if (router.canGoBack()) {
-                //       router.dismissAll();
-                //     }
-                //   },
-                // })}
                 options={{
                   tabBarLabelStyle: {
                     fontSize: 18,
@@ -488,13 +364,6 @@ export default function TabLayout() {
                       }
                     />
                   ),
-                }}
-              />
-
-              <Tabs.Screen
-                name="shareintent"
-                options={{
-                  href: null,
                 }}
               />
             </Tabs>
