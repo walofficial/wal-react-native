@@ -6,22 +6,17 @@ import useCountAnonList from '../LiveUserCountIndicator/useCountAnonList';
 import CreatePostGlobal from '../CreatePostGlobal';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { useSetAtom } from 'jotai';
-import {
-  locationUserListSheetState,
-  locationUserListfeedIdState,
-} from '@/lib/atoms/location';
+import { locationUserListSheetState } from '@/lib/atoms/location';
 import { isIOS } from '@/lib/platform';
 import { trackEvent } from '@/lib/analytics';
 
 export default function BottomLocationActions({
   feedId,
   isUserInSelectedLocation,
-  isFactCheckFeed,
 }: {
   feedId: string;
   onExpandLiveUsers?: () => void; // Make this optional
   isUserInSelectedLocation: boolean;
-  isFactCheckFeed: boolean;
 }) {
   const { data } = useCountAnonList(feedId);
   const { isDarkColorScheme } = useColorScheme();
@@ -39,38 +34,27 @@ export default function BottomLocationActions({
   const bottomPosition = 20;
   return (
     <>
-      {isFactCheckFeed ? (
-        <View
+      <View style={[styles.container, { bottom: bottomPosition }]}>
+        <TouchableOpacity
+          onPress={handlePress}
           style={[
-            styles.floatingButtonContainer,
-            { bottom: isIOS ? bottomPosition : 20 },
+            styles.liveUsersButton,
+            {
+              opacity: !isUserInSelectedLocation ? 0.5 : 1,
+              backgroundColor: isDarkColorScheme
+                ? 'rgba(0,0,0,0.7)'
+                : 'rgba(240,240,240,0.9)',
+              borderColor: isDarkColorScheme
+                ? 'rgba(255,255,255,0.1)'
+                : 'rgba(0,0,0,0.1)',
+            },
           ]}
         >
-          <CreatePostGlobal disabled={false} feedId={feedId} />
-        </View>
-      ) : (
-        <View style={[styles.container, { bottom: bottomPosition }]}>
-          <TouchableOpacity
-            onPress={handlePress}
-            style={[
-              styles.liveUsersButton,
-              {
-                opacity: !isUserInSelectedLocation ? 0.5 : 1,
-                backgroundColor: isDarkColorScheme
-                  ? 'rgba(0,0,0,0.7)'
-                  : 'rgba(240,240,240,0.9)',
-                borderColor: isDarkColorScheme
-                  ? 'rgba(255,255,255,0.1)'
-                  : 'rgba(0,0,0,0.1)',
-              },
-            ]}
-          >
-            <LiveUserCountIndicator feedId={feedId} />
-          </TouchableOpacity>
+          <LiveUserCountIndicator feedId={feedId} />
+        </TouchableOpacity>
 
-          <TakeVideo disabled={!isUserInSelectedLocation} />
-        </View>
-      )}
+        <TakeVideo disabled={!isUserInSelectedLocation} />
+      </View>
     </>
   );
 }
