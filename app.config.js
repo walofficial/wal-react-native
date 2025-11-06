@@ -8,6 +8,7 @@ export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
 
 // Build plugin list dynamically so the app can run without Firebase files
 const pluginsList = [
+  "expo-video",
   'expo-router',
   [
     'expo-share-intent',
@@ -80,10 +81,10 @@ const pluginsList = [
     'expo-build-properties',
     {
       ios: {
-        newArchEnabled: false,
+        newArchEnabled: true,
       },
       android: {
-        newArchEnabled: false,
+        newArchEnabled: true,
       },
     },
   ],
