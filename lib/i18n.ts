@@ -1,4 +1,4 @@
-import * as Localization from 'expo-localization';
+import { getLocales } from 'expo-localization';
 import { I18n } from 'i18n-js';
 
 // Import translation files
@@ -15,14 +15,14 @@ const i18n = new I18n({
 
 // Set the locale based on device settings
 // If the device locale is not supported, fallback to English
-const deviceLocale = Localization.locale;
 const supportedLocales = ['en', 'fr', 'ka'];
 
-// Extract language code from locale (e.g., 'en-US' -> 'en', 'ka-GE' -> 'ka')
-const languageCode = deviceLocale.split('-')[0];
+// Get the device's preferred locale using the modern API
+const deviceLocales = getLocales();
+const deviceLanguageCode = deviceLocales[0]?.languageCode ?? 'en';
 
 // Set locale to supported language or fallback to English
-i18n.locale = supportedLocales.includes(languageCode) ? languageCode : 'en';
+i18n.locale = supportedLocales.includes(deviceLanguageCode) ? deviceLanguageCode : 'en';
 
 // Enable fallback to English if translation is missing
 i18n.enableFallback = true;
@@ -50,7 +50,8 @@ export function getSupportedLocales(): string[] {
 
 // Get device's preferred locale
 export function getDeviceLocale(): string {
-  return deviceLocale;
+  const locales = getLocales();
+  return locales[0]?.languageTag ?? 'en';
 }
 
 // Map locale codes to region names for feed selection

@@ -22,19 +22,7 @@ const pluginsList = [
       androidIntentFilters: ['text/*', 'image/*'],
     },
   ],
-  [
-    'expo-build-properties',
-    {
-      ios: {
-        useFrameworks: 'static',
-      },
-      android: {
-        //LiveKit sdk requires min 24
-        minSdkVersion: 24,
-        targetSdkVersion: 35,
-      },
-    },
-  ],
+
   [
     'expo-notifications',
     {
@@ -70,6 +58,15 @@ const pluginsList = [
     },
   ],
   [
+    'expo-localization',
+    {
+      supportedLocales: {
+        ios: ['en', 'fr', 'ka'],
+        android: ['en', 'fr', 'ka'],
+      },
+    },
+  ],
+  [
     'expo-contacts',
     {
       contactsPermission:
@@ -81,6 +78,9 @@ const pluginsList = [
     'expo-build-properties',
     {
       ios: {
+        "deploymentTarget": "15.1",
+        "useFrameworks": "static",
+        "forceStaticLinking": ["RNFBApp", "RNFBAnalytics", "RNFBRemoteConfig"],
         newArchEnabled: true,
       },
       android: {
@@ -88,7 +88,7 @@ const pluginsList = [
       },
     },
   ],
-  'react-native-libsodium',
+  '@more-tech/react-native-libsodium',
   [
     'react-native-share',
     {
