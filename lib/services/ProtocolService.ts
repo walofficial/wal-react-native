@@ -9,7 +9,7 @@ import {
   crypto_box_PUBLICKEYBYTES,
   crypto_box_SECRETKEYBYTES,
   crypto_box_NONCEBYTES,
-} from 'react-native-libsodium';
+} from '@more-tech/react-native-libsodium';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS_STORAGE = 'user_keys';
