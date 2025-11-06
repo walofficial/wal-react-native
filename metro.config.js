@@ -8,5 +8,6 @@ const defaultConfig = getDefaultConfig(__dirname, {
 
 const sentryConfig = getSentryExpoConfig(__dirname);
 const config = { ...defaultConfig, ...sentryConfig };
+config.resolver.unstable_enablePackageExports = false;
 
 module.exports = config;
