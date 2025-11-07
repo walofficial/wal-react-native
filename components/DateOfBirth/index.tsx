@@ -129,8 +129,8 @@ export default function DateOfBirth({ control }: { control: any }) {
                 {value ? t('common.change') : t('common.select')}
               </Text>
             </AnimatedTouchable>
-            {open && (
-              Platform.OS === 'android' ? (
+            {open &&
+              (Platform.OS === 'android' ? (
                 <DateTimePicker
                   value={value ? formatDate(value) : new Date(2000, 1, 1)}
                   mode="date"
@@ -161,14 +161,27 @@ export default function DateOfBirth({ control }: { control: any }) {
                       if (date) setTempDate(date);
                     }}
                   />
-                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      marginTop: 8,
+                    }}
+                  >
                     <TouchableOpacity
                       onPress={() => {
                         setOpen(false);
                       }}
                       style={{ padding: 12 }}
                     >
-                      <Text style={{ color: colorScheme === 'dark' ? '#a1a1aa' : theme.colors.primary }}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark'
+                              ? '#a1a1aa'
+                              : theme.colors.primary,
+                        }}
+                      >
                         {t('common.cancel')}
                       </Text>
                     </TouchableOpacity>
@@ -179,14 +192,20 @@ export default function DateOfBirth({ control }: { control: any }) {
                       }}
                       style={{ padding: 12 }}
                     >
-                      <Text style={{ color: colorScheme === 'dark' ? '#fff' : theme.colors.primary }}>
+                      <Text
+                        style={{
+                          color:
+                            colorScheme === 'dark'
+                              ? '#fff'
+                              : theme.colors.primary,
+                        }}
+                      >
                         {t('common.confirm')}
                       </Text>
                     </TouchableOpacity>
                   </View>
                 </View>
-              )
-            )}
+              ))}
           </>
         )}
       />
