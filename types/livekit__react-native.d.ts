@@ -28,5 +28,3 @@ declare module '@livekit/react-native' {
   // Types used in imports
   export type TrackReferenceOrPlaceholder = any;
 }
-
-

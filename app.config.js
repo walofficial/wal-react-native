@@ -8,7 +8,7 @@ export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
 
 // Build plugin list dynamically so the app can run without Firebase files
 const pluginsList = [
-  "expo-video",
+  'expo-video',
   'expo-router',
   [
     'expo-share-intent',
@@ -80,9 +80,9 @@ const pluginsList = [
     'expo-build-properties',
     {
       ios: {
-        "deploymentTarget": "15.1",
-        "useFrameworks": "static",
-        "forceStaticLinking": ["RNFBApp", "RNFBAnalytics", "RNFBRemoteConfig"],
+        deploymentTarget: '15.1',
+        useFrameworks: 'static',
+        forceStaticLinking: ['RNFBApp', 'RNFBAnalytics', 'RNFBRemoteConfig'],
         newArchEnabled: true,
       },
       android: {

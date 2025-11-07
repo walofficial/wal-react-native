@@ -37,7 +37,7 @@ const _CaptureButton: React.FC<Props> = ({
   const isPressingButton = useSharedValue(false);
   const photoRef = useRef<PhotoFile | null>(null);
   const haptic = useHaptics();
-  
+
   const handlePhotoTaken = useCallback(async () => {
     try {
       if (camera.current == null) throw new Error('Camera ref is null!');
@@ -64,7 +64,14 @@ const _CaptureButton: React.FC<Props> = ({
         photoRef.current = null;
       }
     }
-  }, [camera, flash, haptic, isPressingButton, setIsPressingButton, onMediaCaptured]);
+  }, [
+    camera,
+    flash,
+    haptic,
+    isPressingButton,
+    setIsPressingButton,
+    onMediaCaptured,
+  ]);
 
   const tapGesture = useMemo(
     () =>

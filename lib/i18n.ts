@@ -22,7 +22,9 @@ const deviceLocales = getLocales();
 const deviceLanguageCode = deviceLocales[0]?.languageCode ?? 'en';
 
 // Set locale to supported language or fallback to English
-i18n.locale = supportedLocales.includes(deviceLanguageCode) ? deviceLanguageCode : 'en';
+i18n.locale = supportedLocales.includes(deviceLanguageCode)
+  ? deviceLanguageCode
+  : 'en';
 
 // Enable fallback to English if translation is missing
 i18n.enableFallback = true;
