@@ -1,6 +1,12 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Platform,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, router, useRouter } from 'expo-router';
 import { useCreateSpace } from '@/hooks/useCreateSpace';
