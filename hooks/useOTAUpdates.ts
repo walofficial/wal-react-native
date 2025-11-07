@@ -32,7 +32,9 @@ export function useOTAUpdates() {
   const appState = React.useRef<AppStateStatus>('active');
   const lastMinimize = React.useRef(0);
   const ranInitialCheck = React.useRef(false);
-  const timeout = React.useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const timeout = React.useRef<ReturnType<typeof setTimeout> | undefined>(
+    undefined,
+  );
   const { isUpdatePending } = useUpdates();
 
   const setCheckTimeout = React.useCallback(() => {

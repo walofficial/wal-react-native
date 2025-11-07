@@ -40,8 +40,6 @@ export function useNotificationHandler() {
       return;
     }
 
-  
-
     if (type === 'new_message' && roomId) {
       console.log('new_message', roomId);
       router.push({
@@ -92,14 +90,15 @@ export function useNotificationHandler() {
   useEffect(() => {
     if (
       lastNotificationResponse &&
-      lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+      lastNotificationResponse.actionIdentifier ===
+        Notifications.DEFAULT_ACTION_IDENTIFIER
     ) {
       const data = lastNotificationResponse.notification.request.content.data;
       const type = data?.type as string;
       const verificationId = data?.verificationId as string | undefined;
       const roomId = data?.roomId as string | undefined;
       const feedId = data?.feedId as string | undefined;
-      
+
       console.log('Last notification response:', {
         type,
         verificationId,
@@ -128,7 +127,7 @@ export function useNotificationHandler() {
         const verificationId = data?.verificationId as string | undefined;
         const roomId = data?.roomId as string | undefined;
         const feedId = data?.feedId as string | undefined;
-        
+
         console.log('Notification response received:', {
           type,
           verificationId,
