@@ -1,7 +1,6 @@
 import { Platform, Share } from 'react-native';
 import { setStringAsync } from 'expo-clipboard';
 import { isAndroid, isIOS } from '@/lib/platform';
-import { ShareOptions } from 'react-native-share';
 /**
  * This function shares a URL using the native Share API if available, or copies it to the clipboard
  * and displays a toast message if not (mostly on web)
@@ -9,23 +8,19 @@ import { ShareOptions } from 'react-native-share';
  * clipboard.
  */
 export async function shareUrl(url: string) {
-  let Share: any;
-  if (Platform.OS !== 'web') {
-    Share = require('react-native-share').default as ShareOptions;
-    await Share.open({ message: url });
+  if (Platform.OS === 'web') {
+    // Web Share API support varies; default to clipboard
+    await setStringAsync(url);
+    return;
+  }
+
+  // Use React Native Share API on native
+  if (isAndroid) {
+    await Share.share({ message: url });
+  } else if (isIOS) {
+    await Share.share({ url, message: url });
   } else {
-    if (isAndroid) {
-      await Share.share({ message: url });
-    } else if (isIOS) {
-      await Share.share({ url });
-    } else {
-      // React Native Share is not supported by web. Web Share API
-      // has increasing but not full support, so default to clipboard
-      setStringAsync(url);
-      // toast("Copied to clipboard", {
-      //   id: "clipboard-check",
-      // });
-    }
+    await setStringAsync(url);
   }
 }
 

@@ -81,8 +81,6 @@ const pluginsList = [
     {
       ios: {
         deploymentTarget: '15.1',
-        useFrameworks: 'static',
-        forceStaticLinking: ['RNFBApp', 'RNFBAnalytics', 'RNFBRemoteConfig'],
         newArchEnabled: true,
       },
       android: {
@@ -91,20 +89,7 @@ const pluginsList = [
     },
   ],
   '@more-tech/react-native-libsodium',
-  [
-    'react-native-share',
-    {
-      ios: ['fb', 'instagram', 'whatsapp', 'tg', 'twitter', 'tiktoksharesdk'],
-      android: [
-        'com.whatsapp',
-        'org.telegram.messenger',
-        'com.facebook.katana',
-        'com.instagram.android',
-        'com.twitter.android',
-        'com.zhiliaoapp.musically',
-      ],
-    },
-  ],
+  // Removed react-native-share plugin; using RN Share API / expo-sharing instead
   '@livekit/react-native-expo-plugin',
   '@config-plugins/react-native-webrtc',
   [
@@ -166,6 +151,8 @@ export default {
           'This app uses the camera to capture photos and videos.',
         NSPhotoLibraryUsageDescription:
           'This app accesses your photos to let you share them.',
+        NSPhotoLibraryAddUsageDescription:
+          'This app saves photos and videos to your photo library.',
         NSMicrophoneUsageDescription:
           'This app accesses your microphone to let you share them.',
         NSContactsUsageDescription:

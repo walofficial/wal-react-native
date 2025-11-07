@@ -237,7 +237,7 @@ export default function AuthLayer({ children }: { children: React.ReactNode }) {
         session: session || null,
       }}
     >
-      <RemoteConfigBanner />
+      {/* <RemoteConfigBanner /> */}
       {children}
     </AuthContext.Provider>
   );

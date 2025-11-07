@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import Share, { ShareSingleOptions, Social } from 'react-native-share';
+import { Share } from 'react-native';
 import ContactListHeader from './ContactListHeader';
 import { Text } from '@/components/ui/text';
 import { Telegram } from '@/lib/icons/Telegram';
@@ -18,29 +18,24 @@ const AddUserFromOtherApps: React.FC = () => {
 
   const shareMessage = `https://${app_name_slug}.ge/links/${user?.username}`;
 
-  const shareToApp = async (app: keyof typeof Share.Social) => {
-    const shareOptions: ShareSingleOptions = {
-      title: 'Share via',
-      message: 'წამო WAL ზე',
-      url: shareMessage,
-      social: Share.Social[app] as Social,
-    };
-
+  const shareToApp = async (_app?: string) => {
     try {
-      await Share.shareSingle(shareOptions);
+      await Share.share({
+        title: 'Share via',
+        message: `წამო WAL ზე ${shareMessage}`,
+        url: shareMessage,
+      });
     } catch (error) {
-      console.error(`Error sharing to ${app}:`, error);
+      console.error('Error sharing:', error);
     }
   };
 
   const shareToOthers = async () => {
-    const shareOptions = {
-      message: 'მოდი',
-      url: `https://${app_name_slug}.ge/links/${user?.username}`,
-    };
-
     try {
-      await Share.open(shareOptions);
+      await Share.share({
+        message: 'მოდი',
+        url: `https://${app_name_slug}.ge/links/${user?.username}`,
+      });
     } catch (error) {
       console.error('Error sharing:', error);
     }

@@ -4,10 +4,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
+  Platform,
 } from 'react-native';
 import { Controller } from 'react-hook-form';
 import { Text } from '@/components/ui/text';
-import DatePicker from 'react-native-date-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { parse, format } from 'date-fns';
 import Animated, {
   useSharedValue,
@@ -24,6 +25,7 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function DateOfBirth({ control }: { control: any }) {
   const [open, setOpen] = useState(false);
+  const [tempDate, setTempDate] = useState<Date>(new Date(2000, 1, 1));
   const pressed = useSharedValue(0);
   const colorScheme = useColorScheme();
   const theme = useTheme();
@@ -78,7 +80,10 @@ export default function DateOfBirth({ control }: { control: any }) {
                     colorScheme === 'dark' ? '#000' : 'rgba(0,0,0,0.2)',
                 },
               ]}
-              onPress={() => setOpen(true)}
+              onPress={() => {
+                setTempDate(value ? formatDate(value) : new Date(2000, 1, 1));
+                setOpen(true);
+              }}
               onPressIn={() => {
                 pressed.value = withTiming(1, {
                   duration: 150,
@@ -124,29 +129,64 @@ export default function DateOfBirth({ control }: { control: any }) {
                 {value ? t('common.change') : t('common.select')}
               </Text>
             </AnimatedTouchable>
-            <DatePicker
-              modal
-              title={t('common.date_of_birth')}
-              buttonColor={
-                colorScheme === 'dark' ? 'white' : theme.colors.primary
-              }
-              mode="date"
-              locale={locale}
-              theme={colorScheme === 'dark' ? 'dark' : 'light'}
-              confirmText={t('common.confirm')}
-              cancelText={t('common.cancel')}
-              open={open}
-              minimumDate={new Date(1940, 1, 1)}
-              maximumDate={pastDate}
-              date={value ? formatDate(value) : new Date(2000, 1, 1)}
-              onConfirm={(date) => {
-                setOpen(false);
-                onChange(formatDateToString(date));
-              }}
-              onCancel={() => {
-                setOpen(false);
-              }}
-            />
+            {open && (
+              Platform.OS === 'android' ? (
+                <DateTimePicker
+                  value={value ? formatDate(value) : new Date(2000, 1, 1)}
+                  mode="date"
+                  display="default"
+                  minimumDate={new Date(1940, 1, 1)}
+                  maximumDate={pastDate}
+                  onChange={(event, date) => {
+                    if (event.type === 'set' && date) {
+                      onChange(formatDateToString(date));
+                      setOpen(false);
+                    } else {
+                      setOpen(false);
+                    }
+                  }}
+                />
+              ) : (
+                <View style={{ marginTop: 12, width: '100%' }}>
+                  <Text style={{ marginBottom: 8, textAlign: 'center' }}>
+                    {t('common.date_of_birth')}
+                  </Text>
+                  <DateTimePicker
+                    value={tempDate}
+                    mode="date"
+                    display="spinner"
+                    minimumDate={new Date(1940, 1, 1)}
+                    maximumDate={pastDate}
+                    onChange={(_, date) => {
+                      if (date) setTempDate(date);
+                    }}
+                  />
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8 }}>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setOpen(false);
+                      }}
+                      style={{ padding: 12 }}
+                    >
+                      <Text style={{ color: colorScheme === 'dark' ? '#a1a1aa' : theme.colors.primary }}>
+                        {t('common.cancel')}
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => {
+                        onChange(formatDateToString(tempDate));
+                        setOpen(false);
+                      }}
+                      style={{ padding: 12 }}
+                    >
+                      <Text style={{ color: colorScheme === 'dark' ? '#fff' : theme.colors.primary }}>
+                        {t('common.confirm')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )
+            )}
           </>
         )}
       />
