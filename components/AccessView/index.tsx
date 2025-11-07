@@ -118,7 +118,7 @@ const TimerButton = React.memo(
     resetTimer,
   }: TimerButtonProps) => {
     const [timer, setTimer] = useState(0);
-    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     const startTimer = useCallback((duration: number) => {
       if (timerRef.current) {
@@ -128,7 +128,7 @@ const TimerButton = React.memo(
       timerRef.current = setInterval(() => {
         setTimer((prev) => {
           if (prev <= 1) {
-            clearInterval(timerRef.current as NodeJS.Timeout);
+            clearInterval(timerRef.current as unknown as NodeJS.Timeout);
             return 0;
           }
           return prev - 1;

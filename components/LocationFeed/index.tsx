@@ -1,5 +1,12 @@
 import { View } from 'react-native';
-import { useEffect, useState, useRef, useCallback, Suspense } from 'react';
+import {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  Suspense,
+  RefObject,
+} from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLocationFeedPaginated } from '@/hooks/useLocationFeedPaginated';
 import Animated, {
@@ -29,6 +36,7 @@ import useFeeds from '@/hooks/useFeeds';
 import { ThemedText } from '../ThemedText';
 import { getCurrentLocale } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 type Location = {
   nearest_location: {
@@ -321,7 +329,11 @@ export default function LocationFeed({
       )}
 
       {!isWeb && (
-        <LocationUserListSheet bottomSheetRef={locationUserListSheetRef} />
+        <LocationUserListSheet
+          bottomSheetRef={
+            locationUserListSheetRef as unknown as RefObject<BottomSheetMethods>
+          }
+        />
       )}
     </>
   );

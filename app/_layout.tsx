@@ -86,7 +86,6 @@ export {
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => {
     return {
-      shouldShowAlert: true,
       shouldPlaySound: true,
       shouldSetBadge: false,
       shouldShowBanner: true,

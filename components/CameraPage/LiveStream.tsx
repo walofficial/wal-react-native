@@ -5,7 +5,6 @@ import {
   LiveKitRoom,
   useLocalParticipant,
   VideoTrack,
-  registerGlobals,
   useTracks,
   useRoom,
   useRoomContext,
@@ -23,8 +22,6 @@ import { useAtom } from 'jotai';
 import { apiClient } from '@/lib/api/client';
 import { useMutation } from '@tanstack/react-query';
 import { stopLiveMutation } from '@/lib/api/generated/@tanstack/react-query.gen';
-
-registerGlobals();
 
 interface LiveStreamProps {
   token: string;

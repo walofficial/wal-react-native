@@ -3,7 +3,6 @@ import { TouchableOpacity, View, Platform, StyleSheet } from 'react-native';
 import TakeVideo from '../TakeVideo';
 import LiveUserCountIndicator from '../LiveUserCountIndicator';
 import useCountAnonList from '../LiveUserCountIndicator/useCountAnonList';
-import CreatePostGlobal from '../CreatePostGlobal';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { useSetAtom } from 'jotai';
 import { locationUserListSheetState } from '@/lib/atoms/location';

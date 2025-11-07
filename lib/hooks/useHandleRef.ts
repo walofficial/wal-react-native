@@ -39,7 +39,7 @@ export function measureHandle(
 ): MeasuredDimensions | null {
   'worklet';
   if (current !== null) {
-    return measure((() => current) as AnimatedRef<any>);
+    return measure((() => current) as any as AnimatedRef<any>);
   } else {
     return null;
   }

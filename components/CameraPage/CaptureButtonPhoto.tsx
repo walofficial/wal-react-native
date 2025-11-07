@@ -1,14 +1,14 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useRef, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
-import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
-import { State, TapGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Reanimated, {
   Easing,
   useAnimatedStyle,
   withSpring,
   withTiming,
   useSharedValue,
+  runOnJS,
 } from 'react-native-reanimated';
 import type { Camera, PhotoFile } from 'react-native-vision-camera';
 import { CAPTURE_BUTTON_SIZE } from './Constants';
@@ -37,7 +37,8 @@ const _CaptureButton: React.FC<Props> = ({
   const isPressingButton = useSharedValue(false);
   const photoRef = useRef<PhotoFile | null>(null);
   const haptic = useHaptics();
-  const takePhoto = useCallback(async () => {
+  
+  const handlePhotoTaken = useCallback(async () => {
     try {
       if (camera.current == null) throw new Error('Camera ref is null!');
 
@@ -55,38 +56,29 @@ const _CaptureButton: React.FC<Props> = ({
     } catch (e) {
       console.error('Failed to take photo!', e);
       await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-    }
-  }, [camera, flash, onMediaCaptured]);
-
-  const onHandlerStateChanged = useCallback(
-    async ({ nativeEvent: event }: TapGestureHandlerStateChangeEvent) => {
-      console.debug(`state: ${Object.keys(State)[event.state]}`);
-      switch (event.state) {
-        case State.BEGAN: {
-          isPressingButton.value = true;
-          setIsPressingButton(true);
-          return;
-        }
-        case State.END:
-        case State.FAILED:
-        case State.CANCELLED: {
-          try {
-            await takePhoto();
-          } finally {
-            isPressingButton.value = false;
-            setIsPressingButton(false);
-            if (photoRef.current) {
-              onMediaCaptured(photoRef.current, 'photo');
-              photoRef.current = null;
-            }
-          }
-          return;
-        }
-        default:
-          break;
+    } finally {
+      isPressingButton.value = false;
+      setIsPressingButton(false);
+      if (photoRef.current) {
+        onMediaCaptured(photoRef.current, 'photo');
+        photoRef.current = null;
       }
-    },
-    [isPressingButton, setIsPressingButton, takePhoto],
+    }
+  }, [camera, flash, haptic, isPressingButton, setIsPressingButton, onMediaCaptured]);
+
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .enabled(enabled)
+        .shouldCancelWhenOutside(false)
+        .onBegin(() => {
+          isPressingButton.value = true;
+          runOnJS(setIsPressingButton)(true);
+        })
+        .onEnd(() => {
+          runOnJS(handlePhotoTaken)();
+        }),
+    [enabled, isPressingButton, setIsPressingButton, handlePhotoTaken],
   );
 
   const buttonStyle = useAnimatedStyle(() => {
@@ -124,15 +116,11 @@ const _CaptureButton: React.FC<Props> = ({
   }, [enabled, isPressingButton]);
 
   return (
-    <TapGestureHandler
-      enabled={enabled}
-      onHandlerStateChange={onHandlerStateChanged}
-      shouldCancelWhenOutside={false}
-    >
+    <GestureDetector gesture={tapGesture}>
       <Reanimated.View {...props} style={[buttonStyle, style]}>
         <View style={styles.button} />
       </Reanimated.View>
-    </TapGestureHandler>
+    </GestureDetector>
   );
 };
 
