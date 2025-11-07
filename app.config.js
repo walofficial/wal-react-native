@@ -82,6 +82,7 @@ const pluginsList = [
       ios: {
         deploymentTarget: '15.1',
         newArchEnabled: true,
+        useFrameworks: 'static',
       },
       android: {
         newArchEnabled: true,
