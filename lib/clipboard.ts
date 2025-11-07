@@ -1,7 +1,7 @@
 import * as Clipboard from 'expo-clipboard';
 import { Platform } from 'react-native';
 import { t } from '@/lib/i18n';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { ImagePickerAsset } from 'expo-image-picker';
 import { compressIfNeeded } from '@/lib/media/manip';
 

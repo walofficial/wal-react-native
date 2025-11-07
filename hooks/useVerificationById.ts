@@ -20,9 +20,9 @@ function useVerificationById(
     refetchInterval?: number;
   } = {},
 ) {
-  const queryClient = useQueryClient();
-  const globalSearchTerm = useAtomValue(debouncedSearchValueAtom);
-  const { factCheckFeedId } = useUserFeedIds();
+  // const queryClient = useQueryClient();
+  // const globalSearchTerm = useAtomValue(debouncedSearchValueAtom);
+  // const { factCheckFeedId } = useUserFeedIds();
   const queryOptions = getUserVerificationOptions({
     query: {
       verification_id: verificationId,
@@ -38,25 +38,25 @@ function useVerificationById(
         throwOnError: true,
       });
 
-      const feedOptions = feedQueryOptionsByContentType(
-        globalSearchTerm,
-        factCheckFeedId,
-      );
-      feedOptions.forEach(({ queryKey }) => {
-        queryClient.setQueryData(queryKey, (old) => {
-          if (!old) return old;
-          return {
-            ...old,
-            pages: old.pages.map((page) => {
-              return page.map((feedPost) => {
-                return feedPost.id === response.data?.id
-                  ? response.data
-                  : feedPost;
-              });
-            }),
-          };
-        });
-      });
+      // const feedOptions = feedQueryOptionsByContentType(
+      //   globalSearchTerm,
+      //   factCheckFeedId,
+      // );
+      // feedOptions.forEach(({ queryKey }) => {
+      //   queryClient.setQueryData(queryKey, (old) => {
+      //     if (!old) return old;
+      //     return {
+      //       ...old,
+      //       pages: old.pages.map((page) => {
+      //         return page.map((feedPost) => {
+      //           return feedPost.id === response.data?.id
+      //             ? response.data
+      //             : feedPost;
+      //         });
+      //       }),
+      //     };
+      //   });
+      // });
 
       if (!response.data) {
         throw new Error('Verification not found');

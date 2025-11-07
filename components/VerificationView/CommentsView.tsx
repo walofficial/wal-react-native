@@ -5,6 +5,7 @@ import React, {
   memo,
   useState,
   useEffect,
+  RefObject,
 } from 'react';
 import {
   View,
@@ -43,6 +44,10 @@ import FactCheckBottomSheet from '../FactCheckBottomSheet';
 import { useUniqueSources } from '@/utils/sourceUtils';
 import useFeeds from '@/hooks/useFeeds';
 import { t } from '@/lib/i18n';
+import {
+  BottomSheetMethods,
+  BottomSheetModalMethods,
+} from '@gorhom/bottom-sheet/lib/typescript/types';
 
 // Tab types for news content
 type NewsTab = 'neutral' | 'opposition' | 'government';
@@ -507,8 +512,16 @@ const CommentsView = ({
   const keyboardVerticalOffset = useKeyboardVerticalOffset();
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <NewsSourcesBottomSheet bottomSheetRef={bottomSheetRef} />
-      <FactCheckBottomSheet bottomSheetRef={factCheckBottomSheetRef} />
+      <NewsSourcesBottomSheet
+        bottomSheetRef={
+          bottomSheetRef as unknown as RefObject<BottomSheetMethods>
+        }
+      />
+      <FactCheckBottomSheet
+        bottomSheetRef={
+          factCheckBottomSheetRef as unknown as RefObject<BottomSheetModalMethods>
+        }
+      />
       <ScrollView
         style={[
           styles.scrollView,

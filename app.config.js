@@ -8,6 +8,7 @@ export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
 
 // Build plugin list dynamically so the app can run without Firebase files
 const pluginsList = [
+  'expo-video',
   'expo-router',
   [
     'expo-share-intent',
@@ -21,24 +22,14 @@ const pluginsList = [
       androidIntentFilters: ['text/*', 'image/*'],
     },
   ],
-  [
-    'expo-build-properties',
-    {
-      ios: {
-        useFrameworks: 'static',
-      },
-      android: {
-        //LiveKit sdk requires min 24
-        minSdkVersion: 24,
-        targetSdkVersion: 35,
-      },
-    },
-  ],
+
   [
     'expo-notifications',
     {
       icon: './assets/images/small-icon-android.png',
       color: '#000',
+      defaultChannel: 'default',
+      enableBackgroundRemoteNotifications: true,
     },
   ],
   [
@@ -69,6 +60,15 @@ const pluginsList = [
     },
   ],
   [
+    'expo-localization',
+    {
+      supportedLocales: {
+        ios: ['en', 'fr', 'ka'],
+        android: ['en', 'fr', 'ka'],
+      },
+    },
+  ],
+  [
     'expo-contacts',
     {
       contactsPermission:
@@ -80,14 +80,17 @@ const pluginsList = [
     'expo-build-properties',
     {
       ios: {
-        newArchEnabled: false,
+        deploymentTarget: '15.1',
+        useFrameworks: 'static',
+        forceStaticLinking: ['RNFBApp', 'RNFBAnalytics', 'RNFBRemoteConfig'],
+        newArchEnabled: true,
       },
       android: {
-        newArchEnabled: false,
+        newArchEnabled: true,
       },
     },
   ],
-  'react-native-libsodium',
+  '@more-tech/react-native-libsodium',
   [
     'react-native-share',
     {

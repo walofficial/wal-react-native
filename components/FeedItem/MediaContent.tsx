@@ -19,7 +19,7 @@ import SimplifiedVideoPlayback from '../SimplifiedVideoPlayback';
 import { AutoSizedImage } from '../AutoSizedImage';
 import ImageGrid from '../ImageGrid';
 import * as MediaLibrary from 'expo-media-library';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { measureHandle } from '@/lib/hooks/useHandleRef';
 import { MeasuredDimensions, runOnJS, runOnUI } from 'react-native-reanimated';
 import { HandleRef } from '@/lib/hooks/useHandleRef';

@@ -14,6 +14,7 @@ interface PendingNavigation {
 export function useNotificationHandler() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
 
   const handleNotificationNavigation = ({
     type,
@@ -32,27 +33,6 @@ export function useNotificationHandler() {
       });
       router.push({
         pathname: '/(tabs)/(home)/verification/[verificationId]',
-        params: {
-          verificationId,
-        },
-      });
-      return;
-    }
-
-    if (
-      (type === 'fact_check_completed' || type === 'video_summary_completed') &&
-      verificationId
-    ) {
-      const queryOptions = getUserVerificationOptions({
-        query: {
-          verification_id: verificationId,
-        },
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryOptions.queryKey,
-      });
-      router.push({
-        pathname: '/(tabs)/(fact-check)/verification/[verificationId]',
         params: {
           verificationId,
         },
@@ -106,25 +86,48 @@ export function useNotificationHandler() {
     }
   };
 
+  // Handle notification response when app was opened from a notification
   useEffect(() => {
-    let isMounted = true;
-    // Set up background notification handler
+    if (
+      lastNotificationResponse &&
+      lastNotificationResponse.actionIdentifier ===
+        Notifications.DEFAULT_ACTION_IDENTIFIER
+    ) {
+      const data = lastNotificationResponse.notification.request.content.data;
+      const type = data?.type as string;
+      const verificationId = data?.verificationId as string | undefined;
+      const roomId = data?.roomId as string | undefined;
+      const feedId = data?.feedId as string | undefined;
 
-    Notifications.getLastNotificationResponseAsync().then((response) => {
-      if (!isMounted || !response?.notification) return;
-      const { type, verificationId, roomId, feedId } =
-        response.notification.request.content.data;
+      console.log('Last notification response:', {
+        type,
+        verificationId,
+        roomId,
+        feedId,
+      });
+
       handleNotificationNavigation({
         type,
         verificationId,
         roomId,
         feedId,
       });
-    });
+
+      // Clear the last notification response after handling it
+      Notifications.clearLastNotificationResponseAsync();
+    }
+  }, [lastNotificationResponse]);
+
+  // Handle notification responses while app is running
+  useEffect(() => {
     const backgroundSubscription =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        const { type, verificationId, roomId, feedId } =
-          response.notification.request.content.data;
+        const data = response.notification.request.content.data;
+        const type = data?.type as string;
+        const verificationId = data?.verificationId as string | undefined;
+        const roomId = data?.roomId as string | undefined;
+        const feedId = data?.feedId as string | undefined;
+
         console.log('Notification response received:', {
           type,
           verificationId,
@@ -142,7 +145,6 @@ export function useNotificationHandler() {
       });
 
     return () => {
-      isMounted = false;
       backgroundSubscription.remove();
     };
   }, []);

@@ -10,7 +10,7 @@ export const searchInputValueAtom = atom('');
 export const debouncedSearchValueAtom = atom('');
 
 // Atom to handle debouncing logic
-let debounceTimer: NodeJS.Timeout | null = null;
+let debounceTimer: ReturnType<typeof setTimeout> | undefined = undefined;
 export const setDebouncedSearchAtom = atom(null, (get, set, value: string) => {
   // Update the raw input value immediately
   set(searchInputValueAtom, value);

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import * as Slot from '~/components/primitives/slot';
 import { SlottableTextProps, TextRef } from '~/components/primitives/types';
 import * as React from 'react';

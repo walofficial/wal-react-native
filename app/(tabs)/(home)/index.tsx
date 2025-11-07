@@ -21,7 +21,7 @@ export default function TaskScrollableView() {
   const { headerHeight } = useFeeds();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-
+  console.log(defaultFeedId);
   if (!isFetching && !errorMsg && !!defaultFeedId) {
     return (
       <Redirect

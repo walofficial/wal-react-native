@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { StyleProp, useColorScheme } from 'react-native';
 import { useTheme } from './theme';
 import { StyleSheet } from 'react-native';

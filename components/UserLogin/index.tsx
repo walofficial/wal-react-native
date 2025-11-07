@@ -105,7 +105,7 @@ const UserLogin = forwardRef<BottomSheet>(function UserLogin(_, ref) {
       backgroundComponent={CustomBottomSheetBackground}
       handleIndicatorStyle={{ backgroundColor: isDark ? 'white' : 'black' }}
     >
-      <AccessView inputRef={inputRef} />
+      <AccessView inputRef={inputRef as React.RefObject<TextInput>} />
     </BottomSheet>
   );
 });

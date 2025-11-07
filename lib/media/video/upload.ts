@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { AbortError } from '@/lib/async/cancelable';
 import { CompressedVideo } from '@/lib/media/video/types';
 import { UploadToLocationResponse } from '@/lib/api/generated';

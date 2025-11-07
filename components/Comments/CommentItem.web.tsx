@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { Avatar, AvatarImage } from '../ui/avatar';
