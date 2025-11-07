@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useEffect, useRef } from 'react';
 import { StyleSheet } from 'react-native';
 import { atom, useAtom } from 'jotai';

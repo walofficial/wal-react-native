@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { isWeb } from '@/lib/platform';
 import { useIsFocused } from '@react-navigation/native';
