@@ -33,7 +33,7 @@ export function useLocationFeedPaginated({
 
   // Local debounced search state
   const [debouncedLocalSearch, setDebouncedLocalSearch] = useState('');
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const debounceTimerRef = useRef<number | undefined>(undefined);
 
   // Debounce the external search term
   useEffect(() => {

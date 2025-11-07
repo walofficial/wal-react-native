@@ -1,0 +1,14 @@
+diff --git a/node_modules/@livekit/react-native/package.json b/node_modules/@livekit/react-native/package.json
+index 0000000..1111111 100644
+--- a/node_modules/@livekit/react-native/package.json
++++ b/node_modules/@livekit/react-native/package.json
+@@ -4,7 +4,7 @@
+   "description": "LiveKit for React Native",
+   "main": "lib/commonjs/index",
+   "module": "lib/module/index",
+-  "types": "lib/typescript/src/index.d.ts",
++  "types": "lib/typescript/index.d.ts",
+   "react-native": "src/index",
+   "source": "src/index",
+   "files": [
+

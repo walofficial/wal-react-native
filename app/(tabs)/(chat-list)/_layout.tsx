@@ -3,7 +3,7 @@ import SimpleGoBackHeader from '@/components/SimpleGoBackHeader';
 import { TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ContactSyncSheet from '@/components/ContactSyncSheet';
-import { useRef } from 'react';
+import { RefObject, useRef } from 'react';
 import BottomSheet from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
@@ -46,7 +46,9 @@ function Layout() {
           }}
         />
       </Stack>
-      <ContactSyncSheet bottomSheetRef={contactSyncSheetRef} />
+      <ContactSyncSheet
+        bottomSheetRef={contactSyncSheetRef as RefObject<BottomSheet>}
+      />
     </View>
   );
 }

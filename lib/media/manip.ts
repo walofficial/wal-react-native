@@ -1,5 +1,10 @@
 import { Image as RNImage, Share as RNShare, Share } from 'react-native';
-import {
+import * as FileSystem from 'expo-file-system/legacy';
+import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
+import { Buffer } from 'buffer';
+import { v4 as uuidv4 } from 'uuid';
+
+const {
   cacheDirectory,
   copyAsync,
   deleteAsync,
@@ -8,10 +13,7 @@ import {
   makeDirectoryAsync,
   StorageAccessFramework,
   writeAsStringAsync,
-} from 'expo-file-system';
-import { manipulateAsync, SaveFormat } from 'expo-image-manipulator';
-import { Buffer } from 'buffer';
-import { v4 as uuidv4 } from 'uuid';
+} = FileSystem;
 
 import { POST_IMG_MAX } from '@/lib/constants';
 import { isAndroid, isIOS } from '@/lib/platform';

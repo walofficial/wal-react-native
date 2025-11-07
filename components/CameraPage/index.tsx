@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { useRef, useState, useCallback, useMemo } from 'react';
+import {
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+  RefObject,
+  useEffect,
+} from 'react';
 import type { GestureResponderEvent } from 'react-native';
 import { Text } from '../ui/text';
 
@@ -11,11 +18,7 @@ import {
   TextInput,
   KeyboardAvoidingView,
 } from 'react-native';
-import type { PinchGestureHandlerGestureEvent } from 'react-native-gesture-handler';
-import {
-  PinchGestureHandler,
-  TapGestureHandler,
-} from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import type {
   CameraProps,
   CameraRuntimeError,
@@ -40,13 +43,12 @@ import {
 import Reanimated, {
   Extrapolate,
   interpolate,
-  useAnimatedGestureHandler,
   useAnimatedProps,
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
-import { useEffect } from 'react';
 import { useIsForeground } from '../../hooks/useIsForeground';
 import { StatusBarBlurBackground } from './StatusBarBlurBackground';
 import IonIcon from '@expo/vector-icons/Ionicons';
@@ -229,30 +231,47 @@ export default function CameraPage(): React.ReactElement {
   //#region Pinch to Zoom Gesture
   // The gesture handler maps the linear pinch gesture (0 - 1) to an exponential curve since a camera's zoom
   // function does not appear linear to the user. (aka zoom 0.1 -> 0.2 does not look equal in difference as 0.8 -> 0.9)
-  const onPinchGesture = useAnimatedGestureHandler<
-    PinchGestureHandlerGestureEvent,
-    { startZoom?: number }
-  >({
-    onStart: (_, context) => {
-      context.startZoom = zoom.value;
-    },
-    onActive: (event, context) => {
-      // we're trying to map the scale gesture to a linear zoom here
-      const startZoom = context.startZoom ?? 0;
-      const scale = interpolate(
-        event.scale,
-        [1 - 1 / SCALE_FULL_ZOOM, 1, SCALE_FULL_ZOOM],
-        [-1, 0, 1],
-        Extrapolate.CLAMP,
-      );
-      zoom.value = interpolate(
-        scale,
-        [-1, 0, 1],
-        [minZoom, startZoom, maxZoom],
-        Extrapolate.CLAMP,
-      );
-    },
-  });
+  const startZoom = useSharedValue(zoom.value);
+
+  const pinchGesture = useMemo(
+    () =>
+      Gesture.Pinch()
+        .enabled(isActive)
+        .onBegin(() => {
+          startZoom.value = zoom.value;
+        })
+        .onUpdate((event) => {
+          // we're trying to map the scale gesture to a linear zoom here
+          const scale = interpolate(
+            event.scale,
+            [1 - 1 / SCALE_FULL_ZOOM, 1, SCALE_FULL_ZOOM],
+            [-1, 0, 1],
+            Extrapolate.CLAMP,
+          );
+          zoom.value = interpolate(
+            scale,
+            [-1, 0, 1],
+            [minZoom, startZoom.value, maxZoom],
+            Extrapolate.CLAMP,
+          );
+        }),
+    [isActive, minZoom, maxZoom, zoom, startZoom],
+  );
+
+  const doubleTapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .onEnd(() => {
+          runOnJS(onDoubleTap)();
+        }),
+    [onDoubleTap],
+  );
+
+  const composedGesture = useMemo(
+    () => Gesture.Simultaneous(pinchGesture, doubleTapGesture),
+    [pinchGesture, doubleTapGesture],
+  );
   //#endregion
 
   useEffect(() => {
@@ -268,7 +287,7 @@ export default function CameraPage(): React.ReactElement {
   }, [location]);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isRecording) {
       interval = setInterval(() => {
         setRecordingTime((prevTime) => prevTime + 1);
@@ -323,54 +342,52 @@ export default function CameraPage(): React.ReactElement {
   return (
     <View style={[styles.container]}>
       {device != null ? (
-        <PinchGestureHandler onGestureEvent={onPinchGesture} enabled={isActive}>
+        <GestureDetector gesture={composedGesture}>
           <Reanimated.View
             onTouchEnd={onFocusTap}
             style={StyleSheet.absoluteFill}
           >
-            <TapGestureHandler onEnded={onDoubleTap} numberOfTaps={2}>
-              <ReanimatedCamera
-                style={StyleSheet.absoluteFill}
-                device={device}
-                isActive={isActive}
-                ref={camera}
-                onInitialized={onInitialized}
-                onError={onError}
-                onStarted={() => console.log('Camera started!')}
-                onStopped={() => console.log('Camera stopped!')}
-                onPreviewStarted={() => console.log('Preview started!')}
-                onPreviewStopped={() => console.log('Preview stopped!')}
-                onOutputOrientationChanged={(o) =>
-                  console.log(`Output orientation changed to ${o}!`)
-                }
-                onPreviewOrientationChanged={(o) =>
-                  console.log(`Preview orientation changed to ${o}!`)
-                }
-                onUIRotationChanged={(degrees) =>
-                  console.log(`UI Rotation changed: ${degrees}°`)
-                }
-                format={format}
-                fps={fps}
-                photoHdr={photoHdr}
-                videoHdr={videoHdr}
-                photoQualityBalance="speed"
-                lowLightBoost={device.supportsLowLightBoost && enableNightMode}
-                enableZoomGesture={false}
-                animatedProps={cameraAnimatedProps}
-                exposure={0}
-                enableFpsGraph={false}
-                outputOrientation="device"
-                photo={true}
-                video={true}
-                audio={microphone.hasPermission}
-                enableLocation={location.hasPermission}
-              />
-            </TapGestureHandler>
+            <ReanimatedCamera
+              style={StyleSheet.absoluteFill}
+              device={device}
+              isActive={isActive}
+              ref={camera}
+              onInitialized={onInitialized}
+              onError={onError}
+              onStarted={() => console.log('Camera started!')}
+              onStopped={() => console.log('Camera stopped!')}
+              onPreviewStarted={() => console.log('Preview started!')}
+              onPreviewStopped={() => console.log('Preview stopped!')}
+              onOutputOrientationChanged={(o) =>
+                console.log(`Output orientation changed to ${o}!`)
+              }
+              onPreviewOrientationChanged={(o) =>
+                console.log(`Preview orientation changed to ${o}!`)
+              }
+              onUIRotationChanged={(degrees) =>
+                console.log(`UI Rotation changed: ${degrees}°`)
+              }
+              format={format}
+              fps={fps}
+              photoHdr={photoHdr}
+              videoHdr={videoHdr}
+              photoQualityBalance="speed"
+              lowLightBoost={device.supportsLowLightBoost && enableNightMode}
+              enableZoomGesture={false}
+              animatedProps={cameraAnimatedProps}
+              exposure={0}
+              enableFpsGraph={false}
+              outputOrientation="device"
+              photo={true}
+              video={true}
+              audio={microphone.hasPermission}
+              enableLocation={location.hasPermission}
+            />
 
             {/* Add this new overlay component */}
             <CameraOverlay style={overlayStyle} pointerEvents="none" />
           </Reanimated.View>
-        </PinchGestureHandler>
+        </GestureDetector>
       ) : (
         <View style={styles.emptyContainer}>
           <Text style={styles.text}>Your phone does not have a Camera.</Text>
@@ -483,7 +500,7 @@ export default function CameraPage(): React.ReactElement {
             />
           ) : selectedMode === 'photo' ? (
             <CaptureButtonPhoto
-              camera={camera}
+              camera={camera as RefObject<Camera>}
               onMediaCaptured={onMediaCaptured}
               flash={supportsFlash ? flash : 'off'}
               enabled={isCameraInitialized && isActive}
@@ -491,7 +508,7 @@ export default function CameraPage(): React.ReactElement {
             />
           ) : (
             <CaptureButton
-              camera={camera}
+              camera={camera as RefObject<Camera>}
               onMediaCaptured={onMediaCaptured}
               feedId={feedId as string}
               flash={supportsFlash ? flash : 'off'}

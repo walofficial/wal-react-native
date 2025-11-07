@@ -19,7 +19,7 @@ export default function useRaiseHand() {
     }
   }, [localMetadata?.hand_raised]);
 
-  const timerRef = useRef<NodeJS.Timeout>();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     return () => {

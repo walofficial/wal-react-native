@@ -28,6 +28,8 @@ const pluginsList = [
     {
       icon: './assets/images/small-icon-android.png',
       color: '#000',
+      defaultChannel: 'default',
+      enableBackgroundRemoteNotifications: true,
     },
   ],
   [
