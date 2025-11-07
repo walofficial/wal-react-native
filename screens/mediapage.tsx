@@ -10,7 +10,6 @@ import {
   StyleSheet,
   View,
   ActivityIndicator,
-  PermissionsAndroid,
   Platform,
   Image,
   TouchableOpacity,
@@ -23,10 +22,14 @@ import {
 } from 'react-native';
 import { Video, AVPlaybackStatus, ResizeMode } from 'expo-av';
 import { useSafeAreaPadding } from '@/components/CameraPage/Constants';
-import Share from 'react-native-share';
+import { Share } from 'react-native';
 import { useIsForeground } from '@/hooks/useIsForeground';
 import { Ionicons as IonIcon } from '@expo/vector-icons';
-import { CameraRoll } from '@react-native-camera-roll/camera-roll';
+import * as MediaLibrary from 'expo-media-library';
+import {
+  isAvailableAsync as isSharingAvailableAsync,
+  shareAsync,
+} from 'expo-sharing';
 import { StatusBarBlurBackground } from '@/components/CameraPage/StatusBarBlurBackground';
 import { useIsFocused } from '@react-navigation/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -39,20 +42,7 @@ import { useToast } from '@/components/ToastUsage';
 import { t } from '@/lib/i18n';
 import { useColorScheme } from '@/lib/useColorScheme';
 
-const requestSavePermission = async (): Promise<boolean> => {
-  // On Android 13 and above, scoped storage is used instead and no permission is needed
-  if (Platform.OS !== 'android' || Platform.Version >= 33) return true;
-
-  const permission = PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE;
-  if (permission == null) return false;
-  let hasPermission = await PermissionsAndroid.check(permission);
-  if (!hasPermission) {
-    const permissionRequestResult =
-      await PermissionsAndroid.request(permission);
-    hasPermission = permissionRequestResult === 'granted';
-  }
-  return hasPermission;
-};
+// Permissions handled by expo-media-library
 
 type OnLoadImage = NativeSyntheticEvent<ImageLoadEventData>;
 const isVideoOnLoadEvent = (
@@ -135,18 +125,19 @@ export default function MediaPage(): React.ReactElement {
   const onSavePressed = useCallback(async () => {
     try {
       setSavingState('saving');
-
-      const hasPermission = await requestSavePermission();
-      if (!hasPermission) {
+      const permission = await MediaLibrary.requestPermissionsAsync();
+      if (!permission.granted) {
+        setSavingState('none');
         Alert.alert(
           'Permission denied!',
-          'Vision Camera does not have permission to save the media to your camera roll.',
+          'The app does not have permission to save media to your photo library.',
         );
         return;
       }
-      await CameraRoll.save(`file://${path}`, {
-        type: type as 'video' | 'photo',
-      });
+      const uriToSave = (path as string)?.startsWith('file://')
+        ? (path as string)
+        : `file://${path}`;
+      await MediaLibrary.saveToLibraryAsync(uriToSave);
       setSavingState('saved');
       success({ title: 'შენახულია' });
       // Remove the saved video path from AsyncStorage after saving to camera roll
@@ -163,14 +154,20 @@ export default function MediaPage(): React.ReactElement {
 
   const onSharePressed = useCallback(async () => {
     try {
-      const options = {
-        title: 'Share via',
-        url: `file://${mediaPath}`,
-        type: type === 'photo' ? 'image/jpeg' : 'video/mp4',
-        failOnCancel: false,
-      };
+      const localUri = mediaPath?.startsWith('file://')
+        ? (mediaPath as string)
+        : `file://${mediaPath}`;
 
-      await Share.open(options);
+      const sharingAvailable = await isSharingAvailableAsync();
+      if (sharingAvailable) {
+        await shareAsync(localUri, {
+          mimeType: type === 'photo' ? 'image/jpeg' : 'video/mp4',
+          dialogTitle: 'Share via',
+        });
+      } else {
+        // Fallback to RN Share with URL if expo-sharing is not available
+        await Share.share({ url: localUri });
+      }
     } catch (error) {
       console.log('Error =>', error);
       Alert.alert(

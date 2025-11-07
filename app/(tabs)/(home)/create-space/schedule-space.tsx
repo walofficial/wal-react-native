@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import DatePicker from 'react-native-date-picker';
+import { View, TouchableOpacity, Text, StyleSheet, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useLocalSearchParams, router, useRouter } from 'expo-router';
 import { useCreateSpace } from '@/hooks/useCreateSpace';
 import CustomAnimatedButton from '@/components/ui/AnimatedButton';
@@ -27,27 +27,41 @@ export default function ScheduleSpace() {
 
   return (
     <View style={styles.container}>
-      <DatePicker
-        title="ოთახის დაწყების დრო"
-        buttonColor="white"
-        mode="datetime"
-        locale="en"
-        theme="dark"
-        confirmText="Confirm"
-        cancelText="Cancel"
-        open={open}
-        minimumDate={new Date()}
-        maximumDate={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)} // 30 days from now
-        date={selectedDate}
-        onDateChange={(date) => {
-          setOpen(false);
-          setSelectedDate(date);
-        }}
-        onCancel={() => {
-          setOpen(false);
-          router.back();
-        }}
-      />
+      {open && (
+        <DateTimePicker
+          value={selectedDate}
+          mode="datetime"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          minimumDate={new Date()}
+          maximumDate={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
+          onChange={(event, date) => {
+            if (Platform.OS === 'android') {
+              if (event.type === 'set' && date) {
+                setSelectedDate(date);
+                setOpen(false);
+              } else {
+                setOpen(false);
+                router.back();
+              }
+            } else {
+              if (date) setSelectedDate(date);
+            }
+          }}
+        />
+      )}
+
+      {/* iOS cancel button to mimic previous cancel behavior */}
+      {Platform.OS === 'ios' && (
+        <TouchableOpacity
+          onPress={() => {
+            setOpen(false);
+            router.back();
+          }}
+          style={{ marginTop: 12 }}
+        >
+          <Text style={{ color: '#aaa' }}>Cancel</Text>
+        </TouchableOpacity>
+      )}
 
       {/* Schedule Button */}
       <CustomAnimatedButton
