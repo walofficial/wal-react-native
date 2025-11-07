@@ -50,11 +50,16 @@ function handleRegistrationError(errorMessage: string) {}
 
 export async function registerForPushNotificationsAsync() {
   if (Platform.OS === 'android') {
+    // Create default notification channel with proper configuration
     await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
+      name: 'Default Notifications',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
       lightColor: '#FF231F7C',
+      sound: 'default',
+      enableVibrate: true,
+      enableLights: true,
+      showBadge: true,
     });
   }
 

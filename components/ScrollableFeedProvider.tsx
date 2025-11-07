@@ -62,21 +62,20 @@ export default function ScrollableFeedProvider({
       //   };
       //   onScroll(fakeScrollDownEvent);
       // }, 100);
-
       // Then simulate scrolling back to top
-      setTimeout(() => {
-        const fakeScrollUpEvent: NativeScrollEvent = {
-          contentOffset: { x: 0, y: 0 },
-          contentSize: { width: 0, height: 1000 },
-          layoutMeasurement: { width: 0, height: 800 },
-          velocity: { x: 0, y: -2 },
-          zoomScale: 1,
-          contentInset: { top: 0, left: 0, bottom: 0, right: 0 },
-          targetContentOffset: { x: 0, y: 0 },
-        };
-        onScroll(fakeScrollUpEvent);
-        snapToClosestState(fakeScrollUpEvent);
-      }, 300);
+      // setTimeout(() => {
+      //   const fakeScrollUpEvent: NativeScrollEvent = {
+      //     contentOffset: { x: 0, y: 0 },
+      //     contentSize: { width: 0, height: 1000 },
+      //     layoutMeasurement: { width: 0, height: 800 },
+      //     velocity: { x: 0, y: -2 },
+      //     zoomScale: 1,
+      //     contentInset: { top: 0, left: 0, bottom: 0, right: 0 },
+      //     targetContentOffset: { x: 0, y: 0 },
+      //   };
+      //   onScroll(fakeScrollUpEvent);
+      //   snapToClosestState(fakeScrollUpEvent);
+      // }, 300);
     };
 
     simulateScrollSequence();

@@ -7,8 +7,8 @@ export default function useLocationsInfo(
   categoryId: string,
   enabled: boolean = true,
 ) {
-  const isFocused = useIsFocused();
   const { location, errorMsg, isGettingLocation } = useLocationSession();
+
   const {
     data: locations,
     isFetching: locationsIsFetching,
@@ -30,7 +30,6 @@ export default function useLocationsInfo(
     // subscribed: isFocused,
     staleTime: 1000 * 60 * 5,
   });
-
   return {
     data: locations || {
       nearest_feeds: [],

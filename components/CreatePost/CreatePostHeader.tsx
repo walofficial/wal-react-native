@@ -7,7 +7,6 @@ import {
   Platform,
 } from 'react-native';
 import { Link, useRouter } from 'expo-router';
-import { isIOS } from '@/lib/platform';
 import { FontSizes, useTheme } from '@/lib/theme';
 import { t } from '@/lib/i18n';
 
@@ -49,9 +48,7 @@ export default function CreatePostHeader({
         style={styles.cancelButton}
         onPress={() => {
           if (isShareIntent) {
-            router.replace({
-              pathname: '/(tabs)/(fact-check)',
-            });
+            // TODO: Implement share intent back navigation if needed
           } else {
             router.back();
           }

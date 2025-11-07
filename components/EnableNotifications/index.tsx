@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Linking, Platform, View, StyleSheet } from 'react-native';
 import Button from '@/components/Button';
 import * as Notifications from 'expo-notifications';
+import type { EventSubscription } from 'expo-notifications';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Text } from '../ui/text';
 import { isDev } from '@/lib/api/config';
@@ -38,8 +39,8 @@ export default function EnableNotifications({
   const [expoPushToken, setExpoPushToken] = useAtom(expoPushTokenAtom);
   const [isSubscribed, setIsSubscribed] = useAtom(isSubscribedAtom);
   const [userDismissed, setUserDismissed] = useState(false);
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const notificationListener = useRef<EventSubscription | null>(null);
+  const responseListener = useRef<EventSubscription | null>(null);
   const [notification, setNotification] = useState<
     Notifications.Notification | undefined
   >(undefined);
@@ -150,12 +151,8 @@ export default function EnableNotifications({
       });
 
     return () => {
-      notificationListener.current &&
-        Notifications.removeNotificationSubscription(
-          notificationListener.current,
-        );
-      responseListener.current &&
-        Notifications.removeNotificationSubscription(responseListener.current);
+      notificationListener.current && notificationListener.current.remove();
+      responseListener.current && responseListener.current.remove();
     };
   }, [hidden, router, userDismissed]);
 

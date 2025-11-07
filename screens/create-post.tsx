@@ -325,19 +325,19 @@ export default function CreatePost() {
 
       if (navigationTargetContentType && !isShareIntent) {
         router.back();
-        router.replace({
-          pathname: `/(tabs)/(fact-check)`,
-          params: {
-            content_type: navigationTargetContentType,
-          },
-        });
+        // router.replace({
+        //   pathname: `/(tabs)/(fact-check)`,
+        //   params: {
+        //     content_type: navigationTargetContentType,
+        //   },
+        // });
       } else if (isShareIntent) {
-        router.navigate({
-          pathname: `/(tabs)/(fact-check)`,
-          params: {
-            content_type: navigationTargetContentType, // Default for share intent if no specific link
-          },
-        });
+        // router.navigate({
+        //   pathname: `/(tabs)/(fact-check)`,
+        //   params: {
+        //     content_type: navigationTargetContentType, // Default for share intent if no specific link
+        //   },
+        // });
       } else {
         router.back();
       }

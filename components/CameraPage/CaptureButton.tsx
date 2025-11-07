@@ -1,8 +1,13 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useMemo,
+} from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
-import type { TapGestureHandlerStateChangeEvent } from 'react-native-gesture-handler';
-import { State, TapGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Reanimated, {
   cancelAnimation,
   Easing,
@@ -12,6 +17,7 @@ import Reanimated, {
   useSharedValue,
   withRepeat,
   interpolate,
+  runOnJS,
 } from 'react-native-reanimated';
 import type { Camera, VideoFile } from 'react-native-vision-camera';
 import { CAPTURE_BUTTON_SIZE } from './Constants';
@@ -140,32 +146,35 @@ const _CaptureButton: React.FC<Props> = ({
     feedId,
   ]);
 
-  const onHandlerStateChanged = useCallback(
-    async ({ nativeEvent: event }: TapGestureHandlerStateChangeEvent) => {
-      console.debug(`state: ${Object.keys(State)[event.state]}`);
-      if (event.state === State.ACTIVE) {
-        isPressingButton.value = true;
-        setIsPressingButton(true);
+  const handleButtonPress = useCallback(() => {
+    setIsPressingButton(true);
 
-        if (isRecording) {
-          await stopRecording();
-        } else {
-          startRecording();
-        }
+    if (isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
 
-        setTimeout(() => {
+    setTimeout(() => {
+      setIsPressingButton(false);
+    }, 200);
+  }, [isRecording, startRecording, stopRecording, setIsPressingButton]);
+
+  const tapGesture = useMemo(
+    () =>
+      Gesture.Tap()
+        .enabled(enabled)
+        .shouldCancelWhenOutside(false)
+        .onBegin(() => {
+          isPressingButton.value = true;
+        })
+        .onEnd(() => {
+          runOnJS(handleButtonPress)();
+        })
+        .onFinalize(() => {
           isPressingButton.value = false;
-          setIsPressingButton(false);
-        }, 200);
-      }
-    },
-    [
-      isRecording,
-      startRecording,
-      stopRecording,
-      isPressingButton,
-      setIsPressingButton,
-    ],
+        }),
+    [enabled, isPressingButton, handleButtonPress],
   );
 
   const buttonStyle = useAnimatedStyle(() => {
@@ -228,11 +237,7 @@ const _CaptureButton: React.FC<Props> = ({
   });
 
   return (
-    <TapGestureHandler
-      enabled={enabled}
-      onHandlerStateChange={onHandlerStateChanged}
-      shouldCancelWhenOutside={false}
-    >
+    <GestureDetector gesture={tapGesture}>
       <Reanimated.View {...props} style={[buttonStyle, style]}>
         <View style={styles.button}>
           <Reanimated.View
@@ -244,7 +249,7 @@ const _CaptureButton: React.FC<Props> = ({
           />
         </View>
       </Reanimated.View>
-    </TapGestureHandler>
+    </GestureDetector>
   );
 };
 

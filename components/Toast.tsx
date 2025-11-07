@@ -140,8 +140,8 @@ export const Toast: React.FC<ToastProps> = ({ toast, index }) => {
         stiffness: 140,
         mass: 0.8,
         velocity: 0,
-        restDisplacementThreshold: 0.001,
-        restSpeedThreshold: 0.001,
+        overshootClamping: false,
+        energyThreshold: 0.001,
       });
 
       scale.value = withSpring(getStackScale(), {

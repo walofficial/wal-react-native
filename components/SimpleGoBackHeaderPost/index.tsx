@@ -1,4 +1,4 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, RefObject } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useAtom } from 'jotai';
 import { Image } from 'expo-image';
@@ -15,6 +15,7 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import PostLanguageSwitcher from './PostLanguageSwitcher';
 import { trackEvent } from '@/lib/analytics';
 import { t } from '@/lib/i18n';
+import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 
 function SimpleGoBackHeaderPost({
   verificationId,
@@ -161,7 +162,11 @@ function SimpleGoBackHeaderPost({
           )
         }
       />
-      <NewsSourcesBottomSheet bottomSheetRef={bottomSheetRef} />
+      <NewsSourcesBottomSheet
+        bottomSheetRef={
+          bottomSheetRef as unknown as RefObject<BottomSheetMethods>
+        }
+      />
     </>
   );
 }
