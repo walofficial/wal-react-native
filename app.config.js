@@ -88,7 +88,6 @@ const pluginsList = [
   // Removed react-native-share plugin; using RN Share API / expo-sharing instead
   '@livekit/react-native-expo-plugin',
   '@config-plugins/react-native-webrtc',
-  './plugin/withSwiftSodium',
   [
     'expo-image-picker',
     {

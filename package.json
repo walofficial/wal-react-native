@@ -82,7 +82,6 @@
     "events": "^3.3.0",
     "expo": "^54.0.22",
     "expo-application": "~7.0.7",
-    "expo-av": "~16.0.7",
     "expo-blur": "~15.0.7",
     "expo-build-properties": "~1.0.9",
     "expo-clipboard": "~8.0.7",
