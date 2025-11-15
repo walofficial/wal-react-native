@@ -81,18 +81,14 @@ const pluginsList = [
     {
       ios: {
         deploymentTarget: '15.1',
-        newArchEnabled: true,
-        useFrameworks: 'static',
       },
-      android: {
-        newArchEnabled: true,
-      },
+     
     },
   ],
-  '@more-tech/react-native-libsodium',
   // Removed react-native-share plugin; using RN Share API / expo-sharing instead
   '@livekit/react-native-expo-plugin',
   '@config-plugins/react-native-webrtc',
+  './plugin/withSwiftSodium',
   [
     'expo-image-picker',
     {
@@ -117,7 +113,7 @@ const pluginsList = [
 ];
 
 // Firebase config toggles: enable only if explicitly enabled
-const DISABLE_FIREBASE = process.env.EXPO_PUBLIC_DISABLE_FIREBASE == 'true';
+const DISABLE_FIREBASE = true
 
 if (!DISABLE_FIREBASE) {
   pluginsList.push('@react-native-firebase/app');
@@ -125,6 +121,7 @@ if (!DISABLE_FIREBASE) {
 
 export default {
   expo: {
+    newArchEnabled: true,
     platforms: ['ios', 'android', 'web'],
     name: app_name,
     slug: 'mnt-app',
@@ -144,7 +141,6 @@ export default {
     runtimeVersion: {
       policy: 'appVersion',
     },
-    newArchEnabled: false,
     ios: {
       associatedDomains: [`applinks:${app_name_slug}.ge`],
       infoPlist: {
