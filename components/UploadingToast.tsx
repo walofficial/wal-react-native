@@ -8,7 +8,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useTheme } from '@/lib/theme';
 import { Image as ImageIcon, Film, X } from 'lucide-react-native';
-import { Video, ResizeMode } from 'expo-av';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { useColorScheme } from '@/lib/useColorScheme';
 
 type MediaKind = 'photo' | 'video';
@@ -38,6 +38,15 @@ export const UploadingToast: React.FC<UploadingToastProps> = ({
 
   const progressValue = useSharedValue(0);
 
+  // Create video player for preview (if video)
+  const player = useVideoPlayer(
+    mediaKind === 'video' && previewUri ? previewUri : '',
+    (player) => {
+      player.muted = true;
+      player.pause();
+    },
+  );
+
   useEffect(() => {
     progressValue.value = withTiming(clampedProgress, {
       duration: 220,
@@ -66,13 +75,11 @@ export const UploadingToast: React.FC<UploadingToastProps> = ({
                   style={styles.previewMedia}
                 />
               ) : (
-                <Video
-                  source={{ uri: previewUri }}
+                <VideoView
+                  player={player}
                   style={styles.previewMedia}
-                  resizeMode={ResizeMode.COVER}
-                  isMuted
-                  shouldPlay={false}
-                  useNativeControls={false}
+                  contentFit="cover"
+                  nativeControls={false}
                 />
               )}
             </View>

@@ -1,15 +1,7 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-} from 'react-native';
-import Svg, { Circle, Path } from 'react-native-svg';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import UserLogin from '../UserLogin';
 import VideoPlayer from '../VideoPlayer';
 import { useRef, useEffect } from 'react';
-import { useAtom } from 'jotai';
 import BottomSheet, { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { FontSizes } from '@/lib/theme';
 import { isAndroid } from '@/lib/platform';
@@ -17,7 +9,6 @@ import * as NavigationBar from 'expo-navigation-bar';
 import { StatusBar } from 'expo-status-bar';
 import { useTranslation } from '@/hooks/useTranslation';
 import LanguageSelectionOverlay from '@/components/LanguageOverlay';
-import { appLocaleAtom } from '@/hooks/useAppLocalization';
 
 const VIDEO_URI =
   'https://cdn.wal.ge/video-verifications/transcoded/f2897541-6768-4ae2-ab28-1894d3e96e5f/manifest.mpd';

@@ -9,7 +9,6 @@ import {
   useColorScheme,
 } from 'react-native';
 import { FileImage, Paperclip, Mic, ArrowUp } from '@/lib/icons';
-import { Audio } from 'expo-av';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { hasMessageAtom, messageAtom } from '@/lib/state/chat';
 import Animated, {
@@ -29,7 +28,6 @@ interface ChatBottombarProps {
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
 export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const setMessage = useSetAtom(messageAtom);
   const message = useAtomValue(messageAtom);
   const setHasMessage = useSetAtom(hasMessageAtom);
@@ -42,14 +40,6 @@ export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
   const inputBackground = isLightMode ? '#e0e0e0' : '#1E1E1E'; // Slightly darker gray for light mode
   const placeholderColor = isLightMode ? '#8E8E93' : '#8A8A8E'; // Subtle placeholder color
   const inputTextColor = theme.colors.text;
-
-  useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
 
   useEffect(() => {
     setHasMessage(message.trim().length > 0);
