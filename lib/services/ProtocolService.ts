@@ -1,25 +1,10 @@
-import {
-  crypto_box_keypair,
-  crypto_box_easy,
-  crypto_box_open_easy,
-  randombytes_buf,
-  to_base64,
-  from_base64,
-  to_string,
-  crypto_box_PUBLICKEYBYTES,
-  crypto_box_SECRETKEYBYTES,
-  crypto_box_NONCEBYTES,
-} from '@more-tech/react-native-libsodium';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import CryptoModule from '../../modules/crypto/specs/RTNCryptoWrapper';
 
 const KEYS_STORAGE = 'user_keys';
+const REMOTE_KEY_PREFIX = 'remote_key_';
 
-interface KeyPair {
-  publicKey: Uint8Array;
-  privateKey: Uint8Array;
-}
-
-class SignalProtocolService {
+class WalCrypto {
   constructor() {}
 
   public async clearKeys(): Promise<void> {
@@ -45,23 +30,24 @@ class SignalProtocolService {
       };
     }
 
-    // Generate new keys only if they don't exist
-    const keyPair = crypto_box_keypair();
+    // Generate new keys using C++ turbo module
+    const keyPair = CryptoModule.generateKeyPair();
     const registrationId = Math.floor(Math.random() * 16383) + 1;
+    
     // Store keys locally
     await AsyncStorage.setItem(
       KEYS_STORAGE,
       JSON.stringify({
-        publicKey: to_base64(keyPair.publicKey),
-        privateKey: to_base64(keyPair.privateKey),
+        publicKey: keyPair.publicKey,
+        privateKey: keyPair.privateKey,
         registrationId,
       }),
     );
 
     return {
       identityKeyPair: {
-        publicKey: to_base64(keyPair.publicKey),
-        privateKey: to_base64(keyPair.privateKey),
+        publicKey: keyPair.publicKey,
+        privateKey: keyPair.privateKey,
       },
       registrationId,
       isCached: false,
@@ -69,13 +55,14 @@ class SignalProtocolService {
   }
 
   public async getPreKeyBundle(): Promise<{ publicKey: string }> {
-    const keyPair = await this.getKeyPair();
-    if (!keyPair) {
+    const keys = await AsyncStorage.getItem(KEYS_STORAGE);
+    if (!keys) {
       throw new Error('No keys available');
     }
 
+    const { publicKey } = JSON.parse(keys);
     return {
-      publicKey: to_base64(keyPair.publicKey),
+      publicKey,
     };
   }
 
@@ -83,30 +70,22 @@ class SignalProtocolService {
     userId: string,
     message: string,
   ): Promise<{ encrypted_content: string; nonce: string }> {
-    const nonce = randombytes_buf(crypto_box_NONCEBYTES);
-    const keyPair = await this.getKeyPair();
+    const nonce = CryptoModule.randomBytes(CryptoModule.NONCE_BYTES);
+    const secretKey = await this.getSharedSecretKey(userId);
 
-    if (!keyPair) {
-      throw new Error('No key pair available');
+    if (!secretKey) {
+      throw new Error('No shared secret key available for this user');
     }
 
-    const remoteKeyBundle = await AsyncStorage.getItem(`remote_key_${userId}`);
-    if (!remoteKeyBundle) {
-      throw new Error('Remote key bundle not found');
-    }
-
-    const recipientPublicKey = JSON.parse(remoteKeyBundle).publicKey;
-
-    const encryptedMessage = crypto_box_easy(
+    const encryptedMessage = CryptoModule.secretBoxSeal(
       message,
       nonce,
-      from_base64(recipientPublicKey),
-      keyPair.privateKey,
+      secretKey,
     );
 
     return {
-      encrypted_content: to_base64(encryptedMessage),
-      nonce: to_base64(nonce),
+      encrypted_content: encryptedMessage,
+      nonce,
     };
   }
 
@@ -114,47 +93,56 @@ class SignalProtocolService {
     senderId: string,
     encryptedData: { encryptedMessage: string; nonce: string },
   ): Promise<string> {
-    const keyPair = await this.getKeyPair();
+    const secretKey = await this.getSharedSecretKey(senderId);
 
-    if (!keyPair) {
-      throw new Error('No key pair available');
+    if (!secretKey) {
+      throw new Error("Shared secret key for sender isn't available");
     }
 
-    const remoteKeyBundle = await AsyncStorage.getItem(
-      `remote_key_${senderId}`,
+    return CryptoModule.secretBoxOpen(
+      encryptedData.encryptedMessage,
+      encryptedData.nonce,
+      secretKey,
     );
-    if (!remoteKeyBundle) {
-      throw new Error("Sender's key bundle not found");
-    }
-
-    const senderPublicKey = JSON.parse(remoteKeyBundle).publicKey;
-    const decryptedMessage = crypto_box_open_easy(
-      from_base64(encryptedData.encryptedMessage),
-      from_base64(encryptedData.nonce),
-      from_base64(senderPublicKey),
-      keyPair.privateKey,
-    );
-
-    return to_string(decryptedMessage);
   }
 
-  private async getKeyPair(): Promise<KeyPair | null> {
+  private async getKeyPair(): Promise<{ publicKey: string; privateKey: string } | null> {
     const keys = await AsyncStorage.getItem(KEYS_STORAGE);
     if (keys) {
       const { publicKey, privateKey } = JSON.parse(keys);
       return {
-        publicKey: from_base64(publicKey),
-        privateKey: from_base64(privateKey),
+        publicKey,
+        privateKey,
       };
     }
     return null;
   }
-  async storeRemotePublicKey(userId: string, publicKey: string): Promise<void> {
+
+  private async getSharedSecretKey(userId: string): Promise<string | null> {
+    const storedSecret = await AsyncStorage.getItem(`${REMOTE_KEY_PREFIX}${userId}`);
+    if (!storedSecret) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(storedSecret);
+      return parsed.secretKey ?? null;
+    } catch (error) {
+      console.warn('Failed to parse shared secret key', error);
+      return null;
+    }
+  }
+
+  async storeSharedSecretKey(userId: string, secretKey: string): Promise<void> {
     await AsyncStorage.setItem(
-      `remote_key_${userId}`,
-      JSON.stringify({ publicKey }),
+      `${REMOTE_KEY_PREFIX}${userId}`,
+      JSON.stringify({ secretKey }),
     );
+  }
+
+  async generateSharedSecretKey(): Promise<string> {
+    return CryptoModule.generateSecretKey();
   }
 }
 
-export default new SignalProtocolService();
+export default new WalCrypto();
