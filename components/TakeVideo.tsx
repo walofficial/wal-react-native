@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Button } from './ui/button';
+import Button from './Button';
 import { useTheme } from '@/lib/theme';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { useToast } from './ToastUsage';
