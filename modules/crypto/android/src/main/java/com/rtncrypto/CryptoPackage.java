@@ -5,20 +5,19 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.module.model.ReactModuleInfo;
 import com.facebook.react.module.model.ReactModuleInfoProvider;
-import com.facebook.react.BaseReactPackage;
+import com.facebook.react.TurboReactPackage;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CryptoPackage extends BaseReactPackage {
+public class CryptoPackage extends TurboReactPackage {
 
   @Nullable
   @Override
   public NativeModule getModule(String name, ReactApplicationContext reactContext) {
       if (name.equals(CryptoModule.NAME)) {
           return new CryptoModule(reactContext);
-      } else {
-          return null;
       }
+      return null;
   }
 
   @Override
@@ -32,11 +31,10 @@ public class CryptoPackage extends BaseReactPackage {
                           CryptoModule.NAME,
                           false, // canOverrideExistingModule
                           false, // needsEagerInit
-                          true,  // isCxxModule
+                          false, // isCxxModule - now false since it's a Java module bridging to C++
                           true   // isTurboModule
           ));
           return moduleInfos;
       };
   }
 }
-

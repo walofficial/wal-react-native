@@ -15,16 +15,22 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.facebook.react'
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', 33)
+  compileSdkVersion safeExtGet('compileSdkVersion', 34)
   namespace "com.rtncrypto"
-  ndkVersion safeExtGet('ndkVersion', "29.0.14206865")
+  ndkVersion safeExtGet('ndkVersion', "27.1.12297006")
+  
+  buildFeatures {
+    prefab true
+  }
   
   defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', 21)
+    minSdkVersion safeExtGet('minSdkVersion', 24)
     
     externalNativeBuild {
       cmake {
         arguments "-DANDROID_STL=c++_shared"
+        cppFlags "-fexceptions", "-frtti", "-std=c++17"
+        abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
       }
     }
   }
@@ -43,7 +49,6 @@ repositories {
 
 dependencies {
   implementation 'com.facebook.react:react-native'
-  // libsodium for Android
-  implementation 'com.goterl:lazysodium-android:5.1.0@aar'
-  implementation 'net.java.dev.jna:jna:5.14.0@aar'
+  // libsodium is linked natively via CMake from vendor/android/
+  // Run: ./modules/crypto/scripts/setup-libsodium-android.sh
 }
