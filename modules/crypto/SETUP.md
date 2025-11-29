@@ -5,7 +5,7 @@ This guide will help you integrate the RTNCrypto C++ Turbo Native Module into yo
 ## Prerequisites
 
 - React Native 0.72 or higher with New Architecture enabled
-- For iOS: CocoaPods installed
+- For iOS: CocoaPods installed, Xcode Command Line Tools
 - For Android: Android Studio and NDK
 
 ## Step 1: Add the Module to Your App
@@ -16,7 +16,35 @@ From your app's root directory:
 npm install ./modules/crypto
 ```
 
-## Step 2: iOS Setup
+## Step 2: Setup libsodium
+
+The module uses [libsodium](https://doc.libsodium.org/) for cryptographic operations.
+
+### iOS (libsodium XCFramework)
+
+Run the setup script to download and build libsodium for iOS:
+
+```bash
+./modules/crypto/scripts/setup-libsodium.sh
+```
+
+This will:
+- Download libsodium 1.0.20 from official releases
+- Build for iOS device (arm64) and simulator (arm64 + x86_64)
+- Create an XCFramework at `vendor/libsodium.xcframework`
+
+### Android (automatic via CMake)
+
+**No setup required!** Android builds libsodium automatically from source using CMake FetchContent.
+
+The CMakeLists.txt uses [robinlinden/libsodium-cmake](https://github.com/robinlinden/libsodium-cmake) to:
+- Download libsodium source code during the build
+- Compile for all Android ABIs (arm64-v8a, armeabi-v7a, x86, x86_64)
+- Link statically with the native module
+
+The first build will take longer as it compiles libsodium from source.
+
+## Step 3: iOS Setup
 
 1. **Install the pods:**
 
@@ -30,7 +58,7 @@ cd ..
    - Open `ios/YourApp.xcworkspace` in Xcode
    - The `rtn-crypto` pod should be listed in Pods project
 
-## Step 3: Android Setup
+## Step 4: Android Setup
 
 1. **Enable New Architecture:**
 
@@ -114,6 +142,30 @@ npm run android
 
 ## Troubleshooting
 
+### libsodium Issues
+
+**iOS: "libsodium.xcframework not found":**
+```bash
+# Run the setup script
+./modules/crypto/scripts/setup-libsodium.sh
+
+# Then reinstall pods
+cd ios && pod install
+```
+
+**Android: libsodium build fails:**
+```bash
+# Clean and rebuild (libsodium is built automatically via CMake)
+cd android && ./gradlew clean
+cd .. && npx expo run:android
+```
+
+**Build fails with "sodium.h not found":**
+- For iOS: Ensure you've run `./modules/crypto/scripts/setup-libsodium.sh`
+- For iOS: Check that `vendor/include/sodium.h` exists
+- For iOS: Verify `vendor/libsodium.xcframework` exists
+- For Android: This is handled automatically by CMake FetchContent
+
 ### iOS Issues
 
 **Pod install fails:**
@@ -140,6 +192,7 @@ cd android
 **CMake errors:**
 - Ensure NDK is installed in Android Studio
 - Check that `android/local.properties` has correct SDK path
+- Verify libsodium is set up: `./modules/crypto/scripts/setup-libsodium-android.sh`
 
 **Module not found at runtime:**
 - Verify `newArchEnabled=true` in `gradle.properties`
@@ -178,10 +231,9 @@ console.log({ secretKey, nonce, ciphertext, plaintext });
 
 ## Next Steps
 
-- The module currently returns random hex strings
-- Implement actual cryptographic key generation in `shared/RTNCrypto.cpp`
-- Consider using libraries like libsodium or OpenSSL in the C++ implementation
-- Add proper error handling
+- The module uses [libsodium](https://doc.libsodium.org/) for all cryptographic operations
+- Cryptographic functions are implemented in `shared/RTNCrypto.cpp`
+- Add more cryptographic primitives as needed (signatures, hashing, etc.)
 - Add unit tests
 
 ## Integration with ProtocolService

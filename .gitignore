@@ -40,4 +40,7 @@ build-android.sh
 build-ios-development.sh
 build-ios-preview.sh
 build-ios.sh
- 
+android/.cxx/**
+android/.gradle/**
+android/build/**
+modules/crypto/android/**
