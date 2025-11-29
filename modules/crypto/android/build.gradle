@@ -21,6 +21,12 @@ android {
   
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
+    
+    externalNativeBuild {
+      cmake {
+        arguments "-DANDROID_STL=c++_shared"
+      }
+    }
   }
   
   externalNativeBuild {
@@ -37,5 +43,7 @@ repositories {
 
 dependencies {
   implementation 'com.facebook.react:react-native'
+  // libsodium for Android
+  implementation 'com.goterl:lazysodium-android:5.1.0@aar'
+  implementation 'net.java.dev.jna:jna:5.14.0@aar'
 }
-

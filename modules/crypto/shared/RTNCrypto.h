@@ -10,18 +10,35 @@ class RTNCrypto : public NativeRTNCryptoCxxSpec<RTNCrypto> {
 public:
   RTNCrypto(std::shared_ptr<CallInvoker> jsInvoker);
   
-  jsi::Object generateKeyPair(jsi::Runtime& rt);
-  jsi::String randomBytes(jsi::Runtime& rt, double length);
-  jsi::String generateSecretKey(jsi::Runtime& rt);
-  jsi::String secretBoxSeal(jsi::Runtime& rt,
+  // Key pair generation for crypto_box (public-key cryptography)
+  jsi::Object cryptoBoxKeypair(jsi::Runtime& rt);
+  
+  // Random bytes generation
+  jsi::String randombytesBuf(jsi::Runtime& rt, double length);
+  
+  // Public-key authenticated encryption (crypto_box)
+  jsi::String cryptoBoxEasy(jsi::Runtime& rt,
                             jsi::String message,
                             jsi::String nonce,
-                            jsi::String secretKey);
-  jsi::String secretBoxOpen(jsi::Runtime& rt,
-                            jsi::String encryptedMessage,
-                            jsi::String nonce,
-                            jsi::String secretKey);
+                            jsi::String recipientPublicKey,
+                            jsi::String senderSecretKey);
+  
+  // Public-key authenticated decryption (crypto_box_open)
+  jsi::String cryptoBoxOpenEasy(jsi::Runtime& rt,
+                                jsi::String ciphertext,
+                                jsi::String nonce,
+                                jsi::String senderPublicKey,
+                                jsi::String recipientSecretKey);
+  
+  // Base64 encoding/decoding
+  jsi::String toBase64(jsi::Runtime& rt, jsi::Array bytes);
+  jsi::Array fromBase64(jsi::Runtime& rt, jsi::String base64String);
+  
+  // Constants
+  double getCryptoBoxPublickeybytes(jsi::Runtime& rt);
+  double getCryptoBoxSecretkeybytes(jsi::Runtime& rt);
+  double getCryptoBoxNoncebytes(jsi::Runtime& rt);
+  double getCryptoBoxMacbytes(jsi::Runtime& rt);
 };
 
 } // namespace facebook::react
-

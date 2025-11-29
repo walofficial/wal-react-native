@@ -1,7 +1,9 @@
 {
   "name": "rtn-crypto",
   "version": "0.0.1",
-  "description": "Crypto key generation with Turbo Native Modules",
+  "description": "Crypto module using libsodium for React Native",
+  "main": "specs/index",
+  "types": "specs/index",
   "react-native": "specs/index",
   "source": "specs/index",
   "files": [
@@ -37,4 +39,10 @@
     }
   }
 }
+
+
+
+
+
+
 

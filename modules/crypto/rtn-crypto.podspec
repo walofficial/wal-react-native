@@ -15,7 +15,24 @@ Pod::Spec.new do |s|
   
   s.source_files    = "ios/**/*.{h,m,mm,swift}", "shared/**/*.{h,cpp}"
   s.header_dir      = "RTNCrypto"
+  s.preserve_paths  = "vendor/**/*", "scripts/**/*"
+  
+  # Vendored libsodium - built by scripts/setup-libsodium.sh
+  # Check if xcframework exists, otherwise use static library
+  vendor_dir = File.join(__dir__, "vendor")
+  xcframework_path = File.join(vendor_dir, "libsodium.xcframework")
+  static_lib_path = File.join(vendor_dir, "lib", "libsodium.a")
+  
+  if File.exist?(xcframework_path)
+    s.vendored_frameworks = "vendor/libsodium.xcframework"
+  elsif File.exist?(static_lib_path)
+    s.vendored_libraries = "vendor/lib/libsodium.a"
+  end
+  
+  s.pod_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "$(inherited) \"${PODS_TARGET_SRCROOT}/vendor/include\"",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
+  }
   
   install_modules_dependencies(s)
 end
-
