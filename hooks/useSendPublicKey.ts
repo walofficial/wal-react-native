@@ -22,8 +22,8 @@ export default function useSendPublicKey() {
     }) => {
       const { identityKeyPair, isCached } =
         await ProtocolService.generateIdentityKeyPair();
-      console.log('identityKeyPair', identityKeyPair);
-      if (isCached) {
+
+        if (isCached) {
         // Avoid resetting the timestamp of the public key and setting new public key
         setPublicKey(identityKeyPair.publicKey);
         return;
