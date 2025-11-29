@@ -1,12 +1,12 @@
 import React from 'react';
 import {
-  Pressable,
   StyleSheet,
   Text,
   ViewStyle,
   ActivityIndicator,
   StyleProp,
 } from 'react-native';
+import { PressableScale } from 'pressto';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 
@@ -17,9 +17,13 @@ export type ButtonVariant =
   | 'outline'
   | 'subtle'
   | 'destructive'
-  | 'destructive-outline';
+  | 'destructive-outline'
+  | 'list'; // for settings/list items with subtle background and border
 
 export type ButtonSize = 'medium' | 'large';
+
+/** Standard icon size for list/settings buttons */
+export const LIST_ICON_SIZE = 24;
 
 export interface ButtonProps {
   /** Main label shown in the button. If omitted the button will be treated as icon‑only. */
@@ -34,10 +38,14 @@ export interface ButtonProps {
   fullWidth?: boolean;
   /** Ionicons icon name to render. */
   icon?: React.ComponentProps<typeof Ionicons>['name'];
+  /** Custom icon element to render (takes precedence over icon prop). */
+  iconElement?: React.ReactNode;
   /** Where to render the icon relative to the text. */
   iconPosition?: 'left' | 'right';
   /** Ionicons icon color. */
   iconColor?: string;
+  /** Custom icon size (overrides default size based on button size). */
+  iconSize?: number;
   /** Disables the button. */
   disabled?: boolean;
   /** Loading state replaces contents with ActivityIndicator. */
@@ -55,8 +63,10 @@ export default function Button({
   size = 'medium',
   fullWidth = false,
   icon,
+  iconElement,
   iconPosition = 'left',
-  iconColor = 'white',
+  iconColor,
+  iconSize: customIconSize,
   disabled = false,
   loading = false,
   glassy = false,
@@ -104,6 +114,12 @@ export default function Button({
             text: theme.colors.accent,
             border: theme.colors.accent,
           } as const;
+        case 'list':
+          return {
+            background: theme.colors.card.background,
+            text: theme.colors.text,
+            border: theme.colors.border,
+          } as const;
         case 'primary':
         default:
           return {
@@ -128,6 +144,13 @@ export default function Button({
 
   /* Size mapping */
   const sizeStyle = React.useMemo(() => {
+    // For list variant, always use consistent icon size
+    const getIconSize = (defaultWithTitle: number, defaultIconOnly: number) => {
+      if (customIconSize) return customIconSize;
+      if (variant === 'list') return LIST_ICON_SIZE;
+      return title ? defaultWithTitle : defaultIconOnly;
+    };
+
     switch (size) {
       case 'large':
         return {
@@ -135,7 +158,7 @@ export default function Button({
           paddingHorizontal: theme.spacing.lg,
           fontSize: theme.fontSizes.lg,
           minWidth: 120,
-          iconSize: title ? 22 : 32,
+          iconSize: getIconSize(22, 32),
         } as const;
       case 'medium':
       default:
@@ -144,12 +167,13 @@ export default function Button({
           paddingHorizontal: theme.spacing.md,
           fontSize: theme.fontSizes.md,
           minWidth: 96,
-          iconSize: title ? 18 : 24,
+          iconSize: getIconSize(20, 24),
         } as const;
     }
-  }, [size, theme, title]);
+  }, [size, theme, title, customIconSize, variant]);
 
-  const isIconOnly = !!icon && !title;
+  const hasIcon = !!icon || !!iconElement;
+  const isIconOnly = hasIcon && !title;
 
   const defaultDim = size === 'large' ? 56 : 44;
 
@@ -161,7 +185,10 @@ export default function Button({
       backgroundColor: variantColour.background,
       borderColor: variantColour.border,
       borderWidth:
-        variant === 'outline' || variant === 'destructive-outline' || glassy
+        variant === 'outline' ||
+        variant === 'destructive-outline' ||
+        variant === 'list' ||
+        glassy
           ? 1
           : 0,
       paddingVertical: isIconOnly ? 0 : sizeStyle.paddingVertical,
@@ -180,7 +207,7 @@ export default function Button({
       overflow: 'hidden',
       flexDirection: title ? 'row' : 'column',
       alignItems: 'center',
-      justifyContent: 'center',
+      justifyContent: variant === 'list' ? 'flex-start' : 'center',
       // Glassy effects
       ...(glassy && {
         boxShadow: `0 8px 32px rgba(0, 0, 0, 0.1)`,
@@ -190,15 +217,12 @@ export default function Button({
     style,
   ];
 
+  const isDisabled = disabled || loading;
+
   return (
-    <Pressable
-      style={({ pressed }) => [
-        ...baseContainerStyle,
-        { transform: [{ scale: pressed ? 0.98 : 1 }] },
-      ]}
-      disabled={disabled || loading}
-      android_ripple={{ color: 'rgba(255,255,255,0.12)' }}
-      onPress={onPress}
+    <PressableScale
+      style={baseContainerStyle}
+      onPress={isDisabled ? undefined : onPress}
       accessibilityRole="button"
     >
       {loading ? (
@@ -209,14 +233,17 @@ export default function Button({
         />
       ) : (
         <>
-          {icon && iconPosition === 'left' && (
-            <Ionicons
-              name={icon}
-              size={sizeStyle.iconSize}
-              color={iconColor || variantColour.text}
-              style={title ? { marginRight: 8 } : undefined}
-            />
-          )}
+          {hasIcon &&
+            iconPosition === 'left' &&
+            (iconElement ? (
+              <>{iconElement}</>
+            ) : icon ? (
+              <Ionicons
+                name={icon}
+                size={sizeStyle.iconSize}
+                color={iconColor || variantColour.text}
+              />
+            ) : null)}
           {title && (
             <Text
               style={[
@@ -224,23 +251,28 @@ export default function Button({
                 {
                   color: variantColour.text,
                   fontSize: sizeStyle.fontSize,
+                  marginLeft: hasIcon && iconPosition === 'left' ? 12 : 0,
+                  marginRight: hasIcon && iconPosition === 'right' ? 12 : 0,
                 },
               ]}
             >
               {title}
             </Text>
           )}
-          {icon && iconPosition === 'right' && (
-            <Ionicons
-              name={icon}
-              size={sizeStyle.iconSize}
-              color={iconColor || variantColour.text}
-              style={title ? { marginLeft: 8 } : undefined}
-            />
-          )}
+          {hasIcon &&
+            iconPosition === 'right' &&
+            (iconElement ? (
+              <>{iconElement}</>
+            ) : icon ? (
+              <Ionicons
+                name={icon}
+                size={sizeStyle.iconSize}
+                color={iconColor || variantColour.text}
+              />
+            ) : null)}
         </>
       )}
-    </Pressable>
+    </PressableScale>
   );
 }
 

@@ -14,7 +14,7 @@ import Animated, {
   interpolateColor,
   Easing,
 } from 'react-native-reanimated';
-import { Button } from './button';
+import Button from '../Button';
 
 const AnimatedButton = Animated.createAnimatedComponent(Button);
 
