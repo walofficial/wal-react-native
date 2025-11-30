@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { type DimensionValue, Pressable, View } from 'react-native';
 import { type AnimatedRef } from 'react-native-reanimated';
-import { Image } from 'expo-image';
+import { AnimatedImage } from '@/components/SharedImage';
 
 import { useHandleRef } from '@/lib/hooks/useHandleRef';
 import type { Dimensions } from '@/lib/media/types';
@@ -105,7 +105,7 @@ export function AutoSizedImage({
 
   const contents = (
     <View ref={containerRef} collapsable={false} style={{ flex: 1 }}>
-      <Image
+      <AnimatedImage
         contentFit={isContain ? 'contain' : 'cover'}
         style={{ width: '100%', height: '100%' }}
         source={image.thumb}
