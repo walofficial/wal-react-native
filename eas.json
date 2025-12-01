@@ -13,9 +13,6 @@
       },
       "android": {
         "buildType": "apk"
-      },
-      "ios": {
-        "prebuildCommand": "chmod +x modules/crypto/scripts/setup-libsodium.sh && ./modules/crypto/scripts/setup-libsodium.sh"
       }
     },
     // Same as test environment
@@ -26,9 +23,6 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
-      "ios": {
-        "prebuildCommand": "chmod +x modules/crypto/scripts/setup-libsodium.sh && ./modules/crypto/scripts/setup-libsodium.sh"
       }
     },
     "preview": {
@@ -38,9 +32,6 @@
       "distribution": "internal",   
       "android": {
         "buildType": "apk"
-      },
-      "ios": {
-        "prebuildCommand": "chmod +x modules/crypto/scripts/setup-libsodium.sh && ./modules/crypto/scripts/setup-libsodium.sh"
       }
     },
     "production": {
@@ -50,9 +41,6 @@
       "android": {
         "buildType": "app-bundle"
       },
-      "ios": {
-        "prebuildCommand": "chmod +x modules/crypto/scripts/setup-libsodium.sh && ./modules/crypto/scripts/setup-libsodium.sh"
-      }
     },
     "production-apk": {
       "autoIncrement": true,
@@ -60,9 +48,6 @@
       "environment": "production",
       "android": {
         "buildType": "apk"
-      },
-      "ios": {
-        "prebuildCommand": "chmod +x modules/crypto/scripts/setup-libsodium.sh && ./modules/crypto/scripts/setup-libsodium.sh"
       }
     }
   },
