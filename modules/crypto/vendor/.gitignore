@@ -1,9 +1,3 @@
-# Downloaded libsodium binaries
-libsodium.xcframework/
-lib/
-include/
-ios-*/
-
 # Keep this directory
 !.gitignore
 !.gitkeep
