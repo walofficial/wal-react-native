@@ -121,7 +121,7 @@ export default function MessageConnectionWrapper({
       room_id: string;
     }) => {
       if (public_key) {
-        await ProtocolService.storeSharedSecretKey(user_id, public_key);
+        await ProtocolService.storeRemotePublicKey(user_id, public_key);
       }
     };
 

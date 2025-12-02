@@ -27,7 +27,7 @@ function useLiveUser() {
 
       // Build session with remote user's pre-key bundle
       if (response.data.target_public_key) {
-        await ProtocolService.storeSharedSecretKey(
+        await ProtocolService.storeRemotePublicKey(
           targetUserId,
           response.data.target_public_key,
         );
@@ -67,7 +67,7 @@ function useLiveUser() {
         throwOnError: true,
       });
       if (response.data.target_public_key) {
-        await ProtocolService.storeSharedSecretKey(
+        await ProtocolService.storeRemotePublicKey(
           targetUserId,
           response.data.target_public_key,
         );
