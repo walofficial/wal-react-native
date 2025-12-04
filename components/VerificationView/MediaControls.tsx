@@ -8,6 +8,7 @@ import CommentButton from '@/components/FeedItem/CommentButton';
 import ShareButton from '@/components/FeedItem/ShareButton';
 import { LocationFeedPost } from '@/lib/api/generated';
 import { useTheme } from '@/lib/theme';
+import { convertToCDNUrl } from '@/lib/utils';
 
 interface MediaControlsProps {
   verification: LocationFeedPost;
@@ -41,7 +42,10 @@ const MediaControls = ({
         >
           <AvatarImage
             source={{
-              uri: verification.assignee_user?.photos[0].image_url[0] || '',
+              uri:
+                convertToCDNUrl(
+                  verification.assignee_user?.photos[0].image_url[0],
+                ) || '',
             }}
           />
         </Avatar>

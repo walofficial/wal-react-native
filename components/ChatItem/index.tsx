@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { FontSizes } from '@/lib/theme';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTheme } from '@/lib/theme';
+import { convertToCDNUrl } from '@/lib/utils';
 
 function ChatItem({ item }: { item: ChatRoom }) {
   const { user: authorizedUser } = useAuth();
@@ -128,7 +129,11 @@ function ChatItem({ item }: { item: ChatRoom }) {
             <View style={styles.avatarContainer}>
               <Avatar alt="Avatar" style={styles.avatar}>
                 <AvatarImage
-                  source={{ uri: targetUser?.photos[0].image_url[0] }}
+                  source={{
+                    uri: convertToCDNUrl(
+                      targetUser?.photos[0].image_url[0] || '',
+                    ),
+                  }}
                 />
                 <AvatarFallback>
                   <Text>{targetUser?.username?.[0] || '[d]'}</Text>

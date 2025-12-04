@@ -17,6 +17,7 @@ import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import useAuth from '@/hooks/useAuth';
 import { FeedPost, LinkPreviewData } from '@/lib/api/generated';
 import { t } from '@/lib/i18n';
+import { convertToCDNUrl } from '@/lib/utils';
 
 // Comparison function for memo - now includes all props since we simplified the interface
 function arePropsEqual(prevProps: any, nextProps: any) {
@@ -230,7 +231,7 @@ function FeedItem({
               }}
             >
               <AvatarImage
-                source={{ uri: avatarUrl }}
+                source={{ uri: convertToCDNUrl(avatarUrl) }}
                 style={themedStyles.avatarImage}
               />
             </Avatar>

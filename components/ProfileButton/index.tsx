@@ -3,6 +3,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar';
 import { View, StyleSheet } from 'react-native';
 import useAuth from '@/hooks/useAuth';
 import { User } from 'lucide-react-native';
+import { convertToCDNUrl } from '@/lib/utils';
 
 interface ProfileButtonProps {
   isActive?: boolean;
@@ -20,7 +21,7 @@ function ProfileButton({ isActive }: ProfileButtonProps) {
             <Avatar alt="Profile image" style={styles.avatar}>
               <AvatarImage
                 source={{
-                  uri: user?.photos[0]?.image_url[0],
+                  uri: convertToCDNUrl(user?.photos[0]?.image_url[0]),
                 }}
               />
               <AvatarFallback>
