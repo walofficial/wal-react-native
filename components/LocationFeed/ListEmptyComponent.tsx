@@ -35,17 +35,7 @@ export function ListEmptyComponent({
     );
   }
 
-  if (isWeb) {
-    return null;
-  }
-
-  if (isGettingLocation) {
-    return null;
-  }
-
-  const mainView = <Text style={styles.emptyText}>{'🥲'}</Text>;
-
-  return !isFetching && <View style={styles.container}>{mainView}</View>;
+  return null;
 }
 
 const createStyles = (theme: Theme) =>
