@@ -15,6 +15,7 @@ import { FontSizes, useTheme } from '@/lib/theme';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import UserAvatarLayout from '../UserAvatar';
 import { t } from '@/lib/i18n';
+import { convertToCDNUrl } from '@/lib/utils';
 
 interface FriendItemProps {
   user: User;
@@ -77,7 +78,9 @@ const ContactSyncFriendItem: React.FC<FriendItemProps> = ({
             {user.photos?.[0]?.image_url?.[0] ? (
               <AvatarImage
                 style={styles.avatarImage}
-                source={{ uri: user.photos?.[0]?.image_url?.[0] }}
+                source={{
+                  uri: convertToCDNUrl(user.photos?.[0]?.image_url?.[0]),
+                }}
               />
             ) : (
               <Text style={[styles.avatarText, { color: theme.colors.text }]}>

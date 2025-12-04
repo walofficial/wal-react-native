@@ -11,6 +11,7 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { FontSizes } from '@/lib/theme';
 import { useTheme } from '@/lib/theme';
 import { FriendRequest, User } from '@/lib/api/generated';
+import { convertToCDNUrl } from '@/lib/utils';
 
 interface FriendRequestItemProps {
   user: User;
@@ -56,7 +57,7 @@ const FriendRequestItem: React.FC<FriendRequestItemProps> = ({
             {imageUrl ? (
               <AvatarImage
                 style={styles.avatarImage}
-                source={{ uri: imageUrl }}
+                source={{ uri: convertToCDNUrl(imageUrl) }}
               />
             ) : (
               <Text style={[styles.avatarText, { color: theme.colors.text }]}>

@@ -10,6 +10,7 @@ import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '@/lib/theme';
 import { FriendRequest, User } from '@/lib/api/generated';
+import { convertToCDNUrl } from '@/lib/utils';
 
 interface FriendRequestChipProps {
   user: User;
@@ -68,7 +69,7 @@ const FriendRequestChip: React.FC<FriendRequestChipProps> = ({
             {imageUrl ? (
               <AvatarImage
                 style={{ borderRadius: AVATAR_SIZE / 2 }}
-                source={{ uri: imageUrl }}
+                source={{ uri: convertToCDNUrl(imageUrl) }}
               />
             ) : (
               <Text style={[styles.initials, { color: theme.colors.text }]}>

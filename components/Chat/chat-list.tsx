@@ -42,10 +42,7 @@ import Animated, {
   clamp,
   useAnimatedStyle,
   useSharedValue,
-  scrollTo,
-  useAnimatedRef,
   runOnJS,
-  useAnimatedScrollHandler,
 } from 'react-native-reanimated';
 
 import { ReanimatedScrollEvent } from 'react-native-reanimated/lib/typescript/hook/commonTypes';
