@@ -56,4 +56,10 @@ git push
 
 echo "Release branch ready: ${RELEASE_BRANCH} (version ${VERSION})"
 
+# Open GitHub PR creation page
+REPO_URL="https://github.com/walofficial/wal-react-native"
+PR_URL="${REPO_URL}/compare/${RELEASE_BRANCH}?expand=1"
+echo "Opening PR creation page: ${PR_URL}"
+open "${PR_URL}"
+
 
