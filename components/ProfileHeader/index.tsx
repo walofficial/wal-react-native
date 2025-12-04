@@ -309,7 +309,7 @@ function ProfileHeader({
         />
       </View>
       {/* Tab Bar Component */}
-      <TabBar
+      {/* <TabBar
         showTabs={showTabs}
         tabItems={locationTabItems}
         //@ts-ignore
@@ -317,7 +317,7 @@ function ProfileHeader({
         showLocationTabs={showLocationTabs}
         onTabPress={handleTabPress}
         feedId={feedId}
-      />
+      /> */}
     </Animated.View>
   );
 }
