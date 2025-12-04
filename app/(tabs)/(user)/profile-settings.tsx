@@ -42,7 +42,6 @@ import {
 
 const formSchema = z
   .object({
-    username: z.string().min(1, 'სახელი აუცილებელია'),
     gender: z.string(),
   })
   .and(dateOfBirthSchema);
@@ -113,7 +112,6 @@ export default function Component() {
   const methods = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: user?.username || '',
       gender: user?.gender || '',
       date_of_birth: user?.date_of_birth || '',
     },
@@ -195,31 +193,6 @@ export default function Component() {
       <ScrollView style={[styles.container]}>
         <View style={styles.content}>
           <View style={styles.formContainer}>
-            <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('common.username')}
-            </H4>
-            <Controller
-              control={control}
-              name="username"
-              render={({ field: { value } }) => (
-                <View style={styles.inputWrapper}>
-                  <TextInput
-                    style={{
-                      ...styles.usernameInput,
-                      color: theme.colors.text,
-                      backgroundColor:
-                        colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
-                      borderColor: theme.colors.border,
-                    }}
-                    editable={false}
-                    value={value}
-                  />
-                </View>
-              )}
-            />
-            {errors.username && (
-              <Text style={styles.errorText}>{errors.username.message}</Text>
-            )}
             <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
               {t('common.date_of_birth')}
             </H4>

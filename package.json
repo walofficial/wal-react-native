@@ -53,6 +53,7 @@
     "@haileyok/bluesky-video": "^0.3.1",
     "@hey-api/openapi-ts": "^0.81.0",
     "@hookform/resolvers": "^3.6.0",
+    "@legendapp/list": "^2.0.16",
     "@likashefqet/react-native-image-zoom": "^4.2.1",
     "@livekit/react-native": "^2.9.4",
     "@livekit/react-native-expo-plugin": "^1.0.1",
@@ -172,5 +173,6 @@
     "tailwindcss": "^3.3.5",
     "typescript": "^5.9.2"
   },
-  "private": true
+  "private": true,
+  "packageManager": "pnpm@9.9.0+sha256.7a4261e50d9a44d9240baf6c9d6e10089dcf0a79d0007f2a26985a6927324177"
 }
