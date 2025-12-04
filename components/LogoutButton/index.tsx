@@ -1,9 +1,8 @@
 'use client';
 import { Alert, StyleSheet } from 'react-native';
 import { LogOut } from '@/lib/icons/LogOut';
-import { Text } from '../ui/text';
 import useAuth from '@/hooks/useAuth';
-import AnimatedPressable from '../AnimatedPressable';
+import Button, { LIST_ICON_SIZE } from '../Button';
 import ProtocolService from '@/lib/services/ProtocolService';
 import { useTheme } from '@/lib/theme';
 import { t } from '@/lib/i18n';
@@ -36,23 +35,19 @@ export default function LogoutButton() {
   };
 
   return (
-    <AnimatedPressable onClick={confirmLogout}>
-      <LogOut color={theme.colors.accent} />
-      <Text style={[styles.text, { color: theme.colors.text }]}>
-        {t('common.logout')}
-      </Text>
-    </AnimatedPressable>
+    <Button
+      variant="list"
+      fullWidth
+      title={t('common.logout')}
+      iconElement={<LogOut size={LIST_ICON_SIZE} color={theme.colors.accent} />}
+      onPress={confirmLogout}
+      style={styles.button}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  text: {
-    marginLeft: 16,
-  },
   button: {
-    width: '100%',
-    justifyContent: 'flex-start',
-    marginBottom: 24,
-    borderRadius: 12,
+    marginBottom: 12,
   },
 });

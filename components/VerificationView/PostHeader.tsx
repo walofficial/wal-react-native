@@ -4,6 +4,7 @@ import { usePathname, useRouter } from 'expo-router';
 import { Avatar, AvatarImage } from '@/components/ui/avatar';
 import { formatRelativeTime } from '@/lib/utils/date';
 import { FontSizes, useTheme } from '@/lib/theme';
+import { convertToCDNUrl } from '@/lib/utils';
 
 interface PostHeaderProps {
   name: string;
@@ -49,7 +50,7 @@ const PostHeader = memo(
           <Pressable onPress={handleProfilePress} style={styles.avatarWrapper}>
             <Avatar alt="Avatar" style={styles.avatar}>
               <AvatarImage
-                source={{ uri: avatarUrl }}
+                source={{ uri: convertToCDNUrl(avatarUrl) }}
                 style={styles.avatarImage}
               />
             </Avatar>

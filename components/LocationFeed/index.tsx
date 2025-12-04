@@ -291,15 +291,6 @@ export default function LocationFeed({
         data={items}
         headerOffset={headerHeight}
         renderItem={renderItem}
-        ListHeaderComponent={
-          <ThemedText style={{ fontSize: 24, padding: 20, fontWeight: 'bold' }}>
-            {new Date().toLocaleDateString(getCurrentLocale(), {
-              month: 'long',
-              day: 'numeric',
-            })}
-          </ThemedText>
-        }
-        // @ts-ignore
         ListEmptyComponent={
           <ListEmptyComponent
             isFetching={isFetching}

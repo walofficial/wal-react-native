@@ -6,13 +6,8 @@ import React, {
   useCallback,
   RefObject,
 } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  Platform,
-  Linking,
-  StyleSheet,
-} from 'react-native';
+import { View, Platform, Linking, StyleSheet } from 'react-native';
+import Button from '@/components/Button';
 import { Ionicons } from '@expo/vector-icons';
 import * as Contacts from 'expo-contacts';
 import { Text } from '@/components/ui/text';
@@ -325,31 +320,21 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
               >
                 {t('common.no_contacts_found')}
               </Text>
-              <TouchableOpacity
-                style={[
-                  styles.permissionButton,
-                  { backgroundColor: theme.colors.primary },
-                ]}
+              <Button
+                title={t('common.enable_access')}
                 onPress={openAppSettings}
-              >
-                <Text style={styles.permissionButtonText}>
-                  {t('common.enable_access')}
-                </Text>
-              </TouchableOpacity>
+                variant="primary"
+                style={styles.permissionButton}
+              />
             </>
           )}
           {filteredContacts.length > 0 && !searchQuery && (
-            <TouchableOpacity
-              style={[
-                styles.loadMoreButton,
-                { backgroundColor: theme.colors.feedItem.secondaryText },
-              ]}
+            <Button
+              title={t('common.load_more')}
               onPress={loadMoreContacts}
-            >
-              <Text style={styles.loadMoreButtonText}>
-                {t('common.load_more')}
-              </Text>
-            </TouchableOpacity>
+              variant="secondary"
+              style={styles.loadMoreButton}
+            />
           )}
           <View style={styles.bottomPadding} />
         </BottomSheetScrollView>
@@ -397,26 +382,12 @@ const styles = StyleSheet.create({
   },
   permissionButton: {
     marginTop: 16,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 9999,
     alignSelf: 'center',
   },
-  permissionButtonText: {
-    color: 'white',
-    fontWeight: '600',
-  },
   loadMoreButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 9999,
     marginTop: 24,
     marginBottom: 16,
     alignSelf: 'center',
-  },
-  loadMoreButtonText: {
-    color: 'white',
-    fontWeight: '600',
   },
   bottomPadding: {
     paddingBottom: 40,

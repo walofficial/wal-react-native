@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Linking, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { cn } from '@/lib/utils';
+import { cn, convertToCDNUrl } from '@/lib/utils';
 import * as SMS from 'expo-sms';
 import { ActivityIndicator } from 'react-native';
 import UserAvatarLayout from '../UserAvatar';
@@ -68,7 +68,10 @@ const ContactItem: React.FC<ContactItemProps> = ({
             ]}
           >
             {image ? (
-              <AvatarImage style={styles.avatarImage} source={{ uri: image }} />
+              <AvatarImage
+                style={styles.avatarImage}
+                source={{ uri: convertToCDNUrl(image) }}
+              />
             ) : (
               <Text style={[styles.avatarText, { color: theme.colors.text }]}>
                 {name.charAt(0).toUpperCase()}

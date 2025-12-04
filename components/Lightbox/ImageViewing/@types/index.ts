@@ -6,9 +6,6 @@
  *
  */
 
-import { TransformsStyle } from 'react-native';
-import { MeasuredDimensions } from 'react-native-reanimated';
-
 export type Dimensions = {
   width: number;
   height: number;
@@ -19,17 +16,20 @@ export type Position = {
   y: number;
 };
 
+export type ThumbRect = {
+  pageX: number;
+  pageY: number;
+  width: number;
+  height: number;
+};
+
 export type ImageSource = {
   uri: string;
   dimensions: Dimensions | null;
   thumbUri: string;
   thumbDimensions: Dimensions | null;
-  thumbRect: MeasuredDimensions | null;
+  thumbRect: ThumbRect | null;
   alt?: string;
   type: 'image' | 'circle-avi' | 'rect-avi';
+  verificationId?: string;
 };
-
-export type Transform = Exclude<
-  TransformsStyle['transform'],
-  string | undefined
->;

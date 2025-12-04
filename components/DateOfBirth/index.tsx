@@ -1,35 +1,20 @@
 import React, { useState } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  useColorScheme,
-  Platform,
-} from 'react-native';
-import { Controller } from 'react-hook-form';
+import { View, StyleSheet, Platform, Pressable } from 'react-native';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { Text } from '@/components/ui/text';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { parse, format } from 'date-fns';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  interpolateColor,
-  Easing,
-} from 'react-native-reanimated';
 import { FontSizes, useTheme } from '@/lib/theme';
 import { Calendar } from 'lucide-react-native';
-import { getCurrentLocale, t } from '@/lib/i18n';
+import { t } from '@/lib/i18n';
 
-const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+const DEFAULT_DATE = new Date(2000, 1, 1);
 
-export default function DateOfBirth({ control }: { control: any }) {
+export default function DateOfBirth() {
   const [open, setOpen] = useState(false);
-  const [tempDate, setTempDate] = useState<Date>(new Date(2000, 1, 1));
-  const pressed = useSharedValue(0);
-  const colorScheme = useColorScheme();
   const theme = useTheme();
-  const locale = getCurrentLocale();
+  const { setValue } = useFormContext();
+  const value = useWatch({ name: 'date_of_birth' });
 
   const formatDate = (dateString: string) => {
     return parse(dateString, 'dd/MM/yyyy', new Date());
@@ -44,179 +29,78 @@ export default function DateOfBirth({ control }: { control: any }) {
     currentDate.setFullYear(currentDate.getFullYear() - 12),
   );
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { scale: withTiming(1 - pressed.value * 0.05, { duration: 100 }) },
-      ],
-      backgroundColor: interpolateColor(
-        pressed.value,
-        [0, 1],
-        [
-          colorScheme === 'dark' ? '#1e1e1e' : theme.colors.card.background,
-          colorScheme === 'dark' ? '#2a2a2a' : theme.colors.border,
-        ],
-      ),
-    };
-  });
+  const currentDateValue = value ? formatDate(value) : DEFAULT_DATE;
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      setValue('date_of_birth', formatDateToString(date), {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Controller
-        control={control}
-        name="date_of_birth"
-        render={({ field: { onChange, value } }) => (
-          <>
-            <AnimatedTouchable
-              style={[
-                styles.button,
-                animatedStyle,
-                {
-                  backgroundColor:
-                    colorScheme === 'dark'
-                      ? '#1e1e1e'
-                      : theme.colors.card.background,
-                  shadowColor:
-                    colorScheme === 'dark' ? '#000' : 'rgba(0,0,0,0.2)',
-                },
-              ]}
-              onPress={() => {
-                setTempDate(value ? formatDate(value) : new Date(2000, 1, 1));
-                setOpen(true);
-              }}
-              onPressIn={() => {
-                pressed.value = withTiming(1, {
-                  duration: 150,
-                  easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-                });
-              }}
-              onPressOut={() => {
-                pressed.value = withTiming(0, {
-                  duration: 200,
-                  easing: Easing.bezier(0.25, 0.1, 0.25, 1),
-                });
-              }}
-            >
-              <View style={styles.innerContainer}>
-                <Calendar
-                  size={20}
-                  color={colorScheme === 'dark' ? '#d1d5db' : theme.colors.text}
-                  style={styles.icon}
-                />
-                <Text
-                  style={[
-                    styles.dateText,
-                    {
-                      color:
-                        colorScheme === 'dark' ? '#d1d5db' : theme.colors.text,
-                    },
-                  ]}
-                >
-                  {value
-                    ? `${formatDateToString(formatDate(value))}`
-                    : t('common.date_of_birth')}
-                </Text>
-              </View>
-              <Text
-                style={[
-                  styles.actionText,
-                  {
-                    color:
-                      colorScheme === 'dark' ? '#a1a1aa' : theme.colors.primary,
-                  },
-                ]}
-              >
-                {value ? t('common.change') : t('common.select')}
-              </Text>
-            </AnimatedTouchable>
-            {open &&
-              (Platform.OS === 'android' ? (
-                <DateTimePicker
-                  value={value ? formatDate(value) : new Date(2000, 1, 1)}
-                  mode="date"
-                  display="default"
-                  minimumDate={new Date(1940, 1, 1)}
-                  maximumDate={pastDate}
-                  onChange={(event, date) => {
-                    if (event.type === 'set' && date) {
-                      onChange(formatDateToString(date));
-                      setOpen(false);
-                    } else {
-                      setOpen(false);
-                    }
-                  }}
-                />
-              ) : (
-                <View style={{ marginTop: 12, width: '100%' }}>
-                  <Text style={{ marginBottom: 8, textAlign: 'center' }}>
-                    {t('common.date_of_birth')}
-                  </Text>
-                  <DateTimePicker
-                    value={tempDate}
-                    mode="date"
-                    display="spinner"
-                    minimumDate={new Date(1940, 1, 1)}
-                    maximumDate={pastDate}
-                    onChange={(_, date) => {
-                      if (date) setTempDate(date);
-                    }}
-                  />
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      marginTop: 8,
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => {
-                        setOpen(false);
-                      }}
-                      style={{ padding: 12 }}
-                    >
-                      <Text
-                        style={{
-                          color:
-                            colorScheme === 'dark'
-                              ? '#a1a1aa'
-                              : theme.colors.primary,
-                        }}
-                      >
-                        {t('common.cancel')}
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={() => {
-                        onChange(formatDateToString(tempDate));
-                        setOpen(false);
-                      }}
-                      style={{ padding: 12 }}
-                    >
-                      <Text
-                        style={{
-                          color:
-                            colorScheme === 'dark'
-                              ? '#fff'
-                              : theme.colors.primary,
-                        }}
-                      >
-                        {t('common.confirm')}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              ))}
-          </>
-        )}
-      />
+      <Pressable
+        style={({ pressed }) => [
+          styles.button,
+          {
+            backgroundColor: theme.colors.card.background,
+            borderColor: theme.colors.border,
+            opacity: pressed ? 0.7 : 1,
+          },
+        ]}
+        onPress={() => setOpen(true)}
+      >
+        <View style={styles.innerContainer}>
+          <Calendar size={20} color={theme.colors.icon} style={styles.icon} />
+          <Text style={[styles.dateText, { color: theme.colors.text }]}>
+            {value
+              ? formatDateToString(formatDate(value))
+              : t('common.date_of_birth')}
+          </Text>
+        </View>
+        <Text style={[styles.actionText, { color: theme.colors.primary }]}>
+          {value ? t('common.change') : t('common.select')}
+        </Text>
+      </Pressable>
+      {open &&
+        (Platform.OS === 'android' ? (
+          <DateTimePicker
+            value={currentDateValue}
+            mode="date"
+            display="default"
+            minimumDate={new Date(1940, 1, 1)}
+            maximumDate={pastDate}
+            onChange={(event, date) => {
+              setOpen(false);
+              if (event.type === 'set') {
+                handleDateChange(date);
+              }
+            }}
+          />
+        ) : (
+          <DateTimePicker
+            value={currentDateValue}
+            mode="date"
+            display="spinner"
+            minimumDate={new Date(1940, 1, 1)}
+            maximumDate={pastDate}
+            onChange={(_, date) => {
+              handleDateChange(date);
+            }}
+          />
+        ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
     marginTop: 4,
+    gap: 12,
+    flex: 1,
   },
   button: {
     width: '100%',
@@ -225,8 +109,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    borderRadius: 10,
-    boxShadow: '0px 0px 10px 0px rgba(0, 0, 0, 0.5)',
+    borderRadius: 12,
+    borderWidth: 1,
   },
   innerContainer: {
     flexDirection: 'row',
@@ -242,5 +126,19 @@ const styles = StyleSheet.create({
   actionText: {
     fontSize: FontSizes.medium,
     fontWeight: '600',
+  },
+  pickerContainer: {
+    marginTop: 12,
+    width: '100%',
+  },
+  pickerTitle: {
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  pickerActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    gap: 12,
   },
 });

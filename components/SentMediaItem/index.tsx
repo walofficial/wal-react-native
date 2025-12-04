@@ -5,12 +5,11 @@ import {
   StyleSheet,
   View,
   useColorScheme,
-  Alert,
   Pressable,
 } from 'react-native';
 import { FontSizes } from '@/lib/theme';
 import { formatDistanceToNow } from 'date-fns';
-import Animated, { FadeIn, SlideInUp } from 'react-native-reanimated';
+import Animated, { FadeIn } from 'react-native-reanimated';
 import { t } from '@/lib/i18n';
 import * as Clipboard from 'expo-clipboard';
 import { useToast } from '../ToastUsage';
@@ -58,6 +57,8 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
       }
     }, [content]);
 
+    const showTime = isAuthor && isLastFromAuthor && createdAt;
+
     return (
       <AnimatedMessageLayout
         isAuthor={isAuthor}
@@ -70,21 +71,24 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
           delayLongPress={250}
           style={styles.contentContainer}
         >
-          <Text
-            style={[
-              styles.contentText,
-              isAuthor
-                ? styles.authorContentText
-                : isDark
-                  ? styles.nonAuthorContentTextDark
-                  : styles.nonAuthorContentTextLight,
-            ]}
-          >
-            {content}
-          </Text>
-          {isAuthor && isLastFromAuthor && createdAt && (
-            <Text style={styles.timeText}>{formattedTime}</Text>
-          )}
+          <View style={styles.messageWrapper}>
+            <Text
+              style={[
+                styles.contentText,
+                isAuthor
+                  ? styles.authorContentText
+                  : isDark
+                    ? styles.nonAuthorContentTextDark
+                    : styles.nonAuthorContentTextLight,
+              ]}
+            >
+              {content}
+              {showTime && (
+                <Text style={styles.timeSpacer}>{`  ${formattedTime}`}</Text>
+              )}
+            </Text>
+          </View>
+          {showTime && <Text style={styles.timeText}>{formattedTime}</Text>}
         </Pressable>
       </AnimatedMessageLayout>
     );
@@ -100,8 +104,11 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
 
 const styles = StyleSheet.create({
   contentContainer: {
+    position: 'relative',
+  },
+  messageWrapper: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    flexWrap: 'wrap',
   },
   contentText: {
     fontSize: FontSizes.medium,
@@ -115,10 +122,18 @@ const styles = StyleSheet.create({
   nonAuthorContentTextLight: {
     color: '#000000', // Black text for light mode non-author messages (Messenger/Signal style)
   },
+  // Invisible spacer to reserve space for timestamp
+  timeSpacer: {
+    fontSize: FontSizes.small,
+    color: 'transparent',
+  },
+  // Actual timestamp positioned at bottom right
   timeText: {
     fontSize: FontSizes.small,
     color: 'rgba(255, 255, 255, 0.7)',
-    marginLeft: 6,
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
   },
 });
 

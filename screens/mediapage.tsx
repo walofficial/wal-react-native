@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useRef,
 } from 'react';
+import { useEvent } from 'expo';
 import type { ImageLoadEventData, NativeSyntheticEvent } from 'react-native';
 import {
   StyleSheet,
@@ -20,7 +21,7 @@ import {
   KeyboardAvoidingView,
   Alert,
 } from 'react-native';
-import { Video, AVPlaybackStatus, ResizeMode } from 'expo-av';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { useSafeAreaPadding } from '@/components/CameraPage/Constants';
 import { Share } from 'react-native';
 import { useIsForeground } from '@/hooks/useIsForeground';
@@ -45,9 +46,6 @@ import { useColorScheme } from '@/lib/useColorScheme';
 // Permissions handled by expo-media-library
 
 type OnLoadImage = NativeSyntheticEvent<ImageLoadEventData>;
-const isVideoOnLoadEvent = (
-  event: AVPlaybackStatus | OnLoadImage,
-): event is AVPlaybackStatus => 'isLoaded' in event && event.isLoaded;
 
 export default function MediaPage(): React.ReactElement {
   const safePadding = useSafeAreaPadding();
@@ -70,50 +68,58 @@ export default function MediaPage(): React.ReactElement {
   const { success, dismiss } = useToast();
 
   const [mediaPath, setMediaPath] = useState<string | null>(null);
-  const videoRef = useRef<Video>(null);
+  const [videoSource, setVideoSource] = useState<string | null>(null);
+  const player = useVideoPlayer(videoSource || '', (player) => {
+    player.loop = false;
+    player.muted = true;
+  });
+  const { isPlaying: playerIsPlaying } = useEvent(player, 'playingChange', {
+    isPlaying: player.playing,
+  });
   const [isPlaying, setIsPlaying] = useState(false);
   const [caption, setCaption] = useState('');
   const [isInputFocused, setIsInputFocused] = useState(false);
   const inputRef = useRef<TextInput>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
+  // Sync player playing state with local state
+  useEffect(() => {
+    setIsPlaying(playerIsPlaying);
+  }, [playerIsPlaying]);
+
   useEffect(() => {
     const loadMediaPath = async () => {
       if (path) {
         setMediaPath(path as string);
+        if (type === 'video') {
+          setVideoSource(`file://${path}`);
+        }
       } else {
         const cachedPath = await AsyncStorage.getItem(
           `lastRecordedVideoPath_${feedId}`,
         );
         setMediaPath(cachedPath);
+        if (type === 'video' && cachedPath) {
+          setVideoSource(`file://${cachedPath}`);
+        }
       }
     };
     loadMediaPath();
-
-    return () => {
-      // Cleanup function
-      if (videoRef.current) {
-        videoRef.current.unloadAsync();
-      }
-    };
-  }, [path, feedId]);
+  }, [path, feedId, type]);
 
   useEffect(() => {
-    if (videoRef.current) {
+    if (type === 'video' && player) {
       if (isVideoPaused) {
-        videoRef.current.pauseAsync();
+        player.pause();
       } else {
-        videoRef.current.playAsync();
+        player.play();
       }
     }
-  }, [isVideoPaused]);
+  }, [isVideoPaused, type, player]);
 
-  const onMediaLoad = useCallback((event: AVPlaybackStatus | OnLoadImage) => {
-    if (isVideoOnLoadEvent(event)) {
-    } else {
-      const source = event.nativeEvent.source;
-      // console.log(`Image loaded. Size: ${source.width}x${source.height}`);
-    }
+  const onMediaLoad = useCallback((event: OnLoadImage) => {
+    const source = event.nativeEvent.source;
+    // console.log(`Image loaded. Size: ${source.width}x${source.height}`);
   }, []);
   const onMediaLoadEnd = useCallback(() => {
     setHasMediaLoaded(true);
@@ -184,43 +190,31 @@ export default function MediaPage(): React.ReactElement {
     dismiss('all');
   }, []);
 
-  const togglePlayPause = useCallback(async () => {
-    if (videoRef.current) {
-      const status = await videoRef.current.getStatusAsync();
-      if (status.isLoaded) {
-        if (isPlaying) {
-          await videoRef.current.pauseAsync();
-        } else {
-          if (
-            status.didJustFinish ||
-            (status.durationMillis &&
-              status.durationMillis - 100 < status.positionMillis)
-          ) {
-            await videoRef.current.replayAsync();
-          } else {
-            await videoRef.current.playAsync();
-          }
-        }
-        setIsPlaying(!isPlaying);
+  const togglePlayPause = useCallback(() => {
+    if (player) {
+      if (isPlaying) {
+        player.pause();
+        setIsPlaying(false);
       } else {
-        await videoRef.current?.loadAsync(source);
+        // Check if video ended, replay from start
+        if (player.currentTime >= player.duration - 0.1) {
+          player.replay();
+        } else {
+          player.play();
+        }
         setIsPlaying(true);
-        await videoRef.current?.playAsync();
       }
     }
-  }, [isPlaying]);
+  }, [isPlaying, player]);
 
   const handleBack = useCallback(() => {
-    if (videoRef.current) {
-      videoRef.current.unloadAsync();
-    }
     router.navigate({
       pathname: '/(tabs)/(home)/[feedId]',
       params: {
         feedId: feedId as string,
       },
     });
-  }, [router]);
+  }, [router, feedId]);
 
   const handleAcceptCaption = useCallback(() => {
     Keyboard.dismiss();
@@ -279,25 +273,14 @@ export default function MediaPage(): React.ReactElement {
             onLoad={onMediaLoad}
           />
         )}
-        {type === 'video' && (
+        {type === 'video' && videoSource && (
           <>
-            <Video
-              ref={videoRef}
-              source={source}
+            <VideoView
+              player={player}
               style={StyleSheet.absoluteFill}
-              shouldPlay={!isVideoPaused}
-              resizeMode={ResizeMode.COVER}
-              isLooping={false}
-              isMuted={true}
-              useNativeControls={false}
-              onPlaybackStatusUpdate={(status) => {
-                if (status.isLoaded && !hasMediaLoaded) {
-                  onMediaLoad(status);
-                  onMediaLoadEnd();
-                }
-                setIsPlaying(status.isLoaded ? status.isPlaying : false);
-              }}
-              onError={(error) => onMediaLoadError(error)}
+              nativeControls={false}
+              contentFit="cover"
+              onFirstFrameRender={onMediaLoadEnd}
             />
             <TouchableOpacity
               style={[styles.playPauseOverlay, { opacity: isPlaying ? 0 : 1 }]}
