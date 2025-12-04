@@ -29,7 +29,7 @@
       "autoIncrement": true,
       "channel": "preview",
       "environment": "preview",
-      "distribution": "internal",
+      "distribution": "internal",   
       "android": {
         "buildType": "apk"
       }
@@ -40,7 +40,7 @@
       "environment": "production",
       "android": {
         "buildType": "app-bundle"
-      }
+      },
     },
     "production-apk": {
       "autoIncrement": true,

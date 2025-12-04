@@ -3,60 +3,45 @@ import React, {
   useContext,
   useEffect,
   useRef,
-  useState,
   useMemo,
 } from 'react';
+import { View, StyleSheet } from 'react-native';
 import {
-  View,
-  ScrollView,
-  LayoutChangeEvent,
-  Platform,
-  UIManager,
-  InteractionManager,
-} from 'react-native';
-import ChatBottombar from './chat-bottombar';
+  KeyboardProvider,
+  KeyboardStickyView,
+} from 'react-native-keyboard-controller';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import { KeyboardAvoidingLegendList } from '@legendapp/list/keyboard';
 import { User, ChatMessage } from '@/lib/api/generated';
 import useAuth from '@/hooks/useAuth';
 import { SocketContext } from './socket/context';
 import useMessageUpdates from './useMessageUpdates';
 import useMessageFetching from './useMessageFetching';
 import * as Sentry from '@sentry/react-native';
-import { useKeyboardHandler } from 'react-native-keyboard-controller';
-require('dayjs/locale/ka');
+import { useSetAtom } from 'jotai';
+import { isChatUserOnlineState, messageAtom } from '@/lib/state/chat';
+import { useGlobalSearchParams } from 'expo-router';
+import SentMediaItem from '../SentMediaItem';
+import useMessageRoom from '@/hooks/useMessageRoom';
+import ProtocolService from '@/lib/services/ProtocolService';
+import ChatTopbar from './chat-topbar';
+import ChatBottombar from './chat-bottombar';
+import useFeeds from '@/hooks/useFeeds';
+import { useTheme } from '@/lib/theme';
 
 interface ChatListProps {
   selectedUser: User;
 }
-import { useAtomValue, useSetAtom } from 'jotai';
-import { isChatUserOnlineState, messageAtom } from '@/lib/state/chat';
-import { useGlobalSearchParams, useLocalSearchParams } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import SentMediaItem from '../SentMediaItem';
-import useMessageRoom from '@/hooks/useMessageRoom';
-import ProtocolService from '@/lib/services/ProtocolService';
-import { List, ListMethods } from '../List';
-import { ScrollProvider } from '../List/ScrollContext';
-import { isIOS, isWeb } from '@/lib/platform';
-import { isNative } from '@/lib/platform';
-import Animated, {
-  clamp,
-  useAnimatedStyle,
-  useSharedValue,
-  scrollTo,
-  useAnimatedRef,
-  runOnJS,
-  useAnimatedScrollHandler,
-} from 'react-native-reanimated';
 
-import { ReanimatedScrollEvent } from 'react-native-reanimated/lib/typescript/hook/commonTypes';
-import useFeeds from '@/hooks/useFeeds';
-
-// Enable LayoutAnimation for Android
-if (Platform.OS === 'android') {
-  if (UIManager.setLayoutAnimationEnabledExperimental) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-}
+type MessageItem = {
+  _id: string;
+  text: string;
+  createdAt: Date;
+  user: User | undefined;
+};
 
 export function ChatList({ selectedUser }: ChatListProps) {
   const trackedMessageIdsRef = useRef<Set<string>>(new Set());
@@ -67,7 +52,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
   const { user } = useAuth();
   const socketContext = useContext(SocketContext);
 
-  const { room, isFetching } = useMessageRoom(params.roomId, false);
+  const { room } = useMessageRoom(params.roomId, false);
   const { orderedPages, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useMessageFetching(params.roomId);
   const setIsChatUserOnline = useSetAtom(isChatUserOnlineState);
@@ -77,7 +62,10 @@ export function ChatList({ selectedUser }: ChatListProps) {
     trackedMessageIdsRef,
   );
   const { headerHeight } = useFeeds();
+  const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
+  // Check user online status periodically
   useEffect(() => {
     setTimeout(() => {
       setIsChatUserOnline(false);
@@ -93,6 +81,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
     };
   }, [selectedUser.id, socketContext]);
 
+  // Track message reads and notify seen status
   useEffect(() => {
     orderedPages.forEach((page) => {
       page.messages.forEach((item: ChatMessage, messageIndex: number) => {
@@ -117,25 +106,30 @@ export function ChatList({ selectedUser }: ChatListProps) {
     sendMessageIdsToBackend();
   }, [orderedPages]);
 
-  const getUserBasedOnId = (id: string) => {
-    return room?.participants.find((participant) => participant.id === id);
-  };
-  function getTimestampFromObjectId(objectId: string) {
-    // Extract the timestamp part of the ObjectId
+  const getUserBasedOnId = useCallback(
+    (id: string) => {
+      return room?.participants.find((participant) => participant.id === id);
+    },
+    [room?.participants],
+  );
+
+  const getTimestampFromObjectId = useCallback((objectId: string) => {
     const timestampHex = objectId.substring(0, 8);
-    // Convert the timestamp from hex to an integer
     const timestamp = parseInt(timestampHex, 16);
-    // Convert the timestamp to milliseconds and create a Date object
     const date = new Date(timestamp * 1000);
     return date;
-  }
+  }, []);
 
-  // Memoize the converted messages to prevent recreation on every render
-  const messages = useMemo(
-    () =>
-      orderedPages.map((page, pageIndex) =>
-        page.messages.map((message, messageIndex) => ({
-          _id: message.id || message.temporary_id,
+  // Convert messages to flat array for LegendList
+  const messageItems = useMemo(() => {
+    const items: MessageItem[] = [];
+    orderedPages.forEach((page) => {
+      page.messages.forEach((message) => {
+        items.push({
+          _id:
+            message.id ||
+            message.temporary_id ||
+            `temp-${Date.now()}-${Math.random()}`,
           // @ts-ignore
           text: message.message,
           createdAt:
@@ -143,35 +137,18 @@ export function ChatList({ selectedUser }: ChatListProps) {
               ? getTimestampFromObjectId(message.id)
               : new Date(),
           user: getUserBasedOnId(message.author_id),
-        })),
-      ) || [],
-    [orderedPages],
-  );
+        });
+      });
+    });
+    return items;
+  }, [orderedPages, getUserBasedOnId, getTimestampFromObjectId]);
 
-  // Memoize the messageItems array to prevent recreation on every render
-  const messageItems = useMemo(() => [...messages.flat()], [messages]);
-
-  // Memoize the renderItem function to prevent recreation on every render
-  const messageRenderItem = useCallback(
-    ({
-      item,
-      index,
-    }: {
-      item: {
-        user: User;
-        text: string;
-        createdAt: Date;
-        _id: string;
-      };
-      index: number;
-    }) => {
+  // Render message item
+  const renderItem = useCallback(
+    ({ item, index }: { item: MessageItem; index: number }) => {
       const isSender = item?.user?.id === user?.id;
+      const isLastFromAuthor = index === messageItems.length - 1;
 
-      // Check if this is the last message from this author in the visible messages
-      let isLastFromAuthor = false;
-      if (index === messageItems.length - 1) {
-        isLastFromAuthor = true; // Last visible message
-      }
       return (
         <SentMediaItem
           id={item._id}
@@ -182,289 +159,114 @@ export function ChatList({ selectedUser }: ChatListProps) {
         />
       );
     },
-    [messageItems, user?.id],
+    [messageItems.length, user?.id],
   );
 
-  const flatListRef = useRef<ListMethods>(null);
+  const keyExtractor = useCallback((item: MessageItem) => item._id, []);
 
-  const onSendMessage = async (message: string) => {
-    if (message.trim().length === 0) return;
-    if (message.trim()) {
-      setMessage('');
-      const messageToSend = message.trim();
+  // Send message handler
+  const onSendMessage = useCallback(
+    async (message: string) => {
+      if (message.trim().length === 0) return;
+      if (message.trim()) {
+        setMessage('');
+        const messageToSend = message.trim();
 
-      // Don't use layout animation here to avoid conflict with list updates
-      const randomTemporaryMessageId = Date.now().toString();
-      const newMessage: Partial<ChatMessage> = {
-        id: randomTemporaryMessageId,
-        temporary_id: randomTemporaryMessageId,
-        author_id: user.id,
-        // @ts-ignore
-        message: messageToSend,
-        room_id: params.roomId,
-        message_state: 'SENT',
-        recipient_id: selectedUser.id,
-        sent_date: new Date().toISOString(),
-      };
-      addMessageToCache(newMessage as ChatMessage);
-
-      // Immediate scroll to bottom when sending a message
-      InteractionManager.runAfterInteractions(() => {
-        if (flatListRef.current) {
-          handleScrollToEnd(true);
-        }
-      });
-
-      try {
-        const { encrypted_content, nonce } =
-          await ProtocolService.encryptMessage(selectedUser.id, messageToSend);
-        socketContext?.emit('private_message', {
+        const randomTemporaryMessageId = Date.now().toString();
+        const newMessage: Partial<ChatMessage> = {
+          id: randomTemporaryMessageId,
           temporary_id: randomTemporaryMessageId,
-          recipient: selectedUser.id,
-          encrypted_content: encrypted_content,
-          nonce: nonce,
+          author_id: user.id,
+          // @ts-ignore
+          message: messageToSend,
           room_id: params.roomId,
-        });
-      } catch (error) {
-        Sentry.captureException(error, {
-          extra: {
-            userId: user.id,
-            recipientId: selectedUser.id,
-          },
-        });
-      }
-    }
-  };
+          message_state: 'SENT',
+          recipient_id: selectedUser.id,
+          sent_date: new Date().toISOString(),
+        };
+        addMessageToCache(newMessage as ChatMessage);
 
-  // The bottom.
-  const isAtBottom = useSharedValue(true);
-  const layoutHeight = useSharedValue(0);
-
-  // This will be used on web to assist in determining if we need to maintain the content offset
-  const isAtTop = useSharedValue(true);
-  const prevContentHeight = useRef(0);
-  const prevItemCount = useRef(0);
-
-  const [hasScrolled, setHasScrolled] = useState(false);
-  const didBackground = useRef(false);
-
-  // Create a safe scroll handler function
-  const handleScrollToOffset = useCallback(
-    (offset: number, animated: boolean) => {
-      if (flatListRef.current) {
-        flatListRef.current.scrollToOffset({
-          offset,
-          animated,
-        });
-      }
-    },
-    [],
-  );
-
-  const handleScrollToEnd = useCallback((animated: boolean) => {
-    if (flatListRef.current) {
-      flatListRef.current.scrollToEnd({
-        animated,
-      });
-    }
-  }, []);
-
-  const onContentSizeChange = useCallback(
-    (_: number, height: number) => {
-      // For web, maintain scroll position when loading older messages
-      if (isWeb && isAtTop.value && hasScrolled) {
-        flatListRef.current?.scrollToOffset({
-          offset: height - prevContentHeight.current,
-          animated: false,
-        });
-      }
-
-      // This number _must_ be the height of the MaybeLoader component (if you have one)
-      if (height > 50 && isAtBottom.value) {
-        // If we have background state and the content height has changed significantly
-        if (
-          didBackground.current &&
-          hasScrolled &&
-          height - prevContentHeight.current > layoutHeight.value - 50 &&
-          messageItems.length - prevItemCount.current > 1
-        ) {
-          flatListRef.current?.scrollToOffset({
-            offset: prevContentHeight.current - 65,
-            animated: true,
+        try {
+          const { encrypted_content, nonce } =
+            await ProtocolService.encryptMessage(
+              selectedUser.id,
+              messageToSend,
+            );
+          socketContext?.emit('private_message', {
+            temporary_id: randomTemporaryMessageId,
+            recipient: selectedUser.id,
+            encrypted_content: encrypted_content,
+            nonce: nonce,
+            room_id: params.roomId,
           });
-        } else {
-          flatListRef.current?.scrollToOffset({
-            offset: height,
-            animated: hasScrolled && height > prevContentHeight.current,
+        } catch (error) {
+          Sentry.captureException(error, {
+            extra: {
+              userId: user.id,
+              recipientId: selectedUser.id,
+            },
           });
-
-          // Set has scrolled after a brief delay to prevent flicker
-          if (!hasScrolled && !isFetchingNextPage) {
-            setTimeout(() => {
-              setHasScrolled(true);
-            }, 100);
-          }
         }
-      }
-
-      prevContentHeight.current = height;
-      prevItemCount.current = messageItems.length;
-      didBackground.current = false;
-    },
-    [
-      hasScrolled,
-      setHasScrolled,
-      isFetchingNextPage,
-      messageItems.length,
-      // these are stable
-      flatListRef,
-      isAtTop.value,
-      isAtBottom.value,
-      layoutHeight.value,
-    ],
-  );
-
-  const handleScrolledDownChange = useCallback(
-    (isDown: boolean) => {
-      // This callback is triggered by the List component based on its internal logic
-    },
-    [isAtBottom],
-  );
-
-  const onScroll = useCallback(
-    (e: ReanimatedScrollEvent) => {
-      'worklet';
-      layoutHeight.value = e.layoutMeasurement.height;
-      const bottomOffset = e.contentOffset.y + e.layoutMeasurement.height;
-
-      // Consider user at bottom if within 100px of bottom - for auto-scrolling purposes
-      isAtBottom.value = e.contentSize.height - 100 < bottomOffset;
-      isAtTop.value = e.contentOffset.y <= 1;
-
-      if (!hasScrolled) {
-        runOnJS(setHasScrolled)(true);
-      }
-    },
-    [layoutHeight, isAtBottom, isAtTop, hasScrolled, setHasScrolled],
-  );
-  const insets = useSafeAreaInsets();
-  const bottomOffset = isWeb ? 0 : 0;
-  const keyboardOffsetValue = insets.bottom;
-
-  const keyboardHeight = useSharedValue(0);
-  const keyboardIsOpening = useSharedValue(false);
-
-  const animatedListStyle = useAnimatedStyle(() => ({
-    marginBottom: Math.max(
-      keyboardHeight.value - keyboardOffsetValue,
-      bottomOffset,
-    ),
-  }));
-
-  const animatedStickyViewStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateY: -Math.max(
-          keyboardHeight.value - keyboardOffsetValue,
-          bottomOffset,
-        ),
-      },
-    ],
-  }));
-
-  useKeyboardHandler(
-    {
-      onStart: (e) => {
-        'worklet';
-        // Immediate updates - like opening the emoji picker - will have a duration of zero. In those cases, we should
-        // just update the height here instead of having the `onMove` event do it (that event will not fire!)
-        if (e.duration === 0) {
-          // layoutScrollWithoutAnimation.value = true;
-          keyboardHeight.value = e.height;
-        } else {
-          keyboardIsOpening.value = true;
-        }
-      },
-      onMove: (e) => {
-        'worklet';
-        keyboardHeight.value = e.height;
-        // Scroll to bottom when keyboard moves if we are near the bottom
-        if (e.height > bottomOffset && isAtBottom.value) {
-          runOnJS(handleScrollToEnd)(false);
-        }
-      },
-      onEnd: (e) => {
-        'worklet';
-        keyboardHeight.value = e.height;
-        if (e.height > bottomOffset && isAtBottom.value) {
-          runOnJS(handleScrollToEnd)(false);
-        }
-        keyboardIsOpening.value = false;
-      },
-    },
-    [bottomOffset, handleScrollToEnd, isAtBottom.value],
-  );
-
-  const layoutScrollWithoutAnimation = useSharedValue(false);
-
-  // -- List layout changes (opening emoji keyboard, etc.)
-  const onListLayout = React.useCallback(
-    (e: LayoutChangeEvent) => {
-      layoutHeight.value = e.nativeEvent.layout.height;
-
-      if (isWeb || !keyboardIsOpening.value) {
-        flatListRef.current?.scrollToEnd({
-          animated: !layoutScrollWithoutAnimation.value,
-        });
-        layoutScrollWithoutAnimation.value = false;
       }
     },
     [
-      flatListRef,
-      keyboardIsOpening.value,
-      layoutScrollWithoutAnimation.value,
-      layoutHeight,
+      setMessage,
+      user.id,
+      params.roomId,
+      selectedUser.id,
+      addMessageToCache,
+      socketContext,
     ],
   );
+
+  // Load more messages when scrolling to top
+  const handleStartReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   return (
-    <View style={{ flex: 1, paddingTop: headerHeight }}>
-      <ScrollProvider onScroll={onScroll}>
-        <List
-          ref={flatListRef}
-          data={messageItems}
-          renderItem={messageRenderItem}
-          scrollEventThrottle={100}
-          style={animatedListStyle}
-          disableFullWindowScroll={true}
-          disableVirtualization={true}
-          onContentSizeChange={onContentSizeChange}
-          onLayout={onListLayout}
-          keyExtractor={(item) => item._id}
-          initialNumToRender={isNative ? 32 : 62}
-          maxToRenderPerBatch={isNative ? 32 : 62}
-          keyboardDismissMode="on-drag"
-          keyboardShouldPersistTaps="handled"
-          maintainVisibleContentPosition={{
-            minIndexForVisible: 0,
-          }}
-          onScrolledDownChange={handleScrolledDownChange}
-          removeClippedSubviews={false}
-          sideBorders={false}
-          onEndReached={() => {
-            if (hasNextPage && !isFetchingNextPage) {
-              // Mark that we're fetching older messages to manage scroll
-              isAtTop.value = true;
-              layoutScrollWithoutAnimation.value = true;
-              fetchNextPage();
-            }
-          }}
-          onEndReachedThreshold={0.2}
-        />
-      </ScrollProvider>
-      <Animated.View style={animatedStickyViewStyle}>
+    <KeyboardProvider>
+      {/* Message List */}
+      <KeyboardAvoidingLegendList
+        alignItemsAtEnd
+        contentContainerStyle={styles.contentContainer}
+        data={messageItems}
+        estimatedItemSize={80}
+        initialScrollIndex={
+          messageItems.length > 0 ? messageItems.length - 1 : undefined
+        }
+        keyExtractor={keyExtractor}
+        maintainScrollAtEnd
+        maintainVisibleContentPosition
+        renderItem={renderItem}
+        safeAreaInsetBottom={insets.bottom}
+        style={styles.list}
+        onStartReached={handleStartReached}
+        onStartReachedThreshold={0.5}
+      />
+
+      {/* Input Bar */}
+      <KeyboardStickyView offset={{ closed: 0, opened: insets.bottom }}>
         <ChatBottombar sendMessage={onSendMessage} />
-      </Animated.View>
-    </View>
+      </KeyboardStickyView>
+    </KeyboardProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  topbarContainer: {
+    paddingHorizontal: 16,
+  },
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  list: {
+    flex: 1,
+  },
+});

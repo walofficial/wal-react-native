@@ -1,8 +1,8 @@
-import React, { memo, useEffect, useMemo } from 'react';
-import { Text, Pressable, Image, View, StyleSheet } from 'react-native';
+import React, { memo, useMemo } from 'react';
+import { Text, Pressable, View, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Avatar, AvatarImage } from '../ui/avatar';
-import { Pin } from 'lucide-react-native';
+import { Globe, Lock } from 'lucide-react-native';
 import MediaContent from './MediaContent';
 import FeedActions from './FeedActions';
 import { isWeb } from '@/lib/platform';
@@ -15,8 +15,9 @@ import LinkPreview from '../LinkPreview';
 import useVerificationById from '@/hooks/useVerificationById';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import useAuth from '@/hooks/useAuth';
-import { FeedPost, LinkPreviewData } from '@/lib/api/generated';
+import { FeedPost } from '@/lib/api/generated';
 import { t } from '@/lib/i18n';
+import { convertToCDNUrl } from '@/lib/utils';
 
 // Comparison function for memo - now includes all props since we simplified the interface
 function arePropsEqual(prevProps: any, nextProps: any) {
@@ -187,13 +188,13 @@ function FeedItem({
       ...styles.timeText,
       color: theme.colors.feedItem.secondaryText,
     },
-    recordingText: {
-      ...styles.recordingText,
+    dotSeparator: {
+      ...styles.dotSeparator,
       color: theme.colors.feedItem.secondaryText,
     },
-    locationText: {
-      ...styles.locationText,
-      color: theme.colors.primary,
+    wasLiveText: {
+      ...styles.wasLiveText,
+      color: theme.colors.feedItem.secondaryText,
     },
     titleText: {
       ...styles.titleText,
@@ -203,6 +204,63 @@ function FeedItem({
 
   return (
     <View style={themedStyles.container}>
+      {/* Facebook-style Header */}
+      <View style={themedStyles.headerContainer}>
+        <Pressable
+          onPress={(event) => {
+            event.stopPropagation();
+            handleProfilePress();
+          }}
+          style={themedStyles.avatarPressable}
+        >
+          <Avatar alt="Avatar" style={themedStyles.avatar}>
+            <AvatarImage
+              source={{ uri: convertToCDNUrl(avatarUrl) }}
+              style={themedStyles.avatarImage}
+            />
+          </Avatar>
+          {isLive && (
+            <View style={themedStyles.liveIndicator}>
+              <Text style={themedStyles.liveText}>LIVE</Text>
+            </View>
+          )}
+        </Pressable>
+
+        <View style={themedStyles.headerInfo}>
+          <Pressable
+            onPress={(event) => {
+              event.stopPropagation();
+              handleProfilePress();
+            }}
+          >
+            <Text style={themedStyles.nameText}>{name}</Text>
+          </Pressable>
+          <View style={themedStyles.metaRow}>
+            <Text style={themedStyles.timeText}>{formattedTime}</Text>
+            {hasRecording && (
+              <>
+                <Text style={themedStyles.dotSeparator}>·</Text>
+                <Text style={themedStyles.wasLiveText}>
+                  {t('common.was_live')}
+                </Text>
+              </>
+            )}
+          </View>
+        </View>
+
+        {!isWeb && (
+          <View style={themedStyles.menuContainer}>
+            <MenuView
+              verificationId={verificationId}
+              posterId={posterId}
+              isPublic={isPublic}
+              feedId={feedId}
+            />
+          </View>
+        )}
+      </View>
+
+      {/* Content Section */}
       <Pressable
         style={themedStyles.contentWrapper}
         onPress={() => {
@@ -212,119 +270,63 @@ function FeedItem({
           });
         }}
       >
-        <View style={themedStyles.avatarContainer}>
+        {titleToUse && realTimeImageUrl && (
           <Pressable
-            onPress={(event) => {
-              event.stopPropagation();
-              handleProfilePress();
-            }}
-          >
-            <Avatar
-              alt="Avatar"
-              style={{
-                width: 50,
-                height: 50,
-                borderRadius: 35,
-                borderWidth: isLive ? 1 : 0,
-                borderColor: 'transparent',
-              }}
-            >
-              <AvatarImage
-                source={{ uri: avatarUrl }}
-                style={themedStyles.avatarImage}
-              />
-            </Avatar>
-            {isLive && (
-              <View style={themedStyles.liveIndicator}>
-                <Text style={themedStyles.liveText}>LIVE</Text>
-              </View>
-            )}
-          </Pressable>
-        </View>
+            onPress={() => {
+              if (!verificationId) return;
+              const wasLightboxActive = closeLightbox();
 
-        <View style={themedStyles.contentContainer}>
-          <View style={themedStyles.headerContainer}>
-            <View style={themedStyles.headerLeft}>
-              <View style={themedStyles.nameContainer}>
-                <Text style={[themedStyles.nameText]}>{name}</Text>
-                <Text style={themedStyles.timeText}>· {formattedTime}</Text>
-                {hasRecording && (
-                  <Text style={themedStyles.recordingText}>
-                    · {t('common.was_live')}
-                  </Text>
-                )}
-              </View>
-            </View>
-            {!isWeb && (
-              <MenuView
-                verificationId={verificationId}
-                posterId={posterId}
-                isPublic={isPublic}
-                feedId={feedId}
-              />
-            )}
-          </View>
-          {titleToUse && realTimeImageUrl && (
-            <Pressable
-              onPress={() => {
-                if (!verificationId) return;
-                const wasLightboxActive = closeLightbox();
-
-                // If lightbox was active, wait for animation to complete before navigating
-                if (wasLightboxActive) {
-                  setTimeout(() => {
-                    router.navigate({
-                      pathname: '/verification/[verificationId]',
-                      params: { verificationId },
-                    });
-                  }, 300);
-                } else {
+              if (wasLightboxActive) {
+                setTimeout(() => {
                   router.navigate({
                     pathname: '/verification/[verificationId]',
                     params: { verificationId },
                   });
-                }
-              }}
-              android_ripple={{
-                color: theme.colors.feedItem.secondaryText + '40',
-              }}
-              style={({ pressed }) => [pressed && { opacity: 0.7 }]}
-            >
-              <Text style={themedStyles.titleText} numberOfLines={10}>
-                {titleToUse}
-              </Text>
-            </Pressable>
-          )}
-          <ExpandableText
-            text={text || previewDataToUse?.description || ''}
-            hideForSpace={isSpace}
-            noVideoMargin={!!videoUrl}
-            verificationId={verificationId}
-            enableNavigation
-            hasPreview={hasPreview}
-          />
-          {MemoizedMediaContent}
-
-          {hasPreview && previewDataToUse && !realTimeImageUrl && (
-            <LinkPreview
-              previewData={previewDataToUse}
-              isLoading={false}
-              hasAISummary={
-                verification?.ai_video_summary_status === 'COMPLETED'
+                }, 300);
+              } else {
+                router.navigate({
+                  pathname: '/verification/[verificationId]',
+                  params: { verificationId },
+                });
               }
-              verificationId={verificationId}
-              inFeedView={true}
-              factuality={verification?.fact_check_data?.factuality}
-            />
-          )}
-          <FeedActions
-            // isOwner={user?.id === posterId}
-            showFactualityBadge={isJustText}
-            // hideUserRects={isPreviewFeedItem || false}
+            }}
+            android_ripple={{
+              color: theme.colors.feedItem.secondaryText + '40',
+            }}
+            style={({ pressed }) => [pressed && { opacity: 0.7 }]}
+          >
+            <Text style={themedStyles.titleText} numberOfLines={10}>
+              {titleToUse}
+            </Text>
+          </Pressable>
+        )}
+        <ExpandableText
+          text={text || previewDataToUse?.description || ''}
+          hideForSpace={isSpace}
+          noVideoMargin={!!videoUrl}
+          verificationId={verificationId}
+          enableNavigation
+          hasPreview={hasPreview}
+        />
+        {MemoizedMediaContent}
+
+        {hasPreview && previewDataToUse && !realTimeImageUrl && (
+          <LinkPreview
+            previewData={previewDataToUse}
+            isLoading={false}
+            hasAISummary={verification?.ai_video_summary_status === 'COMPLETED'}
             verificationId={verificationId}
+            inFeedView={true}
+            factuality={verification?.fact_check_data?.factuality}
           />
-        </View>
+        )}
       </Pressable>
+
+      {/* Actions Section */}
+      <FeedActions
+        showFactualityBadge={isJustText}
+        verificationId={verificationId}
+      />
     </View>
   );
 }
@@ -332,93 +334,81 @@ function FeedItem({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    // backgroundColor: "#000",
-    paddingTop: 16,
-    paddingBottom: 0,
-    paddingHorizontal: 8,
+    paddingTop: 12,
+    paddingBottom: 4,
+    paddingHorizontal: 12,
   },
-  contentWrapper: {
+  headerContainer: {
     flexDirection: 'row',
-    width: '100%',
+    alignItems: 'flex-start',
+    marginBottom: 10,
   },
-  avatarContainer: {
-    marginRight: 8,
+  avatarPressable: {
+    position: 'relative',
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
   },
   avatarImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 9999,
+    borderRadius: 20,
   },
-  contentContainer: {
+  headerInfo: {
     flex: 1,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    width: '100%',
-    marginBottom: 3,
-  },
-  headerLeft: {
-    flex: 1,
-    marginRight: 8,
-  },
-  nameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    marginLeft: 10,
+    justifyContent: 'center',
   },
   nameText: {
     fontWeight: '600',
     fontSize: 15,
-    // color: "#E7E9EA",
+    lineHeight: 20,
   },
-  pinnedContainer: {
-    marginRight: 6,
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 1,
   },
   timeText: {
     fontWeight: '400',
-    fontSize: 15,
-    // color: "#71767B",
-    marginLeft: 4,
-  },
-  recordingText: {
-    fontWeight: '400',
-    fontSize: 15,
-    // color: "#71767B",
-    marginLeft: 4,
-  },
-  locationText: {
-    fontWeight: '500',
     fontSize: 13,
-    // color: "#1D9BF0",
-    marginTop: 2,
   },
-  affiliatedIcon: {
-    width: 16,
-    height: 16,
-    marginLeft: 2,
+  dotSeparator: {
+    fontSize: 13,
+    marginHorizontal: 4,
+  },
+  wasLiveText: {
+    fontWeight: '400',
+    fontSize: 13,
+  },
+  menuContainer: {
+    paddingLeft: 8,
+    paddingTop: 4,
+  },
+  contentWrapper: {
+    width: '100%',
   },
   titleText: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '600',
     marginBottom: 6,
-    marginTop: 4,
-    paddingRight: 20,
+    lineHeight: 22,
   },
   liveIndicator: {
     position: 'absolute',
-    bottom: -6,
+    bottom: -4,
     alignSelf: 'center',
     backgroundColor: '#FF3B30',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 4,
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    borderRadius: 3,
   },
   liveText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
-    fontSize: 10,
+    fontSize: 9,
   },
 });
 

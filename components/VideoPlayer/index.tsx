@@ -1,6 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { StyleSheet, Animated } from 'react-native';
-import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
+import { useVideoPlayer, VideoView } from 'expo-video';
+import { useEvent } from 'expo';
 import { isIOS } from '@/lib/platform';
 
 interface VideoPlayerProps {
@@ -9,13 +10,20 @@ interface VideoPlayerProps {
 }
 
 export default function VideoPlayer({ videoUri, style }: VideoPlayerProps) {
-  const videoRef = useRef<Video>(null);
-  const [status, setStatus] = useState<AVPlaybackStatus>(
-    {} as AVPlaybackStatus,
-  );
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [hasStartedPlaying, setHasStartedPlaying] = useState(false);
 
   const videoSrc = isIOS ? videoUri.replace('.mpd', '.m3u8') : videoUri;
+
+  const player = useVideoPlayer(videoSrc, (player) => {
+    player.loop = true;
+    player.muted = true;
+    player.play();
+  });
+
+  const { isPlaying } = useEvent(player, 'playingChange', {
+    isPlaying: player.playing,
+  });
 
   const startFadeIn = () => {
     setTimeout(() => {
@@ -27,28 +35,23 @@ export default function VideoPlayer({ videoUri, style }: VideoPlayerProps) {
     }, 500); // Start fade in after 500ms delay
   };
 
-  const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
-    setStatus(() => status);
-
-    // Start fade in when video starts playing
-    if (status.isLoaded && !status.isBuffering && status.isPlaying) {
+  // Start fade in when video starts playing
+  useEffect(() => {
+    if (isPlaying && !hasStartedPlaying) {
+      setHasStartedPlaying(true);
       startFadeIn();
     }
-  };
+  }, [isPlaying, hasStartedPlaying]);
 
   return (
     <Animated.View
       style={[styles.videoContainer, style, { opacity: fadeAnim }]}
     >
-      <Video
-        ref={videoRef}
-        source={{ uri: videoSrc }}
-        shouldPlay={true}
-        isMuted={true}
-        resizeMode={ResizeMode.COVER}
-        isLooping
+      <VideoView
+        player={player}
         style={styles.videoView}
-        onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+        contentFit="cover"
+        nativeControls={false}
       />
     </Animated.View>
   );

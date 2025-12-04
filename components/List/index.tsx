@@ -83,6 +83,13 @@ let List = React.forwardRef<ListMethods, ListProps>(
   ): React.ReactElement => {
     const dedupe = useDedupe(400);
 
+    // Wrap the dedupe call with updateActiveVideoViewAsync already bound
+    // This is needed for Reanimated v4 + new arch where function arguments
+    // to runOnJS-wrapped functions don't work correctly
+    const dedupeVideoUpdate = useCallback(() => {
+      dedupe(updateActiveVideoViewAsync);
+    }, [dedupe]);
+
     // Intentionally destructured outside the main thread closure.
     // See https://github.com/bluesky-social/social-app/pull/4108.
     const {
@@ -102,7 +109,7 @@ let List = React.forwardRef<ListMethods, ListProps>(
         onScrollFromContext?.(e, ctx);
 
         if (isIOS) {
-          runOnJS(dedupe)(updateActiveVideoViewAsync);
+          runOnJS(dedupeVideoUpdate)();
         }
       },
 

@@ -2,6 +2,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import useAuth from '@/hooks/useAuth';
+import { convertToCDNUrl } from '@/lib/utils';
 
 function TabBarUserIcon() {
   const { user } = useAuth();
@@ -10,7 +11,9 @@ function TabBarUserIcon() {
       <Link href="/user" asChild>
         <TouchableOpacity style={styles.touchable}>
           <Avatar alt="Profile image" style={styles.avatar}>
-            <AvatarImage source={{ uri: user?.photos[0]?.image_url[0] }} />
+            <AvatarImage
+              source={{ uri: convertToCDNUrl(user?.photos[0]?.image_url[0]) }}
+            />
             <AvatarFallback>JS</AvatarFallback>
           </Avatar>
         </TouchableOpacity>

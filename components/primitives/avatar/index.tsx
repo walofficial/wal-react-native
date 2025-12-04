@@ -1,11 +1,7 @@
 import * as React from 'react';
-import {
-  ImageErrorEventData,
-  ImageLoadEventData,
-  NativeSyntheticEvent,
-  Image as RNImage,
-  View,
-} from 'react-native';
+import { View } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
+import type { ImageLoadEventData, ImageErrorEventData } from 'expo-image';
 import * as Slot from '~/components/primitives/slot';
 import {
   ComponentPropsWithAsChild,
@@ -48,8 +44,9 @@ function useRootContext() {
 }
 
 const Image = React.forwardRef<
-  React.ElementRef<typeof RNImage>,
-  Omit<ComponentPropsWithAsChild<typeof RNImage>, 'alt'> & AvatarImageProps
+  React.ElementRef<typeof ExpoImage>,
+  React.ComponentPropsWithoutRef<typeof ExpoImage> &
+    AvatarImageProps & { asChild?: boolean }
 >(
   (
     {
@@ -57,42 +54,56 @@ const Image = React.forwardRef<
       onLoad: onLoadProps,
       onError: onErrorProps,
       onLoadingStatusChange,
-      ...props
+      transition = 300,
+      ...restProps
     },
     ref,
   ) => {
     const { alt, setStatus, status } = useRootContext();
 
     const onLoad = React.useCallback(
-      (e: NativeSyntheticEvent<ImageLoadEventData>) => {
+      (e: ImageLoadEventData) => {
         setStatus('loaded');
         onLoadingStatusChange?.('loaded');
-        onLoadProps?.(e);
+        onLoadProps?.(e as any);
       },
-      [onLoadProps],
+      [onLoadProps, onLoadingStatusChange, setStatus],
     );
 
     const onError = React.useCallback(
-      (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+      (e: ImageErrorEventData) => {
         setStatus('error');
         onLoadingStatusChange?.('error');
-        onErrorProps?.(e);
+        onErrorProps?.(e as any);
       },
-      [onErrorProps],
+      [onErrorProps, onLoadingStatusChange, setStatus],
     );
 
     if (status === 'error') {
       return null;
     }
 
-    const Component = asChild ? Slot.Image : RNImage;
+    if (asChild) {
+      // When using asChild, we need to pass compatible props to Slot.Image (React Native Image)
+      return (
+        <Slot.Image
+          ref={ref as any}
+          alt={alt}
+          onLoad={onLoad as any}
+          onError={onError as any}
+          {...(restProps as any)}
+        />
+      );
+    }
+
     return (
-      <Component
+      <ExpoImage
         ref={ref}
         alt={alt}
         onLoad={onLoad}
         onError={onError}
-        {...props}
+        transition={transition}
+        {...restProps}
       />
     );
   },

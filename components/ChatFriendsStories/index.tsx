@@ -9,6 +9,7 @@ import { AvatarImage } from '../ui/avatar';
 import { t } from '@/lib/i18n';
 import useLiveUser from '@/hooks/useLiveUser';
 import FriendRequests from '../ContactSyncSheet/FriendRequests';
+import { convertToCDNUrl } from '@/lib/utils';
 
 export default function ChatFriendsStories() {
   const theme = useTheme();
@@ -27,6 +28,7 @@ export default function ChatFriendsStories() {
       </View>
     );
   }
+
   return (
     <View style={styles.container}>
       <View style={styles.container}>
@@ -61,7 +63,7 @@ export default function ChatFriendsStories() {
                   {imageUrl ? (
                     <AvatarImage
                       style={styles.avatarImage}
-                      source={{ uri: imageUrl }}
+                      source={{ uri: convertToCDNUrl(imageUrl) }}
                     />
                   ) : (
                     <Text

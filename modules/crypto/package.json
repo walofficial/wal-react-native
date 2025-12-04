@@ -1,0 +1,48 @@
+{
+  "name": "rtn-crypto",
+  "version": "0.0.1",
+  "description": "Crypto module using libsodium for React Native",
+  "main": "specs/index",
+  "types": "specs/index",
+  "react-native": "specs/index",
+  "source": "specs/index",
+  "files": [
+    "specs",
+    "android",
+    "ios",
+    "shared",
+    "rtn-crypto.podspec",
+    "!android/build",
+    "!ios/build",
+    "!**/__tests__",
+    "!**/__fixtures__",
+    "!**/__mocks__"
+  ],
+  "keywords": ["react-native", "ios", "android", "crypto"],
+  "license": "MIT",
+  "devDependencies": {},
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "codegenConfig": {
+    "name": "RTNCryptoSpec",
+    "type": "modules",
+    "jsSrcsDir": "specs",
+    "android": {
+      "javaPackageName": "com.rtncrypto"
+    },
+    "ios": {
+      "modulesProvider": {
+        "RTNCrypto": "RTNCryptoProvider"
+      }
+    }
+  }
+}
+
+
+
+
+
+
+

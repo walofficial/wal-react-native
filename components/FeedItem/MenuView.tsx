@@ -107,14 +107,12 @@ function MenuView({
               {
                 id: 'share',
                 title: t('common.share'),
-                image: isAndroid ? 'share' : 'square.and.arrow.up',
               },
               ...(isPublic
                 ? [
                     {
                       id: 'hide-post',
                       title: t('common.hide'),
-                      image: isAndroid ? 'visibility_off' : 'eye.slash',
                       imageColor: 'yellow',
                     },
                   ]
@@ -122,7 +120,6 @@ function MenuView({
                     {
                       id: 'show-post',
                       title: t('common.show'),
-                      image: isAndroid ? 'visibility' : 'eye',
                     },
                   ]),
             ]
@@ -130,7 +127,6 @@ function MenuView({
               {
                 id: 'share',
                 title: t('common.share'),
-                image: isAndroid ? 'share' : 'square.and.arrow.up',
               },
               {
                 id: 'block',
@@ -138,7 +134,6 @@ function MenuView({
                 attributes: {
                   destructive: true,
                 },
-                image: isAndroid ? 'block' : 'slash.circle',
               },
               {
                 id: 'report',
@@ -146,7 +141,6 @@ function MenuView({
                 attributes: {
                   destructive: true,
                 },
-                image: isAndroid ? 'report' : 'exclamationmark.triangle',
               },
             ]
       }

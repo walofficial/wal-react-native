@@ -6,10 +6,8 @@ import {
   to_base64,
   from_base64,
   to_string,
-  crypto_box_PUBLICKEYBYTES,
-  crypto_box_SECRETKEYBYTES,
   crypto_box_NONCEBYTES,
-} from '@more-tech/react-native-libsodium';
+} from 'rtn-crypto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS_STORAGE = 'user_keys';

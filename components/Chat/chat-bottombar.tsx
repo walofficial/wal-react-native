@@ -1,26 +1,21 @@
-import { Link } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   View,
   TouchableOpacity,
   TextInput,
-  Text,
   StyleSheet,
   useColorScheme,
 } from 'react-native';
-import { FileImage, Paperclip, Mic, ArrowUp } from '@/lib/icons';
-import { Audio } from 'expo-av';
+import { FileImage, Paperclip, ArrowUp } from '@/lib/icons';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { hasMessageAtom, messageAtom } from '@/lib/state/chat';
-import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withTiming,
-} from 'react-native-reanimated';
-import { isIOS } from '@/lib/platform';
 import { useTheme } from '@/lib/theme';
 
-const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+// Maximum height for ~8 lines of text (each line ~20px + padding)
+const MAX_INPUT_HEIGHT = 180;
+// Threshold: if text has more than 8 newlines or is very long, cap the height
+const MAX_LINES = 8;
+const LONG_TEXT_THRESHOLD = 400;
 
 interface ChatBottombarProps {
   sendMessage: (newMessage: string) => void;
@@ -29,85 +24,56 @@ interface ChatBottombarProps {
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
 export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
   const setMessage = useSetAtom(messageAtom);
   const message = useAtomValue(messageAtom);
   const setHasMessage = useSetAtom(hasMessageAtom);
-  const [isFocused, setIsFocused] = useState(false);
-  const [staticHeight, setStaticHeight] = useState(40);
   const theme = useTheme();
 
   // Signal/Messenger-like colors
   const isLightMode = useColorScheme() === 'light';
-  const inputBackground = isLightMode ? '#e0e0e0' : '#1E1E1E'; // Slightly darker gray for light mode
-  const placeholderColor = isLightMode ? '#8E8E93' : '#8A8A8E'; // Subtle placeholder color
+  const inputBackground = isLightMode ? '#e0e0e0' : '#1E1E1E';
+  const placeholderColor = isLightMode ? '#8E8E93' : '#8A8A8E';
   const inputTextColor = theme.colors.text;
+  const backgroundColor = theme.colors.background;
 
-  useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
+  // Check if text is "too long" - either has many newlines or is very long
+  const shouldLimitHeight = useMemo(() => {
+    const newlineCount = (message.match(/\n/g) || []).length;
+    return newlineCount >= MAX_LINES || message.length > LONG_TEXT_THRESHOLD;
+  }, [message]);
 
   useEffect(() => {
     setHasMessage(message.trim().length > 0);
-  }, [message]);
+  }, [message, setHasMessage]);
 
-  const handleInputChange = (text: string) => {
-    setMessage(text);
-  };
-
-  const inputHeight = useSharedValue(40);
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      height: isIOS
-        ? withTiming(inputHeight.value, { duration: 200 })
-        : staticHeight,
-    };
-  });
+  const handleInputChange = useCallback(
+    (text: string) => {
+      setMessage(text);
+    },
+    [setMessage],
+  );
 
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
+    <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.inputContainer}>
-        <AnimatedTextInput
+        <TextInput
           multiline
           value={message}
           onChangeText={handleInputChange}
           style={[
             styles.textInput,
-            animatedStyle,
             {
               color: inputTextColor,
               backgroundColor: inputBackground,
             },
+            shouldLimitHeight && { maxHeight: MAX_INPUT_HEIGHT },
           ]}
           autoCorrect={false}
           autoCapitalize="none"
           returnKeyType="default"
-          enablesReturnKeyAutomatically={true}
+          enablesReturnKeyAutomatically
           placeholder="მესიჯი"
           placeholderTextColor={placeholderColor}
-          onFocus={() => {
-            setIsFocused(true);
-          }}
-          onBlur={() => {
-            setIsFocused(false);
-          }}
-          onContentSizeChange={(event) => {
-            const newHeight =
-              event.nativeEvent.contentSize.height + (isIOS ? 20 : 0);
-            // Limit maximum height to 120px
-            if (isIOS) {
-              inputHeight.value = Math.min(newHeight, 120);
-            } else {
-              // For Android, just update the state without animation
-              setStaticHeight(Math.min(newHeight, 120));
-            }
-          }}
         />
         <View style={styles.sendButtonContainer}>
           <SendButton sendMessage={sendMessage} />
@@ -126,17 +92,18 @@ export function SendButton({
   const hasText = useAtomValue(hasMessageAtom);
   const theme = useTheme();
 
-  // Signal-like send button - blue for light mode, green for dark mode
-  const sendButtonColor =
-    theme.colors.background === '#FFFFFF'
-      ? '#3478F6' // Signal blue for light mode
-      : '#22c55e'; // Keep green for dark mode
+  // Extract specific value to avoid capturing whole theme object
+  const isLightBackground = theme.colors.background === '#FFFFFF';
 
-  const handleSend = () => {
-    if (message.trim()) {
-      sendMessage(message.trim());
+  // Signal-like send button - blue for light mode, green for dark mode
+  const sendButtonColor = isLightBackground ? '#3478F6' : '#22c55e';
+
+  const handleSend = useCallback(() => {
+    const trimmedMessage = message.trim();
+    if (trimmedMessage) {
+      sendMessage(trimmedMessage);
     }
-  };
+  }, [message, sendMessage]);
 
   return (
     <TouchableOpacity
@@ -197,6 +164,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 20,
     borderWidth: 0,
+    fontSize: 16,
   },
   sendButtonContainer: {
     justifyContent: 'flex-end',

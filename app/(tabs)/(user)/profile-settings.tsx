@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Button from '@/components/Button';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Text } from '@/components/ui/text';
@@ -42,7 +42,6 @@ import {
 
 const formSchema = z
   .object({
-    username: z.string().min(1, 'სახელი აუცილებელია'),
     gender: z.string(),
   })
   .and(dateOfBirthSchema);
@@ -110,20 +109,19 @@ export default function Component() {
     },
   });
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors, isDirty },
-    watch,
-    setValue,
-  } = useForm({
+  const methods = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: user?.username || '',
       gender: user?.gender || '',
       date_of_birth: user?.date_of_birth || '',
     },
   });
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = methods;
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     updateUserMutationHook.mutate({
@@ -190,40 +188,15 @@ export default function Component() {
   );
 
   return (
-    <>
+    <FormProvider {...methods}>
       <SimpleGoBackHeader title="ანგარიში" rightSection={acceptButton} />
       <ScrollView style={[styles.container]}>
         <View style={styles.content}>
           <View style={styles.formContainer}>
             <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('common.username')}
-            </H4>
-            <Controller
-              control={control}
-              name="username"
-              render={({ field: { value } }) => (
-                <View style={styles.inputWrapper}>
-                  <TextInput
-                    style={{
-                      ...styles.usernameInput,
-                      color: theme.colors.text,
-                      backgroundColor:
-                        colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
-                      borderColor: theme.colors.border,
-                    }}
-                    editable={false}
-                    value={value}
-                  />
-                </View>
-              )}
-            />
-            {errors.username && (
-              <Text style={styles.errorText}>{errors.username.message}</Text>
-            )}
-            <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
               {t('common.date_of_birth')}
             </H4>
-            <DateOfBirth control={control} />
+            <DateOfBirth />
 
             <View style={styles.notificationSection}>
               <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
@@ -257,31 +230,25 @@ export default function Component() {
                 </View>
               </View>
             )}
+            <Button
+              variant="destructive-outline"
+              onPress={handleDeleteAccount}
+              disabled={deleteAccountMutation.isPending}
+              loading={deleteAccountMutation.isPending}
+              title={t('common.delete_account')}
+            />
+            {__DEV__ && (
+              <Button
+                variant="outline"
+                onPress={handleClearCache}
+                style={styles.clearCacheButton}
+                title={t('common.clear_cache')}
+              />
+            )}
           </View>
         </View>
       </ScrollView>
-      <View style={styles.footer}>
-        <Button
-          glassy={true}
-          size="large"
-          variant="destructive-outline"
-          onPress={handleDeleteAccount}
-          disabled={deleteAccountMutation.isPending}
-          loading={deleteAccountMutation.isPending}
-          title={t('common.delete_account')}
-        />
-        {__DEV__ && (
-          <Button
-            glassy={true}
-            size="large"
-            variant="outline"
-            onPress={handleClearCache}
-            style={styles.clearCacheButton}
-            title={t('common.clear_cache')}
-          />
-        )}
-      </View>
-    </>
+    </FormProvider>
   );
 }
 

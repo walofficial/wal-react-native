@@ -25,6 +25,7 @@ import { useTheme } from '@/lib/theme';
 import CommentReactions from './CommentReactions';
 import { Comment } from '@/lib/api/generated';
 import { t } from '@/lib/i18n';
+import { convertToCDNUrl } from '@/lib/utils';
 
 interface CommentItemProps {
   id: string;
@@ -124,7 +125,9 @@ const CommentItem = ({
     >
       <TouchableOpacity onPress={handleProfilePress}>
         <Avatar style={styles.avatar} alt={author.username}>
-          <AvatarImage source={{ uri: author.profilePicture }} />
+          <AvatarImage
+            source={{ uri: convertToCDNUrl(author.profilePicture) }}
+          />
         </Avatar>
       </TouchableOpacity>
 
