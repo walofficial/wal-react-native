@@ -32,10 +32,6 @@ public class CryptoModule extends NativeRTNCryptoSpec {
     private native byte[] nativeRandombytesBuf(int length);
     private native byte[] nativeCryptoBoxEasy(byte[] message, byte[] nonce, byte[] recipientPublicKey, byte[] senderSecretKey);
     private native byte[] nativeCryptoBoxOpenEasy(byte[] ciphertext, byte[] nonce, byte[] senderPublicKey, byte[] recipientSecretKey);
-    private native int nativeGetCryptoBoxPublickeybytes();
-    private native int nativeGetCryptoBoxSecretkeybytes();
-    private native int nativeGetCryptoBoxNoncebytes();
-    private native int nativeGetCryptoBoxMacbytes();
 
     @Override
     public WritableMap cryptoBoxKeypair() {
@@ -86,26 +82,6 @@ public class CryptoModule extends NativeRTNCryptoSpec {
     public WritableArray fromBase64(String base64String) {
         byte[] bytes = android.util.Base64.decode(base64String, android.util.Base64.NO_WRAP);
         return byteArrayToWritableArray(bytes);
-    }
-
-    @Override
-    public double getCryptoBoxPublickeybytes() {
-        return nativeGetCryptoBoxPublickeybytes();
-    }
-
-    @Override
-    public double getCryptoBoxSecretkeybytes() {
-        return nativeGetCryptoBoxSecretkeybytes();
-    }
-
-    @Override
-    public double getCryptoBoxNoncebytes() {
-        return nativeGetCryptoBoxNoncebytes();
-    }
-
-    @Override
-    public double getCryptoBoxMacbytes() {
-        return nativeGetCryptoBoxMacbytes();
     }
 
     // Helper methods

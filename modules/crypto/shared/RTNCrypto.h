@@ -33,12 +33,6 @@ public:
   // Base64 encoding/decoding
   jsi::String toBase64(jsi::Runtime& rt, jsi::Array bytes);
   jsi::Array fromBase64(jsi::Runtime& rt, jsi::String base64String);
-  
-  // Constants
-  double getCryptoBoxPublickeybytes(jsi::Runtime& rt);
-  double getCryptoBoxSecretkeybytes(jsi::Runtime& rt);
-  double getCryptoBoxNoncebytes(jsi::Runtime& rt);
-  double getCryptoBoxMacbytes(jsi::Runtime& rt);
 };
 
 } // namespace facebook::react
