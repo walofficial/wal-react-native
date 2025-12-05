@@ -81,8 +81,11 @@ const pluginsList = [
     {
       ios: {
         deploymentTarget: '15.1',
+        reactNativeReleaseLevel: "experimental"
       },
-     
+      android: {
+        reactNativeReleaseLevel: "experimental"
+      },
     },
   ],
   // Removed react-native-share plugin; using RN Share API / expo-sharing instead
