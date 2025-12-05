@@ -26,12 +26,6 @@ export interface Spec extends TurboModule {
   // Base64 encoding/decoding
   toBase64(bytes: number[]): string;
   fromBase64(base64String: string): number[];
-
-  // Constants
-  getCryptoBoxPublickeybytes(): number;
-  getCryptoBoxSecretkeybytes(): number;
-  getCryptoBoxNoncebytes(): number;
-  getCryptoBoxMacbytes(): number;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('RTNCrypto');

@@ -1,10 +1,10 @@
 import RTNCrypto from './NativeRTNCrypto';
 
-// Constants (matching libsodium)
-export const crypto_box_PUBLICKEYBYTES = RTNCrypto.getCryptoBoxPublickeybytes();
-export const crypto_box_SECRETKEYBYTES = RTNCrypto.getCryptoBoxSecretkeybytes();
-export const crypto_box_NONCEBYTES = RTNCrypto.getCryptoBoxNoncebytes();
-export const crypto_box_MACBYTES = RTNCrypto.getCryptoBoxMacbytes();
+// Constants (matching libsodium - hardcoded values)
+export const crypto_box_PUBLICKEYBYTES = 32;
+export const crypto_box_SECRETKEYBYTES = 32;
+export const crypto_box_NONCEBYTES = 24;
+export const crypto_box_MACBYTES = 16;
 
 /**
  * Generate a key pair for crypto_box (public-key cryptography)
