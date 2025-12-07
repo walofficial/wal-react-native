@@ -32,81 +32,133 @@ export function useOTAUpdates() {
   const appState = React.useRef<AppStateStatus>('active');
   const lastMinimize = React.useRef(0);
   const ranInitialCheck = React.useRef(false);
+  const isCheckingRef = React.useRef(false);
   const timeout = React.useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
-  const { isUpdatePending } = useUpdates();
 
-  const setCheckTimeout = React.useCallback(() => {
-    timeout.current = setTimeout(async () => {
-      try {
-        await setExtraParams();
+  // Use the new useUpdates hook for reactive state management
+  const {
+    isUpdateAvailable,
+    isUpdatePending,
+    isChecking,
+    isDownloading,
+    downloadedUpdate,
+    checkError,
+    downloadError,
+  } = useUpdates();
 
-        console.log('Checking for update...');
-        const res = await checkForUpdateAsync();
+  // Automatically reload when an update has been downloaded and is pending
+  React.useEffect(() => {
+    if (isUpdatePending && downloadedUpdate && !IS_TESTFLIGHT) {
+      // For non-TestFlight, auto-apply on next natural restart
+      // The update will be applied when the app restarts
+      console.log('Update downloaded and pending, will apply on next restart');
+    }
+  }, [isUpdatePending, downloadedUpdate]);
 
-        if (res.isAvailable) {
-          console.log('Attempting to fetch update...');
-          await fetchUpdateAsync();
-        } else {
-          console.log('No update available.');
-        }
-      } catch (e) {
-        console.error('OTA Update Error', e);
-      }
-    }, 10e3); // 10 seconds
-  }, []);
+  // Handle TestFlight users - prompt them when update is downloaded
+  React.useEffect(() => {
+    if (IS_TESTFLIGHT && isUpdatePending && downloadedUpdate) {
+      Alert.alert(
+        'Update Available',
+        'A new version of the app is available. Relaunch now?',
+        [
+          {
+            text: 'No',
+            style: 'cancel',
+          },
+          {
+            text: 'Relaunch',
+            style: 'default',
+            onPress: async () => {
+              try {
+                await reloadAsync();
+              } catch (e) {
+                console.error('Failed to reload after update', e);
+              }
+            },
+          },
+        ],
+      );
+    }
+  }, [isUpdatePending, downloadedUpdate]);
 
-  const onIsTestFlight = React.useCallback(async () => {
+  // Automatically download when an update is available
+  React.useEffect(() => {
+    if (isUpdateAvailable && !isDownloading && !isUpdatePending) {
+      console.log('Update available, downloading...');
+      fetchUpdateAsync().catch((e) => {
+        console.error('Failed to fetch update', e);
+      });
+    }
+  }, [isUpdateAvailable, isDownloading, isUpdatePending]);
+
+  // Log errors for debugging
+  React.useEffect(() => {
+    if (checkError) {
+      console.error('Update check error:', checkError);
+    }
+    if (downloadError) {
+      console.error('Update download error:', downloadError);
+    }
+  }, [checkError, downloadError]);
+
+  const performUpdateCheck = React.useCallback(async () => {
+    // Guard against multiple simultaneous checks (prevents DatabaseLauncher crash)
+    if (isCheckingRef.current || isChecking || isDownloading) {
+      console.log('Update check already in progress, skipping...');
+      return;
+    }
+
     try {
+      isCheckingRef.current = true;
       await setExtraParams();
 
+      console.log('Checking for update...');
       const res = await checkForUpdateAsync();
+
       if (res.isAvailable) {
-        await fetchUpdateAsync();
-
-        Alert.alert(
-          'Update Available',
-          'A new version of the app is available. Relaunch now?',
-          [
-            {
-              text: 'No',
-              style: 'cancel',
-            },
-            {
-              text: 'Relaunch',
-              style: 'default',
-              onPress: async () => {
-                await reloadAsync();
-              },
-            },
-          ],
-        );
+        console.log('Update available, will be handled by useUpdates hook');
+      } else {
+        console.log('No update available.');
       }
-    } catch (e: any) {
-      console.error('Internal OTA Update Error', e);
+    } catch (e) {
+      console.error('OTA Update Error', e);
+    } finally {
+      isCheckingRef.current = false;
     }
-  }, []);
+  }, [isChecking, isDownloading]);
 
+  const setCheckTimeout = React.useCallback(() => {
+    // Clear any existing timeout
+    if (timeout.current) {
+      clearTimeout(timeout.current);
+    }
+
+    timeout.current = setTimeout(() => {
+      performUpdateCheck();
+    }, 10e3); // 10 seconds
+  }, [performUpdateCheck]);
+
+  // Initial check on mount
   React.useEffect(() => {
-    // Allow time for any initialization before checking for updates
-    // For TestFlight users, prompt immediately when update is available
-    if (IS_TESTFLIGHT) {
-      onIsTestFlight();
-      return;
-    } else if (!shouldReceiveUpdates || ranInitialCheck.current) {
+    if (!shouldReceiveUpdates || ranInitialCheck.current) {
       return;
     }
+
+    // Set extra params early for useUpdates hook
+    setExtraParams().catch(console.error);
 
     setCheckTimeout();
     ranInitialCheck.current = true;
-  }, [onIsTestFlight, setCheckTimeout, shouldReceiveUpdates]);
+  }, [setCheckTimeout, shouldReceiveUpdates]);
 
   // After the app has been minimized for 15 minutes, either:
   // A. Install an update if one has become available
   // B. Check for an update again
   React.useEffect(() => {
-    if (!isEnabled) return;
+    if (!isEnabled || __DEV__) return;
 
     const subscription = AppState.addEventListener(
       'change',
@@ -119,8 +171,12 @@ export function useOTAUpdates() {
           // since there likely isn't anything important happening in the current session
           if (lastMinimize.current <= Date.now() - MINIMUM_MINIMIZE_TIME) {
             if (isUpdatePending) {
-              await reloadAsync();
-            } else {
+              try {
+                await reloadAsync();
+              } catch (e) {
+                console.error('Failed to reload for pending update', e);
+              }
+            } else if (!isChecking && !isDownloading) {
               setCheckTimeout();
             }
           }
@@ -133,8 +189,18 @@ export function useOTAUpdates() {
     );
 
     return () => {
-      clearTimeout(timeout.current);
+      if (timeout.current) {
+        clearTimeout(timeout.current);
+      }
       subscription.remove();
     };
-  }, [isUpdatePending, setCheckTimeout]);
+  }, [isUpdatePending, isChecking, isDownloading, setCheckTimeout]);
+
+  // Return useful state for consumers if needed
+  return {
+    isUpdateAvailable,
+    isUpdatePending,
+    isChecking,
+    isDownloading,
+  };
 }
