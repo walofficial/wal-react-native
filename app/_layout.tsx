@@ -37,7 +37,9 @@ import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 import { useSyncQueriesExternal } from 'react-query-external-sync';
 import * as ExpoDevice from 'expo-device';
 import * as NavigationBar from 'expo-navigation-bar';
+import { install } from 'react-native-quick-crypto';
 
+install();
 function AppLocaleGate({ children }: { children: React.ReactNode }) {
   useNotificationHandler();
   const navigationRef = useNavigationContainerRef();
