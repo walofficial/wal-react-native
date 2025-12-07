@@ -1,5 +1,5 @@
 diff --git a/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt b/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt
-index 1234567..abcdefg 100644
+index e9a8e3d..3c684e0 100644
 --- a/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt
 +++ b/node_modules/expo-updates/android/src/main/java/expo/modules/updates/loader/LoaderTask.kt
 @@ -296,14 +296,13 @@ class LoaderTask(
@@ -19,4 +19,3 @@ index 1234567..abcdefg 100644
        } else {
          launcher.launch(database)
        }
-
