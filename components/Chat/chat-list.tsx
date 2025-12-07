@@ -61,10 +61,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
     params.roomId,
     trackedMessageIdsRef,
   );
-  const { headerHeight } = useFeeds();
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
-
   // Check user online status periodically
   useEffect(() => {
     setTimeout(() => {
@@ -234,14 +231,11 @@ export function ChatList({ selectedUser }: ChatListProps) {
         contentContainerStyle={styles.contentContainer}
         data={messageItems}
         estimatedItemSize={80}
-        initialScrollIndex={
-          messageItems.length > 0 ? messageItems.length - 1 : undefined
-        }
         keyExtractor={keyExtractor}
         maintainScrollAtEnd
         maintainVisibleContentPosition
         renderItem={renderItem}
-        safeAreaInsetBottom={insets.bottom}
+        // safeAreaInsetBottom={insets.bottom}
         style={styles.list}
         onStartReached={handleStartReached}
         onStartReachedThreshold={0.5}
