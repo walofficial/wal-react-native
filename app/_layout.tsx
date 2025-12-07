@@ -13,7 +13,6 @@ import { isDev, SENTRY_DSN } from '@/lib/api/config';
 import AppStateHandler from '../components/AppStateHandler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useEffect } from 'react';
-import { useOTAUpdates } from '@/hooks/useOTAUpdates';
 import {
   focusManager,
   QueryClient,
@@ -192,8 +191,6 @@ function RootLayout() {
   //     'deviceId',
   //   ], // SecureStore keys to monitor
   // });
-  // Use the new OTA updates hook
-  useOTAUpdates();
 
   useEffect(() => {
     SplashScreen.hideAsync();

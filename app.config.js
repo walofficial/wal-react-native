@@ -137,8 +137,7 @@ export default {
     updates: {
       url: 'https://u.expo.dev/a9de94ea-576e-4767-ae3f-085bfe155f96',
       enabled: true,
-      fallbackToCacheTimeout: 30000,
-      checkAutomatically: 'NEVER',
+      checkAutomatically: 'ON_LOAD',
     },
     runtimeVersion: {
       policy: 'appVersion',
