@@ -155,7 +155,7 @@ const hostIP =
   Constants.expoGoConfig?.debuggerHost?.split(`:`)[0] ||
   Constants.expoConfig?.hostUri?.split(`:`)[0];
 
-export default function RootLayout() {
+function RootLayout() {
   const [appIsReady, setAppIsReady] = useAtom(appIsReadyState);
   const theme = useTheme();
   const { colorScheme } = useColorScheme();
@@ -325,3 +325,5 @@ export default function RootLayout() {
     </OnboardingProvider>
   );
 }
+
+export default Sentry.wrap(RootLayout);
