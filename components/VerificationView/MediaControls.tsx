@@ -44,7 +44,7 @@ const MediaControls = ({
             source={{
               uri:
                 convertToCDNUrl(
-                  verification.assignee_user?.photos[0].image_url[0],
+                  verification.assignee_user?.photos[0].image_url[0] || '',
                 ) || '',
             }}
           />

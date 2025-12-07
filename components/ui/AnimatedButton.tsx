@@ -74,7 +74,9 @@ export default function CustomAnimatedButton({
         style,
       ]}
       disabled={disabled || isLoading}
+      // @ts-ignore
       size={size}
+      // @ts-ignore
       variant={variant}
       onPress={onPress}
       onPressIn={() => {
