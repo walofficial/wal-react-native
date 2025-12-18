@@ -18,7 +18,6 @@ import { openMap } from '@/utils/openMap';
 import React from 'react';
 import type { ViewabilityConfig } from 'react-native';
 import { ListEmptyComponent } from './ListEmptyComponent';
-import BottomSheet from '@gorhom/bottom-sheet';
 import type { Feed, LocationFeedPost } from '@/lib/api/generated';
 import { useQueryClient } from '@tanstack/react-query';
 import { isWeb } from '@/lib/platform';
@@ -28,7 +27,6 @@ import NewsCardItem from '../NewsCard/NewsCardItem';
 import { getVideoSrc } from '@/lib/utils';
 import PostsFeed from '../PostsFeed';
 import { scrollToTopState } from '@/lib/atoms/location';
-import LocationUserListSheet from '../LocationUserListSheet';
 import { useRouter, usePathname } from 'expo-router';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import { shouldFocusCommentInputAtom } from '@/atoms/comments';
@@ -80,7 +78,6 @@ export default function LocationFeed({
       | 'social_media_only',
   });
 
-  const locationUserListSheetRef = useRef<BottomSheet>(null);
   const { headerHeight } = useFeeds();
   const flashListRef = useRef<any>(null);
 
@@ -323,7 +320,6 @@ export default function LocationFeed({
         <Suspense fallback={null}>
           <Animated.View style={bottomActionsStyle}>
             <BottomLocationActions
-              feedId={feedId as string}
               isUserInSelectedLocation={isUserInSelectedLocation}
             />
           </Animated.View>

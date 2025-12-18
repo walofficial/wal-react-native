@@ -22,8 +22,6 @@ import { Provider as HeaderTransformProvider } from '@/lib/context/header-transf
 import { Provider as ReactionsOverlayProvider } from '@/lib/reactionsOverlay/reactionsOverlay';
 import { ReactionsOverlay } from '@/components/ReactionsOverlay/ReactionsOverlay';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { factCheckBottomSheetState } from '@/lib/atoms/news';
-import { locationUserListSheetState } from '@/lib/atoms/location';
 import { isUserLiveState } from '@/components/CameraPage/atom';
 import Animated, {
   Easing,

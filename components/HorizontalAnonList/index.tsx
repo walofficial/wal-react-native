@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Pressable, ScrollView, StyleSheet } from 'react-native';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import UserLiveItem from '@/components/UserLiveItem';
 import useLiveUser from '@/hooks/useLiveUser';
 import useAuth from '@/hooks/useAuth';
@@ -23,10 +23,10 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
         feed_id: feedId,
       },
     }),
+    placeholderData: keepPreviousData,
     enabled: !!feedId && isFocused,
     refetchOnMount: false,
     staleTime: 5000,
-    refetchInterval: isFocused ? 3000 : false,
   });
 
   const { user } = useAuth();
