@@ -2,6 +2,7 @@
   "settings": {
     "general": "Général",
     "account": "Compte",
+    "user_preferences": "Préférences utilisateur",
     "change_photo": "Changer la photo",
     "telegram_channel": "Canal Telegram",
     "blocked_users": "Utilisateurs bloqués",

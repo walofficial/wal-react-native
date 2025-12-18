@@ -1,0 +1,245 @@
+import React, { useCallback, useMemo, useState } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+  BottomSheetTextInput,
+} from '@gorhom/bottom-sheet';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Text } from '@/components/ui/text';
+import { Portal } from '@/components/primitives/portal';
+import { useTheme } from '@/lib/theme';
+import { getBottomSheetBackgroundStyle } from '@/lib/styles';
+import useAuth from '@/hooks/useAuth';
+import { Company, getCompanies } from '@/lib/api/generated';
+import {
+  getCompaniesOptions,
+  getUserProfileUserProfileUserIdGetQueryKey,
+  updateUserMutation,
+} from '@/lib/api/generated/@tanstack/react-query.gen';
+import { Image } from 'expo-image';
+
+export default function CompanySelectorSheet({
+  bottomSheetRef,
+  userId,
+}: {
+  bottomSheetRef: React.RefObject<BottomSheet | null>;
+  userId: string;
+}) {
+  const theme = useTheme();
+  const insets = useSafeAreaInsets();
+  const queryClient = useQueryClient();
+  const { user, setAuthUser } = useAuth();
+
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const companiesQuery = useQuery({
+    ...getCompaniesOptions(),
+  });
+
+  const updateUser = useMutation({
+    ...updateUserMutation(),
+    onMutate: (variables) => {
+      const nextCompanyId = variables.body.company_id ?? null;
+      const nextCompany =
+        (companiesQuery.data ?? []).find(
+          (c: Company) => c.id === nextCompanyId,
+        ) ?? null;
+      if (user) {
+        setAuthUser({
+          ...user,
+          company: nextCompany as any,
+        });
+      }
+    },
+    onSuccess: () => {
+      bottomSheetRef.current?.close();
+      queryClient.invalidateQueries({
+        queryKey: getUserProfileUserProfileUserIdGetQueryKey({
+          path: { user_id: userId },
+        }),
+      });
+    },
+    onError: () => {
+      Alert.alert('Failed to update company');
+    },
+  });
+
+  const snapPoints = useMemo(() => ['85%'], []);
+  const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
+
+  const renderBackdrop = useCallback(
+    (props: any) => (
+      <BottomSheetBackdrop
+        {...props}
+        appearsOnIndex={0}
+        disappearsOnIndex={-1}
+        pressBehavior="close"
+      />
+    ),
+    [],
+  );
+
+  const filteredCompanies = useMemo(() => {
+    const companies = companiesQuery.data ?? [];
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return companies;
+    return companies.filter((c) => c.name.toLowerCase().includes(q));
+  }, [companiesQuery.data, searchQuery]);
+
+  const handleSelectCompany = (company: Company) => {
+    updateUser.mutate({
+      body: {
+        company_id: company.id,
+      },
+    });
+  };
+
+  return (
+    <Portal name="company-selector-sheet">
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        snapPoints={snapPoints}
+        topInset={insets.top + 50}
+        enableDynamicSizing={false}
+        enablePanDownToClose={true}
+        backdropComponent={renderBackdrop}
+        backgroundStyle={sheetBackgroundStyle}
+        handleIndicatorStyle={[
+          styles.handleIndicator,
+          { backgroundColor: theme.colors.icon },
+        ]}
+      >
+        <View
+          style={[
+            styles.searchContainer,
+            {
+              backgroundColor:
+                theme.colors.card.background === '#F2F2F7'
+                  ? 'rgba(0, 0, 0, 0.05)'
+                  : theme.colors.card.background,
+            },
+          ]}
+        >
+          <Ionicons
+            name="search"
+            size={20}
+            color={theme.colors.feedItem.secondaryText}
+          />
+          <BottomSheetTextInput
+            autoComplete="off"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            style={[styles.searchInput, { color: theme.colors.text }]}
+            placeholderTextColor={theme.colors.feedItem.secondaryText}
+            placeholder="Search company"
+          />
+        </View>
+
+        <BottomSheetScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {companiesQuery.isLoading && (
+            <Text style={{ color: theme.colors.feedItem.secondaryText }}>
+              Loading...
+            </Text>
+          )}
+          {!companiesQuery.isLoading && filteredCompanies.length === 0 && (
+            <Text style={{ color: theme.colors.feedItem.secondaryText }}>
+              No companies found
+            </Text>
+          )}
+
+          {filteredCompanies.map((company) => (
+            <View
+              key={company.id}
+              style={[
+                styles.companyRow,
+                { borderBottomColor: theme.colors.border },
+              ]}
+            >
+              <View style={styles.companyLeft}>
+                <Image
+                  source={{ uri: company.profile_picture }}
+                  style={styles.companyLogo}
+                  contentFit="cover"
+                  transition={150}
+                />
+                <Text
+                  numberOfLines={1}
+                  style={[styles.companyName, { color: theme.colors.text }]}
+                  onPress={() => handleSelectCompany(company)}
+                >
+                  {company.name}
+                </Text>
+              </View>
+              <Text
+                style={{ color: theme.colors.feedItem.secondaryText }}
+                onPress={() => handleSelectCompany(company)}
+              >
+                Select
+              </Text>
+            </View>
+          ))}
+
+          <View style={{ height: 20 }} />
+        </BottomSheetScrollView>
+      </BottomSheet>
+    </Portal>
+  );
+}
+
+const styles = StyleSheet.create({
+  handleIndicator: {
+    width: 40,
+  },
+  searchContainer: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 12,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 16,
+  },
+  scrollView: {
+    paddingHorizontal: 16,
+  },
+  scrollContent: {
+    paddingBottom: 30,
+  },
+  companyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  companyLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    flex: 1,
+  },
+  companyLogo: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+  },
+  companyName: {
+    fontSize: 15,
+    fontWeight: '600',
+    flex: 1,
+  },
+});

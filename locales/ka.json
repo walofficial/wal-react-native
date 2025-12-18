@@ -2,6 +2,7 @@
   "settings": {
     "general": "ზოგადი",
     "account": "ანგარიში",
+    "user_preferences": "მომხმარებლის პარამეტრები",
     "change_photo": "ფოტოს შეცვლა",
     "telegram_channel": "Telegram არხი",
     "blocked_users": "დაბლოკილი მომხმარებლები",
@@ -117,6 +118,7 @@
     "minute_short": "m",
     "hour_short": "h",
     "day_short": "d",
+    "notifications": "შეტყობინებები",
     "month_short": "mo",
     "year_short": "y",
     "neutral": "ნეიტრალი",

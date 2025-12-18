@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useMemo, useRef } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useProfileInformation } from '@/hooks/useProfileInformation';
 import { convertToCDNUrl } from '@/lib/utils';
 import UserCircleProfile from '../UserCircleProfile';
@@ -8,6 +8,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Text } from '@/components/ui/text';
 import { Image } from 'expo-image';
 import { useTheme } from '@/lib/theme';
+import useAuth from '@/hooks/useAuth';
+import BottomSheet from '@gorhom/bottom-sheet';
+import CompanySelectorSheet from '@/components/UserPreferences/CompanySelectorSheet';
+import BioEditorSheet from '@/components/UserPreferences/BioEditorSheet';
+import ProfilePhotoEditSheet from '@/components/UserPreferences/ProfilePhotoEditSheet';
 
 interface ProfileViewProps {
   userId: string;
@@ -20,7 +25,19 @@ export default function ProfileView({ userId }: ProfileViewProps) {
     isFetching,
   } = useProfileInformation(userId);
   const theme = useTheme();
+  const { user } = useAuth();
+  const isAuthUser = user?.id === userId;
   const isLoadingData = isLoading || isFetching;
+
+  const photoSheetRef = useRef<BottomSheet>(null);
+  const companySheetRef = useRef<BottomSheet>(null);
+  const bioSheetRef = useRef<BottomSheet>(null);
+
+  const shouldShowMeta = useMemo(() => {
+    if (isLoadingData) return false;
+    return Boolean(isAuthUser || profile?.company || profile?.bio);
+  }, [isAuthUser, isLoadingData, profile?.bio, profile?.company]);
+  const isCompanyPressable = isAuthUser && !profile?.bio;
 
   return (
     <>
@@ -31,39 +48,93 @@ export default function ProfileView({ userId }: ProfileViewProps) {
             : convertToCDNUrl(profile?.photos[0].image_url[0] || '')
         }
         userId={userId}
+        onPressAuthUser={() => photoSheetRef.current?.snapToIndex(0)}
       />
-      {!isLoadingData && (profile?.company || profile?.bio) && (
+      {shouldShowMeta && (
         <View style={styles.metaContainer}>
-          {profile?.company && (
-            <View style={styles.companyRow}>
-              <Image
-                source={{ uri: profile.company.profile_picture }}
-                style={[
-                  styles.companyLogo,
-                  { backgroundColor: theme.colors.card.background },
-                ]}
-                contentFit="cover"
-              />
+          <TouchableOpacity
+            activeOpacity={isCompanyPressable ? 0.7 : 1}
+            disabled={!isCompanyPressable}
+            onPress={() => companySheetRef.current?.snapToIndex(0)}
+            style={[
+              styles.companyRow,
+              isCompanyPressable && {
+                opacity: 0.85,
+              },
+            ]}
+          >
+            {profile?.company ? (
+              <>
+                <Image
+                  source={{ uri: profile.company.profile_picture }}
+                  style={[
+                    styles.companyLogo,
+                    { backgroundColor: theme.colors.card.background },
+                  ]}
+                  contentFit="cover"
+                />
+                <Text
+                  numberOfLines={1}
+                  style={[styles.companyText, { color: theme.colors.text }]}
+                >
+                  {profile.company.name}
+                </Text>
+              </>
+            ) : (
               <Text
                 numberOfLines={1}
-                style={[styles.companyText, { color: theme.colors.text }]}
+                style={[
+                  styles.companyText,
+                  { color: theme.colors.feedItem.secondaryText },
+                ]}
               >
-                {profile.company.name}
+                {isAuthUser ? 'Set company' : ''}
               </Text>
-            </View>
-          )}
+            )}
+          </TouchableOpacity>
+
           {profile?.bio ? (
-            <Text
-              style={[
-                styles.bioText,
-                { color: theme.colors.feedItem.secondaryText },
-              ]}
-            >
-              {profile.bio}
-            </Text>
+            <View style={styles.bioRow}>
+              <Text
+                style={[
+                  styles.bioText,
+                  { color: theme.colors.feedItem.secondaryText },
+                ]}
+              >
+                {profile.bio}
+              </Text>
+              {isAuthUser ? (
+                <TouchableOpacity
+                  onPress={() => bioSheetRef.current?.snapToIndex(0)}
+                  style={styles.bioEditButton}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons
+                    name="pencil"
+                    size={14}
+                    color={theme.colors.feedItem.secondaryText}
+                  />
+                </TouchableOpacity>
+              ) : null}
+            </View>
           ) : null}
         </View>
       )}
+
+      {isAuthUser ? (
+        <>
+          <ProfilePhotoEditSheet bottomSheetRef={photoSheetRef} />
+          <CompanySelectorSheet
+            bottomSheetRef={companySheetRef}
+            userId={userId}
+          />
+          <BioEditorSheet
+            bottomSheetRef={bioSheetRef}
+            userId={userId}
+            initialBio={profile?.bio}
+          />
+        </>
+      ) : null}
     </>
   );
 }
@@ -132,12 +203,25 @@ const styles = StyleSheet.create({
   companyText: {
     fontSize: 14,
     fontWeight: '600',
+    maxWidth: '90%',
+  },
+  bioRow: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+    maxWidth: '92%',
   },
   bioText: {
     fontSize: 14,
     lineHeight: 20,
     textAlign: 'center',
-    maxWidth: '92%',
+    maxWidth: '100%',
+  },
+  bioEditButton: {
+    position: 'absolute',
+    right: -18,
+    top: 2,
+    padding: 4,
   },
   centeredContainer: {
     alignItems: 'center',

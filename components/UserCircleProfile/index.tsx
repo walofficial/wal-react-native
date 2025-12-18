@@ -7,9 +7,11 @@ import useAuth from '@/hooks/useAuth';
 function UserCircleProfile({
   photo,
   userId,
+  onPressAuthUser,
 }: {
   photo?: string;
   userId: string;
+  onPressAuthUser?: () => void;
 }) {
   const { user } = useAuth();
   const isAuthUser = user?.id === userId;
@@ -19,7 +21,7 @@ function UserCircleProfile({
       <TouchableOpacity
         onPress={() => {
           if (isAuthUser) {
-            router.navigate('/(tabs)/(user)/change-photo');
+            onPressAuthUser?.();
           } else {
             router.navigate({
               pathname: '/(tabs)/(home)/profile-picture',
