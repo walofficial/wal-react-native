@@ -10,8 +10,6 @@ import useReportTask from '@/hooks/useReportTask';
 import useBlockUser from '@/hooks/useBlockUser';
 import useDeleteFriendMutation from '@/hooks/useDeleteFriendMutation';
 import { useMakePublicMutation } from '@/hooks/useMakePublicMutation';
-import { shareUrl } from '@/lib/share';
-import { app_name_slug } from '@/app.config';
 import { useTheme } from '@/lib/theme';
 import { t } from '@/lib/i18n';
 import { isAndroid } from '@/lib/platform';
@@ -73,14 +71,6 @@ function MenuView({
     });
   };
 
-  const handleShare = async () => {
-    try {
-      await shareUrl(`https://${app_name_slug}.ge/status/${verificationId}`);
-    } catch (error) {
-      console.error('Error sharing:', error);
-    }
-  };
-
   return (
     <RNMenuView
       ref={menuRef}
@@ -96,18 +86,12 @@ function MenuView({
           handleMakePublic(false);
         } else if (nativeEvent.event === 'show-post') {
           handleMakePublic(true);
-        } else if (nativeEvent.event === 'share') {
-          handleShare();
         }
       }}
       shouldOpenOnLongPress={false}
       actions={
         isAuthor
           ? [
-              {
-                id: 'share',
-                title: t('common.share'),
-              },
               ...(isPublic
                 ? [
                     {
@@ -124,10 +108,6 @@ function MenuView({
                   ]),
             ]
           : [
-              {
-                id: 'share',
-                title: t('common.share'),
-              },
               {
                 id: 'block',
                 title: t('common.block'),

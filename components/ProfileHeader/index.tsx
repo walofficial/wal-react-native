@@ -1,36 +1,22 @@
-import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-  Platform,
-  Keyboard,
-  BackHandler,
-} from 'react-native';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { View, StyleSheet, Keyboard } from 'react-native';
 import {
   Link,
   useRouter,
-  useGlobalSearchParams,
   usePathname,
   useLocalSearchParams,
 } from 'expo-router';
-import { TabBarIcon } from '../navigation/TabBarIcon';
 import { Text } from '../ui/text';
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
-  Easing,
-  withSpring,
-  cancelAnimation,
 } from 'react-native-reanimated';
 import { HEADER_HEIGHT, HEADER_HEIGHT_WITH_TABS } from '@/lib/constants';
 import { isWeb } from '@/lib/platform';
 import ProfileHeaderWeb from './web';
-import { FontSizes, useTheme } from '@/lib/theme';
+import { FontSizes } from '@/lib/theme';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { scrollToTopState } from '@/lib/atoms/location';
 import { useMinimalShellHeaderTransform } from '@/hooks/useMinimalShellHeaderTransform';
@@ -38,16 +24,15 @@ import {
   isSearchActiveAtom,
   searchInputValueAtom,
   setDebouncedSearchAtom,
-  resetSearchAtom,
 } from '@/lib/state/search';
 // Location imports
 import useLocationsInfo from '@/hooks/useLocationsInfo';
-import useGoLive from '@/hooks/useGoLive';
 // Separated components
 import { SearchBar } from './SearchBar';
 import { SearchOverlay } from './SearchOverlay';
-import { TabBar } from './TabBar';
 import { useUserFeedIds } from '@/hooks/useUserFeedIds';
+import { Ionicons } from '@expo/vector-icons';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 function ProfileHeader({
   feedId,
@@ -56,7 +41,6 @@ function ProfileHeader({
   isAnimated = true,
   customButtons,
   showSearch = false,
-  showLocationTabs = false,
   showTabs = false,
   content_type,
 }: {
@@ -65,12 +49,13 @@ function ProfileHeader({
   isAnimated?: boolean;
   customButtons?: React.ReactNode;
   showSearch?: boolean;
-  showLocationTabs?: boolean;
   showTabs?: boolean;
   feedId?: string;
   content_type?: string;
 }) {
   const pathname = usePathname();
+  const params = useLocalSearchParams<{ feedId?: string }>();
+  const currentFeedId = feedId ?? params.feedId ?? '';
 
   const iconTranslateX = useSharedValue(0);
   const setHeaderHeight = useSetAtom(HEADER_HEIGHT);
@@ -78,7 +63,6 @@ function ProfileHeader({
   const { isDarkColorScheme } = useColorScheme();
 
   const router = useRouter();
-  const activeTab = content_type;
   const setScrollToTop = useSetAtom(scrollToTopState);
   const { categoryId } = useUserFeedIds();
 
@@ -87,7 +71,7 @@ function ProfileHeader({
     data: locationData,
     isFetching: isLocationFetching,
     errorMsg: locationError,
-  } = useLocationsInfo(categoryId, showLocationTabs);
+  } = useLocationsInfo(categoryId);
 
   // Search state
   const [isSearchActive, setIsSearchActive] = useAtom(isSearchActiveAtom);
@@ -116,47 +100,48 @@ function ProfileHeader({
   const handleTabPress = (tabKey: string) => {
     if (!isMountedRef.current) return;
 
-    if (showLocationTabs) {
-      // Handle location tab navigation
-      handleLocationTabPress(tabKey);
-    } else {
-      // Handle regular content type tabs
-      router.setParams({ content_type: tabKey });
-      // Trigger scroll to top for the main list
-      setScrollToTop(Date.now());
-    }
+    // Handle regular content type tabs
+    router.setParams({ content_type: tabKey });
+    // Trigger scroll to top for the main list
+    setScrollToTop(Date.now());
   };
 
-  const handleLocationTabPress = (tabKey: string) => {
-    if (!locationData) return;
+  const locationFeedIds = useMemo(() => {
+    const ids: string[] = [];
+    for (const feed of locationData?.feeds_at_location ?? []) {
+      if (feed?.id) ids.push(feed.id);
+    }
+    for (const entry of locationData?.nearest_feeds ?? []) {
+      const id = entry?.feed?.id;
+      if (id) ids.push(id);
+    }
+    return ids;
+  }, [locationData]);
 
-    // Handle task at location tabs (feedId format)
-    if (locationData.feeds_at_location?.find((task) => task.id === tabKey)) {
-      // Navigate to task at location
-      router.navigate({
-        pathname: '/(tabs)/(home)/[feedId]',
-        params: {
-          feedId: tabKey,
-        },
-      });
+  const handleOpenLocationsList = () => {
+    router.navigate('/(tabs)/(home)/locations');
+  };
+
+  const handleJumpToNextLocation = () => {
+    if (!locationFeedIds.length) {
+      router.navigate('/(tabs)/(home)/locations');
       return;
     }
 
-    // Handle nearest tasks tabs (nearTask_feedId format)
-    if (tabKey.startsWith('nearTask_')) {
-      const actualfeedId = tabKey.replace('nearTask_', '');
-      const nearTask = locationData.nearest_feeds?.find(
-        (item) => item.feed.id === actualfeedId,
-      );
-      if (nearTask) {
-        router.navigate({
-          pathname: '/(tabs)/(home)/[feedId]',
-          params: {
-            feedId: actualfeedId,
-          },
-        });
-      }
-    }
+    const currentIndex = currentFeedId
+      ? locationFeedIds.findIndex((id) => id === currentFeedId)
+      : -1;
+    const nextIndex =
+      currentIndex >= 0 ? (currentIndex + 1) % locationFeedIds.length : 0;
+    const nextFeedId = locationFeedIds[nextIndex];
+    if (!nextFeedId) return;
+
+    router.navigate({
+      pathname: '/(tabs)/(home)/[feedId]',
+      params: {
+        feedId: nextFeedId,
+      },
+    });
   };
 
   const handleSearchPress = () => {
@@ -172,42 +157,6 @@ function ProfileHeader({
     setSearchValue('');
     setDebouncedSearch('');
   };
-
-  // Tab config for locations
-  const locationTabItems = React.useMemo(() => {
-    if (!locationData) return [];
-
-    const items = [];
-
-    // Add tasks at location first
-    if (locationData.feeds_at_location?.length) {
-      items.push(
-        ...locationData.feeds_at_location.map((task) => ({
-          key: task.id,
-          label: task.display_name,
-          icon: null,
-          isCurrentLocation: true,
-          task,
-        })),
-      );
-    }
-
-    // Add nearby tasks
-    if (locationData.nearest_feeds?.length) {
-      items.push(
-        ...locationData.nearest_feeds.map(({ feed, nearest_location }) => ({
-          key: `nearTask_${feed.id}`,
-          label: feed.display_name,
-          icon: null,
-          isCurrentLocation: false,
-          feed,
-          address: nearest_location?.address,
-        })),
-      );
-    }
-
-    return items;
-  }, [locationData]);
 
   const headerContentAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -237,6 +186,40 @@ function ProfileHeader({
     }
   }, [isSearchActive]);
 
+  const shouldShowLocationsButton =
+    !isWeb && !isSearchActive && pathname.includes('/(tabs)/(home)');
+
+  const singleTap = useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(1)
+        .maxDuration(250)
+        .onEnd((_e, success) => {
+          if (success) {
+            handleOpenLocationsList();
+          }
+        }),
+    [locationFeedIds, currentFeedId, pathname],
+  );
+
+  const doubleTap = useMemo(
+    () =>
+      Gesture.Tap()
+        .numberOfTaps(2)
+        .maxDuration(300)
+        .onEnd((_e, success) => {
+          if (success) {
+            handleJumpToNextLocation();
+          }
+        }),
+    [locationFeedIds, currentFeedId],
+  );
+
+  const mapGesture = useMemo(
+    () => Gesture.Exclusive(doubleTap, singleTap),
+    [doubleTap, singleTap],
+  );
+
   return (
     <Animated.View
       style={[
@@ -252,7 +235,7 @@ function ProfileHeader({
         // This change was happening during tab navigation.
         const height = event.nativeEvent.layout.height;
         if (height > 5) {
-          if (showTabs || showLocationTabs) {
+          if (showTabs) {
             setHeaderHeightWithTabs(height);
           } else {
             setHeaderHeight(height);
@@ -296,6 +279,18 @@ function ProfileHeader({
                 onSearchCancel={handleSearchCancel}
               />
 
+              {shouldShowLocationsButton && (
+                <GestureDetector gesture={mapGesture}>
+                  <View style={styles.iconHitSlop}>
+                    <Ionicons
+                      name="map-outline"
+                      size={22}
+                      color={isDarkColorScheme ? '#FFFFFF' : '#000000'}
+                    />
+                  </View>
+                </GestureDetector>
+              )}
+
               {/* Only show other buttons when search is not active */}
               {!isSearchActive && !showSearch && <>{customButtons}</>}
             </View>
@@ -308,16 +303,6 @@ function ProfileHeader({
           onSearchCancel={handleSearchCancel}
         />
       </View>
-      {/* Tab Bar Component */}
-      {/* <TabBar
-        showTabs={showTabs}
-        tabItems={locationTabItems}
-        //@ts-ignore
-        activeTab={activeTab}
-        showLocationTabs={showLocationTabs}
-        onTabPress={handleTabPress}
-        feedId={feedId}
-      /> */}
     </Animated.View>
   );
 }
@@ -352,6 +337,11 @@ const styles = StyleSheet.create({
   buttonWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  iconHitSlop: {
+    paddingHorizontal: 6,
+    paddingVertical: 6,
+    borderRadius: 10,
   },
   badge: {
     backgroundColor: '#db2777', // pink-600

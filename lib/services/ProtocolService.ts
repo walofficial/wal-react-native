@@ -1,13 +1,16 @@
-import crypto from 'react-native-quick-crypto';
-import { Buffer } from '@craftzdog/react-native-buffer';
+import {
+  crypto_box_keypair,
+  crypto_box_easy,
+  crypto_box_open_easy,
+  randombytes_buf,
+  to_base64,
+  from_base64,
+  to_string,
+  crypto_box_NONCEBYTES,
+} from 'react-native-libsodium';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const KEYS_STORAGE = 'user_keys_v2';
-
-// ChaCha20-Poly1305 uses 12-byte nonce
-const NONCE_BYTES = 12;
-// Auth tag is 16 bytes for ChaCha20-Poly1305
-const AUTH_TAG_BYTES = 16;
 
 interface KeyPair {
   publicKey: string;
@@ -40,18 +43,12 @@ class SignalProtocolService {
       };
     }
 
-    // Generate new X25519 key pair
-    const keyPair = crypto.generateKeyPairSync('x25519', {
-      publicKeyEncoding: { type: 'spki', format: 'der' },
-      privateKeyEncoding: { type: 'pkcs8', format: 'der' },
-    });
-
-    const publicKey = keyPair.publicKey as ArrayBuffer;
-    const privateKey = keyPair.privateKey as ArrayBuffer;
+    // Generate new X25519 key pair (libsodium crypto_box keypair)
+    const keyPair = crypto_box_keypair();
 
     // Convert to base64 for storage
-    const publicKeyBase64 = Buffer.from(publicKey).toString('base64');
-    const privateKeyBase64 = Buffer.from(privateKey).toString('base64');
+    const publicKeyBase64 = to_base64(keyPair.publicKey);
+    const privateKeyBase64 = to_base64(keyPair.privateKey);
 
     const registrationId = Math.floor(Math.random() * 16383) + 1;
 
@@ -101,37 +98,22 @@ class SignalProtocolService {
     }
 
     const recipientPublicKeyBase64 = JSON.parse(remoteKeyBundle).publicKey;
+    const recipientPublicKey = from_base64(recipientPublicKeyBase64);
+    const senderSecretKey = from_base64(keyPair.privateKey);
 
-    // Derive shared secret using Diffie-Hellman
-    const sharedSecret = this.deriveSharedSecret(
-      keyPair.privateKey,
-      recipientPublicKeyBase64,
-    );
+    // Generate nonce (24 bytes for crypto_box)
+    const nonce = randombytes_buf(crypto_box_NONCEBYTES);
 
-    // Generate nonce (12 bytes for ChaCha20-Poly1305)
-    const nonce = crypto.randomBytes(NONCE_BYTES);
-
-    // Encrypt with ChaCha20-Poly1305
-    const cipher = crypto.createCipheriv(
-      'chacha20-poly1305',
-      sharedSecret,
+    const encrypted = crypto_box_easy(
+      message,
       nonce,
-      { authTagLength: AUTH_TAG_BYTES },
+      recipientPublicKey,
+      senderSecretKey,
     );
-
-    const messageBuffer = Buffer.from(message, 'utf-8');
-    const encrypted = Buffer.concat([
-      cipher.update(messageBuffer),
-      cipher.final(),
-    ]);
-
-    // Get auth tag and append to ciphertext
-    const authTag = cipher.getAuthTag();
-    const encryptedWithTag = Buffer.concat([encrypted, authTag]);
 
     return {
-      encrypted_content: encryptedWithTag.toString('base64'),
-      nonce: nonce.toString('base64'),
+      encrypted_content: to_base64(encrypted),
+      nonce: to_base64(nonce),
     };
   }
 
@@ -152,69 +134,20 @@ class SignalProtocolService {
     }
 
     const senderPublicKeyBase64 = JSON.parse(remoteKeyBundle).publicKey;
+    const senderPublicKey = from_base64(senderPublicKeyBase64);
+    const recipientSecretKey = from_base64(keyPair.privateKey);
 
-    // Derive shared secret using Diffie-Hellman
-    const sharedSecret = this.deriveSharedSecret(
-      keyPair.privateKey,
-      senderPublicKeyBase64,
-    );
+    const nonce = from_base64(encryptedData.nonce);
+    const ciphertext = from_base64(encryptedData.encryptedMessage);
 
-    // Decode nonce and ciphertext
-    const nonce = Buffer.from(encryptedData.nonce, 'base64');
-    const encryptedWithTag = Buffer.from(
-      encryptedData.encryptedMessage,
-      'base64',
-    );
-
-    // Split ciphertext and auth tag
-    const ciphertext = encryptedWithTag.subarray(0, -AUTH_TAG_BYTES);
-    const authTag = encryptedWithTag.subarray(-AUTH_TAG_BYTES);
-
-    // Decrypt with ChaCha20-Poly1305
-    const decipher = crypto.createDecipheriv(
-      'chacha20-poly1305',
-      sharedSecret,
+    const decrypted = crypto_box_open_easy(
+      ciphertext,
       nonce,
-      { authTagLength: AUTH_TAG_BYTES },
+      senderPublicKey,
+      recipientSecretKey,
     );
 
-    decipher.setAuthTag(authTag);
-
-    const decrypted = Buffer.concat([
-      decipher.update(ciphertext),
-      decipher.final(),
-    ]);
-
-    return decrypted.toString('utf-8');
-  }
-
-  private deriveSharedSecret(
-    privateKeyBase64: string,
-    publicKeyBase64: string,
-  ): Buffer {
-    // Create KeyObjects from the stored keys
-    const privateKeyDer = Buffer.from(privateKeyBase64, 'base64');
-    const publicKeyDer = Buffer.from(publicKeyBase64, 'base64');
-
-    const privateKey = crypto.createPrivateKey({
-      key: privateKeyDer,
-      format: 'der',
-      type: 'pkcs8',
-    });
-
-    const publicKey = crypto.createPublicKey({
-      key: publicKeyDer,
-      format: 'der',
-      type: 'spki',
-    });
-
-    // Compute shared secret using Diffie-Hellman
-    const sharedSecret = crypto.diffieHellman({
-      privateKey,
-      publicKey,
-    }) as Buffer;
-
-    return sharedSecret;
+    return to_string(decrypted);
   }
 
   private async getKeyPair(): Promise<KeyPair | null> {

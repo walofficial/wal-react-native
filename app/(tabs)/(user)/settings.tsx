@@ -67,6 +67,21 @@ export default function ProfileMain() {
           <Button
             variant="list"
             fullWidth
+            title="Bio & Work"
+            iconElement={
+              <Ionicons
+                size={LIST_ICON_SIZE}
+                name="briefcase-outline"
+                color={theme.colors.icon}
+              />
+            }
+            onPress={() => navigation.navigate('/(tabs)/(user)/bio-work')}
+            style={styles.settingsButton}
+          />
+
+          <Button
+            variant="list"
+            fullWidth
             title={t('settings.language_and_region')}
             icon="globe-outline"
             iconColor={theme.colors.icon}

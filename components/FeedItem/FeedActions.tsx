@@ -14,8 +14,6 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
-import CommentButton from './CommentButton';
-import ShareButton from './ShareButton';
 import { useTheme } from '@/lib/theme';
 import { useRouter, usePathname } from 'expo-router';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
@@ -274,19 +272,9 @@ const FeedActions: React.FC<FeedActionsProps> = ({
         <View style={styles.actionsWrapper}>
           <View style={styles.actionGroup}>
             {/* {!hideUserRects && <LikeButton verificationId={verificationId} />} */}
-            {!hideUserRects && (
-              <CommentButton
-                // style={{ marginLeft: 12 }}
-                large
-                verificationId={verificationId}
-              />
-            )}
             <Pressable
               onPress={handleFactualityPress}
-              style={[
-                styles.factualityContainer,
-                { marginLeft: hideUserRects ? 0 : 12 },
-              ]}
+              style={[styles.factualityContainer, { marginLeft: 0 }]}
             >
               {badgeInfo &&
                 showFactualityBadge &&
@@ -308,9 +296,6 @@ const FeedActions: React.FC<FeedActionsProps> = ({
                 <MetadataLoader style={metadataAnimatedStyle} />
               )}
             </Pressable>
-          </View>
-          <View style={styles.actionGroup}>
-            <ShareButton verificationId={verificationId} />
           </View>
         </View>
       </View>
