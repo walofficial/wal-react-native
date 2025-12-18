@@ -10,48 +10,14 @@ import { isIOS } from '@/lib/platform';
 import { trackEvent } from '@/lib/analytics';
 
 export default function BottomLocationActions({
-  feedId,
   isUserInSelectedLocation,
 }: {
-  feedId: string;
-  onExpandLiveUsers?: () => void; // Make this optional
   isUserInSelectedLocation: boolean;
 }) {
-  const { data } = useCountAnonList(feedId);
-  const { isDarkColorScheme } = useColorScheme();
-  const setIsBottomSheetOpen = useSetAtom(locationUserListSheetState);
-
-  const handlePress = () => {
-    trackEvent('location_feed_live_users_button_pressed', {});
-
-    setIsBottomSheetOpen(false);
-    if (data && data.count > 0) {
-      setIsBottomSheetOpen(true);
-    }
-  };
-
   const bottomPosition = 20;
   return (
     <>
       <View style={[styles.container, { bottom: bottomPosition }]}>
-        <TouchableOpacity
-          onPress={handlePress}
-          style={[
-            styles.liveUsersButton,
-            {
-              opacity: !isUserInSelectedLocation ? 0.5 : 1,
-              backgroundColor: isDarkColorScheme
-                ? 'rgba(0,0,0,0.7)'
-                : 'rgba(240,240,240,0.9)',
-              borderColor: isDarkColorScheme
-                ? 'rgba(255,255,255,0.1)'
-                : 'rgba(0,0,0,0.1)',
-            },
-          ]}
-        >
-          <LiveUserCountIndicator feedId={feedId} />
-        </TouchableOpacity>
-
         <TakeVideo disabled={!isUserInSelectedLocation} />
       </View>
     </>
@@ -63,7 +29,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor: 'transparent',
