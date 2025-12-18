@@ -176,6 +176,12 @@ export type ProfileInformationResponse = {
   photos: Photo[];
   is_friend: boolean;
   user_id: string;
+  bio?: string | null;
+  company?: {
+    id: string;
+    name: string;
+    profile_picture: string;
+  } | null;
 };
 
 export type GetRoomPreviewResponse = {

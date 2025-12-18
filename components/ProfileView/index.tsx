@@ -6,6 +6,8 @@ import UserCircleProfile from '../UserCircleProfile';
 import { spacing } from '@/utils/styleUtils';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Text } from '@/components/ui/text';
+import { Image } from 'expo-image';
+import { useTheme } from '@/lib/theme';
 
 interface ProfileViewProps {
   userId: string;
@@ -17,6 +19,7 @@ export default function ProfileView({ userId }: ProfileViewProps) {
     isLoading,
     isFetching,
   } = useProfileInformation(userId);
+  const theme = useTheme();
   const isLoadingData = isLoading || isFetching;
 
   return (
@@ -29,6 +32,38 @@ export default function ProfileView({ userId }: ProfileViewProps) {
         }
         userId={userId}
       />
+      {!isLoadingData && (profile?.company || profile?.bio) && (
+        <View style={styles.metaContainer}>
+          {profile?.company && (
+            <View style={styles.companyRow}>
+              <Image
+                source={{ uri: profile.company.profile_picture }}
+                style={[
+                  styles.companyLogo,
+                  { backgroundColor: theme.colors.card.background },
+                ]}
+                contentFit="cover"
+              />
+              <Text
+                numberOfLines={1}
+                style={[styles.companyText, { color: theme.colors.text }]}
+              >
+                {profile.company.name}
+              </Text>
+            </View>
+          )}
+          {profile?.bio ? (
+            <Text
+              style={[
+                styles.bioText,
+                { color: theme.colors.feedItem.secondaryText },
+              ]}
+            >
+              {profile.bio}
+            </Text>
+          ) : null}
+        </View>
+      )}
     </>
   );
 }
@@ -77,6 +112,33 @@ function StatCard({
 }
 
 const styles = StyleSheet.create({
+  metaContainer: {
+    paddingHorizontal: 24,
+    paddingBottom: 8,
+    alignItems: 'center',
+    gap: 8,
+  },
+  companyRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    maxWidth: '90%',
+  },
+  companyLogo: {
+    width: 18,
+    height: 18,
+    borderRadius: 4,
+  },
+  companyText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  bioText: {
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: 'center',
+    maxWidth: '92%',
+  },
   centeredContainer: {
     alignItems: 'center',
     justifyContent: 'center',

@@ -34,12 +34,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
 import { t } from '@/lib/i18n';
 import LiveStreamViewer from '../LiveStreamViewer';
+import { BlurView } from 'expo-blur';
 
 interface MediaContentProps {
   videoUrl?: string;
   imageGalleryWithDims: FeedPost['image_gallery_with_dims'];
   isLive?: boolean;
   isVisible: boolean;
+  isLocked?: boolean;
   redirectUrl?: string;
   verificationId: string;
   feedId?: string;
@@ -64,6 +66,7 @@ function MediaContent({
   imageGalleryWithDims,
   isLive,
   isVisible,
+  isLocked,
   verificationId,
   feedId,
   livekitRoomName,
@@ -237,7 +240,23 @@ function MediaContent({
 
   const renderContent = () => (
     <GestureDetector gesture={gestures}>
-      <View style={styles.mediaContainer}>{renderMediaContent()}</View>
+      <View style={styles.mediaContainer}>
+        {renderMediaContent()}
+        {!!isLocked && (
+          <View style={styles.lockOverlay} pointerEvents="none">
+            <BlurView
+              intensity={35}
+              tint="dark"
+              style={StyleSheet.absoluteFill}
+            />
+            <View style={styles.lockOverlayBackdrop} />
+            <View style={styles.lockOverlayContent}>
+              <Ionicons name="lock-closed-outline" size={18} color="#FFFFFF" />
+              <Text style={styles.lockOverlayText}>Arrive to view</Text>
+            </View>
+          </View>
+        )}
+      </View>
     </GestureDetector>
   );
   // Extract media content rendering to a separate function
@@ -256,13 +275,22 @@ function MediaContent({
           topControls={<View />}
         />
       ) : videoUrl ? (
-        <SimplifiedVideoPlayback
-          src={videoUrl}
-          shouldPlay={isVisible}
-          isLive={isLive}
-          loop={false}
-          thumbnail={convertToCDNUrl(thumbnail || '')}
-        />
+        isLocked ? (
+          <Image
+            source={{ uri: convertToCDNUrl(thumbnail || '') }}
+            style={styles.lockedVideoThumb}
+            contentFit="cover"
+            blurRadius={24}
+          />
+        ) : (
+          <SimplifiedVideoPlayback
+            src={videoUrl}
+            shouldPlay={isVisible}
+            isLive={isLive}
+            loop={false}
+            thumbnail={convertToCDNUrl(thumbnail || '')}
+          />
+        )
       ) : images[0] ? (
         <View style={styles.singleImageContainer}>
           <AutoSizedImage
@@ -336,6 +364,33 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     borderRadius: 8,
     overflow: 'hidden',
+  },
+  lockOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  lockOverlayBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.20)',
+  },
+  lockOverlayContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+  },
+  lockOverlayText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  lockedVideoThumb: {
+    width: '100%',
+    aspectRatio: 1.5,
   },
   singleImage: {
     width: '100%',

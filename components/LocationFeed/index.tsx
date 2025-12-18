@@ -37,6 +37,7 @@ import { ThemedText } from '../ThemedText';
 import { getCurrentLocale } from '@/lib/i18n';
 import { trackEvent } from '@/lib/analytics';
 import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
+import HorizontalAnonList from '../HorizontalAnonList';
 
 type Location = {
   nearest_location: {
@@ -254,10 +255,16 @@ export default function LocationFeed({
           previewData={item.preview_data}
           thumbnail={item.verified_media_playback?.thumbnail || ''}
           liveEndedAt={item.live_ended_at}
+          isLocationLocked={!isUserInSelectedLocation}
         />
       );
     },
-    [handleNavigateToVerification, currentViewableItemIndex, convertToNewsItem],
+    [
+      handleNavigateToVerification,
+      currentViewableItemIndex,
+      convertToNewsItem,
+      isUserInSelectedLocation,
+    ],
   );
 
   const [scrollToTop] = useAtom(scrollToTopState);
@@ -284,12 +291,16 @@ export default function LocationFeed({
     });
   }, [refetch, queryClient, feedId]);
 
+  const listHeader = useCallback(() => {
+    return <HorizontalAnonList feedId={feedId as string} />;
+  }, [feedId]);
   return (
     <>
       <PostsFeed
         ref={flashListRef}
         data={items}
         headerOffset={headerHeight}
+        ListHeaderComponent={listHeader}
         renderItem={renderItem}
         ListEmptyComponent={
           <ListEmptyComponent
@@ -317,14 +328,6 @@ export default function LocationFeed({
             />
           </Animated.View>
         </Suspense>
-      )}
-
-      {!isWeb && (
-        <LocationUserListSheet
-          bottomSheetRef={
-            locationUserListSheetRef as unknown as RefObject<BottomSheetMethods>
-          }
-        />
       )}
     </>
   );

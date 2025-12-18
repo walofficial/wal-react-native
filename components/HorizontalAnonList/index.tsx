@@ -1,20 +1,17 @@
 import React from 'react';
-import { View, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
+import { View, Pressable, ScrollView, StyleSheet } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import UserLiveItem from '@/components/UserLiveItem';
 import useLiveUser from '@/hooks/useLiveUser';
 import useAuth from '@/hooks/useAuth';
-import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import { useTheme } from '@/lib/theme';
-import { locationUserListSheetState } from '@/lib/atoms/location';
-import { useAtom } from 'jotai';
 import { useIsFocused } from '@react-navigation/native';
 import { getLiveUsersOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { trackEvent } from '@/lib/analytics';
+import { UserLiveItemSkeleton } from '@/components/UserLiveItem';
 
 const MAX_ITEMS = 30;
-const COLUMNS = 4;
 
 const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
   const theme = useTheme();
@@ -31,9 +28,6 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
     staleTime: 5000,
     refetchInterval: isFocused ? 3000 : false,
   });
-  const [isBottomSheetOpen, setIsBottomSheetOpen] = useAtom(
-    locationUserListSheetState,
-  );
 
   const { user } = useAuth();
 
@@ -44,72 +38,95 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
       a.user.id === user.id ? -1 : b.user.id === user.id ? 1 : 0,
     );
 
+  const separatorColor =
+    theme.colors.background === '#000000'
+      ? 'rgba(255,255,255,0.08)'
+      : 'rgba(0,0,0,0.08)';
+
+  if (!isFetching && items.length === 0) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
-      <BottomSheetScrollView showsHorizontalScrollIndicator={false}>
-        <View style={styles.gridContainer}>
-          {items.map((item, index) => (
-            <Animated.View
-              entering={FadeIn.delay(index * 100)}
-              key={item.user.id}
-            >
-              <TouchableOpacity
-                style={[
-                  styles.itemContainer,
-                  {
-                    width: Dimensions.get('window').width / COLUMNS - 5,
-                    borderColor: theme.colors.border,
-                  },
-                ]}
-                onPress={() => {
-                  if (item.user.id === user.id) return;
-                  trackEvent('location_feed_live_users_button_pressed', {});
+      <View style={[styles.headerRow, { borderColor: separatorColor }]}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          {isFetching
+            ? Array.from({ length: 8 }).map((_, idx) => (
+                <View style={styles.storyItem} key={`skeleton_${idx}`}>
+                  <UserLiveItemSkeleton size="md" />
+                </View>
+              ))
+            : items.map((item, index) => (
+                <Animated.View
+                  entering={FadeIn.delay(index * 40)}
+                  key={item.user.id}
+                  style={styles.storyItem}
+                >
+                  <Pressable
+                    onPress={() => {
+                      if (item.user.id === user.id) return;
+                      trackEvent('location_feed_live_users_button_pressed', {});
 
-                  setIsBottomSheetOpen(false);
-                  requestAnimationFrame(() => {
-                    joinChat.mutate({
-                      targetUserId: item.user.id,
-                    });
-                  });
-                }}
-              >
-                <UserLiveItem
-                  showName={item.user.id !== user.id}
-                  size="lg"
-                  color={item.is_friend ? 'green' : 'pink'}
-                  isLoading={
-                    joinChat.isPending &&
-                    joinChat.variables.targetUserId === item.user.id
-                  }
-                  isSuccess={
-                    joinChat.isSuccess &&
-                    joinChat.variables.targetUserId === item.user.id
-                  }
-                  user={item.user}
-                />
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
-        </View>
-      </BottomSheetScrollView>
+                      requestAnimationFrame(() => {
+                        joinChat.mutate({
+                          targetUserId: item.user.id,
+                        });
+                      });
+                    }}
+                    style={({ pressed }) => [
+                      styles.storyPressable,
+                      { opacity: pressed ? 0.6 : 1 },
+                    ]}
+                    hitSlop={8}
+                  >
+                    <UserLiveItem
+                      showName={item.user.id !== user.id}
+                      size="md"
+                      color={item.is_friend ? 'green' : 'pink'}
+                      isLoading={
+                        joinChat.isPending &&
+                        joinChat.variables.targetUserId === item.user.id
+                      }
+                      isSuccess={
+                        joinChat.isSuccess &&
+                        joinChat.variables.targetUserId === item.user.id
+                      }
+                      user={item.user}
+                    />
+                  </Pressable>
+                </Animated.View>
+              ))}
+        </ScrollView>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-  },
-  gridContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'flex-start',
     width: '100%',
-    paddingVertical: 8,
   },
-  itemContainer: {
-    marginBottom: 24,
-    marginLeft: 4,
+  headerRow: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  scrollContent: {
+    paddingHorizontal: 12,
+    paddingTop: 10,
+    paddingBottom: 12,
+    gap: 12,
+  },
+  storyItem: {
+    width: 76,
+    alignItems: 'center',
+  },
+  storyPressable: {
+    width: '100%',
+    alignItems: 'center',
   },
 });
 

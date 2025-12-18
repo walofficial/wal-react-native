@@ -96,7 +96,6 @@ export default function Layout({ segment }: { segment: string }) {
               showTabs={true}
               //@ts-ignore
               customTitleComponent={<TaskTitle feedId={route.params?.feedId} />}
-              showLocationTabs={true}
               //@ts-ignore
               feedId={route.params?.feedId}
             />
@@ -132,7 +131,6 @@ export default function Layout({ segment }: { segment: string }) {
                     />
                   }
                   showSearch={!isUserFeed}
-                  showLocationTabs={false}
                   showTabs={!isUserFeed}
                   feedId={undefined}
                   //@ts-ignore
