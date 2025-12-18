@@ -1,15 +1,14 @@
 import React from 'react';
-import { View, TouchableOpacity, Linking, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View, Linking, StyleSheet } from 'react-native';
 import { Text } from '@/components/ui/text';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { cn, convertToCDNUrl } from '@/lib/utils';
 import * as SMS from 'expo-sms';
-import { ActivityIndicator } from 'react-native';
 import UserAvatarLayout from '../UserAvatar';
 import useAuth from '@/hooks/useAuth';
 import { FontSizes, useTheme } from '@/lib/theme';
 import { app_name_slug } from '@/app.config';
+import Button from '../Button';
 
 interface ContactItemProps {
   id: string;
@@ -90,37 +89,15 @@ const ContactItem: React.FC<ContactItemProps> = ({
           )}
         </View>
       </View>
-      <TouchableOpacity
-        style={[
-          styles.button,
-          friendRequestSent
-            ? [
-                styles.buttonDisabled,
-                { backgroundColor: theme.colors.feedItem.secondaryText },
-              ]
-            : [styles.buttonEnabled, { backgroundColor: theme.colors.primary }],
-        ]}
+      <Button
+        title={friendRequestSent ? 'გაიგზავნა' : buttonText}
+        icon={friendRequestSent ? 'checkmark' : 'add'}
+        variant={friendRequestSent ? 'secondary' : 'primary'}
+        size="medium"
         onPress={handlePress}
-        disabled={isLoading || friendRequestSent}
-      >
-        {isLoading ? (
-          <ActivityIndicator size="small" color={theme.colors.button.text} />
-        ) : (
-          <>
-            <Ionicons
-              style={styles.buttonIcon}
-              name={friendRequestSent ? 'checkmark' : 'add'}
-              size={24}
-              color={theme.colors.button.text}
-            />
-            <Text
-              style={[styles.buttonText, { color: theme.colors.button.text }]}
-            >
-              {friendRequestSent ? 'გაიგზავნა' : buttonText}
-            </Text>
-          </>
-        )}
-      </TouchableOpacity>
+        disabled={friendRequestSent}
+        loading={isLoading}
+      />
     </View>
   );
 };
@@ -167,22 +144,6 @@ const styles = StyleSheet.create({
   },
   appUserText: {
     fontSize: 14,
-  },
-  button: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 9999,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonEnabled: {},
-  buttonDisabled: {},
-  buttonIcon: {
-    marginRight: 8,
-  },
-  buttonText: {
-    fontWeight: '600',
   },
 });
 

@@ -175,18 +175,6 @@ export default function Layout({ segment }: { segment: string }) {
     );
     screens.push(
       <Stack.Screen
-        name="change-photo"
-        options={{
-          title: '',
-          headerTransparent: true,
-          header: () => <SimpleGoBackHeader title={t('common.change_photo')} />,
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-          },
-          headerTintColor: theme.colors.text,
-        }}
-      />,
-      <Stack.Screen
         name="blocked-users"
         options={{
           title: 'დაბლოკილი',
@@ -210,23 +198,12 @@ export default function Layout({ segment }: { segment: string }) {
       />,
 
       <Stack.Screen
-        name="profile-settings"
-        options={{
-          title: '',
-          headerShown: false,
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-          },
-          headerTintColor: theme.colors.text,
-        }}
-      />,
-      <Stack.Screen
-        name="language-region"
+        name="user-preferences"
         options={{
           title: '',
           headerTransparent: true,
           header: () => (
-            <SimpleGoBackHeader title={t('settings.language_and_region')} />
+            <SimpleGoBackHeader title={t('settings.user_preferences')} />
           ),
           headerStyle: {
             backgroundColor: theme.colors.background,

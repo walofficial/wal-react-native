@@ -11,6 +11,8 @@ import { User } from 'lucide-react-native';
 import { useTheme } from '@/lib/theme';
 import useFeeds from '@/hooks/useFeeds';
 import { t } from '@/lib/i18n';
+import BottomSheet from '@gorhom/bottom-sheet';
+import ProfilePhotoEditSheet from '@/components/UserPreferences/ProfilePhotoEditSheet';
 
 export default function ProfileMain() {
   const { blockedUsers } = useGetBlockedUsers();
@@ -18,6 +20,7 @@ export default function ProfileMain() {
   const theme = useTheme();
   const { headerHeight } = useFeeds();
   const navigation = useRouter();
+  const photoSheetRef = React.useRef<BottomSheet>(null);
 
   return (
     <>
@@ -29,17 +32,6 @@ export default function ProfileMain() {
         ]}
       >
         <View style={styles.container}>
-          <SectionHeader
-            icon={
-              <Ionicons
-                size={28}
-                name="person-outline"
-                color={theme.colors.icon}
-              />
-            }
-            text={t('settings.general')}
-          />
-
           <Button
             variant="list"
             fullWidth
@@ -47,51 +39,26 @@ export default function ProfileMain() {
             iconElement={
               <Image size={LIST_ICON_SIZE} color={theme.colors.icon} />
             }
-            onPress={() => navigation.navigate('/(tabs)/(user)/change-photo')}
+            onPress={() => photoSheetRef.current?.snapToIndex(0)}
             style={styles.settingsButton}
           />
 
           <Button
             variant="list"
             fullWidth
-            title={t('settings.account')}
+            title={t('settings.user_preferences')}
             iconElement={
               <User size={LIST_ICON_SIZE} color={theme.colors.icon} />
             }
             onPress={() =>
-              navigation.navigate('/(tabs)/(user)/profile-settings')
+              navigation.navigate('/(tabs)/(user)/user-preferences')
             }
             style={styles.settingsButton}
           />
 
-          <Button
-            variant="list"
-            fullWidth
-            title="Bio & Work"
-            iconElement={
-              <Ionicons
-                size={LIST_ICON_SIZE}
-                name="briefcase-outline"
-                color={theme.colors.icon}
-              />
-            }
-            onPress={() => navigation.navigate('/(tabs)/(user)/bio-work')}
-            style={styles.settingsButton}
-          />
-
-          <Button
-            variant="list"
-            fullWidth
-            title={t('settings.language_and_region')}
-            icon="globe-outline"
-            iconColor={theme.colors.icon}
-            onPress={() =>
-              navigation.navigate('/(tabs)/(user)/language-region')
-            }
-            style={styles.settingsButton}
-          />
         </View>
       </ScrollView>
+      <ProfilePhotoEditSheet bottomSheetRef={photoSheetRef} />
       <View
         style={[
           styles.bottomContainer,
