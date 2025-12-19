@@ -18,6 +18,7 @@ import {
 import { formDataBodySerializer } from '@/lib/utils/form-data';
 import { LOCATION_FEED_PAGE_SIZE } from '@/lib/constants';
 import { FontSizes, useTheme } from '@/lib/theme';
+import { Portal } from '@/components/primitives/portal';
 
 export default function ProfilePhotoEditSheet({
   bottomSheetRef,
@@ -169,43 +170,63 @@ export default function ProfilePhotoEditSheet({
   };
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      index={-1}
-      backdropComponent={renderBackdrop}
-      snapPoints={snapPoints}
-      enablePanDownToClose
-      enableDynamicSizing={false}
-      backgroundStyle={sheetBackgroundStyle}
-    >
-      <View style={styles.bottomSheetContent}>
-        <TouchableOpacity
-          onPress={handleTakePhoto}
-          style={styles.bottomSheetButton}
-          disabled={isLoading || uploadMutation.isPending || updateUser.isPending}
-        >
-          <Ionicons name="camera-outline" size={24} color={theme.colors.icon} />
-          <Text
-            style={[styles.bottomSheetButtonText, { color: theme.colors.text }]}
+    <Portal name="profile-photo-edit-sheet">
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={-1}
+        backdropComponent={renderBackdrop}
+        snapPoints={snapPoints}
+        enablePanDownToClose
+        enableDynamicSizing={false}
+        backgroundStyle={sheetBackgroundStyle}
+      >
+        <View style={styles.bottomSheetContent}>
+          <TouchableOpacity
+            onPress={handleTakePhoto}
+            style={styles.bottomSheetButton}
+            disabled={
+              isLoading || uploadMutation.isPending || updateUser.isPending
+            }
           >
-            {t('common.camera')}
-          </Text>
-        </TouchableOpacity>
+            <Ionicons
+              name="camera-outline"
+              size={24}
+              color={theme.colors.icon}
+            />
+            <Text
+              style={[
+                styles.bottomSheetButtonText,
+                { color: theme.colors.text },
+              ]}
+            >
+              {t('common.camera')}
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={handlePickImage}
-          style={styles.bottomSheetButton}
-          disabled={isLoading || uploadMutation.isPending || updateUser.isPending}
-        >
-          <Ionicons name="images-outline" size={24} color={theme.colors.icon} />
-          <Text
-            style={[styles.bottomSheetButtonText, { color: theme.colors.text }]}
+          <TouchableOpacity
+            onPress={handlePickImage}
+            style={styles.bottomSheetButton}
+            disabled={
+              isLoading || uploadMutation.isPending || updateUser.isPending
+            }
           >
-            {t('common.upload_from_gallery')}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </BottomSheet>
+            <Ionicons
+              name="images-outline"
+              size={24}
+              color={theme.colors.icon}
+            />
+            <Text
+              style={[
+                styles.bottomSheetButtonText,
+                { color: theme.colors.text },
+              ]}
+            >
+              {t('common.upload_from_gallery')}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </BottomSheet>
+    </Portal>
   );
 }
 
@@ -224,5 +245,3 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.medium,
   },
 });
-
-

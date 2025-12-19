@@ -387,10 +387,6 @@ export default function CreatePost() {
       console.error(JSON.stringify(error, null, 2));
       errorToast({
         title: t('errors.post_publish_failed'),
-        description:
-          error instanceof Error
-            ? error.message
-            : t('errors.post_publish_failed'),
       });
     },
   });
@@ -402,7 +398,6 @@ export default function CreatePost() {
     if (text.trim().length === 0 && selectedImages.length === 0) {
       errorToast({
         title: t('errors.post_empty'),
-        description: t('errors.post_empty'),
       });
       return;
     }

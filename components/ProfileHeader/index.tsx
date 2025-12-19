@@ -243,21 +243,7 @@ function ProfileHeader({
         }
       }}
     >
-      <View
-        style={[
-          styles.headerContainer,
-          {
-            borderBottomWidth: showTabs ? 0 : 1,
-            borderBottomColor: showTabs
-              ? 'transparent'
-              : isAnimated
-                ? isDarkColorScheme
-                  ? 'rgba(255,255,255,0.1)'
-                  : 'rgba(0,0,0,0.1)'
-                : 'transparent',
-          },
-        ]}
-      >
+      <View style={[styles.headerContainer]}>
         {/* Animated header content */}
         <Animated.View
           style={[styles.headerContent, headerContentAnimatedStyle]}

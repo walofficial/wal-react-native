@@ -62,9 +62,6 @@ const PhoneInput = forwardRef<any, PhoneInputProps>(
           title: t('common.enter_without_country_code', {
             countryCode: country.callingCode,
           }),
-          description: t('common.enter_without_country_code', {
-            countryCode: country.callingCode,
-          }),
         });
         onChangeText(withoutCountryCode);
         return;

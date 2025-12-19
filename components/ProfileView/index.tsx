@@ -1,5 +1,12 @@
-import React, { useMemo, useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useMemo, useRef, useState, useCallback } from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  Pressable,
+  TextLayoutEventData,
+  NativeSyntheticEvent,
+} from 'react-native';
 import { useProfileInformation } from '@/hooks/useProfileInformation';
 import { convertToCDNUrl } from '@/lib/utils';
 import UserCircleProfile from '../UserCircleProfile';
@@ -9,10 +16,13 @@ import { Text } from '@/components/ui/text';
 import { Image } from 'expo-image';
 import { useTheme } from '@/lib/theme';
 import useAuth from '@/hooks/useAuth';
+import { t } from '@/lib/i18n';
 import BottomSheet from '@gorhom/bottom-sheet';
 import CompanySelectorSheet from '@/components/UserPreferences/CompanySelectorSheet';
 import BioEditorSheet from '@/components/UserPreferences/BioEditorSheet';
 import ProfilePhotoEditSheet from '@/components/UserPreferences/ProfilePhotoEditSheet';
+
+const BIO_MAX_LINES = 2;
 
 interface ProfileViewProps {
   userId: string;
@@ -33,11 +43,33 @@ export default function ProfileView({ userId }: ProfileViewProps) {
   const companySheetRef = useRef<BottomSheet>(null);
   const bioSheetRef = useRef<BottomSheet>(null);
 
+  const [isBioExpanded, setIsBioExpanded] = useState(false);
+  const [bioNeedsTruncation, setBioNeedsTruncation] = useState(false);
+
   const shouldShowMeta = useMemo(() => {
     if (isLoadingData) return false;
     return Boolean(isAuthUser || profile?.company || profile?.bio);
   }, [isAuthUser, isLoadingData, profile?.bio, profile?.company]);
-  const isCompanyPressable = isAuthUser && !profile?.bio;
+  const isCompanyPressable = isAuthUser;
+  const shouldShowAddBio = Boolean(
+    isAuthUser && !isLoadingData && !profile?.bio,
+  );
+
+  const handleBioTextLayout = useCallback(
+    (e: NativeSyntheticEvent<TextLayoutEventData>) => {
+      const lineCount = e.nativeEvent.lines.length;
+      setBioNeedsTruncation(lineCount > BIO_MAX_LINES);
+    },
+    [],
+  );
+
+  const handleBioPress = useCallback(() => {
+    if (isAuthUser) {
+      bioSheetRef.current?.snapToIndex(0);
+    } else if (bioNeedsTruncation) {
+      setIsBioExpanded((prev) => !prev);
+    }
+  }, [isAuthUser, bioNeedsTruncation]);
 
   return (
     <>
@@ -88,35 +120,72 @@ export default function ProfileView({ userId }: ProfileViewProps) {
                   { color: theme.colors.feedItem.secondaryText },
                 ]}
               >
-                {isAuthUser ? 'Set company' : ''}
+                {isAuthUser ? t('profile.set_company') : ''}
               </Text>
             )}
           </TouchableOpacity>
 
           {profile?.bio ? (
-            <View style={styles.bioRow}>
+            <Pressable
+              onPress={handleBioPress}
+              style={({ pressed }) => [
+                styles.bioRow,
+                pressed &&
+                  (isAuthUser || bioNeedsTruncation) &&
+                  styles.bioPressed,
+              ]}
+            >
               <Text
-                style={[
-                  styles.bioText,
-                  { color: theme.colors.feedItem.secondaryText },
-                ]}
+                style={[styles.bioText, { color: theme.colors.text }]}
+                numberOfLines={isBioExpanded ? undefined : BIO_MAX_LINES}
+                onTextLayout={handleBioTextLayout}
               >
                 {profile.bio}
               </Text>
-              {isAuthUser ? (
-                <TouchableOpacity
-                  onPress={() => bioSheetRef.current?.snapToIndex(0)}
-                  style={styles.bioEditButton}
-                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              {!isBioExpanded && bioNeedsTruncation && !isAuthUser && (
+                <Text
+                  style={[
+                    styles.viewMoreText,
+                    { color: theme.colors.feedItem.secondaryText },
+                  ]}
                 >
-                  <Ionicons
-                    name="pencil"
-                    size={14}
-                    color={theme.colors.feedItem.secondaryText}
-                  />
-                </TouchableOpacity>
-              ) : null}
-            </View>
+                  {t('common.more')}
+                </Text>
+              )}
+            </Pressable>
+          ) : shouldShowAddBio ? (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => bioSheetRef.current?.snapToIndex(0)}
+              style={[
+                styles.addBioButton,
+                {
+                  backgroundColor: theme.colors.feedItem.background,
+                  borderColor: theme.colors.feedItem.border,
+                },
+              ]}
+            >
+              <View
+                style={[
+                  styles.addBioIconContainer,
+                  { backgroundColor: theme.colors.card.background },
+                ]}
+              >
+                <Ionicons name="pencil" size={14} color={theme.colors.icon} />
+              </View>
+              <View style={styles.addBioTextContainer}>
+                <Text
+                  style={[styles.addBioTitle, { color: theme.colors.text }]}
+                >
+                  {t('profile.about_me')}
+                </Text>
+              </View>
+              <Ionicons
+                name="chevron-forward"
+                size={16}
+                color={theme.colors.feedItem.secondaryText}
+              />
+            </TouchableOpacity>
           ) : null}
         </View>
       )}
@@ -206,10 +275,15 @@ const styles = StyleSheet.create({
     maxWidth: '90%',
   },
   bioRow: {
-    position: 'relative',
     alignItems: 'center',
     justifyContent: 'center',
     maxWidth: '92%',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+  },
+  bioPressed: {
+    opacity: 0.6,
   },
   bioText: {
     fontSize: 14,
@@ -217,11 +291,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     maxWidth: '100%',
   },
-  bioEditButton: {
-    position: 'absolute',
-    right: -18,
-    top: 2,
-    padding: 4,
+  viewMoreText: {
+    fontSize: 13,
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  addBioButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    borderWidth: StyleSheet.hairlineWidth,
+    maxWidth: '92%',
+  },
+  addBioIconContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addBioTextContainer: {
+    flex: 1,
+    minWidth: 0,
+  },
+  addBioTitle: {
+    fontSize: 14,
+    fontWeight: '600',
   },
   centeredContainer: {
     alignItems: 'center',

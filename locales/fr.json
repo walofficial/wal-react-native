@@ -29,6 +29,18 @@
     "cancel": "Annuler",
     "save": "Enregistrer",
     "loading": "Chargement...",
-    "error": "Une erreur s'est produite"
+    "error": "Une erreur s'est produite",
+    "delete": "Supprimer",
+    "profile_update_failed": "Échec de la mise à jour du profil",
+    "more": "plus"
+  },
+  "profile": {
+    "set_company": "Définir l'entreprise",
+    "add_bio": "Ajouter une bio",
+    "add_bio_example": "ex. Amateur de café • Je crée des choses",
+    "about_me": "À propos de moi",
+    "bio_placeholder": "Écrivez quelque chose sur vous...",
+    "delete_bio": "Supprimer la bio",
+    "delete_bio_confirm": "Êtes-vous sûr de vouloir supprimer votre bio ?"
   }
 }
