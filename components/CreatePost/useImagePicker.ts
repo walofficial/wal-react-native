@@ -47,7 +47,6 @@ export function useImagePicker() {
     if (selectedImages.length >= MAX_IMAGES) {
       errorToast({
         title: t('errors.max_images_reached', { count: MAX_IMAGES }),
-        description: t('errors.max_images_reached', { count: MAX_IMAGES }),
       });
       return;
     }
@@ -65,7 +64,6 @@ export function useImagePicker() {
       if (selectedImages.length + newImages.length > MAX_IMAGES) {
         errorToast({
           title: t('errors.max_images_reached', { count: MAX_IMAGES }),
-          description: t('errors.max_images_reached', { count: MAX_IMAGES }),
         });
         return;
       }
@@ -77,7 +75,6 @@ export function useImagePicker() {
     if (selectedImages.length >= MAX_IMAGES) {
       errorToast({
         title: t('errors.max_images_reached', { count: MAX_IMAGES }),
-        description: t('errors.max_images_reached', { count: MAX_IMAGES }),
       });
       return;
     }
@@ -87,7 +84,6 @@ export function useImagePicker() {
       const pastedImage = await pasteImageFromClipboard((message) => {
         errorToast({
           title: message,
-          description: message,
         });
       });
       if (pastedImage) {

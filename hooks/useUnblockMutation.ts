@@ -23,7 +23,6 @@ function useUnblockMutation() {
       console.log('error', error);
       errorToast({
         title: t('errors.general_error'),
-        description: t('errors.general_error'),
       });
     },
   });

@@ -79,7 +79,6 @@ export default function useLocation() {
         setIsGettingLocation(false);
         errorToast({
           title: t('common.location_check_failed_gps'),
-          description: t('common.location_check_failed_gps'),
         });
       }
     })();
@@ -97,7 +96,6 @@ export default function useLocation() {
     if (errorMsg) {
       errorToast({
         title: errorMsg,
-        description: errorMsg,
       });
     }
   }, [errorMsg]);

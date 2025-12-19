@@ -39,7 +39,6 @@ function useLiveUser() {
       console.log(error);
       errorToast({
         title: t('errors.failed_to_join_chat'),
-        description: t('errors.failed_to_join_chat'),
       });
     },
     onSuccess: (data, variables) => {

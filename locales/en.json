@@ -24,6 +24,15 @@
     "french": "French",
     "georgian": "Georgian"
   },
+  "profile": {
+    "set_company": "Set company",
+    "add_bio": "Add bio",
+    "add_bio_example": "e.g. Coffee lover • Building cool things",
+    "about_me": "About me",
+    "bio_placeholder": "Write something about yourself...",
+    "delete_bio": "Delete bio",
+    "delete_bio_confirm": "Are you sure you want to delete your bio?"
+  },
   "common": {
     "retry": "Retry",
     "save": "Save",
@@ -219,7 +228,9 @@
     "process_step_4": "Sources are evaluated as supporting or non-supporting",
     "process_step_5": "We provide a summary, a factual accuracy score, and original sources",
     "limitations": "Limitations",
-    "limitations_description": "While our fact-checking system is comprehensive, it has limitations. Results depend on available online information, and some topics may have limited or conflicting sources. We recommend reviewing the provided sources to make your own assessment."
+    "limitations_description": "While our fact-checking system is comprehensive, it has limitations. Results depend on available online information, and some topics may have limited or conflicting sources. We recommend reviewing the provided sources to make your own assessment.",
+    "delete": "Delete",
+    "more": "more"
   },
   "errors": {
     "failed_to_join_chat": "Failed to join chat",

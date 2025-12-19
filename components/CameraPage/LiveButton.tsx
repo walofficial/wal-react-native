@@ -38,7 +38,6 @@ export function LiveButton({
       console.error('Failed to start live stream:', error);
       errorToast({
         title: t('errors.failed_to_start_live_stream'),
-        description: t('errors.failed_to_start_live_stream'),
       });
     },
   });

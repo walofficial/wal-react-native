@@ -15,6 +15,7 @@ import ProfilePhotoEditSheet from '@/components/UserPreferences/ProfilePhotoEdit
 import ContentLanguageSelector from '@/components/ContentLanguageSelector';
 import RegionSelector from '@/components/RegionSelector';
 import { t } from '@/lib/i18n';
+import EnableNotifications from '@/components/EnableNotifications';
 
 export default function UserPreferences() {
   const theme = useTheme();
@@ -31,62 +32,17 @@ export default function UserPreferences() {
   return (
     <>
       <ScrollView
-        style={[styles.scrollView, { backgroundColor: theme.colors.background }]}
+        style={[
+          styles.scrollView,
+          { backgroundColor: theme.colors.background },
+        ]}
         contentContainerStyle={{
           paddingTop: 56, // header height (SimpleGoBackHeader)
           paddingBottom: insets.bottom + 24,
         }}
       >
         <View style={styles.container}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            {t('settings.account')}
-          </Text>
-
-          <Button
-            variant="list"
-            fullWidth
-            title={t('settings.change_photo')}
-            iconElement={
-              <Ionicons
-                size={LIST_ICON_SIZE}
-                name="image-outline"
-                color={theme.colors.icon}
-              />
-            }
-            onPress={() => photoSheetRef.current?.snapToIndex(0)}
-            style={styles.button}
-          />
-
-          <Button
-            variant="list"
-            fullWidth
-            title="Company"
-            iconElement={
-              <Ionicons
-                size={LIST_ICON_SIZE}
-                name="briefcase-outline"
-                color={theme.colors.icon}
-              />
-            }
-            onPress={() => companySheetRef.current?.snapToIndex(0)}
-            style={styles.button}
-          />
-
-          <Button
-            variant="list"
-            fullWidth
-            title="Bio"
-            iconElement={
-              <Ionicons
-                size={LIST_ICON_SIZE}
-                name="create-outline"
-                color={theme.colors.icon}
-              />
-            }
-            onPress={() => bioSheetRef.current?.snapToIndex(0)}
-            style={styles.button}
-          />
-
+          <EnableNotifications />
           <View style={{ height: 24 }} />
 
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
@@ -156,5 +112,3 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
 });
-
-

@@ -36,10 +36,6 @@ export const useCreateSpace = () => {
     onError: (error) => {
       errorToast({
         title: t('errors.failed_to_create_space'),
-        description:
-          error instanceof Error
-            ? error.message
-            : t('errors.failed_to_create_space'),
       });
     },
   });

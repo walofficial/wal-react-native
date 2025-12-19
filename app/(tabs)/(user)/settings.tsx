@@ -35,17 +35,6 @@ export default function ProfileMain() {
           <Button
             variant="list"
             fullWidth
-            title={t('settings.change_photo')}
-            iconElement={
-              <Image size={LIST_ICON_SIZE} color={theme.colors.icon} />
-            }
-            onPress={() => photoSheetRef.current?.snapToIndex(0)}
-            style={styles.settingsButton}
-          />
-
-          <Button
-            variant="list"
-            fullWidth
             title={t('settings.user_preferences')}
             iconElement={
               <User size={LIST_ICON_SIZE} color={theme.colors.icon} />
@@ -55,10 +44,8 @@ export default function ProfileMain() {
             }
             style={styles.settingsButton}
           />
-
         </View>
       </ScrollView>
-      <ProfilePhotoEditSheet bottomSheetRef={photoSheetRef} />
       <View
         style={[
           styles.bottomContainer,

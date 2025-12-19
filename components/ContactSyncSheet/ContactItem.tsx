@@ -108,7 +108,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 12,
-    paddingHorizontal: 4,
     width: '100%',
   },
   leftContainer: {

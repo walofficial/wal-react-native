@@ -24,14 +24,12 @@ export function Lightbox() {
       if (!permissionResponse || permissionResponse.granted === false) {
         errorToast({
           title: t('errors.camera_permission_required'),
-          description: t('errors.camera_permission_required'),
         });
         if (permissionResponse?.canAskAgain) {
           requestPermission();
         } else {
           errorToast({
             title: t('errors.camera_permission_denied'),
-            description: t('errors.camera_permission_denied'),
           });
         }
         return;
@@ -41,7 +39,6 @@ export function Lightbox() {
       } catch (e: any) {
         errorToast({
           title: t('errors.failed_save_image'),
-          description: `${t('errors.failed_save_image')}: ${String(e)}`,
         });
       }
     },

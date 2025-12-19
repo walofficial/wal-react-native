@@ -259,7 +259,6 @@ const ContactSyncSheet = ({ bottomSheetRef }: ContactSyncSheetProps) => {
           />
         </View>
         <BottomSheetScrollView style={{ paddingHorizontal: 10 }}>
-          {!searchQuery && <AddUserFromOtherApps />}
           {!searchQuery && <FriendRequests />}
           {!searchQuery && <FriendsList />}
           {!searchQuery && <RegisteredContactsList />}

@@ -1,23 +1,31 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
-import BottomSheet, {
-  BottomSheetBackdrop,
-  BottomSheetTextInput,
-} from '@gorhom/bottom-sheet';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Alert,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Portal } from '@/components/primitives/portal';
 import { Text } from '@/components/ui/text';
-import Button from '@/components/Button';
 import { useTheme } from '@/lib/theme';
 import { getBottomSheetBackgroundStyle } from '@/lib/styles';
 import useAuth from '@/hooks/useAuth';
+import { t } from '@/lib/i18n';
 import {
   getUserProfileUserProfileUserIdGetQueryKey,
   updateUserMutation,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
-
-const MAX_BIO_CHARS = 280;
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function BioEditorSheet({
   bottomSheetRef,
@@ -32,6 +40,7 @@ export default function BioEditorSheet({
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { user, setAuthUser } = useAuth();
+  const inputRef = useRef<TextInput>(null);
 
   const [draft, setDraft] = useState(initialBio ?? '');
 
@@ -39,7 +48,7 @@ export default function BioEditorSheet({
     setDraft(initialBio ?? '');
   }, [initialBio]);
 
-  const snapPoints = useMemo(() => ['60%'], []);
+  const snapPoints = useMemo(() => ['50%'], []);
   const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
 
   const renderBackdrop = useCallback(
@@ -65,7 +74,6 @@ export default function BioEditorSheet({
       });
     },
     onSuccess: () => {
-      bottomSheetRef.current?.close();
       queryClient.invalidateQueries({
         queryKey: getUserProfileUserProfileUserIdGetQueryKey({
           path: { user_id: userId },
@@ -73,20 +81,49 @@ export default function BioEditorSheet({
       });
     },
     onError: () => {
-      Alert.alert('Failed to update bio');
+      Alert.alert(t('common.error'), t('common.profile_update_failed'));
     },
   });
 
   const trimmedDraft = draft.trim();
   const isDirty = trimmedDraft !== (initialBio ?? '').trim();
-  const remaining = MAX_BIO_CHARS - draft.length;
+  const hasBio = Boolean(initialBio?.trim());
 
-  const handleSave = () => {
-    updateUser.mutate({
-      body: {
-        bio: trimmedDraft.length ? trimmedDraft : null,
+  // Auto-save on close if changed
+  const handleSheetChange = useCallback(
+    (index: number) => {
+      if (index === 0) {
+        // Auto-focus with slight delay for sheet animation
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 300);
+      } else if (index === -1) {
+        // Save on close if dirty
+        if (isDirty) {
+          updateUser.mutate({
+            body: {
+              bio: trimmedDraft.length ? trimmedDraft : null,
+            },
+          });
+        }
+      }
+    },
+    [isDirty, trimmedDraft, updateUser],
+  );
+
+  const handleDelete = () => {
+    Alert.alert(t('profile.delete_bio'), t('profile.delete_bio_confirm'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      {
+        text: t('common.delete'),
+        style: 'destructive',
+        onPress: () => {
+          setDraft('');
+          updateUser.mutate({ body: { bio: null } });
+          bottomSheetRef.current?.close();
+        },
       },
-    });
+    ]);
   };
 
   return (
@@ -104,42 +141,44 @@ export default function BioEditorSheet({
           styles.handleIndicator,
           { backgroundColor: theme.colors.icon },
         ]}
+        onChange={handleSheetChange}
+        keyboardBehavior="interactive"
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
       >
         <View style={styles.headerRow}>
-          <Button
-            variant="subtle"
-            title="Cancel"
-            onPress={() => bottomSheetRef.current?.close()}
-            style={{ minWidth: 'auto' }}
-          />
           <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-            Bio
+            {t('profile.about_me')}
           </Text>
-          <Button
-            variant="subtle"
-            title="Save"
-            onPress={handleSave}
-            disabled={!isDirty || updateUser.isPending}
-            style={{ minWidth: 'auto' }}
-          />
+          {hasBio && (
+            <TouchableOpacity
+              onPress={handleDelete}
+              style={styles.deleteButton}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            >
+              <Ionicons
+                name="trash-outline"
+                size={20}
+                color={theme.colors.accent}
+              />
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.content}>
-          <BottomSheetTextInput
+          <TextInput
+            ref={inputRef}
             value={draft}
             onChangeText={setDraft}
-            placeholder="Write something about you…"
+            // placeholder={t('profile.bio_placeholder')}
             placeholderTextColor={theme.colors.feedItem.secondaryText}
-            style={[
-              styles.input,
-              { color: theme.colors.text, borderColor: theme.colors.border },
-            ]}
+            style={[styles.input, { color: theme.colors.text }]}
             multiline
-            maxLength={MAX_BIO_CHARS}
+            textAlign="center"
+            textAlignVertical="center"
+            scrollEnabled={false}
+            blurOnSubmit={false}
           />
-          <Text style={{ color: theme.colors.feedItem.secondaryText }}>
-            {remaining}
-          </Text>
         </View>
       </BottomSheet>
     </Portal>
@@ -153,27 +192,31 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingBottom: 8,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    position: 'relative',
   },
   headerTitle: {
     fontSize: 16,
     fontWeight: '600',
   },
+  deleteButton: {
+    position: 'absolute',
+    right: 16,
+    padding: 4,
+  },
   content: {
-    paddingHorizontal: 16,
-    gap: 10,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
   },
   input: {
-    borderWidth: StyleSheet.hairlineWidth,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-    minHeight: 140,
-    fontSize: 16,
-    lineHeight: 22,
+    width: '100%',
+    fontSize: 24,
+    lineHeight: 32,
+    fontWeight: '500',
+    paddingVertical: 16,
   },
 });
-
-

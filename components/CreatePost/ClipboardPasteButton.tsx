@@ -33,7 +33,6 @@ export default function ClipboardPasteButton({
       if (currentImageCount >= maxImages) {
         errorToast({
           title: t('errors.max_images_reached', { count: maxImages }),
-          description: t('errors.max_images_reached', { count: maxImages }),
         });
         return;
       }
@@ -64,7 +63,6 @@ export default function ClipboardPasteButton({
       console.error('Error handling paste data:', error);
       errorToast({
         title: t('errors.failed_paste_content'),
-        description: t('errors.failed_paste_content'),
       });
     }
   };
