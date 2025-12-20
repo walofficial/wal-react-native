@@ -2,7 +2,7 @@
   "settings": {
     "general": "ზოგადი",
     "account": "ანგარიში",
-    "user_preferences": "პარამეტრები",
+    "user_preferences": "ენა და შეტყობინებები",
     "change_photo": "ფოტოს შეცვლა",
     "telegram_channel": "Telegram არხი",
     "blocked_users": "დაბლოკილი მომხმარებლები",
@@ -227,7 +227,7 @@
     "more": "მეტი"
   },
   "errors": {
-    "failed_to_join_chat": "ვერ შემოვიდა ჩათში",
+    "failed_to_join_chat": "დაფიქსირდა შეცდომა",
     "post_publish_failed": "პოსტი ვერ გამოქვეყნდა",
     "post_empty": "არ უნდა იყოს ცარიელი",
     "general_error": "დაფიქსირდა შეცდომა. გთხოვთ სცადოთ თავიდან",

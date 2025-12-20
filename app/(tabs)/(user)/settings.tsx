@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Button, { LIST_ICON_SIZE } from '@/components/Button';
 import { SectionHeader } from '@/components/SectionHeader';
 import useGetBlockedUsers from '@/hooks/useGetBlockedUsers';
-import { User } from 'lucide-react-native';
+import { CogIcon, User } from 'lucide-react-native';
 import { useTheme } from '@/lib/theme';
 import useFeeds from '@/hooks/useFeeds';
 import { t } from '@/lib/i18n';
@@ -37,10 +37,22 @@ export default function ProfileMain() {
             fullWidth
             title={t('settings.user_preferences')}
             iconElement={
-              <User size={LIST_ICON_SIZE} color={theme.colors.icon} />
+              <CogIcon size={LIST_ICON_SIZE} color={theme.colors.icon} />
             }
             onPress={() =>
               navigation.navigate('/(tabs)/(user)/user-preferences')
+            }
+            style={styles.settingsButton}
+          />
+          <Button
+            variant="list"
+            fullWidth
+            title={t('settings.account')}
+            iconElement={
+              <User size={LIST_ICON_SIZE} color={theme.colors.icon} />
+            }
+            onPress={() =>
+              navigation.navigate('/(tabs)/(user)/profile-settings')
             }
             style={styles.settingsButton}
           />

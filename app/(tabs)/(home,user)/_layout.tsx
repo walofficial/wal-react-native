@@ -172,6 +172,17 @@ export default function Layout({ segment }: { segment: string }) {
           ),
         }}
       />,
+      <Stack.Screen
+        name="profile-settings"
+        options={{
+          title: '',
+          header: () => <SimpleGoBackHeader title={t('settings.account')} />,
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          headerTintColor: theme.colors.text,
+        }}
+      />,
     );
     screens.push(
       <Stack.Screen
