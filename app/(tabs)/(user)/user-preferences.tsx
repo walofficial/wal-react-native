@@ -20,14 +20,6 @@ import EnableNotifications from '@/components/EnableNotifications';
 export default function UserPreferences() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-  const { user } = useAuth();
-
-  const photoSheetRef = useRef<BottomSheet>(null);
-  const companySheetRef = useRef<BottomSheet>(null);
-  const bioSheetRef = useRef<BottomSheet>(null);
-
-  const { data: profile } = useProfileInformation(user?.id || '');
 
   return (
     <>
@@ -59,21 +51,6 @@ export default function UserPreferences() {
           </Text>
         </View>
       </ScrollView>
-
-      {user?.id ? (
-        <>
-          <ProfilePhotoEditSheet bottomSheetRef={photoSheetRef} />
-          <CompanySelectorSheet
-            bottomSheetRef={companySheetRef}
-            userId={user.id}
-          />
-          <BioEditorSheet
-            bottomSheetRef={bioSheetRef}
-            userId={user.id}
-            initialBio={profile?.bio}
-          />
-        </>
-      ) : null}
     </>
   );
 }
