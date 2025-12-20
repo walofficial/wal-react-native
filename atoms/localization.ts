@@ -1,10 +1,4 @@
-import { atom } from 'jotai';
-import { atomWithStorage } from 'jotai/utils';
-import {
-  getCurrentLocale,
-  getRegionFromLocale,
-  getLanguageFromLocale,
-} from '@/lib/i18n';
+
 
 // Type definitions for user preferences
 export type Region = 'georgia' | 'united_states' | 'france';

@@ -45,13 +45,6 @@ export default function UserPreferences() {
           <EnableNotifications />
           <View style={{ height: 24 }} />
 
-          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-            {t('settings.language_and_region')}
-          </Text>
-
-          <View style={styles.selectorRow}>
-            <ContentLanguageSelector />
-          </View>
           <View style={styles.selectorRow}>
             <RegionSelector />
           </View>
