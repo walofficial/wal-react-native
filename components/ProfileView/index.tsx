@@ -43,6 +43,7 @@ export default function ProfileView({ userId }: ProfileViewProps) {
   const [bioNeedsTruncation, setBioNeedsTruncation] = useState(false);
 
   const shouldShowMeta = useMemo(() => {
+    if (isLoadingData) return false;
     return Boolean(isAuthUser || profile?.company || profile?.bio);
   }, [isAuthUser, isLoadingData, profile?.bio, profile?.company]);
   const isCompanyPressable = isAuthUser;
