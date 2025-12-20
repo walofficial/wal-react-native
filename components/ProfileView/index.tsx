@@ -29,15 +29,11 @@ interface ProfileViewProps {
 }
 
 export default function ProfileView({ userId }: ProfileViewProps) {
-  const {
-    data: profile,
-    isLoading,
-    isFetching,
-  } = useProfileInformation(userId);
+  const { data: profile, isFetching } = useProfileInformation(userId);
   const theme = useTheme();
   const { user } = useAuth();
   const isAuthUser = user?.id === userId;
-  const isLoadingData = isLoading || isFetching;
+  const isLoadingData = isFetching;
 
   const photoSheetRef = useRef<BottomSheet>(null);
   const companySheetRef = useRef<BottomSheet>(null);
@@ -47,7 +43,6 @@ export default function ProfileView({ userId }: ProfileViewProps) {
   const [bioNeedsTruncation, setBioNeedsTruncation] = useState(false);
 
   const shouldShowMeta = useMemo(() => {
-    if (isLoadingData) return false;
     return Boolean(isAuthUser || profile?.company || profile?.bio);
   }, [isAuthUser, isLoadingData, profile?.bio, profile?.company]);
   const isCompanyPressable = isAuthUser;
@@ -74,11 +69,7 @@ export default function ProfileView({ userId }: ProfileViewProps) {
   return (
     <>
       <UserCircleProfile
-        photo={
-          isLoadingData
-            ? undefined
-            : convertToCDNUrl(profile?.photos[0].image_url[0] || '')
-        }
+        photo={convertToCDNUrl(profile?.photos[0].image_url[0] || '')}
         userId={userId}
         onPressAuthUser={() => photoSheetRef.current?.snapToIndex(0)}
       />
