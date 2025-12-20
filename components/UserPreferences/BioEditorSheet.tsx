@@ -1,18 +1,15 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
+  useColorScheme,
   View,
 } from 'react-native';
-import BottomSheet, { BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetTextInput,
+} from '@gorhom/bottom-sheet';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Portal } from '@/components/primitives/portal';
@@ -27,6 +24,8 @@ import {
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
+const MAX_BIO_LENGTH = 150;
+
 export default function BioEditorSheet({
   bottomSheetRef,
   userId,
@@ -37,10 +36,12 @@ export default function BioEditorSheet({
   initialBio?: string | null;
 }) {
   const theme = useTheme();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { user, setAuthUser } = useAuth();
-  const inputRef = useRef<TextInput>(null);
+  const [shouldFocus, setShouldFocus] = useState(false);
 
   const [draft, setDraft] = useState(initialBio ?? '');
 
@@ -48,8 +49,12 @@ export default function BioEditorSheet({
     setDraft(initialBio ?? '');
   }, [initialBio]);
 
-  const snapPoints = useMemo(() => ['50%'], []);
+  const snapPoints = useMemo(() => ['45%'], []);
   const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
+
+  // Input background color - subtle dark gray for dark mode, light gray for light
+  const inputBackground = isDark ? '#1c1c1e' : '#f2f2f7';
+  const placeholderColor = isDark ? '#636366' : '#8e8e93';
 
   const renderBackdrop = useCallback(
     (props: any) => (
@@ -87,18 +92,15 @@ export default function BioEditorSheet({
 
   const trimmedDraft = draft.trim();
   const isDirty = trimmedDraft !== (initialBio ?? '').trim();
-  const hasBio = Boolean(initialBio?.trim());
+  const hasBio = Boolean(draft.trim());
 
   // Auto-save on close if changed
   const handleSheetChange = useCallback(
     (index: number) => {
       if (index === 0) {
-        // Auto-focus with slight delay for sheet animation
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 300);
+        setShouldFocus(true);
       } else if (index === -1) {
-        // Save on close if dirty
+        setShouldFocus(false);
         if (isDirty) {
           updateUser.mutate({
             body: {
@@ -126,6 +128,12 @@ export default function BioEditorSheet({
     ]);
   };
 
+  const handleTextChange = (text: string) => {
+    if (text.length <= MAX_BIO_LENGTH) {
+      setDraft(text);
+    }
+  };
+
   return (
     <Portal name="bio-editor-sheet">
       <BottomSheet
@@ -139,46 +147,59 @@ export default function BioEditorSheet({
         backgroundStyle={sheetBackgroundStyle}
         handleIndicatorStyle={[
           styles.handleIndicator,
-          { backgroundColor: theme.colors.icon },
+          { backgroundColor: isDark ? '#48484a' : '#c7c7cc' },
         ]}
         onChange={handleSheetChange}
         keyboardBehavior="interactive"
-        keyboardBlurBehavior="restore"
+        keyboardBlurBehavior="none"
         android_keyboardInputMode="adjustResize"
       >
-        <View style={styles.headerRow}>
-          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
-            {t('profile.about_me')}
-          </Text>
-          {hasBio && (
-            <TouchableOpacity
-              onPress={handleDelete}
-              style={styles.deleteButton}
-              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-            >
-              <Ionicons
-                name="trash-outline"
-                size={20}
-                color={theme.colors.accent}
-              />
-            </TouchableOpacity>
-          )}
-        </View>
+        <View style={styles.container}>
+          <View
+            style={[
+              styles.inputContainer,
+              { backgroundColor: inputBackground },
+            ]}
+          >
+            <BottomSheetTextInput
+              key={shouldFocus ? 'focused' : 'unfocused'}
+              autoFocus={shouldFocus}
+              value={draft}
+              onChangeText={handleTextChange}
+              placeholder={t('profile.bio_placeholder')}
+              placeholderTextColor={placeholderColor}
+              style={[styles.input, { color: theme.colors.text }]}
+              multiline
+              maxLength={MAX_BIO_LENGTH}
+              scrollEnabled={true}
+              blurOnSubmit={false}
+            />
 
-        <View style={styles.content}>
-          <TextInput
-            ref={inputRef}
-            value={draft}
-            onChangeText={setDraft}
-            // placeholder={t('profile.bio_placeholder')}
-            placeholderTextColor={theme.colors.feedItem.secondaryText}
-            style={[styles.input, { color: theme.colors.text }]}
-            multiline
-            textAlign="center"
-            textAlignVertical="center"
-            scrollEnabled={false}
-            blurOnSubmit={false}
-          />
+            {hasBio && (
+              <TouchableOpacity
+                onPress={handleDelete}
+                style={styles.clearButton}
+                hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+              >
+                <View
+                  style={[
+                    styles.clearButtonInner,
+                    { backgroundColor: isDark ? '#48484a' : '#c7c7cc' },
+                  ]}
+                >
+                  <Ionicons
+                    name="close"
+                    size={12}
+                    color={isDark ? '#fff' : '#000'}
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
+          </View>
+
+          <Text style={[styles.charCount, { color: placeholderColor }]}>
+            {draft.length}/{MAX_BIO_LENGTH}
+          </Text>
         </View>
       </BottomSheet>
     </Portal>
@@ -187,36 +208,43 @@ export default function BioEditorSheet({
 
 const styles = StyleSheet.create({
   handleIndicator: {
-    width: 40,
+    width: 36,
+    height: 4,
   },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+  container: {
+    flex: 1,
     paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingTop: 8,
+  },
+  inputContainer: {
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    minHeight: 120,
     position: 'relative',
   },
-  headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  deleteButton: {
-    position: 'absolute',
-    right: 16,
-    padding: 4,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
   input: {
-    width: '100%',
-    fontSize: 24,
-    lineHeight: 32,
-    fontWeight: '500',
-    paddingVertical: 16,
+    fontSize: 16,
+    lineHeight: 22,
+    paddingRight: 24,
+    textAlignVertical: 'top',
+  },
+  clearButton: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+  },
+  clearButtonInner: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  charCount: {
+    fontSize: 12,
+    textAlign: 'right',
+    marginTop: 8,
+    paddingRight: 4,
   },
 });
