@@ -34,15 +34,6 @@ export default function UserPreferences() {
           <View style={styles.selectorRow}>
             <RegionSelector />
           </View>
-
-          <Text
-            style={[
-              styles.explainer,
-              { color: theme.colors.feedItem.secondaryText },
-            ]}
-          >
-            {t('settings.region_explanation')}
-          </Text>
         </View>
       </ScrollView>
     </>
