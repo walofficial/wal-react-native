@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { getUserProfileUserProfileUserIdGetOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 export function useProfileInformation(userId: string) {
@@ -7,7 +7,8 @@ export function useProfileInformation(userId: string) {
       path: {
         user_id: userId,
       },
-    }),
+    }), 
+    placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
   });
 }
