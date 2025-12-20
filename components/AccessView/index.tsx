@@ -592,7 +592,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
                   color: theme.colors.text,
                 },
                 focusedPinCodeContainerStyle: {
-                  borderColor: '#007AFF',
+                  borderColor: '#efefef',
                 },
                 focusStickStyle: {
                   backgroundColor: '#333',
@@ -624,12 +624,15 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
       />
 
       {!showPhoneInput && !isAuthenticating && (
-        <Button
+        <TouchableOpacity
           style={styles.tryAgainButton}
-          variant="subtle"
           onPress={onTryAgain}
-          title={t('common.try_again_with_other_number')}
-        />
+          activeOpacity={0.6}
+        >
+          <Text style={[styles.tryAgainText, { color: theme.colors.text }]}>
+            {t('common.try_again_with_other_number')}
+          </Text>
+        </TouchableOpacity>
       )}
 
       {showPhoneInput && termsSection}
@@ -695,7 +698,13 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.small,
   },
   tryAgainButton: {
-    marginTop: 8,
+    marginTop: 16,
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  tryAgainText: {
+    fontSize: 13,
+    opacity: 0.4,
   },
 });
 
