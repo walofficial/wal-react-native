@@ -7,7 +7,7 @@ export function useProfileInformation(userId: string) {
       path: {
         user_id: userId,
       },
-    }), 
+    }),
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 5,
   });

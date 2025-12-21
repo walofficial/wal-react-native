@@ -1,5 +1,3 @@
-
-
 // Type definitions for user preferences
 export type Region = 'georgia' | 'united_states' | 'france';
 export type ContentLanguage = 'english' | 'french' | 'georgian';
