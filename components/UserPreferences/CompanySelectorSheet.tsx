@@ -203,12 +203,6 @@ export default function CompanySelectorSheet({
                   {company.name}
                 </Text>
               </View>
-              <Text
-                style={{ color: theme.colors.feedItem.secondaryText }}
-                onPress={() => handleSelectCompany(company)}
-              >
-                Select
-              </Text>
             </View>
           ))}
 
