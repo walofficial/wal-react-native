@@ -17,10 +17,44 @@ import { useTheme, FontSizes } from '@/lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import useTranslation from '@/hooks/useTranslation';
 
+const PINK_ACCENT = '#FF4B8C';
+
 type LocationRow = {
   id: string;
   title: string;
   kind: 'at_location' | 'nearby';
+  activityLevel: number; // 1-4 bars
+};
+
+// Activity bar indicator component (iPhone battery-style)
+const ActivityBars = ({ level }: { level: number }) => {
+  const bars = [1, 2, 3, 4];
+  const barHeight = [6, 9, 12, 15];
+
+  return (
+    <View style={styles.activityBarsContainer}>
+      {bars.map((bar, idx) => (
+        <View
+          key={bar}
+          style={[
+            styles.activityBar,
+            {
+              height: barHeight[idx],
+              backgroundColor:
+                idx < level ? PINK_ACCENT : 'rgba(255,75,140,0.2)',
+            },
+          ]}
+        />
+      ))}
+    </View>
+  );
+};
+
+// Get activity level with fallback (1-4 range, default to 1)
+const getActivityLevel = (level: number | undefined | null): number => {
+  if (level === undefined || level === null || level < 1) return 1;
+  if (level > 4) return 4;
+  return level;
 };
 
 export default function LocationsListScreen() {
@@ -41,6 +75,7 @@ export default function LocationsListScreen() {
         id: feed.id,
         title: feed.display_name,
         kind: 'at_location',
+        activityLevel: getActivityLevel((feed as any).activity_level),
       });
     }
     return items;
@@ -55,6 +90,7 @@ export default function LocationsListScreen() {
         id: feed.id,
         title: feed.display_name,
         kind: 'nearby',
+        activityLevel: getActivityLevel((feed as any).activity_level),
       });
     }
     return items;
@@ -148,15 +184,18 @@ export default function LocationsListScreen() {
                           { opacity: pressed ? 0.6 : 1 },
                         ]}
                       >
-                        <Text
-                          numberOfLines={1}
-                          style={[
-                            styles.rowTitle,
-                            { color: theme.colors.text },
-                          ]}
-                        >
-                          {row.title}
-                        </Text>
+                        <View style={styles.rowContent}>
+                          <Text
+                            numberOfLines={1}
+                            style={[
+                              styles.rowTitle,
+                              { color: theme.colors.text },
+                            ]}
+                          >
+                            {row.title}
+                          </Text>
+                          <ActivityBars level={row.activityLevel} />
+                        </View>
                       </Pressable>
                       {!isLast && (
                         <View
@@ -206,15 +245,18 @@ export default function LocationsListScreen() {
                           { opacity: pressed ? 0.6 : 1 },
                         ]}
                       >
-                        <Text
-                          numberOfLines={1}
-                          style={[
-                            styles.rowTitle,
-                            { color: theme.colors.text },
-                          ]}
-                        >
-                          {row.title}
-                        </Text>
+                        <View style={styles.rowContent}>
+                          <Text
+                            numberOfLines={1}
+                            style={[
+                              styles.rowTitle,
+                              { color: theme.colors.text },
+                            ]}
+                          >
+                            {row.title}
+                          </Text>
+                          <ActivityBars level={row.activityLevel} />
+                        </View>
                       </Pressable>
                       {!isLast && (
                         <View
@@ -266,7 +308,14 @@ const styles = StyleSheet.create({
     minHeight: 52,
     justifyContent: 'center',
   },
+  rowContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
   rowTitle: {
+    flex: 1,
     fontSize: FontSizes.medium,
     fontWeight: '500',
     letterSpacing: 0.1,
@@ -285,5 +334,16 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.medium,
     textAlign: 'center',
     lineHeight: 22,
+  },
+  // Activity bars (battery-style indicator)
+  activityBarsContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 2,
+    height: 15,
+  },
+  activityBar: {
+    width: 4,
+    borderRadius: 1.5,
   },
 });

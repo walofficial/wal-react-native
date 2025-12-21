@@ -300,6 +300,20 @@ export type CheckUsernameResponse = {
 };
 
 /**
+ * CleanupSeedResponse
+ */
+export type CleanupSeedResponse = {
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Deleted Count
+     */
+    deleted_count: number;
+};
+
+/**
  * Comment
  */
 export type Comment = {
@@ -1801,6 +1815,46 @@ export type ScreenshotInfo = {
 };
 
 /**
+ * SeedLiveUsersRequest
+ */
+export type SeedLiveUsersRequest = {
+    /**
+     * Count
+     */
+    count?: number;
+    /**
+     * Feed Ids
+     */
+    feed_ids?: Array<string> | null;
+};
+
+/**
+ * SeedLiveUsersResponse
+ */
+export type SeedLiveUsersResponse = {
+    /**
+     * Message
+     */
+    message: string;
+    /**
+     * Users Seeded
+     */
+    users_seeded: number;
+    /**
+     * User Ids
+     */
+    user_ids: Array<string>;
+    /**
+     * Feed Ids
+     */
+    feed_ids: Array<string>;
+    /**
+     * Seed Id
+     */
+    seed_id: string;
+};
+
+/**
  * SendPublicKeyRequest
  */
 export type SendPublicKeyRequest = {
@@ -2305,6 +2359,92 @@ export type LiveUserPresenceUpsertTestFeedsTestPostResponses = {
      */
     200: unknown;
 };
+
+export type CleanupAllSeedLiveUsersData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/feeds/seed-live-users';
+};
+
+export type CleanupAllSeedLiveUsersErrors = {
+    /**
+     * Not found
+     */
+    404: unknown;
+};
+
+export type CleanupAllSeedLiveUsersResponses = {
+    /**
+     * Successful Response
+     */
+    200: CleanupSeedResponse;
+};
+
+export type CleanupAllSeedLiveUsersResponse = CleanupAllSeedLiveUsersResponses[keyof CleanupAllSeedLiveUsersResponses];
+
+export type SeedLiveUsersData = {
+    body: SeedLiveUsersRequest;
+    path?: never;
+    query?: never;
+    url: '/feeds/seed-live-users';
+};
+
+export type SeedLiveUsersErrors = {
+    /**
+     * Not found
+     */
+    404: unknown;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type SeedLiveUsersError = SeedLiveUsersErrors[keyof SeedLiveUsersErrors];
+
+export type SeedLiveUsersResponses = {
+    /**
+     * Successful Response
+     */
+    200: SeedLiveUsersResponse;
+};
+
+export type SeedLiveUsersResponse2 = SeedLiveUsersResponses[keyof SeedLiveUsersResponses];
+
+export type CleanupSeedLiveUsersData = {
+    body?: never;
+    path: {
+        /**
+         * Seed Id
+         */
+        seed_id: string;
+    };
+    query?: never;
+    url: '/feeds/seed-live-users/{seed_id}';
+};
+
+export type CleanupSeedLiveUsersErrors = {
+    /**
+     * Not found
+     */
+    404: unknown;
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CleanupSeedLiveUsersError = CleanupSeedLiveUsersErrors[keyof CleanupSeedLiveUsersErrors];
+
+export type CleanupSeedLiveUsersResponses = {
+    /**
+     * Successful Response
+     */
+    200: CleanupSeedResponse;
+};
+
+export type CleanupSeedLiveUsersResponse = CleanupSeedLiveUsersResponses[keyof CleanupSeedLiveUsersResponses];
 
 export type GetLiveUsersData = {
     body?: never;
