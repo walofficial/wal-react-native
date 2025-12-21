@@ -232,7 +232,12 @@ export function ChatList({ selectedUser }: ChatListProps) {
         data={messageItems}
         estimatedItemSize={80}
         keyExtractor={keyExtractor}
-        maintainScrollAtEnd
+        maintainScrollAtEnd={{
+          onLayout: true,
+          onItemLayout: true,
+          onDataChange: true,
+        }}
+        maintainScrollAtEndThreshold={0.1}
         maintainVisibleContentPosition
         renderItem={renderItem}
         // safeAreaInsetBottom={insets.bottom}
