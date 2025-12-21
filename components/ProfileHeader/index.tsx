@@ -12,6 +12,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withTiming,
+  runOnJS,
 } from 'react-native-reanimated';
 import { HEADER_HEIGHT, HEADER_HEIGHT_WITH_TABS } from '@/lib/constants';
 import { isWeb } from '@/lib/platform';
@@ -186,8 +187,7 @@ function ProfileHeader({
     }
   }, [isSearchActive]);
 
-  const shouldShowLocationsButton =
-    !isWeb && !isSearchActive && pathname.includes('/(tabs)/(home)');
+  const shouldShowLocationsButton = !isWeb && !isSearchActive;
 
   const singleTap = useMemo(
     () =>
@@ -195,8 +195,9 @@ function ProfileHeader({
         .numberOfTaps(1)
         .maxDuration(250)
         .onEnd((_e, success) => {
+          'worklet';
           if (success) {
-            handleOpenLocationsList();
+            runOnJS(handleOpenLocationsList)();
           }
         }),
     [locationFeedIds, currentFeedId, pathname],
@@ -208,8 +209,9 @@ function ProfileHeader({
         .numberOfTaps(2)
         .maxDuration(300)
         .onEnd((_e, success) => {
+          'worklet';
           if (success) {
-            handleJumpToNextLocation();
+            runOnJS(handleJumpToNextLocation)();
           }
         }),
     [locationFeedIds, currentFeedId],

@@ -78,12 +78,6 @@ export default function LocationsListScreen() {
         },
       ]}
     >
-      <View style={styles.header}>
-        <Text style={[styles.title, { color: theme.colors.text }]}>
-          Locations
-        </Text>
-      </View>
-
       {isFetching ? (
         <View style={styles.centered}>
           <ActivityIndicator color={theme.colors.text} />
