@@ -41,6 +41,7 @@ import CountryChangeToast from '@/components/CountryChangeToast';
 import { getCountryByCode } from '@/lib/countries';
 import { updateUser, UpdateUserRequest } from '@/lib/api/generated';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { getUserProfileUserProfileUserIdGetOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
 
 function LivePulseIcon({ children }: { children: React.ReactNode }) {
   const scale = useSharedValue(1);
@@ -128,6 +129,18 @@ export default function TabLayout() {
   }, [colorScheme]);
 
   const { session, isLoading, user, userIsLoading, setAuthUser } = useSession();
+
+  // Prefetch user profile data so it's ready when navigating to profile tab
+  useEffect(() => {
+    if (user?.id) {
+      queryClient.prefetchQuery(
+        getUserProfileUserProfileUserIdGetOptions({
+          path: { user_id: user.id },
+        }),
+      );
+    }
+  }, [user?.id, queryClient]);
+
   const updateUserMutation = useMutation({
     mutationFn: (values: UpdateUserRequest) =>
       updateUser({

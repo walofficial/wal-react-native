@@ -13,7 +13,7 @@ import { Portal } from '@/components/primitives/portal';
 import { useTheme } from '@/lib/theme';
 import { getBottomSheetBackgroundStyle } from '@/lib/styles';
 import useAuth from '@/hooks/useAuth';
-import { Company, getCompanies } from '@/lib/api/generated';
+import { Company, ProfileInformationResponse } from '@/lib/api/generated';
 import {
   getCompaniesOptions,
   getUserProfileUserProfileUserIdGetQueryKey,
@@ -39,30 +39,55 @@ export default function CompanySelectorSheet({
     ...getCompaniesOptions(),
   });
 
+  const profileQueryKey = getUserProfileUserProfileUserIdGetQueryKey({
+    path: { user_id: userId },
+  });
+
   const updateUser = useMutation({
     ...updateUserMutation(),
-    onMutate: (variables) => {
+    onMutate: async (variables) => {
       const nextCompanyId = variables.body.company_id ?? null;
       const nextCompany =
         (companiesQuery.data ?? []).find(
           (c: Company) => c.id === nextCompanyId,
         ) ?? null;
+
+      // Cancel outgoing refetches to avoid race conditions
+      await queryClient.cancelQueries({ queryKey: profileQueryKey });
+
+      // Snapshot previous value
+      const previousProfile =
+        queryClient.getQueryData<ProfileInformationResponse>(profileQueryKey);
+
+      // Optimistically update the profile cache
+      if (previousProfile) {
+        queryClient.setQueryData<ProfileInformationResponse>(profileQueryKey, {
+          ...previousProfile,
+          company: nextCompany,
+        });
+      }
+
+      // Update auth user optimistically
       if (user) {
         setAuthUser({
           ...user,
           company: nextCompany as any,
         });
       }
+
+      return { previousProfile };
     },
     onSuccess: () => {
       bottomSheetRef.current?.close();
-      queryClient.invalidateQueries({
-        queryKey: getUserProfileUserProfileUserIdGetQueryKey({
-          path: { user_id: userId },
-        }),
-      });
     },
-    onError: () => {
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousProfile) {
+        queryClient.setQueryData<ProfileInformationResponse>(
+          profileQueryKey,
+          context.previousProfile,
+        );
+      }
       Alert.alert('Failed to update company');
     },
   });
