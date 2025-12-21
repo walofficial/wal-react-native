@@ -47,15 +47,15 @@ export function ReactionsOverlay() {
 
   React.useEffect(() => {
     if (activeOverlay?.isVisible) {
-      opacity.value = withTiming(1, { duration: 250 });
-      overlayScale.value = withSpring(1, { damping: 15, stiffness: 300 });
-      overlayOpacity.value = withTiming(1, { duration: 250 });
-      overlayTranslateY.value = withSpring(0, { damping: 15, stiffness: 300 });
+      opacity.value = withTiming(1, { duration: 120 });
+      overlayScale.value = withTiming(1, { duration: 120 });
+      overlayOpacity.value = withTiming(1, { duration: 120 });
+      overlayTranslateY.value = withTiming(0, { duration: 120 });
     } else {
-      opacity.value = withTiming(0, { duration: 200 });
-      overlayScale.value = withTiming(0, { duration: 200 });
-      overlayOpacity.value = withTiming(0, { duration: 200 });
-      overlayTranslateY.value = withTiming(-10, { duration: 200 });
+      opacity.value = withTiming(0, { duration: 100 });
+      overlayScale.value = withTiming(0.95, { duration: 100 });
+      overlayOpacity.value = withTiming(0, { duration: 100 });
+      overlayTranslateY.value = withTiming(-4, { duration: 100 });
     }
   }, [
     activeOverlay?.isVisible,
