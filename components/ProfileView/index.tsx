@@ -24,16 +24,38 @@ import ProfilePhotoEditSheet from '@/components/UserPreferences/ProfilePhotoEdit
 
 const BIO_MAX_LINES = 2;
 
+function SkeletonBox({
+  width,
+  height,
+  borderRadius = 4,
+  style,
+}: {
+  width: number | string;
+  height: number;
+  borderRadius?: number;
+  style?: any;
+}) {
+  const theme = useTheme();
+  const backgroundColor =
+    theme.colors.background === '#000000'
+      ? 'rgba(255,255,255,0.08)'
+      : 'rgba(0,0,0,0.06)';
+
+  return (
+    <View style={[{ width, height, borderRadius, backgroundColor }, style]} />
+  );
+}
+
 interface ProfileViewProps {
   userId: string;
 }
 
 export default function ProfileView({ userId }: ProfileViewProps) {
-  const { data: profile, isFetching } = useProfileInformation(userId);
+  const { data: profile, isLoading } = useProfileInformation(userId);
   const theme = useTheme();
   const { user } = useAuth();
   const isAuthUser = user?.id === userId;
-  const isLoadingData = isFetching;
+  const isLoadingData = isLoading;
 
   const photoSheetRef = useRef<BottomSheet>(null);
   const companySheetRef = useRef<BottomSheet>(null);
@@ -43,8 +65,10 @@ export default function ProfileView({ userId }: ProfileViewProps) {
   const [bioNeedsTruncation, setBioNeedsTruncation] = useState(false);
 
   const shouldShowMeta = useMemo(() => {
+    // Show meta container for auth user even when loading (to show skeletons)
+    if (isAuthUser) return true;
     if (isLoadingData) return false;
-    return Boolean(isAuthUser || profile?.company || profile?.bio);
+    return Boolean(profile?.company || profile?.bio);
   }, [isAuthUser, isLoadingData, profile?.bio, profile?.company]);
   const isCompanyPressable = isAuthUser;
   const shouldShowAddBio = Boolean(
@@ -76,48 +100,67 @@ export default function ProfileView({ userId }: ProfileViewProps) {
       />
       {shouldShowMeta && (
         <View style={styles.metaContainer}>
-          <TouchableOpacity
-            activeOpacity={isCompanyPressable ? 0.7 : 1}
-            disabled={!isCompanyPressable}
-            onPress={() => companySheetRef.current?.snapToIndex(0)}
-            style={[
-              styles.companyRow,
-              isCompanyPressable && {
-                opacity: 0.85,
-              },
-            ]}
-          >
-            {profile?.company ? (
-              <>
-                <Image
-                  source={{ uri: profile.company.profile_picture }}
-                  style={[
-                    styles.companyLogo,
-                    { backgroundColor: theme.colors.card.background },
-                  ]}
-                  contentFit="cover"
-                />
+          {isLoadingData && isAuthUser ? (
+            // Skeleton for company row
+            <View style={styles.companyRow}>
+              <SkeletonBox width={18} height={18} borderRadius={4} />
+              <SkeletonBox width={100} height={14} borderRadius={4} />
+            </View>
+          ) : (
+            <TouchableOpacity
+              activeOpacity={isCompanyPressable ? 0.7 : 1}
+              disabled={!isCompanyPressable}
+              onPress={() => companySheetRef.current?.snapToIndex(0)}
+              style={[
+                styles.companyRow,
+                isCompanyPressable && {
+                  opacity: 0.85,
+                },
+              ]}
+            >
+              {profile?.company ? (
+                <>
+                  <Image
+                    source={{ uri: profile.company.profile_picture }}
+                    style={[
+                      styles.companyLogo,
+                      { backgroundColor: theme.colors.card.background },
+                    ]}
+                    contentFit="cover"
+                  />
+                  <Text
+                    numberOfLines={1}
+                    style={[styles.companyText, { color: theme.colors.text }]}
+                  >
+                    {profile.company.name}
+                  </Text>
+                </>
+              ) : (
                 <Text
                   numberOfLines={1}
-                  style={[styles.companyText, { color: theme.colors.text }]}
+                  style={[
+                    styles.companyText,
+                    { color: theme.colors.feedItem.secondaryText },
+                  ]}
                 >
-                  {profile.company.name}
+                  {isAuthUser ? t('profile.set_company') : ''}
                 </Text>
-              </>
-            ) : (
-              <Text
-                numberOfLines={1}
-                style={[
-                  styles.companyText,
-                  { color: theme.colors.feedItem.secondaryText },
-                ]}
-              >
-                {isAuthUser ? t('profile.set_company') : ''}
-              </Text>
-            )}
-          </TouchableOpacity>
+              )}
+            </TouchableOpacity>
+          )}
 
-          {profile?.bio ? (
+          {isLoadingData && isAuthUser ? (
+            // Skeleton for bio row
+            <View style={styles.bioSkeletonContainer}>
+              <SkeletonBox width="80%" height={14} borderRadius={4} />
+              <SkeletonBox
+                width="60%"
+                height={14}
+                borderRadius={4}
+                style={{ marginTop: 6 }}
+              />
+            </View>
+          ) : profile?.bio ? (
             <Pressable
               onPress={handleBioPress}
               style={({ pressed }) => [
@@ -276,6 +319,11 @@ const styles = StyleSheet.create({
   },
   bioPressed: {
     opacity: 0.6,
+  },
+  bioSkeletonContainer: {
+    alignItems: 'center',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
   },
   bioText: {
     fontSize: 14,

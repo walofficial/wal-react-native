@@ -22,6 +22,7 @@ import {
   getUserProfileUserProfileUserIdGetQueryKey,
   updateUserMutation,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
+import { ProfileInformationResponse } from '@/lib/api/generated';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const MAX_BIO_LENGTH = 150;
@@ -68,24 +69,48 @@ export default function BioEditorSheet({
     [],
   );
 
+  const profileQueryKey = getUserProfileUserProfileUserIdGetQueryKey({
+    path: { user_id: userId },
+  });
+
   const updateUser = useMutation({
     ...updateUserMutation(),
-    onMutate: (variables) => {
-      if (!user) return;
+    onMutate: async (variables) => {
       if (typeof variables.body.bio === 'undefined') return;
-      setAuthUser({
-        ...user,
-        bio: variables.body.bio as any,
-      });
+
+      // Cancel outgoing refetches to avoid race conditions
+      await queryClient.cancelQueries({ queryKey: profileQueryKey });
+
+      // Snapshot previous value
+      const previousProfile =
+        queryClient.getQueryData<ProfileInformationResponse>(profileQueryKey);
+
+      // Optimistically update the profile cache
+      if (previousProfile) {
+        queryClient.setQueryData<ProfileInformationResponse>(profileQueryKey, {
+          ...previousProfile,
+          bio: variables.body.bio ?? null,
+        });
+      }
+
+      // Update auth user optimistically
+      if (user) {
+        setAuthUser({
+          ...user,
+          bio: variables.body.bio as any,
+        });
+      }
+
+      return { previousProfile };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: getUserProfileUserProfileUserIdGetQueryKey({
-          path: { user_id: userId },
-        }),
-      });
-    },
-    onError: () => {
+    onError: (_err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousProfile) {
+        queryClient.setQueryData<ProfileInformationResponse>(
+          profileQueryKey,
+          context.previousProfile,
+        );
+      }
       Alert.alert(t('common.error'), t('common.profile_update_failed'));
     },
   });
