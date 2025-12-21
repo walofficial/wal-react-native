@@ -7,12 +7,15 @@ import {
   View,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { Text } from '@/components/ui/text';
+import { SectionHeader } from '@/components/SectionHeader';
 import useLocationsInfo from '@/hooks/useLocationsInfo';
 import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 import useFeeds from '@/hooks/useFeeds';
 import { useTheme, FontSizes } from '@/lib/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useTranslation from '@/hooks/useTranslation';
 
 type LocationRow = {
   id: string;
@@ -26,12 +29,12 @@ export default function LocationsListScreen() {
   const insets = useSafeAreaInsets();
   const { headerHeight } = useFeeds();
   const { categoryId } = useUserFeedIds();
+  const { t } = useTranslation();
 
   const { data, isFetching, errorMsg } = useLocationsInfo(categoryId);
 
-  const rows: LocationRow[] = useMemo(() => {
+  const feedsAtLocation: LocationRow[] = useMemo(() => {
     const items: LocationRow[] = [];
-
     for (const feed of data?.feeds_at_location ?? []) {
       if (!feed?.id) continue;
       items.push({
@@ -40,7 +43,11 @@ export default function LocationsListScreen() {
         kind: 'at_location',
       });
     }
+    return items;
+  }, [data]);
 
+  const nearestFeeds: LocationRow[] = useMemo(() => {
+    const items: LocationRow[] = [];
     for (const entry of data?.nearest_feeds ?? []) {
       const feed = entry?.feed;
       if (!feed?.id) continue;
@@ -50,9 +57,10 @@ export default function LocationsListScreen() {
         kind: 'nearby',
       });
     }
-
     return items;
   }, [data]);
+
+  const hasAnyLocations = feedsAtLocation.length > 0 || nearestFeeds.length > 0;
 
   const handleNavigateToFeed = (feedId: string) => {
     router.navigate({
@@ -72,7 +80,6 @@ export default function LocationsListScreen() {
       style={[
         styles.container,
         {
-          paddingTop: headerHeight + insets.top,
           paddingBottom: insets.bottom,
           backgroundColor,
         },
@@ -93,7 +100,7 @@ export default function LocationsListScreen() {
             Location is unavailable right now.
           </Text>
         </View>
-      ) : rows.length === 0 ? (
+      ) : !hasAnyLocations ? (
         <View style={styles.centered}>
           <Text
             style={[
@@ -109,45 +116,120 @@ export default function LocationsListScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContent}
         >
-          <View
-            style={[
-              styles.card,
-              {
-                backgroundColor: theme.colors.feedItem.background,
-                borderColor: separatorColor,
-              },
-            ]}
-          >
-            {rows.map((row, idx) => {
-              const isLast = idx === rows.length - 1;
-              return (
-                <React.Fragment key={`${row.kind}_${row.id}`}>
-                  <Pressable
-                    onPress={() => handleNavigateToFeed(row.id)}
-                    style={({ pressed }) => [
-                      styles.row,
-                      { opacity: pressed ? 0.6 : 1 },
-                    ]}
-                  >
-                    <Text
-                      numberOfLines={1}
-                      style={[styles.rowTitle, { color: theme.colors.text }]}
-                    >
-                      {row.title}
-                    </Text>
-                  </Pressable>
-                  {!isLast && (
-                    <View
-                      style={[
-                        styles.separator,
-                        { backgroundColor: separatorColor },
-                      ]}
-                    />
-                  )}
-                </React.Fragment>
-              );
-            })}
-          </View>
+          {feedsAtLocation.length > 0 && (
+            <>
+              <SectionHeader
+                icon={
+                  <Ionicons
+                    name="location"
+                    size={22}
+                    color={theme.colors.text}
+                  />
+                }
+                text={t('common.locations_nearby')}
+              />
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor: theme.colors.feedItem.background,
+                    borderColor: separatorColor,
+                  },
+                ]}
+              >
+                {feedsAtLocation.map((row, idx) => {
+                  const isLast = idx === feedsAtLocation.length - 1;
+                  return (
+                    <React.Fragment key={`${row.kind}_${row.id}`}>
+                      <Pressable
+                        onPress={() => handleNavigateToFeed(row.id)}
+                        style={({ pressed }) => [
+                          styles.row,
+                          { opacity: pressed ? 0.6 : 1 },
+                        ]}
+                      >
+                        <Text
+                          numberOfLines={1}
+                          style={[
+                            styles.rowTitle,
+                            { color: theme.colors.text },
+                          ]}
+                        >
+                          {row.title}
+                        </Text>
+                      </Pressable>
+                      {!isLast && (
+                        <View
+                          style={[
+                            styles.separator,
+                            { backgroundColor: separatorColor },
+                          ]}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </View>
+            </>
+          )}
+
+          {nearestFeeds.length > 0 && (
+            <>
+              <View style={styles.sectionSpacing} />
+              <SectionHeader
+                icon={
+                  <Ionicons
+                    name="compass-outline"
+                    size={22}
+                    color={theme.colors.text}
+                  />
+                }
+                text={t('common.locations_far')}
+              />
+              <View
+                style={[
+                  styles.card,
+                  {
+                    backgroundColor: theme.colors.feedItem.background,
+                    borderColor: separatorColor,
+                  },
+                ]}
+              >
+                {nearestFeeds.map((row, idx) => {
+                  const isLast = idx === nearestFeeds.length - 1;
+                  return (
+                    <React.Fragment key={`${row.kind}_${row.id}`}>
+                      <Pressable
+                        onPress={() => handleNavigateToFeed(row.id)}
+                        style={({ pressed }) => [
+                          styles.row,
+                          { opacity: pressed ? 0.6 : 1 },
+                        ]}
+                      >
+                        <Text
+                          numberOfLines={1}
+                          style={[
+                            styles.rowTitle,
+                            { color: theme.colors.text },
+                          ]}
+                        >
+                          {row.title}
+                        </Text>
+                      </Pressable>
+                      {!isLast && (
+                        <View
+                          style={[
+                            styles.separator,
+                            { backgroundColor: separatorColor },
+                          ]}
+                        />
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </View>
+            </>
+          )}
         </ScrollView>
       )}
     </View>
@@ -169,6 +251,9 @@ const styles = StyleSheet.create({
   },
   listContent: {
     paddingBottom: 24,
+  },
+  sectionSpacing: {
+    height: 24,
   },
   card: {
     borderRadius: 14,

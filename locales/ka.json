@@ -159,6 +159,8 @@
     "go_to_location_to_post": "გამოსაქვეყნებლად საჭიროა ლოკაციაზე მისვლა",
     "rate_location": "შეაფასეთ ლოკაცია",
     "no_locations_found": "ლოკაციები ვერ მოიძებნა",
+    "locations_nearby": "ახლოს",
+    "locations_far": "შორს",
     "please_sign_in_to_continue": "გთხოვთ შეხვიდეთ სისტემაში გასაგრძელებლად",
     "back": "უკან",
     "photo": "ფოტო",
