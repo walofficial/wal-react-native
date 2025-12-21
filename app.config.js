@@ -81,10 +81,10 @@ const pluginsList = [
     {
       ios: {
         deploymentTarget: '15.1',
-        reactNativeReleaseLevel: "experimental"
+        reactNativeReleaseLevel: 'experimental',
       },
       android: {
-        reactNativeReleaseLevel: "experimental"
+        reactNativeReleaseLevel: 'experimental',
       },
     },
   ],
@@ -115,7 +115,7 @@ const pluginsList = [
 ];
 
 // Firebase config toggles: enable only if explicitly enabled
-const DISABLE_FIREBASE = true
+const DISABLE_FIREBASE = true;
 
 // if (!DISABLE_FIREBASE) {
 //   pluginsList.push('@react-native-firebase/app');

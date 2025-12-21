@@ -29,5 +29,3 @@ declare module 'walcrypt' {
   const defaultExport: unknown;
   export default defaultExport;
 }
-
-

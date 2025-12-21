@@ -41,6 +41,13 @@ export default function Layout({ segment }: { segment: string }) {
   const theme = useTheme();
   const screens = [
     <Stack.Screen
+      name="profile"
+      options={{
+        headerTransparent: true,
+        header: () => <ProfilePageUsername />,
+      }}
+    />,
+    <Stack.Screen
       name="verification/[verificationId]"
       options={({ route }) => {
         const params = route.params as { verificationId?: string };

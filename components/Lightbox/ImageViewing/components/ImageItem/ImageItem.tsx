@@ -18,12 +18,7 @@ type Props = {
   imageDimensions: Dimensions | undefined;
 };
 
-const ImageItem = ({
-  imageSrc,
-  onTap,
-  onLoad,
-  imageAspect,
-}: Props) => {
+const ImageItem = ({ imageSrc, onTap, onLoad, imageAspect }: Props) => {
   const [hasLoaded, setHasLoaded] = useState(false);
   const type = imageSrc.type;
   const borderRadius =
