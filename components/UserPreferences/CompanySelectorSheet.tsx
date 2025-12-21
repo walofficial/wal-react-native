@@ -20,6 +20,7 @@ import {
   updateUserMutation,
 } from '@/lib/api/generated/@tanstack/react-query.gen';
 import { Image } from 'expo-image';
+import { useTranslation } from '@/hooks/useTranslation';
 
 export default function CompanySelectorSheet({
   bottomSheetRef,
@@ -32,7 +33,7 @@ export default function CompanySelectorSheet({
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
   const { user, setAuthUser } = useAuth();
-
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const companiesQuery = useQuery({
@@ -160,7 +161,7 @@ export default function CompanySelectorSheet({
             onChangeText={setSearchQuery}
             style={[styles.searchInput, { color: theme.colors.text }]}
             placeholderTextColor={theme.colors.feedItem.secondaryText}
-            placeholder="Search company"
+            placeholder={t('common.search_company_name')}
           />
         </View>
 
@@ -171,12 +172,12 @@ export default function CompanySelectorSheet({
         >
           {companiesQuery.isLoading && (
             <Text style={{ color: theme.colors.feedItem.secondaryText }}>
-              Loading...
+              {t('common.loading')}
             </Text>
           )}
           {!companiesQuery.isLoading && filteredCompanies.length === 0 && (
             <Text style={{ color: theme.colors.feedItem.secondaryText }}>
-              No companies found
+              {t('common.no_results_found')}
             </Text>
           )}
 
