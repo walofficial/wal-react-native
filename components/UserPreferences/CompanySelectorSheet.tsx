@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Alert, StyleSheet, View } from 'react-native';
 import BottomSheet, {
   BottomSheetBackdrop,
@@ -36,8 +36,14 @@ export default function CompanySelectorSheet({
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
+  const trimmedQuery = searchQuery.trim();
+  const shouldSearch = trimmedQuery.length >= 2;
+
   const companiesQuery = useQuery({
-    ...getCompaniesOptions(),
+    ...getCompaniesOptions({
+      query: { q: trimmedQuery },
+    }),
+    enabled: shouldSearch,
   });
 
   const profileQueryKey = getUserProfileUserProfileUserIdGetQueryKey({
@@ -93,7 +99,7 @@ export default function CompanySelectorSheet({
     },
   });
 
-  const snapPoints = useMemo(() => ['85%'], []);
+  const snapPoints = ['85%'];
   const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
 
   const renderBackdrop = useCallback(
@@ -108,12 +114,7 @@ export default function CompanySelectorSheet({
     [],
   );
 
-  const filteredCompanies = useMemo(() => {
-    const companies = companiesQuery.data ?? [];
-    const q = searchQuery.trim().toLowerCase();
-    if (!q) return companies;
-    return companies.filter((c) => c.name.toLowerCase().includes(q));
-  }, [companiesQuery.data, searchQuery]);
+  const companies = companiesQuery.data ?? [];
 
   const handleSelectCompany = (company: Company) => {
     updateUser.mutate({
@@ -170,18 +171,25 @@ export default function CompanySelectorSheet({
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {companiesQuery.isLoading && (
+          {!shouldSearch && (
+            <Text style={{ color: theme.colors.feedItem.secondaryText }}>
+              {t('common.type_to_search')}
+            </Text>
+          )}
+          {shouldSearch && companiesQuery.isLoading && (
             <Text style={{ color: theme.colors.feedItem.secondaryText }}>
               {t('common.loading')}
             </Text>
           )}
-          {!companiesQuery.isLoading && filteredCompanies.length === 0 && (
-            <Text style={{ color: theme.colors.feedItem.secondaryText }}>
-              {t('common.no_results_found')}
-            </Text>
-          )}
+          {shouldSearch &&
+            !companiesQuery.isLoading &&
+            companies.length === 0 && (
+              <Text style={{ color: theme.colors.feedItem.secondaryText }}>
+                {t('common.no_results_found')}
+              </Text>
+            )}
 
-          {filteredCompanies.map((company) => (
+          {companies.map((company) => (
             <View
               key={company.id}
               style={[
