@@ -34,8 +34,11 @@
     "delete_bio_confirm": "ნამდვილად გსურთ ბიოს წაშლა?"
   },
   "common": {
+    "no_results_found": "ვერ მოიძებნა",
+    "no_results_found_description": "ვერ მოიძებნა",
     "retry": "თავიდან გადაღება",
     "save": "შენახვა",
+    "search_company_name": "მოძებნე",
     "error": "შეცდომა მოხდა",
     "profile_update_failed": "პროფილი ვერ განახლდა",
     "system_error": "სისტემური ხარვეზი",

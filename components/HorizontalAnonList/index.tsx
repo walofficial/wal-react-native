@@ -43,10 +43,9 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
       ? 'rgba(255,255,255,0.08)'
       : 'rgba(0,0,0,0.08)';
 
-  if (!isFetching && items.length === 0) {
+  if (items.length === 0) {
     return null;
   }
-
   return (
     <View style={styles.container}>
       <View style={[styles.headerRow, { borderColor: separatorColor }]}>
