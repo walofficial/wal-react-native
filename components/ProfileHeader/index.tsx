@@ -187,7 +187,8 @@ function ProfileHeader({
     }
   }, [isSearchActive]);
 
-  const shouldShowLocationsButton = !isWeb && !isSearchActive;
+  const shouldShowLocationsButton =
+    !isWeb && !isSearchActive && locationFeedIds.includes(currentFeedId);
 
   const singleTap = useMemo(
     () =>
