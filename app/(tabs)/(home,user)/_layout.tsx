@@ -41,17 +41,6 @@ export default function Layout({ segment }: { segment: string }) {
   const theme = useTheme();
   const screens = [
     <Stack.Screen
-      name="locations"
-      options={{
-        title: '',
-        header: () => <SimpleGoBackHeader title="ლოკაციები" />,
-        headerStyle: {
-          backgroundColor: theme.colors.background,
-        },
-        headerTintColor: theme.colors.text,
-      }}
-    />,
-    <Stack.Screen
       name="verification/[verificationId]"
       options={({ route }) => {
         const params = route.params as { verificationId?: string };
@@ -89,6 +78,17 @@ export default function Layout({ segment }: { segment: string }) {
   ];
   if (isHomeFeed) {
     screens.push(
+      <Stack.Screen
+        name="locations"
+        options={{
+          title: '',
+          header: () => <SimpleGoBackHeader title="ლოკაციები" />,
+          headerStyle: {
+            backgroundColor: theme.colors.background,
+          },
+          headerTintColor: theme.colors.text,
+        }}
+      />,
       <Stack.Screen
         name="[feedId]/index"
         options={({ route }) => ({
