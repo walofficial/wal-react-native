@@ -53,7 +53,6 @@
     "@haileyok/bluesky-video": "^0.3.1",
     "@hey-api/openapi-ts": "^0.81.0",
     "@hookform/resolvers": "^3.6.0",
-    "@legendapp/list": "^2.0.16",
     "@likashefqet/react-native-image-zoom": "^4.2.1",
     "@livekit/react-native": "^2.9.4",
     "@livekit/react-native-expo-plugin": "^1.0.1",
