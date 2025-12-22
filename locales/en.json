@@ -35,10 +35,12 @@
   },
   "common": {
     "retry": "Retry",
+    "no_results_found": "No results found",
     "save": "Save",
     "live_stream_started": "Live stream started",
     "live_stream_started_description": "You are now live",
-  
+    "locations": "Locations",
+
       "profile_update_failed": "Profile update failed",
     "change_country": "Change country",
     "system_error": "System error",

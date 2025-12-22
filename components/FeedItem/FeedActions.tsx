@@ -14,6 +14,8 @@ import Animated, {
   withRepeat,
   withTiming,
 } from 'react-native-reanimated';
+import CommentButton from './CommentButton';
+import ShareButton from './ShareButton';
 import { useTheme } from '@/lib/theme';
 import { useRouter, usePathname } from 'expo-router';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
@@ -182,7 +184,7 @@ const FeedActions: React.FC<FeedActionsProps> = ({
   const summaryLoaderOpacity = useSharedValue(isSummaryLoading ? 1 : 0);
   const metadataLoaderOpacity = useSharedValue(metadataLoading ? 1 : 0);
   const router = useRouter();
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const { closeLightbox } = useLightboxControls();
 
   const badgeInfo = getFactCheckBadgeInfo(factuality);
@@ -238,13 +240,13 @@ const FeedActions: React.FC<FeedActionsProps> = ({
     }
     const wasLightboxActive = closeLightbox();
 
-    // Check if we're already on the verification page
-    const isOnVerificationPage = pathname === `/verification/${verificationId}`;
+    // // Check if we're already on the verification page
+    // const isOnVerificationPage = pathname === `/verification/${verificationId}`;
 
-    if (isOnVerificationPage) {
-      // Potentially scroll to a relevant section or do nothing
-      return;
-    }
+    // if (isOnVerificationPage) {
+    //   // Potentially scroll to a relevant section or do nothing
+    //   return;
+    // }
 
     // If lightbox was active, wait for animation to complete before navigating
     if (wasLightboxActive) {
@@ -272,9 +274,19 @@ const FeedActions: React.FC<FeedActionsProps> = ({
         <View style={styles.actionsWrapper}>
           <View style={styles.actionGroup}>
             {/* {!hideUserRects && <LikeButton verificationId={verificationId} />} */}
+            {!hideUserRects && (
+              <CommentButton
+                // style={{ marginLeft: 12 }}
+                large
+                verificationId={verificationId}
+              />
+            )}
             <Pressable
               onPress={handleFactualityPress}
-              style={[styles.factualityContainer, { marginLeft: 0 }]}
+              style={[
+                styles.factualityContainer,
+                { marginLeft: hideUserRects ? 0 : 12 },
+              ]}
             >
               {badgeInfo &&
                 showFactualityBadge &&
@@ -296,6 +308,9 @@ const FeedActions: React.FC<FeedActionsProps> = ({
                 <MetadataLoader style={metadataAnimatedStyle} />
               )}
             </Pressable>
+          </View>
+          <View style={styles.actionGroup}>
+            <ShareButton verificationId={verificationId} />
           </View>
         </View>
       </View>
