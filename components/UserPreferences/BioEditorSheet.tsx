@@ -175,9 +175,6 @@ export default function BioEditorSheet({
           { backgroundColor: isDark ? '#48484a' : '#c7c7cc' },
         ]}
         onChange={handleSheetChange}
-        keyboardBehavior="interactive"
-        keyboardBlurBehavior="none"
-        android_keyboardInputMode="adjustResize"
       >
         <View style={styles.container}>
           <View
