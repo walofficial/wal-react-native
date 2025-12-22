@@ -57,6 +57,9 @@ const pluginsList = [
     {
       locationPermissionText:
         'This app accesses your location to let you post videos or photos to nearby locations.',
+      isIosBackgroundLocationEnabled: true,
+      isAndroidBackgroundLocationEnabled: true,
+      isAndroidForegroundServiceEnabled: false,
     },
   ],
   [
@@ -157,6 +160,9 @@ export default {
           'WAL uses your contacts to help you find and connect with friends who are already using the app. Your contact data is only used for finding friends and is never stored or used for any other purpose.',
         NSLocationWhenInUseUsageDescription:
           'This app accesses your location to let you post videos or photos to nearby locations.',
+        NSLocationAlwaysAndWhenInUseUsageDescription:
+          'This app accesses your location in the background to notify you when you are near interesting locations.',
+        UIBackgroundModes: ['location'],
         ITSAppUsesNonExemptEncryption: false,
       },
       supportsTablet: false,
@@ -197,7 +203,12 @@ export default {
           category: ['BROWSABLE', 'DEFAULT'],
         },
       ],
-      permissions: ['READ_CONTACTS'],
+      permissions: [
+        'READ_CONTACTS',
+        'ACCESS_FINE_LOCATION',
+        'ACCESS_COARSE_LOCATION',
+        'ACCESS_BACKGROUND_LOCATION',
+      ],
     },
     plugins: pluginsList,
     experiments: {

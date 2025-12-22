@@ -810,6 +810,10 @@ export type Feed = {
    * Feed Type
    */
   feed_type?: ('news' | 'fact_check' | 'location') | null;
+  /**
+   * Activity Level
+   */
+  activity_level?: number | null;
 };
 
 /**
@@ -1043,6 +1047,62 @@ export type FriendRequestSentResponse = {
  * FriendRequestStatus
  */
 export type FriendRequestStatus = 'pending' | 'accepted' | 'rejected';
+
+/**
+ * GeofenceEventRequest
+ */
+export type GeofenceEventRequest = {
+  /**
+   * Event Type
+   */
+  event_type: string;
+  /**
+   * Region Identifier
+   */
+  region_identifier: string;
+  /**
+   * Region Name
+   */
+  region_name: string;
+  /**
+   * Latitude
+   */
+  latitude: number;
+  /**
+   * Longitude
+   */
+  longitude: number;
+  /**
+   * Radius
+   */
+  radius: number;
+  /**
+   * Timestamp
+   */
+  timestamp: string;
+};
+
+/**
+ * GeofenceEventResponse
+ */
+export type GeofenceEventResponse = {
+  /**
+   * Success
+   */
+  success: boolean;
+  /**
+   * Message
+   */
+  message: string;
+  /**
+   * User Id
+   */
+  user_id?: string | null;
+  /**
+   * Region Name
+   */
+  region_name?: string | null;
+};
 
 /**
  * GetCommentReactionsResponse
@@ -1353,6 +1413,10 @@ export type Location = {
    * Location
    */
   location: [number, number];
+  /**
+   * Radius
+   */
+  radius?: number;
 };
 
 /**
@@ -5309,6 +5373,61 @@ export type AddOrUpdateReactionCommentsCommentIdReactionsPostError =
 export type AddOrUpdateReactionCommentsCommentIdReactionsPostResponses = {
   /**
    * Successful Response
+   */
+  200: unknown;
+};
+
+export type GeofenceEventData = {
+  body: GeofenceEventRequest;
+  path?: never;
+  query?: never;
+  url: '/geofence/event';
+};
+
+export type GeofenceEventErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Internal server error
+   */
+  500: unknown;
+};
+
+export type GeofenceEventError = GeofenceEventErrors[keyof GeofenceEventErrors];
+
+export type GeofenceEventResponses = {
+  /**
+   * Successful Response
+   */
+  200: GeofenceEventResponse;
+};
+
+export type GeofenceEventResponse2 =
+  GeofenceEventResponses[keyof GeofenceEventResponses];
+
+export type GetGeofenceRegionsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/geofence/regions';
+};
+
+export type GetGeofenceRegionsErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+};
+
+export type GetGeofenceRegionsResponses = {
+  /**
+   * List of available geofence regions
    */
   200: unknown;
 };

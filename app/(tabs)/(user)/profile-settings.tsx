@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Alert,
@@ -9,6 +9,7 @@ import {
   Platform,
   useColorScheme as useRNColorScheme,
   TouchableOpacity,
+  Switch,
 } from 'react-native';
 import Button from '@/components/Button';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
@@ -39,6 +40,7 @@ import {
   setApiBaseUrl as setApiBaseUrlInConfig,
   API_BASE_URL as DEFAULT_API_BASE_URL,
 } from '@/lib/api/config';
+import { LOCATION_DEBUG_KEY } from '@/hooks/useLocation';
 
 const formSchema = z
   .object({
@@ -86,6 +88,21 @@ export default function Component() {
   const isNonProduction = __DEV__ || Updates.channel !== 'production';
 
   const [apiBaseUrl, setApiBaseUrl] = React.useState(getApiBaseUrlFromConfig());
+  const [locationDebugEnabled, setLocationDebugEnabled] = useState(false);
+
+  // Load location debug setting
+  useEffect(() => {
+    if (isNonProduction) {
+      AsyncStorage.getItem(LOCATION_DEBUG_KEY).then((value) => {
+        setLocationDebugEnabled(value === 'true');
+      });
+    }
+  }, [isNonProduction]);
+
+  const handleLocationDebugToggle = async (value: boolean) => {
+    setLocationDebugEnabled(value);
+    await AsyncStorage.setItem(LOCATION_DEBUG_KEY, value ? 'true' : 'false');
+  };
 
   useEffect(() => {
     if (!user) {
@@ -146,29 +163,59 @@ export default function Component() {
       <View style={styles.content}>
         <View style={styles.formContainer}>
           {isNonProduction && (
-            <View style={styles.notificationSection}>
-              <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
-                API Base URL (dev/preview)
-              </H4>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={{
-                    ...styles.usernameInput,
-                    color: theme.colors.text,
-                    backgroundColor:
-                      colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
-                    borderColor: theme.colors.border,
-                  }}
-                  placeholder={DEFAULT_API_BASE_URL}
-                  placeholderTextColor={theme.colors.border}
-                  value={apiBaseUrl}
-                  onChangeText={setApiBaseUrl}
-                  onBlur={handleApplyApiBaseUrl}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
+            <>
+              <View style={styles.notificationSection}>
+                <H4 style={[styles.sectionTitle, { color: theme.colors.text }]}>
+                  API Base URL (dev/preview)
+                </H4>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={{
+                      ...styles.usernameInput,
+                      color: theme.colors.text,
+                      backgroundColor:
+                        colorScheme === 'dark' ? '#1C1C1E' : '#F2F2F7',
+                      borderColor: theme.colors.border,
+                    }}
+                    placeholder={DEFAULT_API_BASE_URL}
+                    placeholderTextColor={theme.colors.border}
+                    value={apiBaseUrl}
+                    onChangeText={setApiBaseUrl}
+                    onBlur={handleApplyApiBaseUrl}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
               </View>
-            </View>
+              <View style={styles.debugToggleSection}>
+                <View style={styles.debugToggleRow}>
+                  <View style={styles.debugToggleText}>
+                    <H4
+                      style={[
+                        styles.sectionTitle,
+                        { color: theme.colors.text },
+                      ]}
+                    >
+                      Location Debug Toast
+                    </H4>
+                    <Text
+                      style={[
+                        styles.debugToggleDescription,
+                        { color: theme.colors.secondary },
+                      ]}
+                    >
+                      Show coordinates when location updates
+                    </Text>
+                  </View>
+                  <Switch
+                    value={locationDebugEnabled}
+                    onValueChange={handleLocationDebugToggle}
+                    trackColor={{ false: '#767577', true: '#3B82F6' }}
+                    thumbColor={locationDebugEnabled ? '#fff' : '#f4f3f4'}
+                  />
+                </View>
+              </View>
+            </>
           )}
           <Button
             variant="destructive-outline"
@@ -223,6 +270,22 @@ const styles = StyleSheet.create({
   notificationSection: {
     flexDirection: 'column',
     marginVertical: 12,
+  },
+  debugToggleSection: {
+    marginVertical: 12,
+  },
+  debugToggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  debugToggleText: {
+    flex: 1,
+    marginRight: 12,
+  },
+  debugToggleDescription: {
+    fontSize: FontSizes.small,
+    marginTop: 2,
   },
   errorText: {
     color: 'red',
