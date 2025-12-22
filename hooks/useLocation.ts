@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import * as Location from 'expo-location';
 import { isWeb } from '@/lib/platform';
 import { t } from '@/lib/i18n';
 import { useToast } from '@/lib/context/ToastContext';
 import { useSegments } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isDev } from '@/lib/api/config';
+
+export const LOCATION_DEBUG_KEY = 'LOCATION_DEBUG_ENABLED';
 
 export default function useLocation() {
   const [location, setLocation] = useState<Location.LocationObject | null>(
@@ -12,10 +16,36 @@ export default function useLocation() {
   const segments = useSegments();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState(true);
-  const { error: errorToast } = useToast();
+  const { error: errorToast, info: infoToast } = useToast();
+  const locationDebugEnabled = useRef(false);
   // Use the location permission hook instead of directly requesting permissions
   const [permissionResponse, requestPermission] =
     Location.useForegroundPermissions();
+
+  // Load debug setting on mount
+  useEffect(() => {
+    if (isDev) {
+      AsyncStorage.getItem(LOCATION_DEBUG_KEY).then((value) => {
+        locationDebugEnabled.current = value === 'true';
+      });
+    }
+  }, []);
+
+  const showLocationDebugToast = useCallback(
+    (coords: Location.LocationObjectCoords, isInitial: boolean) => {
+      if (!isDev || !locationDebugEnabled.current) return;
+
+      const accuracy = coords.accuracy?.toFixed(1) ?? 'N/A';
+      const altitude = coords.altitude?.toFixed(1) ?? 'N/A';
+      const speed = coords.speed?.toFixed(2) ?? 'N/A';
+      const heading = coords.heading?.toFixed(0) ?? 'N/A';
+      infoToast({
+        title: isInitial ? '📍 Initial Location' : '📍 Location Updated',
+        description: `Lat: ${coords.latitude.toFixed(6)}, Lng: ${coords.longitude.toFixed(6)}\nAcc: ${accuracy}m | Alt: ${altitude}m | Spd: ${speed}m/s | Hdg: ${heading}°`,
+      });
+    },
+    [infoToast],
+  );
 
   useEffect(() => {
     let locationSubscription: Location.LocationSubscription | null = null;
@@ -53,13 +83,14 @@ export default function useLocation() {
 
         setLocation(formattedCurrentPosition);
         setIsGettingLocation(false);
+        showLocationDebugToast(currentPosition.coords, true);
 
         // Then start watching for position updates
         locationSubscription = await Location.watchPositionAsync(
           {
             accuracy: Location.Accuracy.High,
-            timeInterval: 5000,
-            distanceInterval: 30,
+            timeInterval: 2000,
+            distanceInterval: 5,
           },
           (newLocation) => {
             // Format latitude and longitude to 10 decimal places
@@ -73,6 +104,7 @@ export default function useLocation() {
             };
             setLocation(formattedNewLocation);
             setIsGettingLocation(false);
+            showLocationDebugToast(newLocation.coords, false);
           },
         );
       } catch (error) {
@@ -90,7 +122,7 @@ export default function useLocation() {
         }
       }
     };
-  }, [permissionResponse, requestPermission, segments]);
+  }, [permissionResponse, requestPermission, segments, showLocationDebugToast]);
 
   useEffect(() => {
     if (errorMsg) {

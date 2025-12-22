@@ -280,6 +280,12 @@ import type {
   AddOrUpdateReactionCommentsCommentIdReactionsPostData,
   AddOrUpdateReactionCommentsCommentIdReactionsPostResponses,
   AddOrUpdateReactionCommentsCommentIdReactionsPostErrors,
+  GeofenceEventData,
+  GeofenceEventResponses,
+  GeofenceEventErrors,
+  GetGeofenceRegionsData,
+  GetGeofenceRegionsResponses,
+  GetGeofenceRegionsErrors,
   GetCountryData,
   GetCountryResponses,
   EndpointHealthGetData,
@@ -2123,6 +2129,52 @@ export const addOrUpdateReactionCommentsCommentIdReactionsPost = <
       'Content-Type': 'application/json',
       ...options.headers,
     },
+  });
+};
+
+/**
+ * Handle Geofence Event
+ * Handle geofence enter/exit events from mobile clients.
+ *
+ * This endpoint receives notifications when a user enters or exits
+ * a geofenced region.
+ */
+export const geofenceEvent = <ThrowOnError extends boolean = false>(
+  options: Options<GeofenceEventData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    GeofenceEventResponses,
+    GeofenceEventErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/geofence/event',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Get Geofence Regions
+ * Return the list of available geofence regions.
+ *
+ * This can be used by clients to dynamically load regions
+ * instead of hardcoding them (future enhancement).
+ */
+export const getGeofenceRegions = <ThrowOnError extends boolean = false>(
+  options?: Options<GetGeofenceRegionsData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    GetGeofenceRegionsResponses,
+    GetGeofenceRegionsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/geofence/regions',
+    ...options,
   });
 };
 
