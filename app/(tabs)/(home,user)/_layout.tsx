@@ -89,7 +89,7 @@ export default function Layout({ segment }: { segment: string }) {
         name="locations"
         options={{
           title: '',
-          header: () => <SimpleGoBackHeader title="ლოკაციები" />,
+          header: () => <SimpleGoBackHeader title={t('common.locations')} />,
           headerStyle: {
             backgroundColor: theme.colors.background,
           },
