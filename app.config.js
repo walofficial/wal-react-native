@@ -5,9 +5,13 @@ const pkg = require('./package.json');
 
 export const app_name_slug = 'wal';
 export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
+const ios_bundle_identifier = IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment';
+const ios_app_group = IS_DEV ? 'group.com.greetai.mentdev' : 'group.com.greetai.ment';
 
 // Build plugin list dynamically so the app can run without Firebase files
 const pluginsList = [
+  // Generates native Apple targets from /targets (Notification Service Extension, etc.)
+  '@bacons/apple-targets',
   'expo-video',
   'expo-router',
   [
@@ -146,7 +150,15 @@ export default {
       policy: 'appVersion',
     },
     ios: {
+      appleTeamId: '7JZBPQL8L6',
       associatedDomains: [`applinks:${app_name_slug}.ge`],
+      entitlements: {
+        // Required for iOS "Communication Notifications" (Messenger/iMessage style sender avatar)
+        'com.apple.developer.usernotifications.communication': true,
+        // Keep capabilities in sync with existing native entitlements
+        'com.apple.security.application-groups': [ios_app_group],
+        'com.apple.developer.associated-domains': [`applinks:${app_name_slug}.ge`],
+      },
       infoPlist: {
         NSCameraUsageDescription:
           'This app uses the camera to capture photos and videos.',
@@ -162,11 +174,13 @@ export default {
           'This app accesses your location to let you post videos or photos to nearby locations.',
         NSLocationAlwaysAndWhenInUseUsageDescription:
           'This app accesses your location in the background to notify you when you are near interesting locations.',
-        UIBackgroundModes: ['location'],
+        // Ensure push background delivery + notification service extension triggers are supported.
+        UIBackgroundModes: ['location', 'fetch', 'remote-notification'],
         ITSAppUsesNonExemptEncryption: false,
+        NSUserActivityTypes: [`${ios_bundle_identifier}.expo.index_route`, 'INSendMessageIntent'],
       },
       supportsTablet: false,
-      bundleIdentifier: IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment',
+      bundleIdentifier: ios_bundle_identifier,
       googleServicesFile: !DISABLE_FIREBASE
         ? './GoogleService-Info.plist'
         : undefined,

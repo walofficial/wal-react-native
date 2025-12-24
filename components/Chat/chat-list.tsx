@@ -91,27 +91,26 @@ export function ChatList({ selectedUser }: ChatListProps) {
   }, [selectedUser.id, socketContext]);
 
   useEffect(() => {
-    orderedPages.forEach((page) => {
-      page.messages.forEach((item: ChatMessage, messageIndex: number) => {
-        if (item.author_id !== user.id) {
-          if (page.page === 1 && messageIndex === 0) {
-            socketContext?.emit('notify_single_message_seen', {
-              recipient: selectedUser.id,
-              temporary_id: item.temporary_id || item.id,
-              author_id: item.author_id,
-            });
-          }
-        }
-
-        if (
-          item.author_id !== user.id &&
-          !trackedMessageIdsRef.current.has(item.id)
-        ) {
-          trackedMessageIdsRef.current.add(item.id);
-        }
-      });
-    });
-    sendMessageIdsToBackend();
+    // orderedPages.forEach((page) => {
+    //   page.messages.forEach((item: ChatMessage, messageIndex: number) => {
+    //     if (item.author_id !== user.id) {
+    //       if (page.page === 1 && messageIndex === 0) {
+    //         socketContext?.emit('notify_single_message_seen', {
+    //           recipient: selectedUser.id,
+    //           temporary_id: item.temporary_id || item.id,
+    //           author_id: item.author_id,
+    //         });
+    //       }
+    //     }
+    //     if (
+    //       item.author_id !== user.id &&
+    //       !trackedMessageIdsRef.current.has(item.id)
+    //     ) {
+    //       trackedMessageIdsRef.current.add(item.id);
+    //     }
+    //   });
+    // });
+    // sendMessageIdsToBackend();
   }, [orderedPages]);
 
   const getUserBasedOnId = (id: string) => {
