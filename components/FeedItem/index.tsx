@@ -42,7 +42,8 @@ function arePropsEqual(prevProps: any, nextProps: any) {
     prevProps.fact_check_status === nextProps.fact_check_status &&
     prevProps.fact_check_data === nextProps.fact_check_data &&
     prevProps.thumbnail === nextProps.thumbnail &&
-    prevProps.liveEndedAt === nextProps.liveEndedAt
+    prevProps.liveEndedAt === nextProps.liveEndedAt &&
+    prevProps.isLocationLocked === nextProps.isLocationLocked
   );
 }
 
@@ -68,6 +69,7 @@ function FeedItem({
   thumbnail,
   fact_check_data,
   liveEndedAt,
+  isLocationLocked,
 }: {
   name: string;
   time: string;
@@ -90,6 +92,7 @@ function FeedItem({
   previewData: FeedPost['preview_data'];
   thumbnail: string;
   liveEndedAt: FeedPost['live_ended_at'];
+  isLocationLocked?: boolean;
 }) {
   const { user } = useAuth();
   const router = useRouter();

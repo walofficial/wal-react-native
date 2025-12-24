@@ -184,9 +184,38 @@ export default function EnableNotifications({
           style={styles.button}
           variant="secondary"
           size="large"
-          onPress={() => sendPushNotification(expoPushToken)}
+          onPress={() =>
+            sendPushNotification(expoPushToken, {
+              type: 'chat',
+              // Must be publicly accessible https URL so the iOS Notification Service Extension can download it.
+              mediaUrl:
+                'https://pbs.twimg.com/profile_images/1998436430842863616/RhKrHqNs_400x400.jpg',
+            })
+          }
           disabled={saveToken.isPending}
-          title={'Test notification'}
+          title={'Test notification (rich image)'}
+        />
+      )}
+      {isDev && (
+        <Button
+          glassy={true}
+          style={styles.button}
+          variant="secondary"
+          size="large"
+          onPress={() =>
+            sendPushNotification(expoPushToken, {
+              type: 'chat',
+              senderDisplayName: 'Test Sender',
+              senderAvatarUrl:
+                'https://pbs.twimg.com/profile_images/1998436430842863616/RhKrHqNs_400x400.jpg',
+              body: 'Test body',
+              title: 'Test title',
+              roomId: 'test-room',
+              senderId: 'test-sender-id',
+            })
+          }
+          disabled={saveToken.isPending}
+          title={'Test notification (chat style)'}
         />
       )}
       {isDev && (
