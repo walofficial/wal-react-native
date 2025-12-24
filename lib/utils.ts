@@ -30,9 +30,6 @@ export type SendPushNotificationOptions = {
 };
 
 function getRandomProfileImageUrl() {
-  // "Profile pic"-style placeholder, no auth needed. Great for quickly testing rich pushes.
-  // Docs: `https://i.pravatar.cc`
-  const imgId = Math.floor(Math.random() * 70) + 1; // 1..70
   return `https://pbs.twimg.com/profile_images/1998436430842863616/RhKrHqNs_400x400.jpg`;
 }
 
@@ -54,27 +51,15 @@ export async function sendPushNotification(
     to: expoPushToken,
     title: options.title ?? 'Test (rich image)',
     body: options.body ?? 'Expand the notification to see the image attachment.',
-    // Ensures iOS delivers the notification to the Notification Service Extension.
+    categoryId:  'chat_message',
     mutableContent: true,
-    // Put all custom keys under `data` so they arrive on-device consistently as
-    // `request.content.userInfo["data"]` (and `notification.request.content.data` in JS).
     data: {
-      // Attachment (rich image)
       mediaUrl: pushType === 'rich_image' ? mediaUrl : undefined,
-
-      // Chat / communication notification metadata
-      roomId: options.roomId,
-      senderId: options.senderId,
-      senderDisplayName,
-      senderAvatarUrl: pushType === 'chat' ? senderAvatarUrl : undefined,
-
-      // Optional: keep legacy schema if anything downstream expects it
-      richContent: { image: mediaUrl },
-    },
-
-    // // Optional: keep top-level richContent for any existing provider-side transforms.
-    // // The iOS Notification Service Extension now reads both `data.richContent.image` and `body._richContent.image`.
-    // richContent: { image: mediaUrl },
+      roomId: " 123",
+      senderId: "1234",
+      senderDisplayName: "test 1",
+      senderAvatarUrl: "senderAvatarUrl",
+    }
   };
 
   const response = await fetch('https://exp.host/--/api/v2/push/send', {
