@@ -11,6 +11,42 @@ class NotificationService: UNNotificationServiceExtension {
     category: "NotificationServiceExtension"
   )
 
+  private func asAnyHashableDict(_ value: Any?) -> [AnyHashable: Any]? {
+    if let dict = value as? [AnyHashable: Any] {
+      return dict
+    }
+    if let dict = value as? [String: Any] {
+      return Dictionary(uniqueKeysWithValues: dict.map { (AnyHashable($0.key), $0.value) })
+    }
+    return nil
+  }
+
+  private func stringValue(from dict: [AnyHashable: Any], key: String) -> String? {
+    if let value = dict[key] as? String {
+      let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+      return trimmed.isEmpty ? nil : trimmed
+    }
+    if let value = dict[AnyHashable(key)] as? String {
+      let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
+      return trimmed.isEmpty ? nil : trimmed
+    }
+    if let value = dict[key] as? NSNumber {
+      let str = value.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+      return str.isEmpty ? nil : str
+    }
+    if let value = dict[AnyHashable(key)] as? NSNumber {
+      let str = value.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+      return str.isEmpty ? nil : str
+    }
+    if let value = dict[key] as? Int {
+      return String(value)
+    }
+    if let value = dict[AnyHashable(key)] as? Int {
+      return String(value)
+    }
+    return nil
+  }
+
   private struct CommunicationNotificationPayload {
     let conversationIdentifier: String
     let senderId: String
@@ -19,24 +55,19 @@ class NotificationService: UNNotificationServiceExtension {
   }
 
   private func extractCommunicationPayload(from userInfo: [AnyHashable: Any]) -> CommunicationNotificationPayload? {
-    func string(from dict: [String: Any], key: String) -> String? {
-      if let value = dict[key] as? String, !value.isEmpty {
-        return value
-      }
-      return nil
-    }
+    // Our pushes can arrive as:
+    // - `userInfo["data"]["body"]` (Expo custom payload wrapper)
+    // - `userInfo["body"]` (some providers flatten)
+    // - `userInfo["data"]` (legacy/flat)
+    // - `userInfo` (very flat)
+    let data = asAnyHashableDict(userInfo["data"])
+    let body = asAnyHashableDict(data?["body"] ?? userInfo["body"])
+    let dict = body ?? data ?? userInfo
 
-    var data: [String: Any]? = nil
-    if let raw = userInfo["data"] as? [String: Any] {
-      data = raw
-    }
-
-    let dict = data ?? (userInfo as? [String: Any]) ?? [:]
-
-    let roomId = string(from: dict, key: "roomId") ?? string(from: dict, key: "conversationId")
-    let senderId = string(from: dict, key: "senderId") ?? string(from: dict, key: "authorId")
-    let senderDisplayName = string(from: dict, key: "senderDisplayName") ?? string(from: dict, key: "senderName")
-    let senderAvatarUrlString = string(from: dict, key: "senderAvatarUrl")
+    let roomId = stringValue(from: dict, key: "roomId") ?? stringValue(from: dict, key: "conversationId")
+    let senderId = stringValue(from: dict, key: "senderId") ?? stringValue(from: dict, key: "authorId")
+    let senderDisplayName = stringValue(from: dict, key: "senderDisplayName") ?? stringValue(from: dict, key: "senderName")
+    let senderAvatarUrlString = stringValue(from: dict, key: "senderAvatarUrl")
 
     guard
       let conversationIdentifier = roomId,
@@ -59,26 +90,39 @@ class NotificationService: UNNotificationServiceExtension {
   private func extractImageURL(from userInfo: [AnyHashable: Any]) -> URL? {
     let keys = userInfo.keys.map { String(describing: $0) }.sorted().joined(separator: ",")
     logger.info("extractImageURL userInfo keys=[\(keys, privacy: .public)]")
-    // Expo pushes typically deliver custom payload under `data` (top-level key in APNS payload).
-    if let data = userInfo["data"] as? [String: Any] {
-      // Support nested schema: data.richContent.image
-      if let richContent = data["richContent"] as? [String: Any],
-        let imageUrlString = richContent["image"] as? String,
+    // Expo pushes typically deliver custom payload under `data`, and our app-specific payload can be nested under `data.body`.
+    if let data = asAnyHashableDict(userInfo["data"]) {
+      let body = asAnyHashableDict(data["body"])
+
+      // Support nested schema: data.body._richContent.image (current)
+      if let body = body,
+        let richContent = asAnyHashableDict(body["_richContent"]),
+        let imageUrlString = stringValue(from: richContent, key: "image"),
         let url = URL(string: imageUrlString) {
-        logger.info("matched data.richContent.image=\(url.absoluteString, privacy: .public)")
+        logger.info("matched data.body._richContent.image=\(url.absoluteString, privacy: .public)")
         return url
       }
 
-      if let mediaUrlString = data["mediaUrl"] as? String,
+      // Support nested schema: data.body.richContent.image (alternative)
+      if let body = body,
+        let richContent = asAnyHashableDict(body["richContent"]),
+        let imageUrlString = stringValue(from: richContent, key: "image"),
+        let url = URL(string: imageUrlString) {
+        logger.info("matched data.body.richContent.image=\(url.absoluteString, privacy: .public)")
+        return url
+      }
+
+      if let mediaUrlString = stringValue(from: data, key: "mediaUrl"),
         let url = URL(string: mediaUrlString) {
         logger.info("matched data.mediaUrl=\(url.absoluteString, privacy: .public)")
         return url
       }
 
-      // Optional: support chat-style pushes attaching sender avatar
-      if let senderAvatarUrlString = data["senderAvatarUrl"] as? String,
+      // Optional: support chat-style pushes attaching sender avatar at either level.
+      if let senderAvatarUrlString = (body.flatMap { stringValue(from: $0, key: "senderAvatarUrl") })
+        ?? stringValue(from: data, key: "senderAvatarUrl"),
         let url = URL(string: senderAvatarUrlString) {
-        logger.info("matched data.senderAvatarUrl=\(url.absoluteString, privacy: .public)")
+        logger.info("matched data(.body).senderAvatarUrl=\(url.absoluteString, privacy: .public)")
         return url
       }
     }
@@ -104,9 +148,9 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     // OneSignal-style rich content: `body._richContent.image`
-    if let body = userInfo["body"] as? [String: Any],
-      let richContent = body["_richContent"] as? [String: Any],
-      let imageUrlString = richContent["image"] as? String,
+    if let body = asAnyHashableDict(userInfo["body"]),
+      let richContent = asAnyHashableDict(body["_richContent"]),
+      let imageUrlString = stringValue(from: richContent, key: "image"),
       let url = URL(string: imageUrlString) {
       logger.info("matched body._richContent.image=\(url.absoluteString, privacy: .public)")
       return url
