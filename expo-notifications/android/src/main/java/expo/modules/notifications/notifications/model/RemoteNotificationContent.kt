@@ -21,6 +21,13 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
   constructor(parcel: Parcel) : this(parcel.readParcelable<RemoteMessage>(RemoteMessage::class.java.classLoader)!!)
 
   private val notificationData = NotificationData(remoteMessage.data)
+  
+  /**
+   * Chat notification data for MessagingStyle notifications
+   */
+  val chatNotificationData: ChatNotificationData by lazy {
+    ChatNotificationData.fromRemoteMessageData(remoteMessage.data)
+  }
 
   override suspend fun getImage(context: Context): Bitmap? {
     val uri = remoteMessage.notification?.imageUrl

@@ -19,7 +19,9 @@ import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationContent
 import expo.modules.notifications.notifications.model.NotificationRequest
+import expo.modules.notifications.notifications.model.RemoteNotificationContent
 import expo.modules.notifications.notifications.presentation.builders.ExpoNotificationBuilder
+import expo.modules.notifications.notifications.presentation.builders.MessagingStyleNotificationBuilder
 import expo.modules.notifications.service.interfaces.PresentationDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -156,10 +158,27 @@ open class ExpoPresentationDelegate(
 
   override fun dismissAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
-  protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehaviorRecord?): android.app.Notification =
-    ExpoNotificationBuilder(context, notification, SharedPreferencesNotificationCategoriesStore(context)).apply {
+  protected open suspend fun createNotification(notification: Notification, notificationBehavior: NotificationBehaviorRecord?): android.app.Notification {
+    val content = notification.notificationRequest.content
+    val store = SharedPreferencesNotificationCategoriesStore(context)
+    
+    // Check if this is a chat/messaging notification that should use MessagingStyle
+    if (content is RemoteNotificationContent && MessagingStyleNotificationBuilder.shouldUseMessagingStyle(content)) {
+      return MessagingStyleNotificationBuilder(
+        context,
+        notification,
+        store,
+        content.chatNotificationData
+      ).apply {
+        setAllowedBehavior(notificationBehavior)
+      }.build()
+    }
+    
+    // Default to standard notification builder
+    return ExpoNotificationBuilder(context, notification, store).apply {
       setAllowedBehavior(notificationBehavior)
     }.build()
+  }
 
   protected open fun getNotification(statusBarNotification: StatusBarNotification): Notification? {
     val notification = statusBarNotification.notification
