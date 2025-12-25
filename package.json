@@ -101,7 +101,7 @@
     "expo-location": "~19.0.7",
     "expo-media-library": "~18.2.0",
     "expo-navigation-bar": "~5.0.9",
-    "expo-notifications": "~0.32.12",
+    "expo-notifications": "file:./expo-notifications",
     "expo-router": "~6.0.14",
     "expo-screen-orientation": "~9.0.7",
     "expo-share-intent": "^5.1.0",

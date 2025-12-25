@@ -181,6 +181,7 @@ export default {
       },
       supportsTablet: false,
       bundleIdentifier: ios_bundle_identifier,
+      // on iOS firebase is not required but on Android FCM needs it.
       googleServicesFile: !DISABLE_FIREBASE
         ? './GoogleService-Info.plist'
         : undefined,
@@ -195,9 +196,7 @@ export default {
         backgroundColor: '#ffffff',
       },
 
-      googleServicesFile: !DISABLE_FIREBASE
-        ? './google-services.json'
-        : undefined,
+      googleServicesFile: './google-services-local.json',
       intentFilters: [
         {
           action: 'VIEW',

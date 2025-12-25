@@ -215,7 +215,48 @@ export default function EnableNotifications({
             })
           }
           disabled={saveToken.isPending}
-          title={'Test notification (chat style)'}
+          title={'Test notification (new_message payload)'}
+        />
+      )}
+      {isDev && (
+        <Button
+          glassy={true}
+          style={styles.button}
+          variant="secondary"
+          size="large"
+          onPress={async () => {
+            if (Platform.OS !== 'android') {
+              Alert.alert(
+                'Android only',
+                'This test uses a native Android MessagingStyle notification.',
+              );
+              return;
+            }
+
+            // await showMessagingNotificationAsync({
+            //   conversationId: 'test-room',
+            //   roomId: 'test-room',
+            //   title: 'Test Sender',
+            //   isGroup: false,
+            //   accentColor: '#000000',
+            //   enableInlineReply: true,
+            //   messages: [
+            //     {
+            //       text: 'Hey — this is a Signal-style MessagingStyle notification.',
+            //       timestamp: Date.now() - 30_000,
+            //       isSelf: false,
+            //       senderName: 'Test Sender',
+            //       senderKey: 'test-sender-id',
+            //     },
+            //     {
+            //       text: 'And it includes message history + optional inline reply.',
+            //       timestamp: Date.now() - 10_000,
+            //       isSelf: true,
+            //     },
+            //   ],
+            // });
+          }}
+          title={'Test native MessagingStyle (Android)'}
         />
       )}
       {isDev && (
