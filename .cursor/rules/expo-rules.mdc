@@ -43,4 +43,5 @@ const additionalInstructions = `
 12. When using react query and doing mutations 
 13. When designing UX or adjusting it as instructed to come up with better design make sure to think about the user prespective and what user want's the most from the screen if thing should be more subtle make it more subtle for example.
 14. Usually in tanstack the optimistic updates are implemented using setQueryData passing appropriate query keys
+15. There is no pnpm, it npm project. Make sure that when thinking about modifything the native code. it can survive npx expo prebuild. Use industry standards when modifying native code
     `;

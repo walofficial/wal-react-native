@@ -19,7 +19,7 @@ export const CARD_HEIGHT_STYLE_PROMPT = 300;
 export const CARD_MIN_HEIGHT = 300;
 
 export type SendPushNotificationOptions = {
-  type?: 'rich_image' | 'chat';
+  type?: 'rich_image' | 'chat' | 'new_message';
   mediaUrl?: string;
   title?: string;
   body?: string;
@@ -27,6 +27,9 @@ export type SendPushNotificationOptions = {
   senderId?: string;
   senderDisplayName?: string;
   senderAvatarUrl?: string;
+  conversationId?: string;
+  accentColor?: string;
+  enableInlineReply?: boolean;
 };
 
 function getRandomProfileImageUrl() {
@@ -47,20 +50,40 @@ export async function sendPushNotification(
   const senderDisplayName = options.senderDisplayName ?? options.title ?? 'Sender';
   const senderAvatarUrl = options.senderAvatarUrl ?? getRandomProfileImageUrl();
 
-  const message = {
-    to: expoPushToken,
-    title: options.title ?? 'Test (rich image)',
-    body: options.body ?? 'Expand the notification to see the image attachment.',
-    categoryId:  'chat_message',
-    mutableContent: true,
-    data: {
-      mediaUrl: pushType === 'rich_image' ? mediaUrl : undefined,
-      roomId: " 123",
-      senderId: "1234",
-      senderDisplayName: "test 1",
-      senderAvatarUrl: "senderAvatarUrl",
-    }
+  const baseData = {
+    type: pushType,
+    mediaUrl: pushType === 'rich_image' ? mediaUrl : undefined,
+    roomId: options.roomId,
+    conversationId: options.conversationId ?? options.roomId,
+    senderId: options.senderId,
+    senderDisplayName,
+    senderAvatarUrl,
+    // For the native Android MessagingStyle renderer:
+    title: options.title ?? senderDisplayName,
+    body: options.body ?? 'Test message',
+    accentColor: options.accentColor ?? '#000000',
+    enableInlineReply: options.enableInlineReply ? 'true' : 'false',
   };
+
+  /**
+   * IMPORTANT (Android):
+   * - For `new_message`, we send an Expo Push *data-only* message (omit top-level `title`/`body`)
+   *   so FCM doesn't auto-render a default notification. Our native FirebaseMessagingService will
+   *   render the Signal-like MessagingStyle notification instead.
+   */
+  const message: any = pushType === 'new_message'
+    ? {
+        to: expoPushToken,
+        data: baseData,
+      }
+    : {
+    to: expoPushToken,
+        title: options.title ?? 'Test (rich image)',
+        body: options.body ?? 'Expand the notification to see the image attachment.',
+        categoryId: 'chat_message',
+        mutableContent: true,
+        data: baseData,
+      };
 
   const response = await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',
