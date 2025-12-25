@@ -19,17 +19,34 @@ export const CARD_HEIGHT_STYLE_PROMPT = 300;
 export const CARD_MIN_HEIGHT = 300;
 
 export type SendPushNotificationOptions = {
+  /**
+   * Notification type:
+   * - 'rich_image': Standard notification with image attachment
+   * - 'chat': Legacy chat notification
+   * - 'new_message': Signal-style MessagingStyle notification on Android (data-only)
+   */
   type?: 'rich_image' | 'chat' | 'new_message';
   mediaUrl?: string;
   title?: string;
   body?: string;
+  /** Conversation/room identifier for grouping messages */
   roomId?: string;
+  /** Unique identifier for the message sender */
   senderId?: string;
+  /** Display name shown in MessagingStyle notification */
   senderDisplayName?: string;
+  /** Avatar URL for sender (shown in notification on both iOS and Android) */
   senderAvatarUrl?: string;
+  /** Alias for roomId */
   conversationId?: string;
+  /** Accent color for the notification (hex format: #RRGGBB) */
   accentColor?: string;
+  /** Enable inline reply action in notification (Android) */
   enableInlineReply?: boolean;
+  /** Whether this is a group conversation */
+  isGroup?: boolean;
+  /** Group/conversation name (for group chats) */
+  groupName?: string;
 };
 
 function getRandomProfileImageUrl() {
@@ -60,24 +77,42 @@ export async function sendPushNotification(
     senderAvatarUrl,
     // For the native Android MessagingStyle renderer:
     title: options.title ?? senderDisplayName,
-    body: options.body ?? 'Test message',
+    message: options.body ?? 'Test message', // 'message' key for Android data-only parsing
     accentColor: options.accentColor ?? '#000000',
-    enableInlineReply: options.enableInlineReply ? 'true' : 'false',
+    enableInlineReply: options.enableInlineReply !== false ? 'true' : 'false',
+    isGroup: options.isGroup ? 'true' : 'false',
+    groupName: options.groupName,
+    timestamp: Date.now().toString(),
   };
 
   /**
-   * IMPORTANT (Android):
-   * - For `new_message`, we send an Expo Push *data-only* message (omit top-level `title`/`body`)
-   *   so FCM doesn't auto-render a default notification. Our native FirebaseMessagingService will
-   *   render the Signal-like MessagingStyle notification instead.
+   * Push notification payload format:
+   *
+   * For 'new_message' type (Signal-style MessagingStyle on Android):
+   * - Data-only message: FCM won't auto-render, our MessagingStyleNotificationBuilder handles it
+   * - Shows sender avatar, name, message in conversation style
+   * - Supports inline reply action
+   * - Groups messages by conversationId
+   *
+   * For 'rich_image' or 'chat' types:
+   * - Standard notification with title/body
+   * - On iOS: uses Communication Notifications (NotificationService extension)
+   * - On Android: uses BigTextStyle with optional image attachment
    */
   const message: any = pushType === 'new_message'
     ? {
         to: expoPushToken,
+        // Data-only: title/message come from data payload
+        // Android will use MessagingStyleNotificationBuilder
+        title: senderDisplayName,
+        body: options.body ?? 'Test message',
         data: baseData,
+        // Critical for Android MessagingStyle:
+        priority: 'high',
+        channelId: 'expo_notifications_chat_channel',
       }
     : {
-    to: expoPushToken,
+        to: expoPushToken,
         title: options.title ?? 'Test (rich image)',
         body: options.body ?? 'Expand the notification to see the image attachment.',
         categoryId: 'chat_message',

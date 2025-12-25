@@ -42,6 +42,9 @@ dependencies {
   implementation 'com.google.firebase:firebase-messaging:24.0.1'
 
   implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
+  
+  // Required for MessagingStyle notifications with Person API
+  implementation 'androidx.core:core-ktx:1.17.0'
 
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')

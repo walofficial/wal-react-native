@@ -137,17 +137,48 @@ export default function EnableNotifications({
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
+        const data = response.notification.request.content.data;
+        const actionId = response.actionIdentifier;
+        
+        // Handle inline reply action (Android MessagingStyle)
+        if (actionId === 'expo.notifications.REPLY_ACTION') {
+          const userText = (response as any).userText;
+          if (userText && data?.roomId) {
+            console.log('[Notification] Inline reply received:', {
+              roomId: data.roomId,
+              text: userText,
+            });
+            // TODO: Send the reply message to the server
+            // You can implement this by calling your chat API here
+            trackEvent('push_inline_reply', {
+              room_id: data.roomId as string,
+              has_text: !!userText,
+            });
+          }
+          return;
+        }
+        
+        // Handle mark as read action
+        if (actionId === 'expo.notifications.MARK_READ_ACTION') {
+          if (data?.roomId) {
+            console.log('[Notification] Mark as read:', data.roomId);
+            // TODO: Mark the conversation as read on the server
+            trackEvent('push_mark_read', { room_id: data.roomId as string });
+          }
+          return;
+        }
+        
         // Navigate to the chat route when notification is tapped
-        if (response.notification.request.content.data?.chatId) {
+        const chatId = data?.chatId || data?.roomId;
+        if (chatId) {
           trackEvent('push_open_details', {
             source: 'tap',
             has_chat_id: true,
           });
-          router.navigate(
-            `/chat/${response.notification.request.content.data.chatId}`,
-          );
+          router.navigate(`/chat/${chatId}`);
+        } else {
+          trackEvent('push_open_details', { source: 'tap', has_chat_id: false });
         }
-        trackEvent('push_open_details', { source: 'tap', has_chat_id: false });
       });
 
     return () => {
@@ -215,7 +246,7 @@ export default function EnableNotifications({
             })
           }
           disabled={saveToken.isPending}
-          title={'Test notification (new_message payload)'}
+          title={'Test notification (chat payload)'}
         />
       )}
       {isDev && (
@@ -224,39 +255,51 @@ export default function EnableNotifications({
           style={styles.button}
           variant="secondary"
           size="large"
-          onPress={async () => {
-            if (Platform.OS !== 'android') {
-              Alert.alert(
-                'Android only',
-                'This test uses a native Android MessagingStyle notification.',
-              );
-              return;
-            }
-
-            // await showMessagingNotificationAsync({
-            //   conversationId: 'test-room',
-            //   roomId: 'test-room',
-            //   title: 'Test Sender',
-            //   isGroup: false,
-            //   accentColor: '#000000',
-            //   enableInlineReply: true,
-            //   messages: [
-            //     {
-            //       text: 'Hey — this is a Signal-style MessagingStyle notification.',
-            //       timestamp: Date.now() - 30_000,
-            //       isSelf: false,
-            //       senderName: 'Test Sender',
-            //       senderKey: 'test-sender-id',
-            //     },
-            //     {
-            //       text: 'And it includes message history + optional inline reply.',
-            //       timestamp: Date.now() - 10_000,
-            //       isSelf: true,
-            //     },
-            //   ],
-            // });
+          onPress={() => {
+            // Send a 'new_message' type notification that triggers Signal-style MessagingStyle on Android
+            sendPushNotification(expoPushToken, {
+              type: 'new_message',
+              senderDisplayName: 'Signal Style Test',
+              senderAvatarUrl:
+                'https://pbs.twimg.com/profile_images/1998436430842863616/RhKrHqNs_400x400.jpg',
+              body: 'Hey — this is a Signal-style MessagingStyle notification with inline reply!',
+              roomId: 'test-room-123',
+              conversationId: 'test-room-123',
+              senderId: 'user-456',
+              accentColor: '#007AFF',
+              enableInlineReply: true,
+              isGroup: false,
+            });
           }}
-          title={'Test native MessagingStyle (Android)'}
+          disabled={saveToken.isPending}
+          title={'Test MessagingStyle (new_message)'}
+        />
+      )}
+      {isDev && (
+        <Button
+          glassy={true}
+          style={styles.button}
+          variant="secondary"
+          size="large"
+          onPress={() => {
+            // Send a group conversation MessagingStyle notification
+            sendPushNotification(expoPushToken, {
+              type: 'new_message',
+              senderDisplayName: 'Alice',
+              senderAvatarUrl:
+                'https://pbs.twimg.com/profile_images/1998436430842863616/RhKrHqNs_400x400.jpg',
+              body: 'Anyone up for lunch? 🍕',
+              roomId: 'group-chat-789',
+              conversationId: 'group-chat-789',
+              senderId: 'alice-123',
+              accentColor: '#34C759',
+              enableInlineReply: true,
+              isGroup: true,
+              groupName: 'Work Friends',
+            });
+          }}
+          disabled={saveToken.isPending}
+          title={'Test Group MessagingStyle'}
         />
       )}
       {isDev && (
