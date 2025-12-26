@@ -171,11 +171,6 @@ export default function CompanySelectorSheet({
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {!shouldSearch && (
-            <Text style={{ color: theme.colors.feedItem.secondaryText }}>
-              {t('common.type_to_search')}
-            </Text>
-          )}
           {shouldSearch && companiesQuery.isLoading && (
             <Text style={{ color: theme.colors.feedItem.secondaryText }}>
               {t('common.loading')}

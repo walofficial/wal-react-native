@@ -9,6 +9,7 @@
     "preferred_country": "ქვეყანა",
     "preferred_content_language": "სიახლის ენა",
     "language_and_region": "ენა და ქვეყანა",
+    "language": "აპლიკაციის ენა",
     "region_explanation": "აირჩიეთ ქვეყანა, რომლიდანაც გსურთ ადგილობრივი სიახლეების კონტენტის და გადამოწმებული ინფორმაციის მიღება.",
     "content_language_explanation": "აირჩიეთ ენა, რომლითაც გსურთ სიახლეების და კონტენტის წაკითხვა. ეს საშუალებას გაძლევთ ინფორმაციის მიღება თქვენი სასურველი ენით.",
     "terms_of_service": "Terms of Service",

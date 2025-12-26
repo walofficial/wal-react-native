@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, useColorScheme } from 'react-native';
 import { useAtom } from 'jotai';
 import { Text } from '@/components/ui/text';
 import { useTheme } from '@/lib/theme';
@@ -9,7 +9,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LanguageSelectionOverlay: React.FC = () => {
   const theme = useTheme();
-  const [appLocale, setAppLocaleState] = useAtom(appLocaleAtom);
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const [, setAppLocaleState] = useAtom(appLocaleAtom);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -45,18 +47,41 @@ const LanguageSelectionOverlay: React.FC = () => {
     return null;
   }
 
+  const cardBackground = isDark
+    ? 'rgba(44, 44, 46, 0.95)'
+    : 'rgba(255, 255, 255, 0.98)';
+
+  const cardShadow = isDark
+    ? {
+        boxShadow: '0px 8px 32px rgba(0, 0, 0, 0.4)',
+      }
+    : {
+        boxShadow:
+          '0px 2px 8px rgba(0, 0, 0, 0.04), 0px 8px 24px rgba(0, 0, 0, 0.08)',
+      };
+
   return (
     <View
       style={[styles.overlay, { backgroundColor: theme.colors.background }]}
     >
+      <Text
+        style={[
+          styles.title,
+          { color: isDark ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.45)' },
+        ]}
+      >
+        Choose Language
+      </Text>
       <View style={styles.optionsRow}>
         <Pressable
-          style={[
+          style={({ pressed }) => [
             styles.option,
             {
-              backgroundColor: theme.colors.background,
-              borderColor: theme.colors.border,
+              backgroundColor: cardBackground,
+              transform: [{ scale: pressed ? 0.97 : 1 }],
+              opacity: pressed ? 0.9 : 1,
             },
+            cardShadow,
           ]}
           onPress={() => onSelect('en')}
         >
@@ -67,12 +92,14 @@ const LanguageSelectionOverlay: React.FC = () => {
         </Pressable>
 
         <Pressable
-          style={[
+          style={({ pressed }) => [
             styles.option,
             {
-              backgroundColor: theme.colors.background,
-              borderColor: theme.colors.border,
+              backgroundColor: cardBackground,
+              transform: [{ scale: pressed ? 0.97 : 1 }],
+              opacity: pressed ? 0.9 : 1,
             },
+            cardShadow,
           ]}
           onPress={() => onSelect('ka')}
         >
@@ -97,32 +124,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 24,
-    gap: 24,
+    gap: 20,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '500',
     textAlign: 'center',
+    letterSpacing: 0.3,
+    textTransform: 'uppercase',
   },
   optionsRow: {
     flexDirection: 'row',
     gap: 16,
   },
   option: {
-    width: 160,
-    height: 160,
-    borderRadius: 16,
+    width: 150,
+    height: 150,
+    borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
   },
   flag: {
-    fontSize: 56,
-    marginBottom: 8,
+    fontSize: 52,
+    marginBottom: 10,
   },
   optionLabel: {
-    fontSize: 18,
+    fontSize: 17,
     fontWeight: '600',
+    letterSpacing: -0.2,
   },
 });
 

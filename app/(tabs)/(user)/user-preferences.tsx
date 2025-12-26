@@ -1,14 +1,9 @@
-import React, { useRef } from 'react';
+import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
-import BottomSheet from '@gorhom/bottom-sheet';
-import { Ionicons } from '@expo/vector-icons';
-import Button, { LIST_ICON_SIZE } from '@/components/Button';
-import { Text } from '@/components/ui/text';
 import { useTheme } from '@/lib/theme';
 import RegionSelector from '@/components/RegionSelector';
-import { t } from '@/lib/i18n';
+import LanguageSelector from '@/components/LanguageSelector';
 import EnableNotifications from '@/components/EnableNotifications';
 
 export default function UserPreferences() {
@@ -30,6 +25,10 @@ export default function UserPreferences() {
         <View style={styles.container}>
           <EnableNotifications />
           <View style={{ height: 24 }} />
+
+          <View style={styles.selectorRow}>
+            <LanguageSelector />
+          </View>
 
           <View style={styles.selectorRow}>
             <RegionSelector />

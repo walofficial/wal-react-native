@@ -1,13 +1,12 @@
 'use client';
 
 import React from 'react';
-import { ActivityIndicator, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { useUploadVideo } from '@/hooks/useUploadVideo';
 import { useLocalSearchParams } from 'expo-router';
 import Button from '@/components/Button';
 import { compressVideo } from '@/lib/media/video/compress';
 import { compressIfNeeded } from '@/lib/media/manip';
-import { useColorScheme } from '@/lib/useColorScheme';
 
 export default function SubmitButton({
   mediaBlob,
@@ -25,14 +24,6 @@ export default function SubmitButton({
   const { feedId } = useLocalSearchParams<{
     feedId: string;
   }>();
-  const { isDarkColorScheme } = useColorScheme();
-  const iconTint = isDarkColorScheme ? '#FFFFFF' : '#000000';
-  const surfaceBg = isDarkColorScheme
-    ? 'rgba(0, 0, 0, 0.5)'
-    : 'rgba(255, 255, 255, 0.85)';
-  const surfaceBorder = isDarkColorScheme
-    ? 'rgba(255,255,255,0.25)'
-    : 'rgba(0,0,0,0.15)';
   const [isProcessing, setIsProcessing] = React.useState(false);
   const { uploadBlob } = useUploadVideo({
     feedId: feedId as string,
@@ -94,29 +85,24 @@ export default function SubmitButton({
 
   return (
     <Button
-      variant="subtle"
+      variant="primary"
       size="medium"
       onPress={handleSubmit}
       disabled={isProcessing || uploadBlob.isPending}
       loading={isProcessing || uploadBlob.isPending}
-      icon="checkmark"
-      iconColor={iconTint}
-      style={[
-        styles.button,
-        {
-          backgroundColor: surfaceBg,
-          borderColor: surfaceBorder,
-          borderWidth: StyleSheet.hairlineWidth,
-        },
-      ]}
+      icon="arrow-up"
+      iconColor="#FFFFFF"
+      style={styles.button}
     />
   );
 }
 
 const styles = StyleSheet.create({
   button: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#007AFF',
+    boxShadow: '0px 4px 12px rgba(0, 122, 255, 0.4)',
   },
 });

@@ -133,7 +133,6 @@ export default function Layout({ segment }: { segment: string }) {
             ? undefined
             : ({ route }) => (
                 <ProfileHeader
-                  isAnimated
                   customTitleComponent={
                     <TaskTitle
                       //@ts-ignore
@@ -143,8 +142,6 @@ export default function Layout({ segment }: { segment: string }) {
                   showSearch={!isUserFeed}
                   showTabs={!isUserFeed}
                   feedId={undefined}
-                  //@ts-ignore
-                  content_type={route.params?.content_type || 'last24h'}
                 />
               ),
         }}
