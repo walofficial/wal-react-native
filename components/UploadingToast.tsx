@@ -95,41 +95,7 @@ export const UploadingToast: React.FC<UploadingToastProps> = ({
           <Text style={[styles.percent, { color: colors.text }]}>
             {Math.round(clampedProgress * 100)}%
           </Text>
-          {cancellable ? (
-            <TouchableOpacity
-              onPress={onCancel}
-              accessibilityRole="button"
-              style={[styles.cancelButton, { borderColor: colors.border }]}
-              hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
-            >
-              <X size={16} color={colors.text} />
-            </TouchableOpacity>
-          ) : null}
         </View>
-      </View>
-
-      <View
-        style={[
-          styles.progressTrack,
-          { backgroundColor: colors.card.background },
-        ]}
-        accessible
-        accessibilityRole="progressbar"
-        accessibilityValue={{
-          now: Math.round(clampedProgress * 100),
-          min: 0,
-          max: 100,
-        }}
-      >
-        <Animated.View
-          style={[
-            styles.progressFill,
-            {
-              backgroundColor: progressColor,
-            },
-            fillStyle,
-          ]}
-        />
       </View>
     </View>
   );

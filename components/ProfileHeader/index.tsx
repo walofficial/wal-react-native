@@ -19,7 +19,6 @@ import { isWeb } from '@/lib/platform';
 import ProfileHeaderWeb from './web';
 import { FontSizes } from '@/lib/theme';
 import { useColorScheme } from '@/lib/useColorScheme';
-import { scrollToTopState } from '@/lib/atoms/location';
 import { useMinimalShellHeaderTransform } from '@/hooks/useMinimalShellHeaderTransform';
 import {
   isSearchActiveAtom,
@@ -39,72 +38,44 @@ function ProfileHeader({
   feedId,
   customTitle,
   customTitleComponent,
-  isAnimated = true,
   customButtons,
   showSearch = false,
   showTabs = false,
-  content_type,
 }: {
   customTitle?: string;
   customTitleComponent?: React.ReactNode;
-  isAnimated?: boolean;
   customButtons?: React.ReactNode;
   showSearch?: boolean;
   showTabs?: boolean;
   feedId?: string;
-  content_type?: string;
 }) {
   const pathname = usePathname();
   const params = useLocalSearchParams<{ feedId?: string }>();
   const currentFeedId = feedId ?? params.feedId ?? '';
 
-  const iconTranslateX = useSharedValue(0);
   const setHeaderHeight = useSetAtom(HEADER_HEIGHT);
   const setHeaderHeightWithTabs = useSetAtom(HEADER_HEIGHT_WITH_TABS);
   const { isDarkColorScheme } = useColorScheme();
 
   const router = useRouter();
-  const setScrollToTop = useSetAtom(scrollToTopState);
   const { categoryId } = useUserFeedIds();
 
   // Location data for location tabs
-  const {
-    data: locationData,
-    isFetching: isLocationFetching,
-    errorMsg: locationError,
-  } = useLocationsInfo(categoryId);
+  const { data: locationData } = useLocationsInfo(categoryId);
 
   // Search state
   const [isSearchActive, setIsSearchActive] = useAtom(isSearchActiveAtom);
   const setSearchValue = useSetAtom(searchInputValueAtom);
   const setDebouncedSearch = useSetAtom(setDebouncedSearchAtom);
 
-  // MEMORY LEAK FIX: Add cleanup refs
-  const isMountedRef = useRef(true);
-
   // Animated values for header content
   const headerContentOpacity = useSharedValue(1);
-
-  const iconAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateX: iconTranslateX.value }],
-    };
-  });
 
   const headerMinimalShellTransform = useMinimalShellHeaderTransform();
 
   const titleStyle = {
     ...styles.title,
     color: isDarkColorScheme ? '#FFFFFF' : '#000000', // Force color with higher specificity
-  };
-
-  const handleTabPress = (tabKey: string) => {
-    if (!isMountedRef.current) return;
-
-    // Handle regular content type tabs
-    router.setParams({ content_type: tabKey });
-    // Trigger scroll to top for the main list
-    setScrollToTop(Date.now());
   };
 
   const locationFeedIds = useMemo(() => {

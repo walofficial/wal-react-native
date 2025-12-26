@@ -155,10 +155,9 @@ function SimpleGoBackHeaderPost({
               }}
             >
               {sourcesComponent}
-              <PostLanguageSwitcher />
             </View>
           ) : (
-            <PostLanguageSwitcher />
+            <View />
           )
         }
       />
