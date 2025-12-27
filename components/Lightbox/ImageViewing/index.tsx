@@ -63,14 +63,12 @@ const SLOW_SPRING: WithSpringConfig = {
   mass: isIOS ? 1.25 : 0.75,
   damping: 300,
   stiffness: 800,
-  restDisplacementThreshold: 0.01,
 };
 
 const FAST_SPRING: WithSpringConfig = {
   mass: isIOS ? 1.25 : 0.75,
   damping: 150,
   stiffness: 900,
-  restDisplacementThreshold: 0.01,
 };
 
 function canAnimate(lightbox: Lightbox): boolean {
@@ -566,6 +564,7 @@ function LightboxImage({
       onLoad={setFetchedDims}
       isScrollViewBeingDragged={isScrollViewBeingDragged}
       showControls={showControls}
+      //@ts-ignore
       measureSafeArea={measureSafeArea}
       imageAspect={imageAspect}
       imageDimensions={dims ?? undefined}

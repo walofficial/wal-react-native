@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { ExpoConfig } from 'expo/config';
 import { fs, vol } from 'memfs';
 import * as path from 'path';

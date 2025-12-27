@@ -25,12 +25,9 @@ const ImageItem = ({ imageSrc, onTap, onLoad, imageAspect }: Props) => {
   const borderRadius =
     type === 'circle-avi' ? 1e5 : type === 'rect-avi' ? 20 : 0;
 
-  const transitionTag = imageSrc.transitionTag;
-
   return (
     <Pressable style={styles.container} onPress={onTap}>
       <Animated.View
-        sharedTransitionTag={transitionTag}
         style={[styles.imageContainer, { aspectRatio: imageAspect ?? 1 }]}
       >
         <Image

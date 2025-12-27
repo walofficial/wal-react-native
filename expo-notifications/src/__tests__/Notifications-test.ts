@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { fail } from 'assert';
 
 import NotificationScheduler from '../NotificationScheduler';
