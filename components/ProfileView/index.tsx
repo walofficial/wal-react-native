@@ -18,7 +18,6 @@ import { useTheme } from '@/lib/theme';
 import useAuth from '@/hooks/useAuth';
 import { t } from '@/lib/i18n';
 import BottomSheet from '@gorhom/bottom-sheet';
-import CompanySelectorSheet from '@/components/UserPreferences/CompanySelectorSheet';
 import BioEditorSheet from '@/components/UserPreferences/BioEditorSheet';
 import ProfilePhotoEditSheet from '@/components/UserPreferences/ProfilePhotoEditSheet';
 
@@ -58,7 +57,6 @@ export default function ProfileView({ userId }: ProfileViewProps) {
   const isLoadingData = isLoading;
 
   const photoSheetRef = useRef<BottomSheet>(null);
-  const companySheetRef = useRef<BottomSheet>(null);
   const bioSheetRef = useRef<BottomSheet>(null);
 
   const [isBioExpanded, setIsBioExpanded] = useState(false);
@@ -68,9 +66,8 @@ export default function ProfileView({ userId }: ProfileViewProps) {
     // Show meta container for auth user even when loading (to show skeletons)
     if (isAuthUser) return true;
     if (isLoadingData) return false;
-    return Boolean(profile?.company || profile?.bio);
-  }, [isAuthUser, isLoadingData, profile?.bio, profile?.company]);
-  const isCompanyPressable = isAuthUser;
+    return Boolean(profile?.bio);
+  }, [isAuthUser, isLoadingData, profile?.bio]);
   const shouldShowAddBio = Boolean(
     isAuthUser && !isLoadingData && !profile?.bio,
   );
@@ -100,55 +97,6 @@ export default function ProfileView({ userId }: ProfileViewProps) {
       />
       {shouldShowMeta && (
         <View style={styles.metaContainer}>
-          {isLoadingData && isAuthUser ? (
-            // Skeleton for company row
-            <View style={styles.companyRow}>
-              <SkeletonBox width={18} height={18} borderRadius={4} />
-              <SkeletonBox width={100} height={14} borderRadius={4} />
-            </View>
-          ) : (
-            <TouchableOpacity
-              activeOpacity={isCompanyPressable ? 0.7 : 1}
-              disabled={!isCompanyPressable}
-              onPress={() => companySheetRef.current?.snapToIndex(0)}
-              style={[
-                styles.companyRow,
-                isCompanyPressable && {
-                  opacity: 0.85,
-                },
-              ]}
-            >
-              {profile?.company ? (
-                <>
-                  <Image
-                    source={{ uri: profile.company.profile_picture }}
-                    style={[
-                      styles.companyLogo,
-                      { backgroundColor: theme.colors.card.background },
-                    ]}
-                    contentFit="cover"
-                  />
-                  <Text
-                    numberOfLines={1}
-                    style={[styles.companyText, { color: theme.colors.text }]}
-                  >
-                    {profile.company.name}
-                  </Text>
-                </>
-              ) : (
-                <Text
-                  numberOfLines={1}
-                  style={[
-                    styles.companyText,
-                    { color: theme.colors.feedItem.secondaryText },
-                  ]}
-                >
-                  {isAuthUser ? t('profile.set_company') : ''}
-                </Text>
-              )}
-            </TouchableOpacity>
-          )}
-
           {isLoadingData && isAuthUser ? (
             // Skeleton for bio row
             <View style={styles.bioSkeletonContainer}>
@@ -228,10 +176,6 @@ export default function ProfileView({ userId }: ProfileViewProps) {
       {isAuthUser ? (
         <>
           <ProfilePhotoEditSheet bottomSheetRef={photoSheetRef} />
-          <CompanySelectorSheet
-            bottomSheetRef={companySheetRef}
-            userId={userId}
-          />
           <BioEditorSheet
             bottomSheetRef={bioSheetRef}
             userId={userId}
@@ -292,22 +236,6 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
     alignItems: 'center',
     gap: 8,
-  },
-  companyRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    maxWidth: '90%',
-  },
-  companyLogo: {
-    width: 18,
-    height: 18,
-    borderRadius: 4,
-  },
-  companyText: {
-    fontSize: 14,
-    fontWeight: '600',
-    maxWidth: '90%',
   },
   bioRow: {
     alignItems: 'center',

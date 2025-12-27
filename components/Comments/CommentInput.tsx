@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   TextInput,
   TouchableOpacity,
-  Keyboard,
   Text,
-  Animated,
   StyleSheet,
+  useColorScheme as useRNColorScheme,
 } from 'react-native';
 import {
   createCommentCommentsPostMutation,
@@ -21,38 +20,45 @@ import {
 import useAuth from '@/hooks/useAuth';
 import { useAtom } from 'jotai';
 import { activeTabAtom, shouldFocusCommentInputAtom } from '@/atoms/comments';
-import { Feather, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useHaptics } from '@/lib/haptics';
-import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/lib/theme';
-import { useColorScheme } from '@/lib/useColorScheme';
-import Button from '@/components/Button';
 import { GetVerificationCommentsResponse } from '@/lib/api/generated';
 import { t } from '@/lib/i18n';
+import { ArrowUp } from '@/lib/icons';
+
+// Maximum height for multiline input
+const MAX_INPUT_HEIGHT = 120;
 
 interface CommentInputProps {
   postId: string;
   onFocusChange?: (focused: boolean) => void;
+  posterUsername?: string;
 }
 
-const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
+const CommentInput = ({
+  postId,
+  onFocusChange,
+  posterUsername,
+}: CommentInputProps) => {
   const [content, setContent] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = React.useRef<TextInput>(null);
   const queryClient = useQueryClient();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useAtom(activeTabAtom);
+  const [activeTab] = useAtom(activeTabAtom);
   const [shouldFocusInput, setShouldFocusInput] = useAtom(
     shouldFocusCommentInputAtom,
   );
-  const fadeAnim = React.useRef(new Animated.Value(0)).current;
   const haptic = useHaptics();
   const MAX_CHARS = 1000;
-  const remainingChars = MAX_CHARS - content.length;
-  const showCharCount = content.length > MAX_CHARS * 0.8;
   const hasContent = content.trim().length > 0;
   const theme = useTheme();
-  const { isDarkColorScheme } = useColorScheme();
+
+  // Signal/Messenger-like colors
+  const isLightMode = useRNColorScheme() === 'light';
+  const inputBackground = isLightMode ? '#e8e8e8' : '#1E1E1E';
+  const placeholderColor = isLightMode ? '#8E8E93' : '#8A8A8E';
+  const sendButtonColor = isLightMode ? '#3478F6' : '#22c55e';
 
   const commentsQuery = getVerificationCommentsInfiniteOptions({
     path: { verification_id: postId },
@@ -136,20 +142,24 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
     },
   });
 
-  const handleFocus = () => {
+  const handleFocus = useCallback(() => {
     setIsFocused(true);
+    onFocusChange?.(true);
     haptic('Light');
-  };
+  }, [haptic, onFocusChange]);
 
-  const handleTextChange = (text: string) => {
-    setContent(text);
-    // Provide very light haptic feedback while typing (only on key press, not delete)
-    if (text.length > content.length) {
-      haptic('Light'); // Very subtle feedback for typing
+  const handleBlur = useCallback(() => {
+    setIsFocused(false);
+    onFocusChange?.(false);
+  }, [onFocusChange]);
+
+  const handleTextChange = useCallback((text: string) => {
+    if (text.length <= MAX_CHARS) {
+      setContent(text);
     }
-  };
+  }, []);
 
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     if (!content.trim() || !user) return;
     haptic('Medium');
     submitComment({
@@ -158,56 +168,43 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
     setContent('');
     // Keep focus on the input after submitting
     inputRef.current?.focus();
-  };
-
-  // Animate send button opacity when content changes
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: hasContent ? 1 : 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start();
-  }, [hasContent]);
+  }, [content, user, haptic, submitComment, postId]);
 
   // Handle automatic focus
   useEffect(() => {
     if (shouldFocusInput && inputRef.current) {
       inputRef.current.focus();
-      setShouldFocusInput(false); // Reset the focus flag
+      setShouldFocusInput(false);
     }
-  }, [shouldFocusInput]);
+  }, [shouldFocusInput, setShouldFocusInput]);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: 'transparent',
-        },
-      ]}
-    >
-      <View
-        style={[
-          styles.inputWrapper,
-          {
-            backgroundColor: isDarkColorScheme
-              ? '#222222'
-              : 'rgba(248, 248, 248, 0.95)',
-          },
-        ]}
-      >
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Subtle note showing who the user is commenting on */}
+      {posterUsername && isFocused && (
+        <View style={styles.commentingOnContainer}>
+          <Text style={[styles.commentingOnText, { color: placeholderColor }]}>
+            {t('common.commenting_on', { username: posterUsername })}
+          </Text>
+        </View>
+      )}
+
+      <View style={styles.inputContainer}>
         <TextInput
           ref={inputRef}
           value={content}
           onChangeText={handleTextChange}
           onFocus={handleFocus}
-          onBlur={() => {
-            setIsFocused(false);
-            onFocusChange?.(false);
-          }}
+          onBlur={handleBlur}
           placeholder={t('common.comment_placeholder')}
-          placeholderTextColor={isDarkColorScheme ? '#6b7280' : '#9ca3af'}
-          style={[styles.textInput, { color: theme.colors.text }]}
+          placeholderTextColor={placeholderColor}
+          style={[
+            styles.textInput,
+            {
+              color: theme.colors.text,
+              backgroundColor: inputBackground,
+            },
+          ]}
           multiline
           autoFocus={false}
           maxLength={MAX_CHARS}
@@ -217,98 +214,64 @@ const CommentInput = ({ postId, onFocusChange }: CommentInputProps) => {
         />
 
         <View style={styles.sendButtonContainer}>
-          {hasContent && (
-            <TouchableOpacity
-              onPress={handleSubmit}
-              style={[
-                styles.sendButton,
-                {
-                  backgroundColor: theme.colors.primary,
-                },
-              ]}
-              disabled={isPending}
-            >
-              <Ionicons name="arrow-up" size={20} color="white" />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            onPress={handleSubmit}
+            style={[
+              styles.sendButton,
+              { backgroundColor: sendButtonColor },
+              !hasContent && styles.sendButtonDisabled,
+            ]}
+            disabled={!hasContent || isPending}
+          >
+            <ArrowUp color="white" size={20} />
+          </TouchableOpacity>
         </View>
       </View>
-
-      {showCharCount && (
-        <Text
-          style={[
-            styles.charCount,
-            {
-              color: isDarkColorScheme
-                ? 'rgba(107, 114, 128, 0.8)'
-                : 'rgba(107, 114, 128, 0.9)',
-            },
-            remainingChars < 50 && styles.charCountWarning,
-          ]}
-        >
-          {remainingChars}
-        </Text>
-      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 8,
-    paddingBottom: 12,
     zIndex: 100,
   },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 22,
-    paddingVertical: 6,
+  commentingOnContainer: {
     paddingHorizontal: 14,
-    minHeight: 40,
+    paddingBottom: 6,
+  },
+  commentingOnText: {
+    fontSize: 12,
+    fontWeight: '400',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    width: '100%',
   },
   textInput: {
+    paddingHorizontal: 14,
+    paddingTop: 10,
+    paddingBottom: 10,
     flex: 1,
-    fontSize: 15,
-    lineHeight: 20,
-    fontWeight: 'normal',
-    paddingVertical: 2,
-    maxHeight: 80,
+    borderRadius: 20,
+    fontSize: 16,
+    maxHeight: MAX_INPUT_HEIGHT,
   },
   sendButtonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 8,
-    width: 32,
-    height: 32,
+    justifyContent: 'flex-end',
+    alignSelf: 'flex-end',
   },
   sendButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    justifyContent: 'center',
+    height: 40,
+    width: 40,
+    borderRadius: 20,
+    marginLeft: 6,
     alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
+    justifyContent: 'center',
   },
-  disabledButton: {
-    opacity: 0.3,
-  },
-  charCount: {
-    fontSize: 11,
-    marginTop: 4,
-    marginRight: 8,
-    textAlign: 'right',
-  },
-  charCountWarning: {
-    color: 'rgba(239, 68, 68, 0.9)',
+  sendButtonDisabled: {
+    opacity: 0.55,
   },
 });
 

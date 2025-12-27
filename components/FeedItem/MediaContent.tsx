@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Animated,
@@ -80,16 +80,19 @@ function MediaContent({
   const router = useRouter();
 
   const badgeInfo = getFactCheckBadgeInfo(factuality);
-  const images = (imageGalleryWithDims || []).map((img: ImageWithDims) => ({
-    uri: img.url,
-    thumbUri: img.url,
-    alt: img.url,
-    verificationId: verificationId,
-    aspectRatio: {
-      width: img.aspectRatio.width,
-      height: img.aspectRatio.height,
-    },
-  }));
+
+  const images = (imageGalleryWithDims || []).map(
+    (img: ImageWithDims, index: number) => ({
+      uri: img.url,
+      thumbUri: img.url,
+      alt: img.url,
+      verificationId: verificationId,
+      aspectRatio: {
+        width: img.aspectRatio.width,
+        height: img.aspectRatio.height,
+      },
+    }),
+  );
   const handleSingleTap = () => {
     // Only navigate if there are no images and no video (i.e., text-only content)
     if (images.length === 0 && !videoUrl) {
@@ -158,13 +161,21 @@ function MediaContent({
     fetchedDims: (Dimensions | null)[],
   ) => {
     openLightbox({
-      images: images.map((item, i) => ({
-        ...item,
-        thumbRect: thumbRects[i] ?? null,
-        thumbDimensions: fetchedDims[i] ?? null,
-        type: 'image',
-        dimensions: fetchedDims[i] ?? null,
-      })),
+      images: images.map((item, i) => {
+        // Use aspectRatio as fallback for dimensions if fetchedDims is null
+        const aspectRatioDims = item.aspectRatio
+          ? { width: item.aspectRatio.width, height: item.aspectRatio.height }
+          : null;
+        const dims = fetchedDims[i] ?? aspectRatioDims;
+
+        return {
+          ...item,
+          thumbRect: thumbRects[i] ?? null,
+          thumbDimensions: dims,
+          type: 'image',
+          dimensions: dims,
+        };
+      }),
       index,
     });
   };
@@ -308,6 +319,7 @@ function MediaContent({
             }}
             crop="constrained"
             hideBadge={false}
+            // sharedTransitionTag={transitionTags[0]}
           />
           {(badgeInfo || previewData) && (
             <>

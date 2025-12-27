@@ -31,7 +31,6 @@ import {
   getVerifications,
   getUserVerification,
   updateUser,
-  getCompanies,
   upsertFcm,
   getFcmToken,
   deleteFcm,
@@ -95,7 +94,6 @@ import {
   getCommentReactionsCommentsCommentIdReactionsGet,
   addOrUpdateReactionCommentsCommentIdReactionsPost,
   geofenceEvent,
-  getGeofenceRegions,
   getCountry,
   endpointHealthGet,
 } from '../sdk.gen';
@@ -167,7 +165,6 @@ import type {
   UpdateUserData,
   UpdateUserError,
   UpdateUserResponse,
-  GetCompaniesData,
   UpsertFcmData,
   UpsertFcmResponse,
   GetFcmTokenData,
@@ -297,7 +294,6 @@ import type {
   GeofenceEventData,
   GeofenceEventError,
   GeofenceEventResponse2,
-  GetGeofenceRegionsData,
   GetCountryData,
   EndpointHealthGetData,
 } from '../types.gen';
@@ -1575,27 +1571,6 @@ export const updateUserMutation = (
     },
   };
   return mutationOptions;
-};
-
-export const getCompaniesQueryKey = (options?: Options<GetCompaniesData>) =>
-  createQueryKey('getCompanies', options);
-
-/**
- * Get Companies
- */
-export const getCompaniesOptions = (options?: Options<GetCompaniesData>) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getCompanies({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: getCompaniesQueryKey(options),
-  });
 };
 
 /**
@@ -4185,34 +4160,6 @@ export const geofenceEventMutation = (
     },
   };
   return mutationOptions;
-};
-
-export const getGeofenceRegionsQueryKey = (
-  options?: Options<GetGeofenceRegionsData>,
-) => createQueryKey('getGeofenceRegions', options);
-
-/**
- * Get Geofence Regions
- * Return the list of available geofence regions.
- *
- * This can be used by clients to dynamically load regions
- * instead of hardcoding them (future enhancement).
- */
-export const getGeofenceRegionsOptions = (
-  options?: Options<GetGeofenceRegionsData>,
-) => {
-  return queryOptions({
-    queryFn: async ({ queryKey, signal }) => {
-      const { data } = await getGeofenceRegions({
-        ...options,
-        ...queryKey[0],
-        signal,
-        throwOnError: true,
-      });
-      return data;
-    },
-    queryKey: getGeofenceRegionsQueryKey(options),
-  });
 };
 
 export const getCountryQueryKey = (options?: Options<GetCountryData>) =>

@@ -26,7 +26,6 @@
     "georgian": "Georgian"
   },
   "profile": {
-    "set_company": "Set company",
     "add_bio": "Add bio",
     "add_bio_example": "e.g. Coffee lover • Building cool things",
     "about_me": "About me",
@@ -50,7 +49,6 @@
     "short_recording_error": "Recording too short",
     "video_disabled": "Video is off",
     "enable_video_to_be_seen": "Turn on video to be seen by viewers",
-    "search_company_name": "Search",
     "search_by_name_or_number": "Search by name or number",
     "add_friends": "Add friends",
     "friends_there": "Friends are there",
@@ -146,9 +144,10 @@
     "upload_from_gallery": "Upload from gallery",
     "search": "Search",
     "all": "All",
-    "comment_placeholder": "Comment...",
+    "comment_placeholder": "Add a comment...",
     "comment_field_accessibility_label": "Comment field",
     "comment_field_accessibility_hint": "Enter your comment here",
+    "commenting_on": "Commenting on @{{username}}'s post",
     "permission_needed_short": "Permission needed",
     "download_media_permission": "Permission is needed to download the image or video",
     "saved": "Saved",

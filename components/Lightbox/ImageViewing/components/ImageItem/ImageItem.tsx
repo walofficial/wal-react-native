@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Pressable } from 'react-native';
 import { Image } from 'expo-image';
+import Animated from 'react-native-reanimated';
 
 import { Dimensions, ImageSource } from '../../@types';
 
@@ -24,9 +25,14 @@ const ImageItem = ({ imageSrc, onTap, onLoad, imageAspect }: Props) => {
   const borderRadius =
     type === 'circle-avi' ? 1e5 : type === 'rect-avi' ? 20 : 0;
 
+  const transitionTag = imageSrc.transitionTag;
+
   return (
     <Pressable style={styles.container} onPress={onTap}>
-      <View style={[styles.imageContainer, { aspectRatio: imageAspect ?? 1 }]}>
+      <Animated.View
+        sharedTransitionTag={transitionTag}
+        style={[styles.imageContainer, { aspectRatio: imageAspect ?? 1 }]}
+      >
         <Image
           contentFit="contain"
           source={{ uri: imageSrc.uri }}
@@ -48,7 +54,7 @@ const ImageItem = ({ imageSrc, onTap, onLoad, imageAspect }: Props) => {
                 }
           }
         />
-      </View>
+      </Animated.View>
     </Pressable>
   );
 };

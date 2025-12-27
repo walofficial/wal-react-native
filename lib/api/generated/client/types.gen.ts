@@ -210,7 +210,7 @@ export type OptionsLegacyParser<
         TData &
         Pick<RequestOptions<unknown, ThrowOnError>, 'headers'>
   : TData extends { headers?: any }
-    ? OmitKeys<RequestOptions<unknown, ThrowOnError>, 'headers' | 'url'> &
-        TData &
-        Pick<RequestOptions<unknown, ThrowOnError>, 'body'>
-    : OmitKeys<RequestOptions<unknown, ThrowOnError>, 'url'> & TData;
+  ? OmitKeys<RequestOptions<unknown, ThrowOnError>, 'headers' | 'url'> &
+      TData &
+      Pick<RequestOptions<unknown, ThrowOnError>, 'body'>
+  : OmitKeys<RequestOptions<unknown, ThrowOnError>, 'url'> & TData;

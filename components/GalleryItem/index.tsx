@@ -8,6 +8,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Image, ImageStyle } from 'expo-image';
+import Animated from 'react-native-reanimated';
 import { HandleRef } from '@/lib/hooks/useHandleRef';
 import type { Dimensions } from '@/lib/media/types';
 
@@ -15,6 +16,8 @@ interface GalleryItemProps {
   images: Array<{
     thumb: string;
     alt?: string;
+    /** Unique tag for shared element transition animation */
+    transitionTag?: string;
   }>;
   index: number;
   onPress?: (
@@ -42,6 +45,23 @@ export function GalleryItem({
   thumbDimsRef,
 }: GalleryItemProps) {
   const image = images[index];
+  const transitionTag = image.transitionTag;
+
+  const imageContent = (
+    <Image
+      source={{ uri: image.thumb }}
+      style={styles.image}
+      accessible={true}
+      accessibilityLabel={image.alt}
+      accessibilityIgnoresInvertColors
+      onLoad={(e) => {
+        thumbDimsRef.current[index] = {
+          width: e.source.width,
+          height: e.source.height,
+        };
+      }}
+    />
+  );
 
   return (
     <View
@@ -61,19 +81,7 @@ export function GalleryItem({
         accessibilityRole="button"
         accessibilityLabel={image.alt || 'Image'}
       >
-        <Image
-          source={{ uri: image.thumb }}
-          style={styles.image}
-          accessible={true}
-          accessibilityLabel={image.alt}
-          accessibilityIgnoresInvertColors
-          onLoad={(e) => {
-            thumbDimsRef.current[index] = {
-              width: e.source.width,
-              height: e.source.height,
-            };
-          }}
-        />
+        {imageContent}
         {/* Optional border overlay */}
         <View style={[styles.overlay, insetBorderStyle]} />
       </Pressable>

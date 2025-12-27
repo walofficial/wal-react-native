@@ -6,18 +6,31 @@
  *
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import {
-  ActivityIndicator,
-  StyleSheet,
-  View,
-  Pressable,
-  ScrollView,
-} from 'react-native';
+  Gesture,
+  GestureDetector,
+  PanGesture,
+} from 'react-native-gesture-handler';
+import Animated, {
+  runOnJS,
+  SharedValue,
+  useAnimatedProps,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useAnimatedScrollHandler,
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 
-import { Dimensions as ImageDimensions, ImageSource } from '../../@types';
+import {
+  Dimensions as ImageDimensions,
+  ImageSource,
+  Transform,
+} from '../../@types';
 
 const MAX_ORIGINAL_IMAGE_ZOOM = 2;
 const MIN_SCREEN_ZOOM = 2;
@@ -30,8 +43,24 @@ type Props = {
   onLoad: (dims: ImageDimensions) => void;
   isScrollViewBeingDragged: boolean;
   showControls: boolean;
+  measureSafeArea: () => {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
   imageAspect: number | undefined;
   imageDimensions: ImageDimensions | undefined;
+  dismissSwipePan: PanGesture;
+  transforms: Readonly<
+    SharedValue<{
+      scaleAndMoveTransform: Transform;
+      cropFrameTransform: Transform;
+      cropContentTransform: Transform;
+      isResting: boolean;
+      isHidden: boolean;
+    }>
+  >;
 };
 
 const ImageItem = ({
@@ -40,107 +69,202 @@ const ImageItem = ({
   onZoom,
   onLoad,
   showControls,
+  measureSafeArea,
   imageAspect,
   imageDimensions,
+  dismissSwipePan,
+  transforms,
 }: Props) => {
-  const scrollViewRef = React.useRef<ScrollView>(null);
+  const scrollViewRef = useAnimatedRef<Animated.ScrollView>();
   const [scaled, setScaled] = useState(false);
-  const screenSize = useSafeAreaFrame();
+  const isDragging = useSharedValue(false);
+  const screenSizeDelayedForJSThreadOnly = useSafeAreaFrame();
   const maxZoomScale = Math.max(
     MIN_SCREEN_ZOOM,
     imageDimensions
-      ? (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM
+      ? (imageDimensions.width / screenSizeDelayedForJSThreadOnly.width) *
+          MAX_ORIGINAL_IMAGE_ZOOM
       : 1,
   );
 
-  const handleScroll = useCallback(
-    (event: any) => {
-      const nextIsScaled = event.nativeEvent.zoomScale > 1;
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll(e) {
+      'worklet';
+      const nextIsScaled = e.zoomScale > 1;
       if (scaled !== nextIsScaled) {
-        onZoom(nextIsScaled);
-        setScaled(nextIsScaled);
+        runOnJS(handleZoom)(nextIsScaled);
       }
     },
-    [scaled, onZoom],
+    onBeginDrag() {
+      'worklet';
+      isDragging.value = true;
+    },
+    onEndDrag() {
+      'worklet';
+      isDragging.value = false;
+    },
+  });
+
+  function handleZoom(nextIsScaled: boolean) {
+    onZoom(nextIsScaled);
+    setScaled(nextIsScaled);
+  }
+
+  function zoomTo(nextZoomRect: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }) {
+    const scrollResponderRef = scrollViewRef?.current?.getScrollResponder();
+    // @ts-ignore
+    scrollResponderRef?.scrollResponderZoomTo({
+      ...nextZoomRect,
+      animated: true,
+    });
+  }
+
+  const singleTap = Gesture.Tap().onEnd(() => {
+    'worklet';
+    runOnJS(onTap)();
+  });
+
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd((e) => {
+      'worklet';
+      const screenSize = measureSafeArea();
+      const { absoluteX, absoluteY } = e;
+      let nextZoomRect = {
+        x: 0,
+        y: 0,
+        width: screenSize.width,
+        height: screenSize.height,
+      };
+      const willZoom = !scaled;
+      if (willZoom) {
+        nextZoomRect = getZoomRectAfterDoubleTap(
+          imageAspect,
+          absoluteX,
+          absoluteY,
+          screenSize,
+        );
+      }
+      runOnJS(zoomTo)(nextZoomRect);
+    });
+
+  const composedGesture = Gesture.Exclusive(
+    dismissSwipePan,
+    doubleTap,
+    singleTap,
   );
 
+  const containerStyle = useAnimatedStyle(() => {
+    const { scaleAndMoveTransform, isHidden } = transforms.value;
+    return {
+      flex: 1,
+      transform: scaleAndMoveTransform,
+      opacity: isHidden ? 0 : 1,
+    };
+  });
+
+  const imageCropStyle = useAnimatedStyle(() => {
+    const screenSize = measureSafeArea();
+    const { cropFrameTransform } = transforms.value;
+    return {
+      overflow: 'hidden',
+      transform: cropFrameTransform,
+      width: screenSize.width,
+      maxHeight: screenSize.height,
+      alignSelf: 'center',
+      aspectRatio: imageAspect ?? 1,
+      opacity: imageAspect === undefined ? 0 : 1,
+    };
+  });
+
+  const imageStyle = useAnimatedStyle(() => {
+    const { cropContentTransform } = transforms.value;
+    return {
+      transform: cropContentTransform,
+      width: '100%',
+      aspectRatio: imageAspect ?? 1,
+      opacity: imageAspect === undefined ? 0 : 1,
+    };
+  });
+
+  const [showLoader, setShowLoader] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
+  useAnimatedReaction(
+    () => {
+      return transforms.value.isResting && !hasLoaded;
+    },
+    (show, prevShow) => {
+      if (!prevShow && show) {
+        runOnJS(setShowLoader)(true);
+      } else if (prevShow && !show) {
+        runOnJS(setShowLoader)(false);
+      }
+    },
+  );
 
   const type = imageSrc.type;
   const borderRadius =
     type === 'circle-avi' ? 1e5 : type === 'rect-avi' ? 20 : 0;
 
+  const scrollViewProps = useAnimatedProps(() => ({
+    bounces: scaled || isDragging.value,
+  }));
+
   return (
-    <Pressable style={styles.container} onPress={onTap}>
-      <ScrollView
+    <GestureDetector gesture={composedGesture}>
+      <Animated.ScrollView
+        // @ts-ignore Something's up with the types here
         ref={scrollViewRef}
         pinchGestureEnabled
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
         maximumZoomScale={maxZoomScale}
-        minimumZoomScale={1}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        onScroll={scrollHandler}
+        style={containerStyle}
+        animatedProps={scrollViewProps}
         centerContent
-        bounces={scaled}
       >
-        {!hasLoaded && (
+        {showLoader && (
           <ActivityIndicator size="small" color="#FFF" style={styles.loading} />
         )}
-        <View
-          style={[styles.imageContainer, { aspectRatio: imageAspect ?? 1 }]}
-        >
-          <Image
-            contentFit="contain"
-            source={{ uri: imageSrc.uri }}
-            placeholderContentFit="contain"
-            placeholder={{ uri: imageSrc.thumbUri }}
-            style={[styles.image, { borderRadius }]}
-            accessibilityLabel={imageSrc.alt}
-            accessibilityHint=""
-            enableLiveTextInteraction={showControls && !scaled}
-            accessibilityIgnoresInvertColors
-            onLoad={
-              hasLoaded
-                ? undefined
-                : (e) => {
-                    setHasLoaded(true);
-                    onLoad({
-                      width: e.source.width,
-                      height: e.source.height,
-                    });
-                  }
-            }
-          />
-        </View>
-      </ScrollView>
-    </Pressable>
+        <Animated.View style={imageCropStyle}>
+          <Animated.View style={imageStyle}>
+            <Image
+              contentFit="contain"
+              source={{ uri: imageSrc.uri }}
+              placeholderContentFit="contain"
+              placeholder={{ uri: imageSrc.thumbUri }}
+              style={{ flex: 1, borderRadius }}
+              accessibilityLabel={imageSrc.alt}
+              accessibilityHint=""
+              enableLiveTextInteraction={showControls && !scaled}
+              accessibilityIgnoresInvertColors
+              onLoad={
+                hasLoaded
+                  ? undefined
+                  : (e) => {
+                      setHasLoaded(true);
+                      onLoad({
+                        width: e.source.width,
+                        height: e.source.height,
+                      });
+                    }
+              }
+              cachePolicy="memory"
+            />
+          </Animated.View>
+        </Animated.View>
+      </Animated.ScrollView>
+    </GestureDetector>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    width: '100%',
-    maxHeight: '100%',
-  },
-  image: {
-    flex: 1,
-  },
   loading: {
     position: 'absolute',
     top: 0,
@@ -149,5 +273,77 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
 });
+
+const getZoomRectAfterDoubleTap = (
+  imageAspect: number | undefined,
+  touchX: number,
+  touchY: number,
+  screenSize: { width: number; height: number },
+): {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+} => {
+  'worklet';
+  if (!imageAspect) {
+    return {
+      x: 0,
+      y: 0,
+      width: screenSize.width,
+      height: screenSize.height,
+    };
+  }
+
+  const screenAspect = screenSize.width / screenSize.height;
+  const zoom = Math.max(
+    imageAspect / screenAspect,
+    screenAspect / imageAspect,
+    MIN_SCREEN_ZOOM,
+  );
+
+  let rectWidth = screenSize.width / zoom;
+  let rectHeight = screenSize.height / zoom;
+
+  let minX = 0;
+  let minY = 0;
+  let maxX = screenSize.width - rectWidth;
+  let maxY = screenSize.height - rectHeight;
+  if (imageAspect >= screenAspect) {
+    const renderedHeight = screenSize.width / imageAspect;
+    const horizontalBarHeight = (screenSize.height - renderedHeight) / 2;
+    minY += horizontalBarHeight;
+    maxY -= horizontalBarHeight;
+  } else {
+    const renderedWidth = screenSize.height * imageAspect;
+    const verticalBarWidth = (screenSize.width - renderedWidth) / 2;
+    minX += verticalBarWidth;
+    maxX -= verticalBarWidth;
+  }
+
+  let rectX;
+  if (maxX >= minX) {
+    rectX = touchX - touchX / zoom;
+    rectX = Math.min(rectX, maxX);
+    rectX = Math.max(rectX, minX);
+  } else {
+    rectX = screenSize.width / 2 - rectWidth / 2;
+  }
+  let rectY;
+  if (maxY >= minY) {
+    rectY = touchY - touchY / zoom;
+    rectY = Math.min(rectY, maxY);
+    rectY = Math.max(rectY, minY);
+  } else {
+    rectY = screenSize.height / 2 - rectHeight / 2;
+  }
+
+  return {
+    x: rectX,
+    y: rectY,
+    height: rectHeight,
+    width: rectWidth,
+  };
+};
 
 export default React.memo(ImageItem);

@@ -23,6 +23,14 @@ export type ThumbRect = {
   height: number;
 };
 
+export type Transform = (
+  | { translateX: number }
+  | { translateY: number }
+  | { scale: number }
+  | { scaleX: number }
+  | { scaleY: number }
+)[];
+
 export type ImageSource = {
   uri: string;
   dimensions: Dimensions | null;
@@ -32,4 +40,6 @@ export type ImageSource = {
   alt?: string;
   type: 'image' | 'circle-avi' | 'rect-avi';
   verificationId?: string;
+  /** Unique tag for shared element transition animation */
+  transitionTag?: string;
 };

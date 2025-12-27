@@ -33,10 +33,13 @@
     "error": "Une erreur s'est produite",
     "delete": "Supprimer",
     "profile_update_failed": "Échec de la mise à jour du profil",
-    "more": "plus"
+    "more": "plus",
+    "comment_placeholder": "Ajouter un commentaire...",
+    "comment_field_accessibility_label": "Champ de commentaire",
+    "comment_field_accessibility_hint": "Entrez votre commentaire ici",
+    "commenting_on": "Commenter la publication de @{{username}}"
   },
   "profile": {
-    "set_company": "Définir l'entreprise",
     "add_bio": "Ajouter une bio",
     "add_bio_example": "ex. Amateur de café • Je crée des choses",
     "about_me": "À propos de moi",
