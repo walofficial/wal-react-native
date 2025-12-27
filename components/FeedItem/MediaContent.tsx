@@ -161,6 +161,7 @@ function MediaContent({
     fetchedDims: (Dimensions | null)[],
   ) => {
     openLightbox({
+      // @ts-ignore
       images: images.map((item, i) => {
         // Use aspectRatio as fallback for dimensions if fetchedDims is null
         const aspectRatioDims = item.aspectRatio
