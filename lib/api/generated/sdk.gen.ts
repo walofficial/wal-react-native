@@ -94,9 +94,6 @@ import type {
   UpdateUserData,
   UpdateUserResponses,
   UpdateUserErrors,
-  GetCompaniesData,
-  GetCompaniesResponses,
-  GetCompaniesErrors,
   UpsertFcmData,
   UpsertFcmResponses,
   UpsertFcmErrors,
@@ -283,9 +280,6 @@ import type {
   GeofenceEventData,
   GeofenceEventResponses,
   GeofenceEventErrors,
-  GetGeofenceRegionsData,
-  GetGeofenceRegionsResponses,
-  GetGeofenceRegionsErrors,
   GetCountryData,
   GetCountryResponses,
   EndpointHealthGetData,
@@ -923,23 +917,6 @@ export const updateUser = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
-  });
-};
-
-/**
- * Get Companies
- */
-export const getCompanies = <ThrowOnError extends boolean = false>(
-  options?: Options<GetCompaniesData, ThrowOnError>,
-) => {
-  return (options?.client ?? _heyApiClient).get<
-    GetCompaniesResponses,
-    GetCompaniesErrors,
-    ThrowOnError
-  >({
-    responseType: 'json',
-    url: '/user/companies',
-    ...options,
   });
 };
 
@@ -2154,27 +2131,6 @@ export const geofenceEvent = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
-  });
-};
-
-/**
- * Get Geofence Regions
- * Return the list of available geofence regions.
- *
- * This can be used by clients to dynamically load regions
- * instead of hardcoding them (future enhancement).
- */
-export const getGeofenceRegions = <ThrowOnError extends boolean = false>(
-  options?: Options<GetGeofenceRegionsData, ThrowOnError>,
-) => {
-  return (options?.client ?? _heyApiClient).get<
-    GetGeofenceRegionsResponses,
-    GetGeofenceRegionsErrors,
-    ThrowOnError
-  >({
-    responseType: 'json',
-    url: '/geofence/regions',
-    ...options,
   });
 };
 

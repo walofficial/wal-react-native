@@ -1,7 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { type DimensionValue, Pressable, View } from 'react-native';
-import { type AnimatedRef } from 'react-native-reanimated';
-import { AnimatedImage } from '@/components/SharedImage';
+import Animated, { type AnimatedRef } from 'react-native-reanimated';
+import { Image } from 'expo-image';
 
 import { useHandleRef } from '@/lib/hooks/useHandleRef';
 import type { Dimensions } from '@/lib/media/types';
@@ -76,6 +76,8 @@ export function AutoSizedImage({
   ) => void;
   onLongPress?: () => void;
   onPressIn?: () => void;
+  /** Unique tag for shared element transition animation with the lightbox */
+  sharedTransitionTag?: string;
 }) {
   const containerRef = useHandleRef();
   const fetchedDimsRef = useRef<{ width: number; height: number } | null>(null);
@@ -105,21 +107,19 @@ export function AutoSizedImage({
 
   const contents = (
     <View ref={containerRef} collapsable={false} style={{ flex: 1 }}>
-      <AnimatedImage
+      <Image
         contentFit={isContain ? 'contain' : 'cover'}
         style={{ width: '100%', height: '100%' }}
         source={image.thumb}
-        accessible={true} // Must set for `accessibilityLabel` to work
+        accessible={true}
         accessibilityIgnoresInvertColors
         accessibilityLabel={image.alt}
         accessibilityHint=""
         onLoad={(e) => {
-          if (!isContain) {
-            fetchedDimsRef.current = {
-              width: e.source.width,
-              height: e.source.height,
-            };
-          }
+          fetchedDimsRef.current = {
+            width: e.source.width,
+            height: e.source.height,
+          };
         }}
       />
     </View>

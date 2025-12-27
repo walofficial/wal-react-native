@@ -1,18 +1,48 @@
+/**
+ * Copyright (c) JOB TODAY S.A. and its affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ *
+ */
+
 import React, { useState, useCallback } from 'react';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import {
-  ActivityIndicator,
-  StyleSheet,
-  View,
-  Pressable,
-  ScrollView,
-} from 'react-native';
-import { useSafeAreaFrame } from 'react-native-safe-area-context';
+  Gesture,
+  GestureDetector,
+  PanGesture,
+} from 'react-native-gesture-handler';
+import Animated, {
+  runOnJS,
+  SharedValue,
+  useAnimatedReaction,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
 import { Image } from 'expo-image';
 
-import type { Dimensions as ImageDimensions, ImageSource } from '../../@types';
+import type {
+  Dimensions as ImageDimensions,
+  ImageSource,
+  Transform,
+} from '../../@types';
+import {
+  applyRounding,
+  createTransform,
+  prependPan,
+  prependPinch,
+  prependTransform,
+  readTransform,
+  TransformMatrix,
+} from '../../transforms';
 
 const MIN_SCREEN_ZOOM = 2;
 const MAX_ORIGINAL_IMAGE_ZOOM = 2;
+
+const initialTransform = createTransform();
 
 type Props = {
   imageSrc: ImageSource;
@@ -22,8 +52,24 @@ type Props = {
   onLoad: (dims: ImageDimensions) => void;
   isScrollViewBeingDragged: boolean;
   showControls: boolean;
+  measureSafeArea: () => {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
   imageAspect: number | undefined;
   imageDimensions: ImageDimensions | undefined;
+  dismissSwipePan: PanGesture;
+  transforms: Readonly<
+    SharedValue<{
+      scaleAndMoveTransform: Transform;
+      cropFrameTransform: Transform;
+      cropContentTransform: Transform;
+      isResting: boolean;
+      isHidden: boolean;
+    }>
+  >;
 };
 
 const ImageItem = ({
@@ -31,108 +77,347 @@ const ImageItem = ({
   onTap,
   onZoom,
   onLoad,
+  isScrollViewBeingDragged,
+  measureSafeArea,
   imageAspect,
   imageDimensions,
+  dismissSwipePan,
+  transforms,
 }: Props) => {
-  const scrollViewRef = React.useRef<ScrollView>(null);
   const [isScaled, setIsScaled] = useState(false);
-  const screenSize = useSafeAreaFrame();
-  const maxZoomScale = Math.max(
-    MIN_SCREEN_ZOOM,
-    imageDimensions
-      ? (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM
-      : 1,
-  );
+  const committedTransform = useSharedValue(initialTransform);
+  const panTranslation = useSharedValue({ x: 0, y: 0 });
+  const pinchOrigin = useSharedValue({ x: 0, y: 0 });
+  const pinchScale = useSharedValue(1);
+  const pinchTranslation = useSharedValue({ x: 0, y: 0 });
+  const containerRef = useAnimatedRef();
 
-  const handleScroll = useCallback(
-    (event: any) => {
-      const nextIsScaled = event.nativeEvent.zoomScale > 1;
-      if (isScaled !== nextIsScaled) {
-        setIsScaled(nextIsScaled);
-        onZoom(nextIsScaled);
+  // Keep track of when we're entering or leaving scaled rendering.
+  useAnimatedReaction(
+    () => {
+      if (pinchScale.value !== 1) {
+        return true;
+      }
+      const [, , committedScale] = readTransform(committedTransform.value);
+      if (committedScale !== 1) {
+        return true;
+      }
+      return false;
+    },
+    (nextIsScaled, prevIsScaled) => {
+      if (nextIsScaled !== prevIsScaled) {
+        runOnJS(handleZoom)(nextIsScaled);
       }
     },
-    [isScaled, onZoom],
   );
 
-  const [showLoader, setShowLoader] = useState(true);
+  function handleZoom(nextIsScaled: boolean) {
+    setIsScaled(nextIsScaled);
+    onZoom(nextIsScaled);
+  }
+
+  // On Android, stock apps prevent going "out of bounds" on pan or pinch.
+  function getExtraTranslationToStayInBounds(
+    candidateTransform: TransformMatrix,
+    screenSize: { width: number; height: number },
+  ) {
+    'worklet';
+    if (!imageAspect) {
+      return [0, 0];
+    }
+    const [nextTranslateX, nextTranslateY, nextScale] =
+      readTransform(candidateTransform);
+    const scaledDimensions = getScaledDimensions(
+      imageAspect,
+      nextScale,
+      screenSize,
+    );
+    const clampedTranslateX = clampTranslation(
+      nextTranslateX,
+      scaledDimensions.width,
+      screenSize.width,
+    );
+    const clampedTranslateY = clampTranslation(
+      nextTranslateY,
+      scaledDimensions.height,
+      screenSize.height,
+    );
+    const dx = clampedTranslateX - nextTranslateX;
+    const dy = clampedTranslateY - nextTranslateY;
+    return [dx, dy];
+  }
+
+  const pinch = Gesture.Pinch()
+    .onStart((e) => {
+      'worklet';
+      const screenSize = measureSafeArea();
+      pinchOrigin.value = {
+        x: e.focalX - screenSize.width / 2,
+        y: e.focalY - screenSize.height / 2,
+      };
+    })
+    .onChange((e) => {
+      'worklet';
+      const screenSize = measureSafeArea();
+      if (!imageDimensions) {
+        return;
+      }
+      const [, , committedScale] = readTransform(committedTransform.value);
+      const maxCommittedScale = Math.max(
+        MIN_SCREEN_ZOOM,
+        (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM,
+      );
+      const minPinchScale = 1 / committedScale;
+      const maxPinchScale = maxCommittedScale / committedScale;
+      const nextPinchScale = Math.min(
+        Math.max(minPinchScale, e.scale),
+        maxPinchScale,
+      );
+      pinchScale.value = nextPinchScale;
+
+      const t = createTransform();
+      prependPan(t, panTranslation.value);
+      prependPinch(
+        t,
+        nextPinchScale,
+        pinchOrigin.value,
+        pinchTranslation.value,
+      );
+      prependTransform(t, committedTransform.value);
+      const [dx, dy] = getExtraTranslationToStayInBounds(t, screenSize);
+      if (dx !== 0 || dy !== 0) {
+        const pt = pinchTranslation.value;
+        pinchTranslation.value = {
+          x: pt.x + dx,
+          y: pt.y + dy,
+        };
+      }
+    })
+    .onEnd(() => {
+      'worklet';
+      let t = createTransform();
+      prependPinch(
+        t,
+        pinchScale.value,
+        pinchOrigin.value,
+        pinchTranslation.value,
+      );
+      prependTransform(t, committedTransform.value);
+      applyRounding(t);
+      committedTransform.value = t;
+
+      pinchScale.value = 1;
+      pinchOrigin.value = { x: 0, y: 0 };
+      pinchTranslation.value = { x: 0, y: 0 };
+    });
+
+  const pan = Gesture.Pan()
+    .averageTouches(true)
+    .minPointers(isScaled ? 1 : 2)
+    .onChange((e) => {
+      'worklet';
+      const screenSize = measureSafeArea();
+      if (!imageDimensions) {
+        return;
+      }
+
+      const nextPanTranslation = { x: e.translationX, y: e.translationY };
+      let t = createTransform();
+      prependPan(t, nextPanTranslation);
+      prependPinch(
+        t,
+        pinchScale.value,
+        pinchOrigin.value,
+        pinchTranslation.value,
+      );
+      prependTransform(t, committedTransform.value);
+
+      const [dx, dy] = getExtraTranslationToStayInBounds(t, screenSize);
+      nextPanTranslation.x += dx;
+      nextPanTranslation.y += dy;
+      panTranslation.value = nextPanTranslation;
+    })
+    .onEnd(() => {
+      'worklet';
+      let t = createTransform();
+      prependPan(t, panTranslation.value);
+      prependTransform(t, committedTransform.value);
+      applyRounding(t);
+      committedTransform.value = t;
+
+      panTranslation.value = { x: 0, y: 0 };
+    });
+
+  const singleTap = Gesture.Tap().onEnd(() => {
+    'worklet';
+    runOnJS(onTap)();
+  });
+
+  const doubleTap = Gesture.Tap()
+    .numberOfTaps(2)
+    .onEnd((e) => {
+      'worklet';
+      const screenSize = measureSafeArea();
+      if (!imageDimensions || !imageAspect) {
+        return;
+      }
+      const [, , committedScale] = readTransform(committedTransform.value);
+      if (committedScale !== 1) {
+        let t = createTransform();
+        committedTransform.value = withClampedSpring(t);
+        return;
+      }
+
+      const screenAspect = screenSize.width / screenSize.height;
+      const candidateScale = Math.max(
+        imageAspect / screenAspect,
+        screenAspect / imageAspect,
+        MIN_SCREEN_ZOOM,
+      );
+      const maxScale = Math.max(
+        MIN_SCREEN_ZOOM,
+        (imageDimensions.width / screenSize.width) * MAX_ORIGINAL_IMAGE_ZOOM,
+      );
+      const scale = Math.min(candidateScale, maxScale);
+
+      const candidateTransform = createTransform();
+      const origin = {
+        x: e.absoluteX - screenSize.width / 2,
+        y: e.absoluteY - screenSize.height / 2,
+      };
+      prependPinch(candidateTransform, scale, origin, { x: 0, y: 0 });
+
+      const [dx, dy] = getExtraTranslationToStayInBounds(
+        candidateTransform,
+        screenSize,
+      );
+      const finalTransform = createTransform();
+      prependPinch(finalTransform, scale, origin, { x: dx, y: dy });
+      committedTransform.value = withClampedSpring(finalTransform);
+    });
+
+  const composedGesture = isScrollViewBeingDragged
+    ? Gesture.Manual()
+    : Gesture.Exclusive(
+        dismissSwipePan,
+        Gesture.Simultaneous(pinch, pan),
+        doubleTap,
+        singleTap,
+      );
+
+  const containerStyle = useAnimatedStyle(() => {
+    const { scaleAndMoveTransform, isHidden } = transforms.value;
+    let t = createTransform();
+    prependPan(t, panTranslation.value);
+    prependPinch(
+      t,
+      pinchScale.value,
+      pinchOrigin.value,
+      pinchTranslation.value,
+    );
+    prependTransform(t, committedTransform.value);
+    const [translateX, translateY, scale] = readTransform(t);
+    const manipulationTransform = [{ translateX }, { translateY }, { scale }];
+    const screenSize = measureSafeArea();
+    return {
+      opacity: isHidden ? 0 : 1,
+      transform: scaleAndMoveTransform.concat(manipulationTransform),
+      width: screenSize.width,
+      maxHeight: screenSize.height,
+      alignSelf: 'center',
+      aspectRatio: imageAspect ?? 1,
+    };
+  });
+
+  const imageCropStyle = useAnimatedStyle(() => {
+    const { cropFrameTransform } = transforms.value;
+    return {
+      flex: 1,
+      overflow: 'hidden',
+      transform: cropFrameTransform,
+    };
+  });
+
+  const imageStyle = useAnimatedStyle(() => {
+    const { cropContentTransform } = transforms.value;
+    return {
+      flex: 1,
+      transform: cropContentTransform,
+      opacity: imageAspect === undefined ? 0 : 1,
+    };
+  });
+
+  const [showLoader, setShowLoader] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
+  useAnimatedReaction(
+    () => {
+      return transforms.value.isResting && !hasLoaded;
+    },
+    (show, prevShow) => {
+      if (!prevShow && show) {
+        runOnJS(setShowLoader)(true);
+      } else if (prevShow && !show) {
+        runOnJS(setShowLoader)(false);
+      }
+    },
+  );
 
   const type = imageSrc.type;
   const borderRadius =
     type === 'circle-avi' ? 1e5 : type === 'rect-avi' ? 20 : 0;
 
   return (
-    <Pressable style={styles.container} onPress={onTap}>
-      <ScrollView
-        ref={scrollViewRef}
-        pinchGestureEnabled
-        showsHorizontalScrollIndicator={false}
-        showsVerticalScrollIndicator={false}
-        maximumZoomScale={maxZoomScale}
-        minimumZoomScale={1}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        centerContent
-        bounces={isScaled}
+    <GestureDetector gesture={composedGesture}>
+      <Animated.View
+        ref={containerRef}
+        style={[styles.container]}
+        renderToHardwareTextureAndroid
       >
-        {showLoader && !hasLoaded && (
-          <ActivityIndicator size="small" color="#FFF" style={styles.loading} />
-        )}
-        <View
-          style={[styles.imageContainer, { aspectRatio: imageAspect ?? 1 }]}
-        >
-          <Image
-            contentFit="contain"
-            source={{ uri: imageSrc.uri }}
-            placeholderContentFit="contain"
-            placeholder={{ uri: imageSrc.thumbUri }}
-            accessibilityLabel={imageSrc.alt}
-            onLoad={
-              hasLoaded
-                ? undefined
-                : (e) => {
-                    setHasLoaded(true);
-                    setShowLoader(false);
-                    onLoad({
-                      width: e.source.width,
-                      height: e.source.height,
-                    });
-                  }
-            }
-            style={[styles.image, { borderRadius }]}
-            accessibilityHint=""
-            accessibilityIgnoresInvertColors
-            cachePolicy="memory"
-          />
-        </View>
-      </ScrollView>
-    </Pressable>
+        <Animated.View style={containerStyle}>
+          {showLoader && (
+            <ActivityIndicator
+              size="small"
+              color="#FFF"
+              style={styles.loading}
+            />
+          )}
+          <Animated.View style={imageCropStyle}>
+            <Animated.View style={imageStyle}>
+              <Image
+                contentFit="contain"
+                source={{ uri: imageSrc.uri }}
+                placeholderContentFit="contain"
+                placeholder={{ uri: imageSrc.thumbUri }}
+                accessibilityLabel={imageSrc.alt}
+                onLoad={
+                  hasLoaded
+                    ? undefined
+                    : (e) => {
+                        setHasLoaded(true);
+                        onLoad({
+                          width: e.source.width,
+                          height: e.source.height,
+                        });
+                      }
+                }
+                style={{ flex: 1, borderRadius }}
+                accessibilityHint=""
+                accessibilityIgnoresInvertColors
+                cachePolicy="memory"
+              />
+            </Animated.View>
+          </Animated.View>
+        </Animated.View>
+      </Animated.View>
+    </GestureDetector>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: '100%',
+    overflow: 'hidden',
     justifyContent: 'center',
-    alignItems: 'center',
-  },
-  scrollView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    width: '100%',
-    maxHeight: '100%',
-  },
-  image: {
-    flex: 1,
   },
   loading: {
     position: 'absolute',
@@ -143,5 +428,42 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+function getScaledDimensions(
+  imageAspect: number,
+  scale: number,
+  screenSize: { width: number; height: number },
+): ImageDimensions {
+  'worklet';
+  const screenAspect = screenSize.width / screenSize.height;
+  const isLandscape = imageAspect > screenAspect;
+  if (isLandscape) {
+    return {
+      width: scale * screenSize.width,
+      height: (scale * screenSize.width) / imageAspect,
+    };
+  } else {
+    return {
+      width: scale * screenSize.height * imageAspect,
+      height: scale * screenSize.height,
+    };
+  }
+}
+
+function clampTranslation(
+  value: number,
+  scaledSize: number,
+  screenSize: number,
+): number {
+  'worklet';
+  const panDistance = Math.max(0, (scaledSize - screenSize) / 2);
+  const clampedValue = Math.min(Math.max(-panDistance, value), panDistance);
+  return clampedValue;
+}
+
+function withClampedSpring(value: any) {
+  'worklet';
+  return withSpring(value, { overshootClamping: true });
+}
 
 export default React.memo(ImageItem);

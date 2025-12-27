@@ -26,7 +26,6 @@
     "georgian": "ქართული"
   },
   "profile": {
-    "set_company": "მუშაობ?",
     "add_bio": "ბიოს დამატება",
     "add_bio_example": "მაგ. ყავის მოყვარული • ვქმნი საინტერესო რამეებს",
     "about_me": "ჩემზე",
@@ -39,7 +38,6 @@
     "no_results_found_description": "ვერ მოიძებნა",
     "retry": "თავიდან გადაღება",
     "save": "შენახვა",
-    "search_company_name": "მოძებნე",
     "error": "შეცდომა მოხდა",
     "profile_update_failed": "პროფილი ვერ განახლდა",
     "system_error": "სისტემური ხარვეზი",
@@ -151,9 +149,10 @@
     "go_to_settings_enable_notifications": "გადადით პარამეტრებში რომ გააქტიუროთ შეტყობინებები",
     "settings": "პარამეტრები",
     "disable_notifications": "შეტყობინებების გამორთვა",
-    "comment_placeholder": "კომენტარი...",
+    "comment_placeholder": "დაამატე კომენტარი...",
     "comment_field_accessibility_label": "კომენტარის ველი",
     "comment_field_accessibility_hint": "შეიყვანე კომენტარი აქ",
+    "commenting_on": "კომენტარი @{{username}}-ის პოსტზე",
     "permission_needed_short": "თანხმობაა საჭირო",
     "download_media_permission": "საჭიროა თანხმობა სურათის ან ვიდეოს გადმოსაწერად",
     "saved": "შეინახულია",

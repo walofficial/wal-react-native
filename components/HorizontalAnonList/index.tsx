@@ -54,52 +54,46 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {isFetching
-            ? Array.from({ length: 8 }).map((_, idx) => (
-                <View style={styles.storyItem} key={`skeleton_${idx}`}>
-                  <UserLiveItemSkeleton size="md" />
-                </View>
-              ))
-            : items.map((item, index) => (
-                <Animated.View
-                  entering={FadeIn.delay(index * 40)}
-                  key={item.user.id}
-                  style={styles.storyItem}
-                >
-                  <Pressable
-                    onPress={() => {
-                      if (item.user.id === user.id) return;
-                      trackEvent('location_feed_live_users_button_pressed', {});
+          {items.map((item, index) => (
+            <Animated.View
+              entering={FadeIn.delay(index * 40)}
+              key={item.user.id}
+              style={styles.storyItem}
+            >
+              <Pressable
+                onPress={() => {
+                  if (item.user.id === user.id) return;
+                  trackEvent('location_feed_live_users_button_pressed', {});
 
-                      requestAnimationFrame(() => {
-                        joinChat.mutate({
-                          targetUserId: item.user.id,
-                        });
-                      });
-                    }}
-                    style={({ pressed }) => [
-                      styles.storyPressable,
-                      { opacity: pressed ? 0.6 : 1 },
-                    ]}
-                    hitSlop={8}
-                  >
-                    <UserLiveItem
-                      showName={item.user.id !== user.id}
-                      size="md"
-                      color={item.is_friend ? 'green' : 'pink'}
-                      isLoading={
-                        joinChat.isPending &&
-                        joinChat.variables.targetUserId === item.user.id
-                      }
-                      isSuccess={
-                        joinChat.isSuccess &&
-                        joinChat.variables.targetUserId === item.user.id
-                      }
-                      user={item.user}
-                    />
-                  </Pressable>
-                </Animated.View>
-              ))}
+                  requestAnimationFrame(() => {
+                    joinChat.mutate({
+                      targetUserId: item.user.id,
+                    });
+                  });
+                }}
+                style={({ pressed }) => [
+                  styles.storyPressable,
+                  { opacity: pressed ? 0.6 : 1 },
+                ]}
+                hitSlop={8}
+              >
+                <UserLiveItem
+                  showName={item.user.id !== user.id}
+                  size="md"
+                  color={item.is_friend ? 'green' : 'pink'}
+                  isLoading={
+                    joinChat.isPending &&
+                    joinChat.variables.targetUserId === item.user.id
+                  }
+                  isSuccess={
+                    joinChat.isSuccess &&
+                    joinChat.variables.targetUserId === item.user.id
+                  }
+                  user={item.user}
+                />
+              </Pressable>
+            </Animated.View>
+          ))}
         </ScrollView>
       </View>
     </View>

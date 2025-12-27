@@ -565,7 +565,10 @@ const CommentsView = ({
             backgroundColor: 'transparent',
           }}
         >
-          <CommentInput postId={verificationId} />
+          <CommentInput
+            postId={verificationId}
+            posterUsername={verification.assignee_user?.username ?? undefined}
+          />
         </KeyboardAvoidingView>
       )}
     </View>

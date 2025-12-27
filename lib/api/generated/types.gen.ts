@@ -1719,7 +1719,6 @@ export type ProfileInformationResponse = {
    * Bio
    */
   bio?: string | null;
-  company?: Company | null;
 };
 
 /**
@@ -3326,42 +3325,6 @@ export type UpdateUserResponses = {
 };
 
 export type UpdateUserResponse = UpdateUserResponses[keyof UpdateUserResponses];
-
-export type GetCompaniesData = {
-  body?: never;
-  path?: never;
-  query?: {
-    /**
-     * Q
-     */
-    q?: string | null;
-  };
-  url: '/user/companies';
-};
-
-export type GetCompaniesErrors = {
-  /**
-   * Not found
-   */
-  404: unknown;
-  /**
-   * Validation Error
-   */
-  422: HttpValidationError;
-};
-
-export type GetCompaniesError = GetCompaniesErrors[keyof GetCompaniesErrors];
-
-export type GetCompaniesResponses = {
-  /**
-   * Response Get Companies
-   * Successful Response
-   */
-  200: Array<Company>;
-};
-
-export type GetCompaniesResponse =
-  GetCompaniesResponses[keyof GetCompaniesResponses];
 
 export type UpsertFcmData = {
   body?: never;
@@ -5410,27 +5373,6 @@ export type GeofenceEventResponses = {
 
 export type GeofenceEventResponse2 =
   GeofenceEventResponses[keyof GeofenceEventResponses];
-
-export type GetGeofenceRegionsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: '/geofence/regions';
-};
-
-export type GetGeofenceRegionsErrors = {
-  /**
-   * Not found
-   */
-  404: unknown;
-};
-
-export type GetGeofenceRegionsResponses = {
-  /**
-   * List of available geofence regions
-   */
-  200: unknown;
-};
 
 export type GetCountryData = {
   body?: never;

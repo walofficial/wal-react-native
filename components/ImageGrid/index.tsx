@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   StyleSheet,
@@ -39,7 +39,7 @@ const ImageGrid = ({
 
   if (!images || images.length === 0) return null;
 
-  const galleryImages = images.map((img) => ({
+  const galleryImages = images.map((img, index) => ({
     thumb: convertToCDNUrl(img),
     alt: '',
   }));
@@ -49,7 +49,7 @@ const ImageGrid = ({
     thumbRects: (MeasuredDimensions | null)[],
     fetchedDims: (Dimensions | null)[],
   ) => {
-    const items = images.map((img) => ({
+    const items = images.map((img, i) => ({
       uri: convertToCDNUrl(img),
       thumbUri: convertToCDNUrl(img),
       alt: '',
