@@ -44,6 +44,7 @@ const CommentButton = ({
     const isOnVerificationPage = pathname === `/verification/${verificationId}`;
 
     if (isOnVerificationPage) {
+      // Already on page, just focus the input
       setShouldFocusInput(true);
       return;
     }
@@ -55,6 +56,7 @@ const CommentButton = ({
           pathname: '/verification/[verificationId]',
           params: {
             verificationId,
+            focusComment: 'true',
           },
         });
       }, 300);
@@ -63,6 +65,7 @@ const CommentButton = ({
         pathname: '/verification/[verificationId]',
         params: {
           verificationId,
+          focusComment: 'true',
         },
       });
     }

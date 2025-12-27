@@ -13,6 +13,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  InteractionManager,
 } from 'react-native';
 import { KeyboardAvoidingView } from 'react-native-keyboard-controller';
 import CommentsList from '@/components/Comments/CommentsList';
@@ -21,7 +22,8 @@ import LiveStreamViewer from '@/components/LiveStreamViewer';
 import SpaceView from '@/components/FeedItem/SpaceView';
 import { FeedPost, LocationFeedPost, Source, User } from '@/lib/api/generated';
 import { getVideoSrc } from '@/lib/utils';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
+import { shouldFocusCommentInputAtom } from '@/atoms/comments';
 import FeedActions from '../FeedItem/FeedActions';
 import { FontSizes, useTheme } from '@/lib/theme';
 import { useColorScheme } from '@/lib/useColorScheme';
@@ -490,12 +492,27 @@ PostContent.displayName = 'PostContent';
 const CommentsView = ({
   verification: initialVerification,
   verificationId,
+  focusCommentInput = false,
 }: {
   verification: FeedPost;
   verificationId: string;
+  focusCommentInput?: boolean;
 }) => {
   const { user } = useAuth();
   const { headerHeight } = useFeeds();
+  const setShouldFocusInput = useSetAtom(shouldFocusCommentInputAtom);
+
+  // Handle auto-focus when navigating from comment button
+  // Use InteractionManager to wait for navigation animations to complete
+  // This is the standard React Native pattern for post-navigation actions
+  useEffect(() => {
+    if (focusCommentInput) {
+      const interactionPromise = InteractionManager.runAfterInteractions(() => {
+        setShouldFocusInput(true);
+      });
+      return () => interactionPromise.cancel();
+    }
+  }, [focusCommentInput, setShouldFocusInput]);
 
   const theme = useTheme();
   const bottomSheetRef = useRef<BottomSheet>(null);

@@ -45,4 +45,5 @@ const additionalInstructions = `
 14. Usually in tanstack the optimistic updates are implemented using setQueryData passing appropriate query keys
 15. There is no pnpm, it npm project. Make sure that when thinking about modifything the native code. it can survive npx expo prebuild. Use industry standards when modifying native code
 16. Do not use deprecated API if you are implementing a new code or feature, search  for web for latest docs if needed
+17. App tries to minimize brainrot, do not write engagement boosting copyrights.
     `;
