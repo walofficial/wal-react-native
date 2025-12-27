@@ -34,12 +34,36 @@ import Animated, {
 import { isNative, isWeb, isIOS } from '@/lib/platform';
 import { List, ListMethods } from '../List';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useTheme } from '@/lib/theme';
+import { useColorScheme } from '@/lib/useColorScheme';
+import { Ionicons } from '@expo/vector-icons';
 import { t } from '@/lib/i18n';
 
 function EmptyListComponent() {
+  const theme = useTheme();
+  const { isDarkColorScheme } = useColorScheme();
+
   return (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyText}>{t('common.no_comments_found')}</Text>
+      <View
+        style={[
+          styles.emptyIconContainer,
+          {
+            backgroundColor: isDarkColorScheme
+              ? 'rgba(255, 255, 255, 0.06)'
+              : 'rgba(0, 0, 0, 0.04)',
+          },
+        ]}
+      >
+        <Ionicons
+          name="chatbubble-outline"
+          size={28}
+          color={isDarkColorScheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)'}
+        />
+      </View>
+      <Text style={[styles.emptyText, { color: theme.colors.text, opacity: 0.6 }]}>
+        {t('common.be_first_to_comment')}
+      </Text>
     </View>
   );
 }
@@ -268,10 +292,19 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingVertical: 32,
+    paddingVertical: 40,
+    gap: 12,
+  },
+  emptyIconContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   emptyText: {
-    color: '#9ca3af',
+    fontSize: 15,
+    fontWeight: '500',
     textAlign: 'center',
   },
   loadingContainer: {

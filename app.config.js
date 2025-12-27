@@ -196,7 +196,7 @@ export default {
         backgroundColor: '#ffffff',
       },
 
-      googleServicesFile: './google-services-local.json',
+      googleServicesFile: './google-services.json',
       intentFilters: [
         {
           action: 'VIEW',

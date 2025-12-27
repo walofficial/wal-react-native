@@ -10,6 +10,7 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 function VerificationView() {
   const params = useLocalSearchParams<{
     verificationId: string;
+    focusComment?: string;
   }>();
 
   // Runtime check and type assertion
@@ -55,6 +56,7 @@ function VerificationView() {
         <CommentsView
           verification={verification}
           verificationId={verificationId}
+          focusCommentInput={params.focusComment === 'true'}
         />
       </View>
     </BottomSheetModalProvider>

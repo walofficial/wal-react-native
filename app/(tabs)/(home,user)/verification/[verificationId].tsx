@@ -8,6 +8,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 function VerificationView() {
   const params = useLocalSearchParams<{
     verificationId: string;
+    focusComment?: string;
   }>();
 
   const color = useThemeColor({}, 'text');
@@ -52,6 +53,7 @@ function VerificationView() {
       <CommentsView
         verification={verification}
         verificationId={verificationId}
+        focusCommentInput={params.focusComment === 'true'}
       />
     </>
   );
