@@ -145,13 +145,16 @@ class MessagingStyleNotificationBuilder(
       }
     }
 
-    // Add inline reply action
-    if (chatData.enableInlineReply) {
-      addInlineReplyAction(builder)
-    }
+    // Add actions only if enabled
+    if (chatData.enableActions) {
+      // Add inline reply action
+      if (chatData.enableInlineReply) {
+        addInlineReplyAction(builder)
+      }
 
-    // Add mark as read action
-    addMarkAsReadAction(builder)
+      // Add mark as read action
+      addMarkAsReadAction(builder)
+    }
 
     // Set content intent (tap action)
     val defaultAction = NotificationAction(NotificationResponse.DEFAULT_ACTION_IDENTIFIER, null, true)

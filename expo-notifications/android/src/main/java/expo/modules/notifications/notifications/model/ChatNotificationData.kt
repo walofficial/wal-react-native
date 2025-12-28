@@ -55,6 +55,14 @@ class ChatNotificationData(private val data: Map<String, String>) {
   val enableInlineReply: Boolean
     get() = getStringValue("enableInlineReply")?.toBooleanStrictOrNull() ?: true
 
+  /**
+   * Whether to show any actions (reply, mark as read) on the notification.
+   * Set to false for communication notifications where user shouldn't take action.
+   * Defaults to true.
+   */
+  val enableActions: Boolean
+    get() = getStringValue("enableActions")?.toBooleanStrictOrNull() ?: true
+
   val isGroupConversation: Boolean
     get() = getStringValue("isGroup")?.toBooleanStrictOrNull() ?: false
 
