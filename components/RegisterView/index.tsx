@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect } from 'react';
 import {
   View,
@@ -12,8 +11,6 @@ import {
   Pressable,
   useColorScheme,
 } from 'react-native';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -39,13 +36,12 @@ import Animated, {
   Easing,
   interpolate,
 } from 'react-native-reanimated';
-import CustomAnimatedButton from '@/components/ui/AnimatedButton';
 import UsernameProgressBar from '@/components/ui/UsernameProgressBar';
 import { useDebounce } from '@uidotdev/usehooks';
 import { FACT_CHECK_FEED_ID } from '@/lib/constants';
 import { updateUser } from '@/lib/api/generated';
 import { getUserProfileByUsernameOptions } from '@/lib/api/generated/@tanstack/react-query.gen';
-
+import Button from '../Button';
 const MAX_USERNAME_LENGTH = 20;
 
 const formSchema = z
@@ -304,22 +300,13 @@ export default function RegisterView() {
             { paddingBottom: insets.bottom + 20 },
           ]}
         >
-          <CustomAnimatedButton
-            style={styles.submitButton}
-            disabled={
-              updateUserMutation.isPending ||
-              !isValid ||
-              !isUsernameValid ||
-              debouncedUsername !== username
-            }
-            size="lg"
-            variant="secondary"
+          <Button
+            title="Continue"
+            variant="default"
+            size="large"
+            fullWidth
             onPress={handleSubmit(onSubmit)}
-            isLoading={updateUserMutation.isPending}
-            loadingColor="black"
-          >
-            <Text style={styles.submitButtonText}>{t('common.continue')}</Text>
-          </CustomAnimatedButton>
+          />
         </View>
       </View>
     </KeyboardAvoidingView>

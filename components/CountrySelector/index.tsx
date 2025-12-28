@@ -4,7 +4,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   useColorScheme,
-  StatusBar,
 } from 'react-native';
 import { BottomSheetScrollView } from '@gorhom/bottom-sheet';
 import { Image } from 'expo-image';
@@ -12,6 +11,8 @@ import { Text } from '@/components/ui/text';
 import { getSortedCountries, Country, getFlagUrl } from '@/lib/countries';
 import { ChevronLeft } from 'lucide-react-native';
 import { FontSizes } from '@/lib/theme';
+import { useAtomValue } from 'jotai';
+import { appLocaleAtom } from '@/hooks/useAppLocalization';
 
 interface CountrySelectorProps {
   onSelectCountry: (country: Country) => void;
@@ -27,6 +28,8 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const sortedCountries = getSortedCountries();
+  const appLocale = useAtomValue(appLocaleAtom);
+  const isGeorgian = appLocale === 'ka';
   const handleCountrySelect = (country: Country) => {
     onSelectCountry(country);
     onBack();
@@ -47,7 +50,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
         <Text
           style={[styles.headerTitle, { color: isDark ? 'white' : 'black' }]}
         >
-          აირჩიეთ ქვეყანა
+          {isGeorgian ? 'აირჩიეთ ქვეყანა' : 'Select Country'}
         </Text>
         <View style={styles.placeholder} />
       </View>
@@ -84,15 +87,7 @@ const CountrySelector: React.FC<CountrySelectorProps> = ({
                     { color: isDark ? 'white' : 'black' },
                   ]}
                 >
-                  {country.nameGeo}
-                </Text>
-                <Text
-                  style={[
-                    styles.countryEnglishName,
-                    { color: isDark ? '#ccc' : '#666' },
-                  ]}
-                >
-                  {country.name}
+                  {isGeorgian ? country.nameGeo : country.name}
                 </Text>
               </View>
             </View>
@@ -169,10 +164,6 @@ const styles = StyleSheet.create({
   countryName: {
     fontSize: FontSizes.medium,
     fontWeight: '500',
-  },
-  countryEnglishName: {
-    fontSize: FontSizes.small,
-    marginTop: 2,
   },
   callingCode: {
     fontSize: FontSizes.medium,
