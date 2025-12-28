@@ -28,11 +28,16 @@ import { parseTrigger } from './scheduleNotificationAsync';
  * @header schedule
  */
 export default async function getNextTriggerDateAsync(
-  trigger: SchedulableNotificationTriggerInput
+  trigger: SchedulableNotificationTriggerInput,
 ): Promise<number | null> {
   if (!NotificationScheduler.getNextTriggerDateAsync) {
-    throw new UnavailabilityError('ExpoNotifications', 'getNextTriggerDateAsync');
+    throw new UnavailabilityError(
+      'ExpoNotifications',
+      'getNextTriggerDateAsync',
+    );
   }
 
-  return await NotificationScheduler.getNextTriggerDateAsync(parseTrigger(trigger));
+  return await NotificationScheduler.getNextTriggerDateAsync(
+    parseTrigger(trigger),
+  );
 }

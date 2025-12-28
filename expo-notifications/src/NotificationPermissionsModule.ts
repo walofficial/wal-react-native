@@ -7,7 +7,7 @@ import {
 import { NotificationPermissionsModule } from './NotificationPermissionsModule.types';
 
 function convertPermissionStatus(
-  status?: NotificationPermission | 'prompt'
+  status?: NotificationPermission | 'prompt',
 ): NotificationPermissionsStatus {
   switch (status) {
     case 'granted':
@@ -56,11 +56,16 @@ async function resolvePermissionAsync({
           }
         }
         // Some browsers require a callback argument and some return a Promise
-        Notification.requestPermission(resolveOnce)?.then(resolveOnce)?.catch(reject);
+        Notification.requestPermission(resolveOnce)
+          ?.then(resolveOnce)
+          ?.catch(reject);
       });
     }
     return convertPermissionStatus(status);
-  } else if (typeof navigator !== 'undefined' && navigator?.permissions?.query) {
+  } else if (
+    typeof navigator !== 'undefined' &&
+    navigator?.permissions?.query
+  ) {
     // TODO(Bacon): Support `push` in the future when it's stable.
     const query = await navigator.permissions.query({ name: 'notifications' });
     return convertPermissionStatus(query.state);
@@ -76,7 +81,7 @@ export default {
     return resolvePermissionAsync({ shouldAsk: false });
   },
   async requestPermissionsAsync(
-    request: NativeNotificationPermissionsRequest
+    request: NativeNotificationPermissionsRequest,
   ): Promise<NotificationPermissionsStatus> {
     return resolvePermissionAsync({ shouldAsk: true });
   },

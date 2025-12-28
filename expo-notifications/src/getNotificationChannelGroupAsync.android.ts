@@ -4,11 +4,16 @@ import NotificationChannelGroupManager from './NotificationChannelGroupManager';
 import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
 
 export default async function getNotificationChannelGroupAsync(
-  groupId: string
+  groupId: string,
 ): Promise<NotificationChannelGroup | null> {
   if (!NotificationChannelGroupManager.getNotificationChannelGroupAsync) {
-    throw new UnavailabilityError('Notifications', 'getNotificationChannelGroupAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'getNotificationChannelGroupAsync',
+    );
   }
 
-  return await NotificationChannelGroupManager.getNotificationChannelGroupAsync(groupId);
+  return await NotificationChannelGroupManager.getNotificationChannelGroupAsync(
+    groupId,
+  );
 }

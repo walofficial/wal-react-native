@@ -296,11 +296,11 @@ const ImageItem = ({
     // Get dismiss translateY from transforms
     const dismissTranslateY =
       transforms.transform && Array.isArray(transforms.transform)
-        ? ((
+        ? (
             transforms.transform.find(
               (t: any) => t && typeof t === 'object' && 'translateY' in t,
             ) as { translateY: number } | undefined
-          )?.translateY ?? 0)
+          )?.translateY ?? 0
         : 0;
 
     return {

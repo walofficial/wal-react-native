@@ -92,10 +92,10 @@ function NotificationItem({
               {item.notification.type === 'poke'
                 ? t('common.poked_you')
                 : item.notification.type === 'impression'
-                  ? t('common.accumulated_views', {
-                      count: item.notification.count,
-                    })
-                  : t('common.likes_your_post')}
+                ? t('common.accumulated_views', {
+                    count: item.notification.count,
+                  })
+                : t('common.likes_your_post')}
             </Text>
           </View>
         </View>

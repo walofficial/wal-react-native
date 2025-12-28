@@ -15,4 +15,3 @@ export {
 
 // Import the task definition to ensure it's registered
 import './geofenceTask';
-

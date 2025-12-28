@@ -9,12 +9,17 @@ import { mapNotificationRequest } from './utils/mapNotificationResponse';
  * @return Returns a Promise resolving to an array of objects conforming to the [`Notification`](#notification) interface.
  * @header schedule
  */
-export default async function getAllScheduledNotificationsAsync(): Promise<NotificationRequest[]> {
+export default async function getAllScheduledNotificationsAsync(): Promise<
+  NotificationRequest[]
+> {
   if (!NotificationScheduler.getAllScheduledNotificationsAsync) {
-    throw new UnavailabilityError('Notifications', 'getAllScheduledNotificationsAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'getAllScheduledNotificationsAsync',
+    );
   }
 
-  return (await NotificationScheduler.getAllScheduledNotificationsAsync()).map((request) =>
-    mapNotificationRequest(request)
+  return (await NotificationScheduler.getAllScheduledNotificationsAsync()).map(
+    (request) => mapNotificationRequest(request),
   );
 }

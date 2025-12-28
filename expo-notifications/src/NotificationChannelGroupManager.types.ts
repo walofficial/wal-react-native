@@ -25,10 +25,12 @@ export interface NotificationChannelGroupInput {
 
 export interface NotificationChannelGroupManager extends ProxyNativeModule {
   getNotificationChannelGroupsAsync?: () => Promise<NotificationChannelGroup[]>;
-  getNotificationChannelGroupAsync?: (groupId: string) => Promise<NotificationChannelGroup | null>;
+  getNotificationChannelGroupAsync?: (
+    groupId: string,
+  ) => Promise<NotificationChannelGroup | null>;
   setNotificationChannelGroupAsync?: (
     groupId: string,
-    group: NotificationChannelGroupInput
+    group: NotificationChannelGroupInput,
   ) => Promise<NotificationChannelGroup | null>;
   deleteNotificationChannelGroupAsync?: (groupId: string) => Promise<void>;
 }

@@ -14,39 +14,43 @@ function guardPermission() {
   if (!('Notification' in window)) {
     throw new CodedError(
       'ERR_UNAVAILABLE',
-      'The Web Notifications API is not available on this device.'
+      'The Web Notifications API is not available on this device.',
     );
   }
   if (!navigator.serviceWorker) {
     throw new CodedError(
       'ERR_UNAVAILABLE',
-      'Notifications cannot be used because the service worker API is not supported on this device. This might also happen because your web page does not support HTTPS.'
+      'Notifications cannot be used because the service worker API is not supported on this device. This might also happen because your web page does not support HTTPS.',
     );
   }
   if (Notification.permission !== 'granted') {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PERMISSION_DENIED',
-      `Cannot use web notifications without permissions granted. Request permissions with "expo-permissions".`
+      `Cannot use web notifications without permissions granted. Request permissions with "expo-permissions".`,
     );
   }
 }
 
-async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushToken['data']> {
+async function _subscribeDeviceToPushNotificationsAsync(): Promise<
+  DevicePushToken['data']
+> {
   // @ts-expect-error: TODO: not on the schema
-  const vapidPublicKey: string | null = Constants.expoConfig?.notification?.vapidPublicKey;
+  const vapidPublicKey: string | null =
+    Constants.expoConfig?.notification?.vapidPublicKey;
   if (!vapidPublicKey) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
-      'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.dev/versions/latest/guides/using-vapid/.'
+      'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.dev/versions/latest/guides/using-vapid/.',
     );
   }
 
   // @ts-expect-error: TODO: not on the schema
-  const serviceWorkerPath = Constants.expoConfig?.notification?.serviceWorkerPath;
+  const serviceWorkerPath =
+    Constants.expoConfig?.notification?.serviceWorkerPath;
   if (!serviceWorkerPath) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION',
-      'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Provide the path to the service worker that will handle notifications.'
+      'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Provide the path to the service worker that will handle notifications.',
     );
   }
   guardPermission();
@@ -57,7 +61,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   } catch (error) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED',
-      `Could not register this device for push notifications because the service worker (${serviceWorkerPath}) could not be registered: ${error}`
+      `Could not register this device for push notifications because the service worker (${serviceWorkerPath}) could not be registered: ${error}`,
     );
   }
   await navigator.serviceWorker.ready;
@@ -65,7 +69,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   if (!registration.active) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED',
-      'Could not register this device for push notifications because the service worker is not active.'
+      'Could not register this device for push notifications because the service worker is not active.',
     );
   }
 
@@ -75,13 +79,15 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   };
   let pushSubscription: PushSubscription | null = null;
   try {
-    pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+    pushSubscription = await registration.pushManager.subscribe(
+      subscribeOptions,
+    );
   } catch (error) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_REGISTRATION_FAILED',
       'The device was unable to register for remote notifications with the browser endpoint. (' +
         error +
-        ')'
+        ')',
     );
   }
   const pushSubscriptionJson = pushSubscription.toJSON();
@@ -101,7 +107,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   // https://stackoverflow.com/a/35729334/2603230
   const notificationIcon = (Constants.expoConfig?.notification ?? {}).icon;
   await registration.active.postMessage(
-    JSON.stringify({ fromExpoWebClient: { notificationIcon } })
+    JSON.stringify({ fromExpoWebClient: { notificationIcon } }),
   );
 
   return subscriptionObject;

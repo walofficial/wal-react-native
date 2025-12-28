@@ -14,7 +14,7 @@ import {
  */
 export default async function setNotificationChannelGroupAsync(
   groupId: string,
-  group: NotificationChannelGroupInput
+  group: NotificationChannelGroupInput,
 ): Promise<NotificationChannelGroup | null> {
   console.debug('Notification channels feature is only supported on Android.');
   return null;

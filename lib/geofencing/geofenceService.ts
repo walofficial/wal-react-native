@@ -2,10 +2,7 @@ import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
 
-import {
-  GEOFENCING_TASK_NAME,
-  type GeofencedRegion,
-} from './constants';
+import { GEOFENCING_TASK_NAME, type GeofencedRegion } from './constants';
 
 /**
  * Request necessary permissions for geofencing
@@ -144,4 +141,3 @@ export async function stopGeofencing(): Promise<boolean> {
     return false;
   }
 }
-

@@ -54,7 +54,11 @@ export function GalleryItem({
   return (
     <View style={styles.container} collapsable={false}>
       <Pressable
-        onPress={onPress ? () => onPress(index, thumbDimsRef.current.slice()) : undefined}
+        onPress={
+          onPress
+            ? () => onPress(index, thumbDimsRef.current.slice())
+            : undefined
+        }
         onPressIn={onPressIn ? () => onPressIn(index) : undefined}
         onLongPress={onLongPress ? () => onLongPress(index) : undefined}
         style={[styles.pressable, imageStyle]}

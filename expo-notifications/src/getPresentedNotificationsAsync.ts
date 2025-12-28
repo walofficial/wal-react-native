@@ -10,12 +10,17 @@ import { mapNotification } from './utils/mapNotificationResponse';
  * @return A Promise which resolves with a list of notifications ([`Notification`](#notification)) currently present in the notification tray (Notification Center).
  * @header dismiss
  */
-export default async function getPresentedNotificationsAsync(): Promise<Notification[]> {
+export default async function getPresentedNotificationsAsync(): Promise<
+  Notification[]
+> {
   if (!NotificationPresenter.getPresentedNotificationsAsync) {
-    throw new UnavailabilityError('Notifications', 'getPresentedNotificationsAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'getPresentedNotificationsAsync',
+    );
   }
 
-  return (await NotificationPresenter.getPresentedNotificationsAsync()).map((notification) =>
-    mapNotification(notification)
+  return (await NotificationPresenter.getPresentedNotificationsAsync()).map(
+    (notification) => mapNotification(notification),
   );
 }

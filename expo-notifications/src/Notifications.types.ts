@@ -450,7 +450,11 @@ export type NotificationContent = {
  * - 'critical - the system presents the notification immediately, lights up the screen, and bypasses the mute switch to play a sound
  * @platform ios
  */
-export type InterruptionLevel = 'passive' | 'active' | 'timeSensitive' | 'critical';
+export type InterruptionLevel =
+  | 'passive'
+  | 'active'
+  | 'timeSensitive'
+  | 'critical';
 
 /**
  * See [Apple documentation](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) for more information on specific fields.
@@ -570,7 +574,12 @@ export type NotificationContentInput = {
    * On Android version 8 and later, control the sounds via [notification channels](#setNotificationChannelAsync).
    * `defaultCritical` and `defaultRingtone` are applicable only on iOS, with `defaultCritical` requiring the critical alerts entitlement.
    * */
-  sound?: boolean | 'default' | 'defaultCritical' | 'defaultRingtone' | (string & {});
+  sound?:
+    | boolean
+    | 'default'
+    | 'defaultCritical'
+    | 'defaultRingtone'
+    | (string & {});
   /**
    * The name of the image or storyboard to use when your app launches because of the notification.
    */

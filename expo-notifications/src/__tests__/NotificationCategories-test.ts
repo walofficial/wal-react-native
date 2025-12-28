@@ -10,7 +10,10 @@ it(`setNotificationCategoryAsync accepts the expected arguments`, async () => {
       {
         identifier: 'actionId',
         buttonTitle: 'click me',
-        textInput: { submitButtonTitle: 'submit', placeholder: 'tests are good' },
+        textInput: {
+          submitButtonTitle: 'submit',
+          placeholder: 'tests are good',
+        },
         options: {
           opensAppToForeground: false,
           isAuthenticationRequired: true,
@@ -27,15 +30,20 @@ it(`setNotificationCategoryAsync accepts the expected arguments`, async () => {
       showTitle: true,
       showSubtitle: true,
       allowAnnouncement: true,
-    }
+    },
   );
-  expect(NotificationCategoriesModule.setNotificationCategoryAsync).toHaveBeenLastCalledWith(
+  expect(
+    NotificationCategoriesModule.setNotificationCategoryAsync,
+  ).toHaveBeenLastCalledWith(
     'my-category-id',
     [
       {
         identifier: 'actionId',
         buttonTitle: 'click me',
-        textInput: { submitButtonTitle: 'submit', placeholder: 'tests are good' },
+        textInput: {
+          submitButtonTitle: 'submit',
+          placeholder: 'tests are good',
+        },
         options: {
           opensAppToForeground: false,
           isAuthenticationRequired: true,
@@ -52,18 +60,20 @@ it(`setNotificationCategoryAsync accepts the expected arguments`, async () => {
       showTitle: true,
       showSubtitle: true,
       allowAnnouncement: true,
-    }
+    },
   );
 });
 
 it('deleteNotificationCategoryAsync accepts the expected argument', async () => {
   await deleteNotificationCategoryAsync('my-category-id');
-  expect(NotificationCategoriesModule.deleteNotificationCategoryAsync).toHaveBeenLastCalledWith(
-    'my-category-id'
-  );
+  expect(
+    NotificationCategoriesModule.deleteNotificationCategoryAsync,
+  ).toHaveBeenLastCalledWith('my-category-id');
 });
 
 it('getNotificationCategoriesAsync accepts the expected argument', async () => {
   await getNotificationCategoriesAsync();
-  expect(NotificationCategoriesModule.getNotificationCategoriesAsync).toHaveBeenLastCalledWith();
+  expect(
+    NotificationCategoriesModule.getNotificationCategoriesAsync,
+  ).toHaveBeenLastCalledWith();
 });

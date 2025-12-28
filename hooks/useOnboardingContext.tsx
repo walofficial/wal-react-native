@@ -34,8 +34,9 @@ export function OnboardingProvider({
     const loadOnboardingStates = async () => {
       try {
         const hasSeenSpaceInfo = await AsyncStorage.getItem('hasSeenSpaceInfo');
-        const hasSeenContactSync =
-          await AsyncStorage.getItem('hasSeenContactSync');
+        const hasSeenContactSync = await AsyncStorage.getItem(
+          'hasSeenContactSync',
+        );
         setOnboardingState((state) => ({
           ...state,
           hasSeenSpaceInfo: !!hasSeenSpaceInfo,

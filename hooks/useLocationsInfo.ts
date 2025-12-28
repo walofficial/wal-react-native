@@ -48,11 +48,15 @@ export default function useLocationsInfo(
           const [lat, lng] = nearestLocation.location;
           regions.push({
             identifier: `feed_${feedWithLocation.feed.id}_${index}`,
-            name: nearestLocation.name || feedWithLocation.feed.display_name || feedWithLocation.feed.feed_title,
+            name:
+              nearestLocation.name ||
+              feedWithLocation.feed.display_name ||
+              feedWithLocation.feed.feed_title,
             description: nearestLocation.address,
             latitude: lat,
             longitude: lng,
-            radius: (nearestLocation as unknown as { radius?: number }).radius ?? 300,
+            radius:
+              (nearestLocation as unknown as { radius?: number }).radius ?? 300,
             notifyOnEnter: true,
             notifyOnExit: true,
           });

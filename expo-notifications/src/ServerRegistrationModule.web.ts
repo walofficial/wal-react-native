@@ -46,7 +46,7 @@ export default {
     } catch (error) {
       throw new CodedError(
         'ERR_NOTIFICATIONS_STORAGE_ERROR',
-        `Could not modify localStorage to persist auto-registration information: ${error}`
+        `Could not modify localStorage to persist auto-registration information: ${error}`,
       );
     }
   },

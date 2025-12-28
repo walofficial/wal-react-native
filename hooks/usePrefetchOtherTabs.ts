@@ -69,7 +69,7 @@ export function usePrefetchOtherTabs() {
         (error) => {
           // Silently fail - this is just optimization
           console.debug('[Prefetch] Failed to prefetch other tabs:', error);
-        }
+        },
       );
     }, 100); // Small delay to prioritize initial render
 
@@ -78,4 +78,3 @@ export function usePrefetchOtherTabs() {
 }
 
 export default usePrefetchOtherTabs;
-

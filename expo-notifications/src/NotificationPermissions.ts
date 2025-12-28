@@ -52,7 +52,9 @@ export async function getPermissionsAsync() {
  * ```
  * @header permissions
  */
-export async function requestPermissionsAsync(permissions?: NotificationPermissionsRequest) {
+export async function requestPermissionsAsync(
+  permissions?: NotificationPermissionsRequest,
+) {
   if (!NotificationPermissionsModule.requestPermissionsAsync) {
     throw new UnavailabilityError('Notifications', 'requestPermissionsAsync');
   }
@@ -67,5 +69,7 @@ export async function requestPermissionsAsync(permissions?: NotificationPermissi
   const requestedPlatformPermissions =
     requestedPermissions[Platform.OS as keyof typeof requestedPermissions];
   // TODO(@kitten): This never checks whether the configuration object is undefined
-  return await NotificationPermissionsModule.requestPermissionsAsync(requestedPlatformPermissions!);
+  return await NotificationPermissionsModule.requestPermissionsAsync(
+    requestedPlatformPermissions!,
+  );
 }

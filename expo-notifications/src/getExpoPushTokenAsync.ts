@@ -4,7 +4,11 @@ import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
-import { DevicePushToken, ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
+import {
+  DevicePushToken,
+  ExpoPushToken,
+  ExpoPushTokenOptions,
+} from './Tokens.types';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
@@ -47,9 +51,10 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
  * ```
  */
 export default async function getExpoPushTokenAsync(
-  options: ExpoPushTokenOptions = {}
+  options: ExpoPushTokenOptions = {},
 ): Promise<ExpoPushToken> {
-  const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
+  const devicePushToken =
+    options.devicePushToken || (await getDevicePushTokenAsync());
 
   const deviceId = options.deviceId || (await getDeviceIdAsync());
   // Depending on the runtime environment, the default may be located in various places.
@@ -61,7 +66,7 @@ export default async function getExpoPushTokenAsync(
   if (!projectId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_EXPERIENCE_ID',
-      `No "projectId" found. If "projectId" can't be inferred from the manifest (for instance, in bare workflow), you have to pass it in yourself.`
+      `No "projectId" found. If "projectId" can't be inferred from the manifest (for instance, in bare workflow), you have to pass it in yourself.`,
     );
   }
 
@@ -69,11 +74,12 @@ export default async function getExpoPushTokenAsync(
   if (!applicationId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_APPLICATION_ID',
-      `No "applicationId" found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.`
+      `No "applicationId" found. If it can't be inferred from native configuration by expo-application, you have to pass it in yourself.`,
     );
   }
   const type = options.type || getTypeOfToken(devicePushToken);
-  const development = options.development || (await shouldUseDevelopmentNotificationService());
+  const development =
+    options.development || (await shouldUseDevelopmentNotificationService());
 
   const baseUrl = options.baseUrl ?? productionBaseUrl;
   const url = options.url ?? `${baseUrl}push/getExpoPushToken`;
@@ -96,7 +102,7 @@ export default async function getExpoPushTokenAsync(
   }).catch((error) => {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NETWORK_ERROR',
-      `Error encountered while fetching Expo token: ${error}.`
+      `Error encountered while fetching Expo token: ${error}.`,
     );
   });
 
@@ -110,7 +116,7 @@ export default async function getExpoPushTokenAsync(
     }
     throw new CodedError(
       'ERR_NOTIFICATIONS_SERVER_ERROR',
-      `Error encountered while fetching Expo token, expected an OK response, received: ${statusInfo} (body: "${body}").`
+      `Error encountered while fetching Expo token, expected an OK response, received: ${statusInfo} (body: "${body}").`,
     );
   }
 
@@ -119,7 +125,7 @@ export default async function getExpoPushTokenAsync(
   try {
     if (options.url || options.baseUrl) {
       console.debug(
-        `[expo-notifications] Since the URL endpoint to register in has been customized in the options, expo-notifications won't try to auto-update the device push token on the server.`
+        `[expo-notifications] Since the URL endpoint to register in has been customized in the options, expo-notifications won't try to auto-update the device push token on the server.`,
       );
     } else {
       await setAutoServerRegistrationEnabledAsync(true);
@@ -127,7 +133,7 @@ export default async function getExpoPushTokenAsync(
   } catch (e) {
     console.warn(
       '[expo-notifications] Could not enable automatically registering new device tokens with the Expo notification service',
-      e
+      e,
     );
   }
 
@@ -145,15 +151,15 @@ async function parseResponse(response: Response) {
       throw new CodedError(
         'ERR_NOTIFICATIONS_SERVER_ERROR',
         `Expected a JSON response from server when fetching Expo token, received body: ${JSON.stringify(
-          await response.text()
-        )}.`
+          await response.text(),
+        )}.`,
       );
     } catch {
       throw new CodedError(
         'ERR_NOTIFICATIONS_SERVER_ERROR',
         `Expected a JSON response from server when fetching Expo token, received response: ${JSON.stringify(
-          response
-        )}.`
+          response,
+        )}.`,
       );
     }
   }
@@ -173,8 +179,8 @@ function getExpoPushToken(data: any) {
       `Malformed response from server, expected "{ data: { expoPushToken: string } }", received: ${JSON.stringify(
         data,
         null,
-        2
-      )}.`
+        2,
+      )}.`,
     );
   }
 
@@ -185,14 +191,17 @@ function getExpoPushToken(data: any) {
 async function getDeviceIdAsync() {
   try {
     if (!ServerRegistrationModule.getInstallationIdAsync) {
-      throw new UnavailabilityError('ExpoServerRegistrationModule', 'getInstallationIdAsync');
+      throw new UnavailabilityError(
+        'ExpoServerRegistrationModule',
+        'getInstallationIdAsync',
+      );
     }
 
     return await ServerRegistrationModule.getInstallationIdAsync();
   } catch (e) {
     throw new CodedError(
       'ERR_NOTIF_DEVICE_ID',
-      `Could not have fetched installation ID of the application: ${e}.`
+      `Could not have fetched installation ID of the application: ${e}.`,
     );
   }
 }

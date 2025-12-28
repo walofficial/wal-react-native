@@ -8,6 +8,6 @@ import {
 export interface NotificationPermissionsModule extends ProxyNativeModule {
   getPermissionsAsync?: () => Promise<NotificationPermissionsStatus>;
   requestPermissionsAsync?: (
-    request: NativeNotificationPermissionsRequest
+    request: NativeNotificationPermissionsRequest,
   ) => Promise<NotificationPermissionsStatus>;
 }

@@ -124,12 +124,12 @@ const NewsTabs = memo(
                       color: isActive
                         ? '#ffffff'
                         : isDisabled
-                          ? isDarkColorScheme
-                            ? 'rgba(255, 255, 255, 0.5)'
-                            : 'rgba(0, 0, 0, 0.5)'
-                          : isDarkColorScheme
-                            ? 'rgba(255, 255, 255, 0.7)'
-                            : 'rgba(0, 0, 0, 0.7)',
+                        ? isDarkColorScheme
+                          ? 'rgba(255, 255, 255, 0.5)'
+                          : 'rgba(0, 0, 0, 0.5)'
+                        : isDarkColorScheme
+                        ? 'rgba(255, 255, 255, 0.7)'
+                        : 'rgba(0, 0, 0, 0.7)',
                     },
                   ]}
                 >
@@ -382,8 +382,8 @@ const PostContent = memo(
                   activeTab === 'government'
                     ? verification.government_summary || ''
                     : activeTab === 'opposition'
-                      ? verification.opposition_summary || ''
-                      : verification.neutral_summary || ''
+                    ? verification.opposition_summary || ''
+                    : verification.neutral_summary || ''
                 }
               />
             </View>

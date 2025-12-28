@@ -12,11 +12,16 @@ import NotificationCategoriesModule from './NotificationCategoriesModule';
  * @header categories
  */
 export default async function deleteNotificationCategoryAsync(
-  identifier: string
+  identifier: string,
 ): Promise<boolean> {
   if (!NotificationCategoriesModule.deleteNotificationCategoryAsync) {
-    throw new UnavailabilityError('Notifications', 'deleteNotificationCategoryAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'deleteNotificationCategoryAsync',
+    );
   }
 
-  return await NotificationCategoriesModule.deleteNotificationCategoryAsync(identifier);
+  return await NotificationCategoriesModule.deleteNotificationCategoryAsync(
+    identifier,
+  );
 }

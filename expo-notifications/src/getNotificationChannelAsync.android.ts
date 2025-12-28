@@ -4,10 +4,15 @@ import NotificationChannelManager from './NotificationChannelManager';
 import { NotificationChannel } from './NotificationChannelManager.types';
 
 export default async function getNotificationChannelAsync(
-  channelId: string
+  channelId: string,
 ): Promise<NotificationChannel | null> {
   if (!NotificationChannelManager.getNotificationChannelAsync) {
-    throw new UnavailabilityError('Notifications', 'getNotificationChannelAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'getNotificationChannelAsync',
+    );
   }
-  return await NotificationChannelManager.getNotificationChannelAsync(channelId);
+  return await NotificationChannelManager.getNotificationChannelAsync(
+    channelId,
+  );
 }

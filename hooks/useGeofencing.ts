@@ -80,13 +80,18 @@ interface UseGeofencingResult {
 export function useGeofencing(
   options: UseGeofencingOptions = {},
 ): UseGeofencingResult {
-  const { autoStart = false, restartOnForeground = false, regions: optionsRegions = [] } = options;
+  const {
+    autoStart = false,
+    restartOnForeground = false,
+    regions: optionsRegions = [],
+  } = options;
 
   const [isActive, setIsActive] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [hasPermission, setHasPermission] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentRegions, setCurrentRegions] = useState<GeofencedRegion[]>(optionsRegions);
+  const [currentRegions, setCurrentRegions] =
+    useState<GeofencedRegion[]>(optionsRegions);
   const previousRegionsRef = useRef<string>('');
 
   // Check initial geofencing status
@@ -124,45 +129,48 @@ export function useGeofencing(
   }, []);
 
   // Start geofencing with provided regions
-  const start = useCallback(async (regionsToUse?: GeofencedRegion[]): Promise<boolean> => {
-    setError(null);
-    setIsLoading(true);
+  const start = useCallback(
+    async (regionsToUse?: GeofencedRegion[]): Promise<boolean> => {
+      setError(null);
+      setIsLoading(true);
 
-    const regions = regionsToUse ?? currentRegions;
+      const regions = regionsToUse ?? currentRegions;
 
-    try {
-      // Request permissions first if not already granted
-      if (!hasPermission) {
-        const granted = await requestGeofencingPermissions();
-        setHasPermission(granted);
-        if (!granted) {
-          setError('Location permissions required for geofencing');
-          setIsLoading(false);
-          return false;
+      try {
+        // Request permissions first if not already granted
+        if (!hasPermission) {
+          const granted = await requestGeofencingPermissions();
+          setHasPermission(granted);
+          if (!granted) {
+            setError('Location permissions required for geofencing');
+            setIsLoading(false);
+            return false;
+          }
         }
+
+        // Start geofencing with the provided regions
+        const success = await startGeofencing(regions);
+        setIsActive(success);
+
+        if (success) {
+          setCurrentRegions(regions);
+        } else {
+          setError('Failed to start geofencing');
+        }
+
+        return success;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : 'Failed to start geofencing';
+        setError(message);
+        setIsActive(false);
+        return false;
+      } finally {
+        setIsLoading(false);
       }
-
-      // Start geofencing with the provided regions
-      const success = await startGeofencing(regions);
-      setIsActive(success);
-
-      if (success) {
-        setCurrentRegions(regions);
-      } else {
-        setError('Failed to start geofencing');
-      }
-
-      return success;
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : 'Failed to start geofencing';
-      setError(message);
-      setIsActive(false);
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [hasPermission, currentRegions]);
+    },
+    [hasPermission, currentRegions],
+  );
 
   // Stop geofencing
   const stop = useCallback(async (): Promise<boolean> => {
@@ -195,16 +203,23 @@ export function useGeofencing(
   // Restart geofencing when regions change
   useEffect(() => {
     const regionsKey = JSON.stringify(
-      optionsRegions.map((r) => `${r.identifier}:${r.latitude}:${r.longitude}:${r.radius}`).sort()
+      optionsRegions
+        .map((r) => `${r.identifier}:${r.latitude}:${r.longitude}:${r.radius}`)
+        .sort(),
     );
 
     // Only restart if regions actually changed and we have regions
-    if (regionsKey !== previousRegionsRef.current && optionsRegions.length > 0) {
+    if (
+      regionsKey !== previousRegionsRef.current &&
+      optionsRegions.length > 0
+    ) {
       previousRegionsRef.current = regionsKey;
-      
+
       // If geofencing is already active, restart with new regions
       if (isActive) {
-        console.log('[useGeofencing] Regions changed, restarting geofencing...');
+        console.log(
+          '[useGeofencing] Regions changed, restarting geofencing...',
+        );
         start(optionsRegions);
       }
     }
@@ -253,4 +268,3 @@ export function useGeofencing(
 }
 
 export default useGeofencing;
-

@@ -45,7 +45,10 @@ export type NotificationsPluginProps = {
   enableBackgroundRemoteNotifications?: boolean;
 };
 
-const withNotifications: ConfigPlugin<NotificationsPluginProps | void> = (config, props) => {
+const withNotifications: ConfigPlugin<NotificationsPluginProps | void> = (
+  config,
+  props,
+) => {
   config = withNotificationsAndroid(config, props || {});
   config = withNotificationsIOS(config, props || {});
   return config;

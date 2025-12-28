@@ -1,7 +1,10 @@
 import { isRunningInExpoGo } from 'expo';
 
 function areWeTestingWithJest() {
-  return process.env.JEST_WORKER_ID !== undefined || process.env.NODE_ENV?.toLowerCase() === 'test';
+  return (
+    process.env.JEST_WORKER_ID !== undefined ||
+    process.env.NODE_ENV?.toLowerCase() === 'test'
+  );
 }
 
 if (isRunningInExpoGo() && !areWeTestingWithJest()) {
@@ -37,7 +40,10 @@ export { default as deleteNotificationCategoryAsync } from './deleteNotification
 export { default as getNextTriggerDateAsync } from './getNextTriggerDateAsync';
 export { default as useLastNotificationResponse } from './useLastNotificationResponse';
 export { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
-export { registerTaskAsync, BackgroundNotificationTaskResult } from './registerTaskAsync';
+export {
+  registerTaskAsync,
+  BackgroundNotificationTaskResult,
+} from './registerTaskAsync';
 export { default as unregisterTaskAsync } from './unregisterTaskAsync';
 export * from './TokenEmitter';
 export * from './NotificationsEmitter';

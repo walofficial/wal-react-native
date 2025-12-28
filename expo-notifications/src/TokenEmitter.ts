@@ -40,9 +40,13 @@ const newTokenEventName = 'onDevicePushToken';
  * }
  * ```
  */
-export function addPushTokenListener(listener: PushTokenListener): EventSubscription {
+export function addPushTokenListener(
+  listener: PushTokenListener,
+): EventSubscription {
   warnOfExpoGoPushUsage();
-  return PushTokenManager.addListener(newTokenEventName, ({ devicePushToken }) =>
-    listener({ data: devicePushToken, type: Platform.OS })
+  return PushTokenManager.addListener(
+    newTokenEventName,
+    ({ devicePushToken }) =>
+      listener({ data: devicePushToken, type: Platform.OS }),
   );
 }
