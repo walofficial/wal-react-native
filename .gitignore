@@ -45,5 +45,4 @@ android/.gradle/**
 android/build/**
 modules/crypto/android/**
 modules/crypto/android/.cxx
-google-services.json
 GoogleService-Info.plist
