@@ -35,7 +35,8 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<
   DevicePushToken['data']
 > {
   // @ts-ignore: vapidPublicKey is not on the schema
-  const vapidPublicKey: string | null = Constants.expoConfig?.notification?.vapidPublicKey;
+  const vapidPublicKey: string | null =
+    Constants.expoConfig?.notification?.vapidPublicKey;
   if (!vapidPublicKey) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG',
@@ -44,7 +45,8 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<
   }
 
   // @ts-ignore: serviceWorkerPath is not on the schema
-  const serviceWorkerPath = Constants.expoConfig?.notification?.serviceWorkerPath;
+  const serviceWorkerPath =
+    Constants.expoConfig?.notification?.serviceWorkerPath;
   if (!serviceWorkerPath) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION',
