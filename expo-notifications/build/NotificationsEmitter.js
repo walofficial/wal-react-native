@@ -1,6 +1,6 @@
-import { LegacyEventEmitter, UnavailabilityError } from 'expo-modules-core';
+import { LegacyEventEmitter, UnavailabilityError, } from 'expo-modules-core';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
-import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
+import { mapNotification, mapNotificationResponse, } from './utils/mapNotificationResponse';
 // Web uses SyntheticEventEmitter
 const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
@@ -107,7 +107,9 @@ export function getLastNotificationResponse() {
         throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponse');
     }
     const response = NotificationsEmitterModule.getLastNotificationResponse();
-    const mappedResponse = response ? mapNotificationResponse(response) : response;
+    const mappedResponse = response
+        ? mapNotificationResponse(response)
+        : response;
     return mappedResponse;
 }
 /**

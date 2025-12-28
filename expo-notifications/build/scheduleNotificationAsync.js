@@ -220,7 +220,12 @@ function parseYearlyTrigger(trigger) {
         typeof trigger === 'object' &&
         'type' in trigger &&
         trigger.type === SchedulableTriggerInputTypes.YEARLY) {
-        validateDateComponentsInTrigger(trigger, ['month', 'day', 'hour', 'minute']);
+        validateDateComponentsInTrigger(trigger, [
+            'month',
+            'day',
+            'hour',
+            'minute',
+        ]);
         const result = {
             type: 'yearly',
             month: trigger.month ?? placeholderDateComponentValue,
@@ -275,7 +280,9 @@ function validateDateComponentsInTrigger(trigger, components) {
             }
             case 'day': {
                 const day = anyTriggerType.day;
-                const month = anyTriggerType.month !== undefined ? anyTriggerType.month : new Date().getMonth();
+                const month = anyTriggerType.month !== undefined
+                    ? anyTriggerType.month
+                    : new Date().getMonth();
                 const daysInGivenMonth = daysInMonth(month);
                 if (day < 1 || day > daysInGivenMonth) {
                     throw new RangeError(`The day parameter for month ${month} must be between 1 and ${daysInGivenMonth}. Found: ${day}`);
