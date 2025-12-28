@@ -290,6 +290,7 @@ export default function LocationFeed({
   const listHeader = useCallback(() => {
     return <HorizontalAnonList feedId={feedId as string} />;
   }, [feedId]);
+
   return (
     <>
       <PostsFeed
