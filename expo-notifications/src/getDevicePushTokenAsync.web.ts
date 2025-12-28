@@ -36,6 +36,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<
 > {
   // @ts-ignore: vapidPublicKey is not on the schema
   const vapidPublicKey: string | null =
+    //@ts-ignore
     Constants.expoConfig?.notification?.vapidPublicKey;
   if (!vapidPublicKey) {
     throw new CodedError(
@@ -46,6 +47,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<
 
   // @ts-ignore: serviceWorkerPath is not on the schema
   const serviceWorkerPath =
+    //@ts-ignore
     Constants.expoConfig?.notification?.serviceWorkerPath;
   if (!serviceWorkerPath) {
     throw new CodedError(
