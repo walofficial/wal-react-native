@@ -18,13 +18,17 @@ function guardPermission() {
     }
 }
 async function _subscribeDeviceToPushNotificationsAsync() {
-    // @ts-expect-error: TODO: not on the schema
-    const vapidPublicKey = Constants.expoConfig?.notification?.vapidPublicKey;
+    // @ts-ignore: vapidPublicKey is not on the schema
+    const vapidPublicKey = 
+    //@ts-ignore
+    Constants.expoConfig?.notification?.vapidPublicKey;
     if (!vapidPublicKey) {
         throw new CodedError('ERR_NOTIFICATIONS_PUSH_WEB_MISSING_CONFIG', 'You must provide `notification.vapidPublicKey` in `app.json` to use push notifications on web. Learn more: https://docs.expo.dev/versions/latest/guides/using-vapid/.');
     }
-    // @ts-expect-error: TODO: not on the schema
-    const serviceWorkerPath = Constants.expoConfig?.notification?.serviceWorkerPath;
+    // @ts-ignore: serviceWorkerPath is not on the schema
+    const serviceWorkerPath = 
+    //@ts-ignore
+    Constants.expoConfig?.notification?.serviceWorkerPath;
     if (!serviceWorkerPath) {
         throw new CodedError('ERR_NOTIFICATIONS_PUSH_MISSING_CONFIGURATION', 'You must specify `notification.serviceWorkerPath` in `app.json` to use push notifications on the web. Provide the path to the service worker that will handle notifications.');
     }

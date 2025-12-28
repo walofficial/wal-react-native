@@ -143,7 +143,9 @@ async function writeNotificationIconImageFilesAsync(icon, projectRoot) {
             (0, fs_1.writeFileSync)((0, path_1.resolve)(dpiFolderPath, exports.NOTIFICATION_ICON + '.png'), resizedIcon);
         }
         catch (e) {
-            throw new Error(ERROR_MSG_PREFIX + 'Encountered an issue resizing Android notification icon: ' + e);
+            throw new Error(ERROR_MSG_PREFIX +
+                'Encountered an issue resizing Android notification icon: ' +
+                e);
         }
     }));
 }
@@ -188,7 +190,9 @@ function writeNotificationSoundFile(soundFileRelativePath, projectRoot) {
             (0, fs_1.copyFileSync)(sourceFilepath, destinationFilepath);
         }
         catch (e) {
-            throw new Error(ERROR_MSG_PREFIX + 'Encountered an issue copying Android notification sounds: ' + e);
+            throw new Error(ERROR_MSG_PREFIX +
+                'Encountered an issue copying Android notification sounds: ' +
+                e);
         }
     }
 }

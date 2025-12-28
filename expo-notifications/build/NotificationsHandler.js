@@ -54,26 +54,28 @@ export function setNotificationHandler(handler) {
         handleTimeoutSubscription = null;
     }
     if (handler) {
-        handleSubscription = notificationEmitter.addListener(handleNotificationEventName, async ({ id, notification }) => {
-            if (!NotificationsHandlerModule.handleNotificationAsync) {
-                handler.handleError?.(id, new UnavailabilityError('Notifications', 'handleNotificationAsync'));
-                return;
-            }
-            try {
-                const mappedNotification = mapNotification(notification);
-                const behavior = await handler.handleNotification(mappedNotification);
-                if (behavior.shouldShowAlert) {
-                    console.warn('[expo-notifications]: `shouldShowAlert` is deprecated. Specify `shouldShowBanner` and / or `shouldShowList` instead.');
+        handleSubscription =
+            notificationEmitter.addListener(handleNotificationEventName, async ({ id, notification }) => {
+                if (!NotificationsHandlerModule.handleNotificationAsync) {
+                    handler.handleError?.(id, new UnavailabilityError('Notifications', 'handleNotificationAsync'));
+                    return;
                 }
-                await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
-                handler.handleSuccess?.(id);
-            }
-            catch (error) {
-                // TODO(@kitten): This callback expects specific Error types, but we never narrow the type before calling this callback
-                handler.handleError?.(id, error);
-            }
-        });
-        handleTimeoutSubscription = notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, mapNotification(notification))));
+                try {
+                    const mappedNotification = mapNotification(notification);
+                    const behavior = await handler.handleNotification(mappedNotification);
+                    if (behavior.shouldShowAlert) {
+                        console.warn('[expo-notifications]: `shouldShowAlert` is deprecated. Specify `shouldShowBanner` and / or `shouldShowList` instead.');
+                    }
+                    await NotificationsHandlerModule.handleNotificationAsync(id, behavior);
+                    handler.handleSuccess?.(id);
+                }
+                catch (error) {
+                    // TODO(@kitten): This callback expects specific Error types, but we never narrow the type before calling this callback
+                    handler.handleError?.(id, error);
+                }
+            });
+        handleTimeoutSubscription =
+            notificationEmitter.addListener(handleNotificationTimeoutEventName, ({ id, notification }) => handler.handleError?.(id, new NotificationTimeoutError(id, mapNotification(notification))));
     }
 }
 //# sourceMappingURL=NotificationsHandler.js.map
