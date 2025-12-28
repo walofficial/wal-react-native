@@ -1,7 +1,6 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   View,
-  Animated,
   ActionSheetIOS,
   Platform,
   Alert,
@@ -9,7 +8,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  Pressable,
   Linking,
 } from 'react-native';
 import { Image } from 'expo-image';
@@ -20,9 +18,7 @@ import { AutoSizedImage } from '../AutoSizedImage';
 import ImageGrid from '../ImageGrid';
 import * as MediaLibrary from 'expo-media-library';
 import * as FileSystem from 'expo-file-system/legacy';
-import { measureHandle } from '@/lib/hooks/useHandleRef';
-import { MeasuredDimensions, runOnJS, runOnUI } from 'react-native-reanimated';
-import { HandleRef } from '@/lib/hooks/useHandleRef';
+import { runOnJS } from 'react-native-reanimated';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import { Dimensions } from '@/components/Lightbox/ImageViewing/@types';
 import { convertToCDNUrl } from '@/lib/utils';
@@ -133,9 +129,6 @@ function MediaContent({
     if (videoUrl) {
       runOnJS(handleLongPress)(videoUrl, 'video');
     }
-    // } else if (imageUrl) {
-    //   runOnJS(handleLongPress)(imageUrl, "photo");
-    // }
   });
 
   const singleTapGesture = Gesture.Tap()
@@ -155,25 +148,24 @@ function MediaContent({
 
   const { openLightbox } = useLightboxControls();
 
-  const _openLightbox = (
-    index: number,
-    thumbRects: (MeasuredDimensions | null)[],
-    fetchedDims: (Dimensions | null)[],
-  ) => {
+  const _openLightbox = (index: number, fetchedDims: (Dimensions | null)[]) => {
     openLightbox({
-      // @ts-ignore
       images: images.map((item, i) => {
         // Use aspectRatio as fallback for dimensions if fetchedDims is null
         const aspectRatioDims = item.aspectRatio
-          ? { width: item.aspectRatio.width, height: item.aspectRatio.height }
+          ? {
+              width: Number(item.aspectRatio.width) || 1,
+              height: Number(item.aspectRatio.height) || 1,
+            }
           : null;
         const dims = fetchedDims[i] ?? aspectRatioDims;
-
         return {
-          ...item,
-          thumbRect: thumbRects[i] ?? null,
+          uri: item.uri,
+          thumbUri: item.thumbUri,
+          alt: item.alt,
+          verificationId: item.verificationId,
           thumbDimensions: dims,
-          type: 'image',
+          type: 'image' as const,
           dimensions: dims,
         };
       }),
@@ -221,17 +213,8 @@ function MediaContent({
     }
   };
 
-  const handlePress = (
-    index: number,
-    containerRefs: HandleRef[],
-    fetchedDims: (Dimensions | null)[],
-  ) => {
-    const handles = containerRefs.map((r) => r.current);
-    runOnUI(() => {
-      'worklet';
-      const rects = handles.map(measureHandle);
-      runOnJS(_openLightbox)(index, rects, fetchedDims);
-    })();
+  const handlePress = (index: number, fetchedDims: (Dimensions | null)[]) => {
+    _openLightbox(index, fetchedDims);
   };
 
   const handlePressIn = (index: number) => {
@@ -315,12 +298,11 @@ function MediaContent({
               },
             }}
             onPressIn={() => handlePressIn(0)}
-            onPress={(containerRef, dims) => {
-              handlePress(0, [containerRef], [dims]);
+            onPress={(dims) => {
+              handlePress(0, [dims]);
             }}
             crop="constrained"
             hideBadge={false}
-            // sharedTransitionTag={transitionTags[0]}
           />
           {(badgeInfo || previewData) && (
             <>

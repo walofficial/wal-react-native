@@ -7,6 +7,8 @@
     "telegram_channel": "Canal Telegram",
     "blocked_users": "Utilisateurs bloqués",
     "preferred_country": "Pays préféré",
+    "app_region": "Région de l'application",
+    "region_based_on_location": "Basé sur votre emplacement",
     "preferred_content_language": "Langue du contenu",
     "language_and_region": "Langue et région",
     "region_explanation": "Sélectionnez le pays ou la région à partir duquel vous souhaitez recevoir le contenu d'actualités locales et les informations vérifiées.",

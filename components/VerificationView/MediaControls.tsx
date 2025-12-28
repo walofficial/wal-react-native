@@ -61,15 +61,6 @@ const MediaControls = ({
 
   return (
     <View style={styles.container}>
-      <View style={styles.actionsContainer}>
-        <View style={styles.actionGroup}>
-          {/* <LikeButton bright verificationId={verificationId} large /> */}
-          <CommentButton bright verificationId={verificationId} large />
-        </View>
-        <View style={styles.actionGroup}>
-          <ShareButton bright verificationId={verificationId} />
-        </View>
-      </View>
       {verification.text_content && (
         <Text style={styles.contentText}>{verification.text_content}</Text>
       )}

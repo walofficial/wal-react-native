@@ -6,7 +6,7 @@
  *
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, StyleSheet } from 'react-native';
 import {
   Gesture,
@@ -15,20 +15,15 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
-  SharedValue,
-  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
+  AnimatedStyle,
 } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 
-import type {
-  Dimensions as ImageDimensions,
-  ImageSource,
-  Transform,
-} from '../../@types';
+import type { Dimensions as ImageDimensions, ImageSource } from '../../@types';
 import {
   applyRounding,
   createTransform,
@@ -44,6 +39,8 @@ const MAX_ORIGINAL_IMAGE_ZOOM = 2;
 
 const initialTransform = createTransform();
 
+type Rect = { x: number; y: number; width: number; height: number };
+
 type Props = {
   imageSrc: ImageSource;
   onRequestClose: () => void;
@@ -52,24 +49,11 @@ type Props = {
   onLoad: (dims: ImageDimensions) => void;
   isScrollViewBeingDragged: boolean;
   showControls: boolean;
-  measureSafeArea: () => {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+  measureSafeArea: () => Rect;
   imageAspect: number | undefined;
   imageDimensions: ImageDimensions | undefined;
   dismissSwipePan: PanGesture;
-  transforms: Readonly<
-    SharedValue<{
-      scaleAndMoveTransform: Transform;
-      cropFrameTransform: Transform;
-      cropContentTransform: Transform;
-      isResting: boolean;
-      isHidden: boolean;
-    }>
-  >;
+  transforms: AnimatedStyle<any>;
 };
 
 const ImageItem = ({
@@ -91,25 +75,6 @@ const ImageItem = ({
   const pinchScale = useSharedValue(1);
   const pinchTranslation = useSharedValue({ x: 0, y: 0 });
   const containerRef = useAnimatedRef();
-
-  // Keep track of when we're entering or leaving scaled rendering.
-  useAnimatedReaction(
-    () => {
-      if (pinchScale.value !== 1) {
-        return true;
-      }
-      const [, , committedScale] = readTransform(committedTransform.value);
-      if (committedScale !== 1) {
-        return true;
-      }
-      return false;
-    },
-    (nextIsScaled, prevIsScaled) => {
-      if (nextIsScaled !== prevIsScaled) {
-        runOnJS(handleZoom)(nextIsScaled);
-      }
-    },
-  );
 
   function handleZoom(nextIsScaled: boolean) {
     setIsScaled(nextIsScaled);
@@ -192,6 +157,14 @@ const ImageItem = ({
           y: pt.y + dy,
         };
       }
+
+      // Update zoom state
+      const newScale = nextPinchScale * committedScale;
+      if (newScale > 1 && !isScaled) {
+        runOnJS(handleZoom)(true);
+      } else if (newScale <= 1 && isScaled) {
+        runOnJS(handleZoom)(false);
+      }
     })
     .onEnd(() => {
       'worklet';
@@ -265,6 +238,7 @@ const ImageItem = ({
       if (committedScale !== 1) {
         let t = createTransform();
         committedTransform.value = withClampedSpring(t);
+        runOnJS(handleZoom)(false);
         return;
       }
 
@@ -294,6 +268,7 @@ const ImageItem = ({
       const finalTransform = createTransform();
       prependPinch(finalTransform, scale, origin, { x: dx, y: dy });
       committedTransform.value = withClampedSpring(finalTransform);
+      runOnJS(handleZoom)(true);
     });
 
   const composedGesture = isScrollViewBeingDragged
@@ -306,7 +281,6 @@ const ImageItem = ({
       );
 
   const containerStyle = useAnimatedStyle(() => {
-    const { scaleAndMoveTransform, isHidden } = transforms.value;
     let t = createTransform();
     prependPan(t, panTranslation.value);
     prependPinch(
@@ -317,50 +291,41 @@ const ImageItem = ({
     );
     prependTransform(t, committedTransform.value);
     const [translateX, translateY, scale] = readTransform(t);
-    const manipulationTransform = [{ translateX }, { translateY }, { scale }];
     const screenSize = measureSafeArea();
+
+    // Get dismiss translateY from transforms
+    const dismissTranslateY =
+      transforms.transform && Array.isArray(transforms.transform)
+        ? ((
+            transforms.transform.find(
+              (t: any) => t && typeof t === 'object' && 'translateY' in t,
+            ) as { translateY: number } | undefined
+          )?.translateY ?? 0)
+        : 0;
+
     return {
-      opacity: isHidden ? 0 : 1,
-      transform: scaleAndMoveTransform.concat(manipulationTransform),
+      opacity: transforms.opacity ?? 1,
+      transform: [
+        { translateY: dismissTranslateY },
+        { translateX },
+        { translateY },
+        { scale },
+      ],
       width: screenSize.width,
       maxHeight: screenSize.height,
-      alignSelf: 'center',
+      alignSelf: 'center' as const,
       aspectRatio: imageAspect ?? 1,
     };
   });
 
-  const imageCropStyle = useAnimatedStyle(() => {
-    const { cropFrameTransform } = transforms.value;
-    return {
-      flex: 1,
-      overflow: 'hidden',
-      transform: cropFrameTransform,
-    };
-  });
-
   const imageStyle = useAnimatedStyle(() => {
-    const { cropContentTransform } = transforms.value;
     return {
       flex: 1,
-      transform: cropContentTransform,
       opacity: imageAspect === undefined ? 0 : 1,
     };
   });
 
-  const [showLoader, setShowLoader] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
-  useAnimatedReaction(
-    () => {
-      return transforms.value.isResting && !hasLoaded;
-    },
-    (show, prevShow) => {
-      if (!prevShow && show) {
-        runOnJS(setShowLoader)(true);
-      } else if (prevShow && !show) {
-        runOnJS(setShowLoader)(false);
-      }
-    },
-  );
 
   const type = imageSrc.type;
   const borderRadius =
@@ -374,38 +339,36 @@ const ImageItem = ({
         renderToHardwareTextureAndroid
       >
         <Animated.View style={containerStyle}>
-          {showLoader && (
+          {!hasLoaded && (
             <ActivityIndicator
               size="small"
               color="#FFF"
               style={styles.loading}
             />
           )}
-          <Animated.View style={imageCropStyle}>
-            <Animated.View style={imageStyle}>
-              <Image
-                contentFit="contain"
-                source={{ uri: imageSrc.uri }}
-                placeholderContentFit="contain"
-                placeholder={{ uri: imageSrc.thumbUri }}
-                accessibilityLabel={imageSrc.alt}
-                onLoad={
-                  hasLoaded
-                    ? undefined
-                    : (e) => {
-                        setHasLoaded(true);
-                        onLoad({
-                          width: e.source.width,
-                          height: e.source.height,
-                        });
-                      }
-                }
-                style={{ flex: 1, borderRadius }}
-                accessibilityHint=""
-                accessibilityIgnoresInvertColors
-                cachePolicy="memory"
-              />
-            </Animated.View>
+          <Animated.View style={imageStyle}>
+            <Image
+              contentFit="contain"
+              source={{ uri: imageSrc.uri }}
+              placeholderContentFit="contain"
+              placeholder={{ uri: imageSrc.thumbUri }}
+              accessibilityLabel={imageSrc.alt}
+              onLoad={
+                hasLoaded
+                  ? undefined
+                  : (e) => {
+                      setHasLoaded(true);
+                      onLoad({
+                        width: e.source.width,
+                        height: e.source.height,
+                      });
+                    }
+              }
+              style={{ flex: 1, borderRadius }}
+              accessibilityHint=""
+              accessibilityIgnoresInvertColors
+              cachePolicy="memory"
+            />
           </Animated.View>
         </Animated.View>
       </Animated.View>

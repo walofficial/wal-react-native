@@ -15,25 +15,22 @@ import {
 } from 'react-native-gesture-handler';
 import Animated, {
   runOnJS,
-  SharedValue,
   useAnimatedProps,
-  useAnimatedReaction,
   useAnimatedRef,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
+  AnimatedStyle,
 } from 'react-native-reanimated';
 import { useSafeAreaFrame } from 'react-native-safe-area-context';
 import { Image } from 'expo-image';
 
-import {
-  Dimensions as ImageDimensions,
-  ImageSource,
-  Transform,
-} from '../../@types';
+import { Dimensions as ImageDimensions, ImageSource } from '../../@types';
 
 const MAX_ORIGINAL_IMAGE_ZOOM = 2;
 const MIN_SCREEN_ZOOM = 2;
+
+type Rect = { x: number; y: number; width: number; height: number };
 
 type Props = {
   imageSrc: ImageSource;
@@ -43,24 +40,11 @@ type Props = {
   onLoad: (dims: ImageDimensions) => void;
   isScrollViewBeingDragged: boolean;
   showControls: boolean;
-  measureSafeArea: () => {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
+  measureSafeArea: () => Rect;
   imageAspect: number | undefined;
   imageDimensions: ImageDimensions | undefined;
   dismissSwipePan: PanGesture;
-  transforms: Readonly<
-    SharedValue<{
-      scaleAndMoveTransform: Transform;
-      cropFrameTransform: Transform;
-      cropContentTransform: Transform;
-      isResting: boolean;
-      isHidden: boolean;
-    }>
-  >;
+  transforms: AnimatedStyle<any>;
 };
 
 const ImageItem = ({
@@ -160,33 +144,19 @@ const ImageItem = ({
   );
 
   const containerStyle = useAnimatedStyle(() => {
-    const { scaleAndMoveTransform, isHidden } = transforms.value;
     return {
       flex: 1,
-      transform: scaleAndMoveTransform,
-      opacity: isHidden ? 0 : 1,
+      transform: transforms.transform ?? [],
+      opacity: transforms.opacity ?? 1,
     };
   });
 
-  const imageCropStyle = useAnimatedStyle(() => {
+  const imageContainerStyle = useAnimatedStyle(() => {
     const screenSize = measureSafeArea();
-    const { cropFrameTransform } = transforms.value;
     return {
-      overflow: 'hidden',
-      transform: cropFrameTransform,
       width: screenSize.width,
       maxHeight: screenSize.height,
-      alignSelf: 'center',
-      aspectRatio: imageAspect ?? 1,
-      opacity: imageAspect === undefined ? 0 : 1,
-    };
-  });
-
-  const imageStyle = useAnimatedStyle(() => {
-    const { cropContentTransform } = transforms.value;
-    return {
-      transform: cropContentTransform,
-      width: '100%',
+      alignSelf: 'center' as const,
       aspectRatio: imageAspect ?? 1,
       opacity: imageAspect === undefined ? 0 : 1,
     };
@@ -194,18 +164,6 @@ const ImageItem = ({
 
   const [showLoader, setShowLoader] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
-  useAnimatedReaction(
-    () => {
-      return transforms.value.isResting && !hasLoaded;
-    },
-    (show, prevShow) => {
-      if (!prevShow && show) {
-        runOnJS(setShowLoader)(true);
-      } else if (prevShow && !show) {
-        runOnJS(setShowLoader)(false);
-      }
-    },
-  );
 
   const type = imageSrc.type;
   const borderRadius =
@@ -229,35 +187,33 @@ const ImageItem = ({
         animatedProps={scrollViewProps}
         centerContent
       >
-        {showLoader && (
+        {!hasLoaded && (
           <ActivityIndicator size="small" color="#FFF" style={styles.loading} />
         )}
-        <Animated.View style={imageCropStyle}>
-          <Animated.View style={imageStyle}>
-            <Image
-              contentFit="contain"
-              source={{ uri: imageSrc.uri }}
-              placeholderContentFit="contain"
-              placeholder={{ uri: imageSrc.thumbUri }}
-              style={{ flex: 1, borderRadius }}
-              accessibilityLabel={imageSrc.alt}
-              accessibilityHint=""
-              enableLiveTextInteraction={showControls && !scaled}
-              accessibilityIgnoresInvertColors
-              onLoad={
-                hasLoaded
-                  ? undefined
-                  : (e) => {
-                      setHasLoaded(true);
-                      onLoad({
-                        width: e.source.width,
-                        height: e.source.height,
-                      });
-                    }
-              }
-              cachePolicy="memory"
-            />
-          </Animated.View>
+        <Animated.View style={imageContainerStyle}>
+          <Image
+            contentFit="contain"
+            source={{ uri: imageSrc.uri }}
+            placeholderContentFit="contain"
+            placeholder={{ uri: imageSrc.thumbUri }}
+            style={{ flex: 1, borderRadius }}
+            accessibilityLabel={imageSrc.alt}
+            accessibilityHint=""
+            enableLiveTextInteraction={showControls && !scaled}
+            accessibilityIgnoresInvertColors
+            onLoad={
+              hasLoaded
+                ? undefined
+                : (e) => {
+                    setHasLoaded(true);
+                    onLoad({
+                      width: e.source.width,
+                      height: e.source.height,
+                    });
+                  }
+            }
+            cachePolicy="memory"
+          />
         </Animated.View>
       </Animated.ScrollView>
     </GestureDetector>

@@ -1,14 +1,6 @@
-import React, { useMemo } from 'react';
-import {
-  View,
-  StyleSheet,
-  useWindowDimensions,
-  InteractionManager,
-} from 'react-native';
-import { HandleRef, useHandleRef } from '@/lib/hooks/useHandleRef';
-import { runOnJS, runOnUI, MeasuredDimensions } from 'react-native-reanimated';
+import React from 'react';
+import { View, StyleSheet, InteractionManager } from 'react-native';
 import { useLightboxControls } from '@/lib/lightbox/lightbox';
-import { measureHandle } from '@/lib/hooks/useHandleRef';
 import { convertToCDNUrl } from '@/lib/utils';
 import { Dimensions } from '@/components/Lightbox/ImageViewing/@types';
 import { Image } from 'expo-image';
@@ -30,11 +22,6 @@ const ImageGrid = ({
   verificationId,
 }: ImageGridProps) => {
   const { openLightbox } = useLightboxControls();
-  // Create refs for each possible image container
-  const containerRef1 = useHandleRef();
-  const containerRef2 = useHandleRef();
-  const containerRef3 = useHandleRef();
-  const containerRef4 = useHandleRef();
   const thumbDimsRef = React.useRef<(Dimensions | null)[]>([]);
 
   if (!images || images.length === 0) return null;
@@ -44,41 +31,23 @@ const ImageGrid = ({
     alt: '',
   }));
 
-  const _openLightbox = (
-    index: number,
-    thumbRects: (MeasuredDimensions | null)[],
-    fetchedDims: (Dimensions | null)[],
-  ) => {
-    const items = images.map((img, i) => ({
-      uri: convertToCDNUrl(img),
-      thumbUri: convertToCDNUrl(img),
-      alt: '',
-      verificationId: verificationId,
-      dimensions: { width: 1, height: 1 },
-    }));
-
+  const _openLightbox = (index: number, fetchedDims: (Dimensions | null)[]) => {
     openLightbox({
-      images: items.map((item, i) => ({
-        ...item,
-        thumbRect: thumbRects[i] ?? null,
+      images: images.map((img, i) => ({
+        uri: convertToCDNUrl(img),
+        thumbUri: convertToCDNUrl(img),
+        alt: '',
+        verificationId: verificationId,
+        dimensions: fetchedDims[i] ?? { width: 1, height: 1 },
         thumbDimensions: fetchedDims[i] ?? null,
-        type: 'image',
+        type: 'image' as const,
       })),
       index,
     });
   };
 
-  const handlePress = (
-    index: number,
-    containerRefs: HandleRef[],
-    fetchedDims: (Dimensions | null)[],
-  ) => {
-    const handles = containerRefs.map((r) => r.current);
-    runOnUI(() => {
-      'worklet';
-      const rects = handles.map(measureHandle);
-      runOnJS(_openLightbox)(index, rects, fetchedDims);
-    })();
+  const handlePress = (index: number, fetchedDims: (Dimensions | null)[]) => {
+    _openLightbox(index, fetchedDims);
   };
 
   const handlePressIn = (index: number) => {
@@ -90,12 +59,6 @@ const ImageGrid = ({
   const renderGridLayout = () => {
     const gap = spacing;
     const count = images.length;
-    const containerRefs = [
-      containerRef1,
-      containerRef2,
-      containerRef3,
-      containerRef4,
-    ];
 
     switch (count) {
       case 2:
@@ -105,7 +68,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={0}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -115,7 +77,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={1}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -131,7 +92,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={0}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -141,7 +101,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={1}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -149,7 +108,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={2}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -165,7 +123,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={0}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -173,7 +130,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={1}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -183,7 +139,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={2}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -191,7 +146,6 @@ const ImageGrid = ({
               <GalleryItem
                 images={galleryImages}
                 index={3}
-                containerRefs={containerRefs}
                 thumbDimsRef={thumbDimsRef}
                 onPress={handlePress}
                 onPressIn={handlePressIn}
@@ -206,7 +160,6 @@ const ImageGrid = ({
             <GalleryItem
               images={galleryImages}
               index={0}
-              containerRefs={containerRefs}
               thumbDimsRef={thumbDimsRef}
               onPress={handlePress}
               onPressIn={handlePressIn}

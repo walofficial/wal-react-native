@@ -7,6 +7,8 @@
     "telegram_channel": "Telegram არხი",
     "blocked_users": "დაბლოკილი მომხმარებლები",
     "preferred_country": "ქვეყანა",
+    "app_region": "აპის რეგიონი",
+    "region_based_on_location": "თქვენი ლოკაციის მიხედვით",
     "preferred_content_language": "სიახლის ენა",
     "language_and_region": "ენა და ქვეყანა",
     "language": "აპლიკაციის ენა",

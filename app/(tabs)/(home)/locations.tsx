@@ -61,11 +61,10 @@ export default function LocationsListScreen() {
   const router = useRouter();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { headerHeight } = useFeeds();
   const { categoryId } = useUserFeedIds();
   const { t } = useTranslation();
 
-  const { data, isFetching, errorMsg } = useLocationsInfo(categoryId);
+  const { data, errorMsg } = useLocationsInfo(categoryId);
 
   const feedsAtLocation: LocationRow[] = useMemo(() => {
     const items: LocationRow[] = [];
@@ -121,11 +120,7 @@ export default function LocationsListScreen() {
         },
       ]}
     >
-      {isFetching ? (
-        <View style={styles.centered}>
-          <ActivityIndicator color={theme.colors.text} />
-        </View>
-      ) : errorMsg ? (
+      {errorMsg ? (
         <View style={styles.centered}>
           <Text
             style={[

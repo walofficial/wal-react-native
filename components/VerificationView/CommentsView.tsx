@@ -6,6 +6,7 @@ import React, {
   useState,
   useEffect,
   RefObject,
+  MutableRefObject,
 } from 'react';
 import {
   View,
@@ -313,13 +314,6 @@ const PostContent = memo(
               scheduledAt={verification.scheduled_at || undefined}
             />
           </View>
-          <View style={styles.actionsContainer}>
-            <FeedActions
-              verificationId={verificationId}
-              sourceComponent={null}
-              // isOwner={!!user && verification.assignee_user?.id === user.id}
-            />
-          </View>
         </View>
       );
     }
@@ -346,13 +340,6 @@ const PostContent = memo(
             <LiveStreamViewer
               liveKitRoomName={verification.livekit_room_name}
               topControls={<View />}
-            />
-          </View>
-          <View style={styles.actionsContainer}>
-            <FeedActions
-              verificationId={verificationId}
-              sourceComponent={null}
-              // isOwner={!!user && verification.assignee_user?.id === user.id}
             />
           </View>
         </View>
@@ -473,14 +460,6 @@ const PostContent = memo(
             style={styles.factCheckBox}
           />
         )}
-
-        <View style={styles.actionsContainer}>
-          <FeedActions
-            verificationId={verificationId}
-            sourceComponent={null}
-            // isOwner={!!user && verification.assignee_user?.id === user.id}
-          />
-        </View>
       </View>
     );
   },
@@ -501,6 +480,22 @@ const CommentsView = ({
   const { user } = useAuth();
   const { headerHeight } = useFeeds();
   const setShouldFocusInput = useSetAtom(shouldFocusCommentInputAtom);
+  const scrollViewRef = useRef<ScrollView>(null);
+  const commentsListRef = useRef<View>(null);
+  const commentsListY = useRef<number>(0);
+
+  // Scroll to comments list when a comment is submitted (Facebook-like UX)
+  const handleCommentSubmitted = useCallback(() => {
+    // Small delay to ensure the optimistic update has rendered
+    setTimeout(() => {
+      if (commentsListY.current > 0) {
+        scrollViewRef.current?.scrollTo({
+          y: commentsListY.current - 20, // Small offset for visual comfort
+          animated: true,
+        });
+      }
+    }, 100);
+  }, []);
 
   // Handle auto-focus when navigating from comment button
   // Use InteractionManager to wait for navigation animations to complete
@@ -540,6 +535,7 @@ const CommentsView = ({
         }
       />
       <ScrollView
+        ref={scrollViewRef}
         style={[
           styles.scrollView,
           { backgroundColor: theme.colors.background },
@@ -571,7 +567,14 @@ const CommentsView = ({
             user={user}
           />
 
-          <CommentsList postId={verificationId} />
+          <View
+            ref={commentsListRef}
+            onLayout={(event) => {
+              commentsListY.current = event.nativeEvent.layout.y;
+            }}
+          >
+            <CommentsList postId={verificationId} />
+          </View>
         </View>
       </ScrollView>
       {user && (
@@ -585,6 +588,7 @@ const CommentsView = ({
           <CommentInput
             postId={verificationId}
             posterUsername={verification.assignee_user?.username ?? undefined}
+            onCommentSubmitted={handleCommentSubmitted}
           />
         </KeyboardAvoidingView>
       )}

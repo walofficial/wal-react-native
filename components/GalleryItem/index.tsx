@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React from 'react';
 import {
   Pressable,
@@ -8,28 +7,19 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Image, ImageStyle } from 'expo-image';
-import Animated from 'react-native-reanimated';
-import { HandleRef } from '@/lib/hooks/useHandleRef';
 import type { Dimensions } from '@/lib/media/types';
 
 interface GalleryItemProps {
   images: Array<{
     thumb: string;
     alt?: string;
-    /** Unique tag for shared element transition animation */
-    transitionTag?: string;
   }>;
   index: number;
-  onPress?: (
-    index: number,
-    containerRefs: HandleRef[],
-    fetchedDims: (Dimensions | null)[],
-  ) => void;
+  onPress?: (index: number, fetchedDims: (Dimensions | null)[]) => void;
   onLongPress?: (index: number) => void;
   onPressIn?: (index: number) => void;
   imageStyle?: StyleProp<ImageStyle>;
   insetBorderStyle?: StyleProp<ViewStyle>;
-  containerRefs: HandleRef[];
   thumbDimsRef: React.MutableRefObject<(Dimensions | null)[]>;
 }
 
@@ -41,11 +31,9 @@ export function GalleryItem({
   onPressIn,
   onLongPress,
   insetBorderStyle,
-  containerRefs,
   thumbDimsRef,
 }: GalleryItemProps) {
   const image = images[index];
-  const transitionTag = image.transitionTag;
 
   const imageContent = (
     <Image
@@ -64,17 +52,9 @@ export function GalleryItem({
   );
 
   return (
-    <View
-      style={styles.container}
-      ref={containerRefs[index]}
-      collapsable={false}
-    >
+    <View style={styles.container} collapsable={false}>
       <Pressable
-        onPress={
-          onPress
-            ? () => onPress(index, containerRefs, thumbDimsRef.current.slice())
-            : undefined
-        }
+        onPress={onPress ? () => onPress(index, thumbDimsRef.current.slice()) : undefined}
         onPressIn={onPressIn ? () => onPressIn(index) : undefined}
         onLongPress={onLongPress ? () => onLongPress(index) : undefined}
         style={[styles.pressable, imageStyle]}
