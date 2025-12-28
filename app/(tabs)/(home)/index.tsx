@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Text } from '@/components/ui/text';
 import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import useLocationsInfo from '@/hooks/useLocationsInfo';
@@ -8,6 +8,7 @@ import useFeeds from '@/hooks/useFeeds';
 import { useUserFeedIds } from '@/hooks/useUserFeedIds';
 import { useTranslation } from '@/hooks/useTranslation';
 import { Redirect } from 'expo-router';
+import { usePrefetchOtherTabs } from '@/hooks/usePrefetchOtherTabs';
 
 export default function TaskScrollableView() {
   const { t } = useTranslation();
@@ -21,6 +22,10 @@ export default function TaskScrollableView() {
   const { headerHeight } = useFeeds();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+
+  // Prefetch chat and profile data for other tabs
+  usePrefetchOtherTabs();
+
   console.log(defaultFeedId);
   if (!isFetching && !errorMsg && !!defaultFeedId) {
     return (

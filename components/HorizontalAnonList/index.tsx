@@ -43,9 +43,12 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
       ? 'rgba(255,255,255,0.08)'
       : 'rgba(0,0,0,0.08)';
 
-  if (items.length === 0) {
+  const showSkeleton = isFetching && items.length === 0;
+
+  if (items.length === 0 && !isFetching) {
     return null;
   }
+
   return (
     <View style={styles.container}>
       <View style={[styles.headerRow, { borderColor: separatorColor }]}>
@@ -54,46 +57,60 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
         >
-          {items.map((item, index) => (
-            <Animated.View
-              entering={FadeIn.delay(index * 40)}
-              key={item.user.id}
-              style={styles.storyItem}
-            >
-              <Pressable
-                onPress={() => {
-                  if (item.user.id === user.id) return;
-                  trackEvent('location_feed_live_users_button_pressed', {});
+          {showSkeleton
+            ? Array.from({ length: 5 }).map((_, index) => (
+                <View
+                  key={`skeleton-${index}`}
+                  style={[styles.storyItem, { marginBottom: 17 }]}
+                >
+                  <UserLiveItemSkeleton size="md" />
+                </View>
+              ))
+            : items
+                .filter((item) => !!item.user.username)
+                .map((item, index) => (
+                  <Animated.View
+                    entering={FadeIn.delay(index * 40)}
+                    key={item.user.id}
+                    style={styles.storyItem}
+                  >
+                    <Pressable
+                      onPress={() => {
+                        if (item.user.id === user.id) return;
+                        trackEvent(
+                          'location_feed_live_users_button_pressed',
+                          {},
+                        );
 
-                  requestAnimationFrame(() => {
-                    joinChat.mutate({
-                      targetUserId: item.user.id,
-                    });
-                  });
-                }}
-                style={({ pressed }) => [
-                  styles.storyPressable,
-                  { opacity: pressed ? 0.6 : 1 },
-                ]}
-                hitSlop={8}
-              >
-                <UserLiveItem
-                  showName={item.user.id !== user.id}
-                  size="md"
-                  color={item.is_friend ? 'green' : 'pink'}
-                  isLoading={
-                    joinChat.isPending &&
-                    joinChat.variables.targetUserId === item.user.id
-                  }
-                  isSuccess={
-                    joinChat.isSuccess &&
-                    joinChat.variables.targetUserId === item.user.id
-                  }
-                  user={item.user}
-                />
-              </Pressable>
-            </Animated.View>
-          ))}
+                        requestAnimationFrame(() => {
+                          joinChat.mutate({
+                            targetUserId: item.user.id,
+                          });
+                        });
+                      }}
+                      style={({ pressed }) => [
+                        styles.storyPressable,
+                        { opacity: pressed ? 0.6 : 1 },
+                      ]}
+                      hitSlop={8}
+                    >
+                      <UserLiveItem
+                        showName={item.user.id !== user.id}
+                        size="md"
+                        color={item.is_friend ? 'green' : 'pink'}
+                        isLoading={
+                          joinChat.isPending &&
+                          joinChat.variables.targetUserId === item.user.id
+                        }
+                        isSuccess={
+                          joinChat.isSuccess &&
+                          joinChat.variables.targetUserId === item.user.id
+                        }
+                        user={item.user}
+                      />
+                    </Pressable>
+                  </Animated.View>
+                ))}
         </ScrollView>
       </View>
     </View>
