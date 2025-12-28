@@ -2,7 +2,10 @@
 import { fail } from 'assert';
 
 import NotificationScheduler from '../NotificationScheduler';
-import { SchedulableTriggerInputTypes, NotificationTriggerInput } from '../Notifications.types';
+import {
+  SchedulableTriggerInputTypes,
+  NotificationTriggerInput,
+} from '../Notifications.types';
 import scheduleNotificationAsync from '../scheduleNotificationAsync';
 
 const notificationTriggerInputTest = {
@@ -21,14 +24,12 @@ it(`verifies date (as Date) trigger handling`, async () => {
     ...notificationTriggerInputTest,
   } as const;
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      type: 'date',
-      timestamp: input.trigger.date.getTime(),
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    type: 'date',
+    timestamp: input.trigger.date.getTime(),
+  });
 });
 
 it(`verifies date (as time) trigger handling`, async () => {
@@ -40,14 +41,12 @@ it(`verifies date (as time) trigger handling`, async () => {
     },
   } as const;
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      type: 'date',
-      timestamp: input.trigger.date,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    type: 'date',
+    timestamp: input.trigger.date,
+  });
 });
 
 it(`verifies daily trigger handling`, async () => {
@@ -61,13 +60,11 @@ it(`verifies daily trigger handling`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    ...input.trigger,
+  });
 });
 
 it(`verifies daily trigger input validation`, async () => {
@@ -86,7 +83,7 @@ it(`verifies daily trigger input validation`, async () => {
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
-      'RangeError: The minute parameter needs to be between 0 and 59. Found: 70'
+      'RangeError: The minute parameter needs to be between 0 and 59. Found: 70',
     );
   }
 });
@@ -103,13 +100,11 @@ it(`verifies weekly trigger handling`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    ...input.trigger,
+  });
 });
 
 it(`verifies weekly trigger input validation`, async () => {
@@ -129,7 +124,7 @@ it(`verifies weekly trigger input validation`, async () => {
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
-      'RangeError: The weekday parameter needs to be between 1 and 7. Found: 8'
+      'RangeError: The weekday parameter needs to be between 1 and 7. Found: 8',
     );
   }
 });
@@ -146,13 +141,11 @@ it(`verifies monthly trigger handling`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    ...input.trigger,
+  });
 });
 
 it(`verifies monthly trigger input validation`, async () => {
@@ -189,13 +182,11 @@ it(`verifies yearly trigger handling`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    ...input.trigger,
+  });
 });
 
 it(`verifies yearly trigger input validation`, async () => {
@@ -216,7 +207,7 @@ it(`verifies yearly trigger input validation`, async () => {
   } catch (e) {
     expect(e instanceof RangeError).toBe(true);
     expect(`${e}`).toEqual(
-      'RangeError: The day parameter for month 6 must be between 1 and 31. Found: 32'
+      'RangeError: The day parameter for month 6 must be between 1 and 31. Found: 32',
     );
   }
 });
@@ -233,13 +224,11 @@ it(`verifies daily trigger handling with channelId`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    ...input.trigger,
+  });
 });
 
 it(`verifies weekly trigger handling with channelId`, async () => {
@@ -255,13 +244,11 @@ it(`verifies weekly trigger handling with channelId`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    ...input.trigger,
+  });
 });
 
 it(`verifies yearly trigger handling with channelId`, async () => {
@@ -278,13 +265,11 @@ it(`verifies yearly trigger handling with channelId`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    ...input.trigger,
+  });
 });
 
 it(`verifies immediate trigger handling`, async () => {
@@ -294,11 +279,9 @@ it(`verifies immediate trigger handling`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    null
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, null);
 });
 
 it(`verifies immediate trigger handling with channelId`, async () => {
@@ -310,11 +293,9 @@ it(`verifies immediate trigger handling with channelId`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    null
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, null);
 });
 
 it(`verifies time interval trigger handling`, async () => {
@@ -327,16 +308,14 @@ it(`verifies time interval trigger handling`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      channelId: undefined,
-      repeats: false,
-      type: 'timeInterval',
-      seconds: input.trigger.seconds,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    channelId: undefined,
+    repeats: false,
+    type: 'timeInterval',
+    seconds: input.trigger.seconds,
+  });
 
   await scheduleNotificationAsync({
     ...input,
@@ -345,15 +324,13 @@ it(`verifies time interval trigger handling`, async () => {
       repeats: true,
     },
   });
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      type: 'timeInterval',
-      repeats: true,
-      seconds: input.trigger.seconds,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    type: 'timeInterval',
+    repeats: true,
+    seconds: input.trigger.seconds,
+  });
 });
 
 it(`verifies calendar trigger handling`, async () => {
@@ -367,15 +344,13 @@ it(`verifies calendar trigger handling`, async () => {
     trigger,
   };
   await scheduleNotificationAsync(input);
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      type: 'calendar',
-      repeats: false,
-      ...input.trigger,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    type: 'calendar',
+    repeats: false,
+    ...input.trigger,
+  });
 
   await scheduleNotificationAsync({
     ...input,
@@ -384,16 +359,14 @@ it(`verifies calendar trigger handling`, async () => {
       second: 10,
     },
   });
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      type: 'calendar',
-      repeats: false,
-      ...input.trigger,
-      second: 10,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    type: 'calendar',
+    repeats: false,
+    ...input.trigger,
+    second: 10,
+  });
 
   await scheduleNotificationAsync({
     ...input,
@@ -403,14 +376,12 @@ it(`verifies calendar trigger handling`, async () => {
       second: 10,
     },
   });
-  expect(NotificationScheduler.scheduleNotificationAsync).toHaveBeenLastCalledWith(
-    input.identifier,
-    input.content,
-    {
-      type: 'calendar',
-      repeats: true,
-      ...input.trigger,
-      second: 10,
-    }
-  );
+  expect(
+    NotificationScheduler.scheduleNotificationAsync,
+  ).toHaveBeenLastCalledWith(input.identifier, input.content, {
+    type: 'calendar',
+    repeats: true,
+    ...input.trigger,
+    second: 10,
+  });
 });

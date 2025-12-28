@@ -79,7 +79,7 @@ import { hasValidTriggerObject } from './hasValidTriggerObject';
  * @header schedule
  */
 export default async function scheduleNotificationAsync(
-  request: NotificationRequestInput
+  request: NotificationRequestInput,
 ): Promise<string> {
   if (!NotificationScheduler.scheduleNotificationAsync) {
     throw new UnavailabilityError('Notifications', 'scheduleNotificationAsync');
@@ -88,14 +88,19 @@ export default async function scheduleNotificationAsync(
   return await NotificationScheduler.scheduleNotificationAsync(
     request.identifier ?? uuid.v4(),
     request.content,
-    parseTrigger(request.trigger)
+    parseTrigger(request.trigger),
   );
 }
 
-type ValidTriggerDateComponents = 'month' | 'day' | 'weekday' | 'hour' | 'minute';
+type ValidTriggerDateComponents =
+  | 'month'
+  | 'day'
+  | 'weekday'
+  | 'hour'
+  | 'minute';
 
 export function parseTrigger(
-  userFacingTrigger: NotificationTriggerInput
+  userFacingTrigger: NotificationTriggerInput,
 ): NativeNotificationTriggerInput {
   if (userFacingTrigger === null) {
     return null;
@@ -103,13 +108,13 @@ export function parseTrigger(
 
   if (userFacingTrigger === undefined) {
     throw new TypeError(
-      'Encountered an `undefined` notification trigger. If you want to trigger the notification immediately, pass in an explicit `null` value.'
+      'Encountered an `undefined` notification trigger. If you want to trigger the notification immediately, pass in an explicit `null` value.',
     );
   }
 
   if (!hasValidTriggerObject(userFacingTrigger)) {
     throw new TypeError(
-      `The \`trigger\` object you provided is invalid. It needs to contain a \`type\` or \`channelId\` entry. Refer to the documentation to update your code: https://docs.expo.dev/versions/latest/sdk/notifications/#notificationtriggerinput`
+      `The \`trigger\` object you provided is invalid. It needs to contain a \`type\` or \`channelId\` entry. Refer to the documentation to update your code: https://docs.expo.dev/versions/latest/sdk/notifications/#notificationtriggerinput`,
     );
   }
   const dateTrigger = parseDateTrigger(userFacingTrigger);
@@ -155,7 +160,7 @@ export function parseTrigger(
 }
 
 function parseCalendarTrigger(
-  trigger: NotificationTriggerInput
+  trigger: NotificationTriggerInput,
 ): NativeCalendarTriggerInput | undefined {
   if (
     trigger !== null &&
@@ -169,12 +174,14 @@ function parseCalendarTrigger(
   return undefined;
 }
 
-function parseDateTrigger(trigger: NotificationTriggerInput): NativeDateTriggerInput | undefined {
+function parseDateTrigger(
+  trigger: NotificationTriggerInput,
+): NativeDateTriggerInput | undefined {
   if (trigger instanceof Date || typeof trigger === 'number') {
     // TODO @vonovak this branch is not be used by people using TS
     // but was part of the public api previously so we keep it for a bit for JS users
     console.warn(
-      `You are using a deprecated parameter type (${trigger}) for the notification trigger. Use "{ type: 'date', date: someValue }" instead.`
+      `You are using a deprecated parameter type (${trigger}) for the notification trigger. Use "{ type: 'date', date: someValue }" instead.`,
     );
     return { type: 'date', timestamp: toTimestamp(trigger) };
   } else if (
@@ -204,7 +211,9 @@ function toTimestamp(date: number | Date) {
   return date;
 }
 
-function parseDailyTrigger(trigger: NotificationTriggerInput): NativeDailyTriggerInput | undefined {
+function parseDailyTrigger(
+  trigger: NotificationTriggerInput,
+): NativeDailyTriggerInput | undefined {
   if (
     trigger !== null &&
     typeof trigger === 'object' &&
@@ -226,7 +235,7 @@ function parseDailyTrigger(trigger: NotificationTriggerInput): NativeDailyTrigge
 }
 
 function parseWeeklyTrigger(
-  trigger: NotificationTriggerInput
+  trigger: NotificationTriggerInput,
 ): NativeWeeklyTriggerInput | undefined {
   if (
     trigger !== null &&
@@ -250,7 +259,7 @@ function parseWeeklyTrigger(
 }
 
 function parseMonthlyTrigger(
-  trigger: NotificationTriggerInput
+  trigger: NotificationTriggerInput,
 ): NativeMonthlyTriggerInput | undefined {
   if (
     trigger !== null &&
@@ -274,7 +283,7 @@ function parseMonthlyTrigger(
 }
 
 function parseYearlyTrigger(
-  trigger: NotificationTriggerInput
+  trigger: NotificationTriggerInput,
 ): NativeYearlyTriggerInput | undefined {
   if (
     trigger !== null &&
@@ -282,7 +291,12 @@ function parseYearlyTrigger(
     'type' in trigger &&
     trigger.type === SchedulableTriggerInputTypes.YEARLY
   ) {
-    validateDateComponentsInTrigger(trigger, ['month', 'day', 'hour', 'minute']);
+    validateDateComponentsInTrigger(trigger, [
+      'month',
+      'day',
+      'hour',
+      'minute',
+    ]);
     const result: NativeYearlyTriggerInput = {
       type: 'yearly',
       month: trigger.month ?? placeholderDateComponentValue,
@@ -299,7 +313,7 @@ function parseYearlyTrigger(
 }
 
 function parseTimeIntervalTrigger(
-  trigger: NotificationTriggerInput
+  trigger: NotificationTriggerInput,
 ): NativeTimeIntervalTriggerInput | undefined {
   if (
     trigger !== null &&
@@ -327,7 +341,7 @@ const placeholderDateComponentValue = -9999;
 
 function validateDateComponentsInTrigger(
   trigger: NonNullable<NotificationTriggerInput>,
-  components: readonly ValidTriggerDateComponents[]
+  components: readonly ValidTriggerDateComponents[],
 ) {
   const anyTriggerType = trigger as any;
   components.forEach((component) => {
@@ -341,18 +355,22 @@ function validateDateComponentsInTrigger(
       case 'month': {
         const { month } = anyTriggerType;
         if (month < 0 || month > 11) {
-          throw new RangeError(`The month parameter needs to be between 0 and 11. Found: ${month}`);
+          throw new RangeError(
+            `The month parameter needs to be between 0 and 11. Found: ${month}`,
+          );
         }
         break;
       }
       case 'day': {
         const day = anyTriggerType.day;
         const month =
-          anyTriggerType.month !== undefined ? anyTriggerType.month : new Date().getMonth();
+          anyTriggerType.month !== undefined
+            ? anyTriggerType.month
+            : new Date().getMonth();
         const daysInGivenMonth = daysInMonth(month);
         if (day < 1 || day > daysInGivenMonth) {
           throw new RangeError(
-            `The day parameter for month ${month} must be between 1 and ${daysInGivenMonth}. Found: ${day}`
+            `The day parameter for month ${month} must be between 1 and ${daysInGivenMonth}. Found: ${day}`,
           );
         }
         break;
@@ -361,7 +379,7 @@ function validateDateComponentsInTrigger(
         const { weekday } = anyTriggerType;
         if (weekday < 1 || weekday > 7) {
           throw new RangeError(
-            `The weekday parameter needs to be between 1 and 7. Found: ${weekday}`
+            `The weekday parameter needs to be between 1 and 7. Found: ${weekday}`,
           );
         }
         break;
@@ -369,7 +387,9 @@ function validateDateComponentsInTrigger(
       case 'hour': {
         const { hour } = anyTriggerType;
         if (hour < 0 || hour > 23) {
-          throw new RangeError(`The hour parameter needs to be between 0 and 23. Found: ${hour}`);
+          throw new RangeError(
+            `The hour parameter needs to be between 0 and 23. Found: ${hour}`,
+          );
         }
         break;
       }
@@ -377,7 +397,7 @@ function validateDateComponentsInTrigger(
         const { minute } = anyTriggerType;
         if (minute < 0 || minute > 59) {
           throw new RangeError(
-            `The minute parameter needs to be between 0 and 59. Found: ${minute}`
+            `The minute parameter needs to be between 0 and 59. Found: ${minute}`,
           );
         }
         break;

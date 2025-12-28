@@ -61,7 +61,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
       title={t('settings.language')}
       onPressAction={({ nativeEvent }) => {
         const selectedLocale = nativeEvent.event as Locale;
-        if (selectedLocale && LANGUAGE_OPTIONS.some((o) => o.id === selectedLocale)) {
+        if (
+          selectedLocale &&
+          LANGUAGE_OPTIONS.some((o) => o.id === selectedLocale)
+        ) {
           handleLanguageSelect(selectedLocale);
         }
       }}
@@ -113,4 +116,3 @@ const styles = StyleSheet.create({
 });
 
 export default LanguageSelector;
-

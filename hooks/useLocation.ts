@@ -41,7 +41,11 @@ export default function useLocation() {
       const heading = coords.heading?.toFixed(0) ?? 'N/A';
       infoToast({
         title: isInitial ? '📍 Initial Location' : '📍 Location Updated',
-        description: `Lat: ${coords.latitude.toFixed(6)}, Lng: ${coords.longitude.toFixed(6)}\nAcc: ${accuracy}m | Alt: ${altitude}m | Spd: ${speed}m/s | Hdg: ${heading}°`,
+        description: `Lat: ${coords.latitude.toFixed(
+          6,
+        )}, Lng: ${coords.longitude.toFixed(
+          6,
+        )}\nAcc: ${accuracy}m | Alt: ${altitude}m | Spd: ${speed}m/s | Hdg: ${heading}°`,
       });
     },
     [infoToast],

@@ -1,4 +1,7 @@
-import { NotificationChannel, NotificationChannelInput } from './NotificationChannelManager.types';
+import {
+  NotificationChannel,
+  NotificationChannelInput,
+} from './NotificationChannelManager.types';
 
 /**
  * Assigns the channel configuration to a channel of a specified name (creating it if need be).
@@ -23,7 +26,7 @@ import { NotificationChannel, NotificationChannelInput } from './NotificationCha
  */
 export default async function setNotificationChannelAsync(
   channelId: string,
-  channel: NotificationChannelInput
+  channel: NotificationChannelInput,
 ): Promise<NotificationChannel | null> {
   console.debug('Notification channels feature is only supported on Android.');
   return null;

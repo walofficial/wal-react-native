@@ -102,7 +102,8 @@ export interface NotificationChannel {
 /**
  * @hidden
  * */
-export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
+export type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> &
+  Required<Pick<T, K>>;
 
 /**
  * An object which represents a notification channel to be set.
@@ -120,10 +121,12 @@ export type NotificationChannelInput = RequiredBy<
 
 export interface NotificationChannelManager extends ProxyNativeModule {
   getNotificationChannelsAsync?: () => Promise<NotificationChannel[] | null>;
-  getNotificationChannelAsync?: (channelId: string) => Promise<NotificationChannel | null>;
+  getNotificationChannelAsync?: (
+    channelId: string,
+  ) => Promise<NotificationChannel | null>;
   setNotificationChannelAsync?: (
     channelId: string,
-    channelConfiguration: NotificationChannelInput
+    channelConfiguration: NotificationChannelInput,
   ) => Promise<NotificationChannel | null>;
   deleteNotificationChannelAsync?: (channelId: string) => Promise<void>;
 }

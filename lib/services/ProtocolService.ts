@@ -103,7 +103,7 @@ class SignalProtocolService {
 
     // Generate nonce (24 bytes for crypto_box)
     const nonce = randombytes_buf(crypto_box_NONCEBYTES);
-    
+
     const encrypted = crypto_box_easy(
       message,
       nonce,

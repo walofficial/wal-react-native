@@ -78,8 +78,8 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
                 isAuthor
                   ? styles.authorContentText
                   : isDark
-                    ? styles.nonAuthorContentTextDark
-                    : styles.nonAuthorContentTextLight,
+                  ? styles.nonAuthorContentTextDark
+                  : styles.nonAuthorContentTextLight,
               ]}
             >
               {content}

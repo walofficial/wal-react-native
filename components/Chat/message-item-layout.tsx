@@ -30,8 +30,8 @@ const MessageItemLayout = forwardRef(function MessageItemLayout(
               ? styles.authorMessageDark
               : styles.authorMessageLight
             : isDark
-              ? styles.nonAuthorMessageDark
-              : styles.nonAuthorMessageLight,
+            ? styles.nonAuthorMessageDark
+            : styles.nonAuthorMessageLight,
         ]}
       >
         {children}

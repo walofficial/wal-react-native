@@ -22,7 +22,7 @@ export interface SetBadgeCountOptions {
  */
 export default async function setBadgeCountAsync(
   badgeCount: number,
-  options?: SetBadgeCountOptions
+  options?: SetBadgeCountOptions,
 ): Promise<boolean> {
   if (!BadgeModule.setBadgeCountAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'setBadgeCountAsync');

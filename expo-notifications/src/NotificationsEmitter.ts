@@ -1,19 +1,28 @@
-import { LegacyEventEmitter, type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import {
+  LegacyEventEmitter,
+  type EventSubscription,
+  UnavailabilityError,
+} from 'expo-modules-core';
 
 import { Notification, NotificationResponse } from './Notifications.types';
 import NotificationsEmitterModule from './NotificationsEmitterModule';
-import { mapNotification, mapNotificationResponse } from './utils/mapNotificationResponse';
+import {
+  mapNotification,
+  mapNotificationResponse,
+} from './utils/mapNotificationResponse';
 
 // Web uses SyntheticEventEmitter
 const emitter = new LegacyEventEmitter(NotificationsEmitterModule);
 
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
-const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+const didReceiveNotificationResponseEventName =
+  'onDidReceiveNotificationResponse';
 const didClearNotificationResponseEventName = 'onDidClearNotificationResponse';
 
 // @docsMissing
-export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
+export const DEFAULT_ACTION_IDENTIFIER =
+  'expo.modules.notifications.actions.DEFAULT';
 
 /**
  * Listeners registered by this method will be called whenever a notification is received while the app is running.
@@ -40,14 +49,14 @@ export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEF
  * @header listen
  */
 export function addNotificationReceivedListener(
-  listener: (event: Notification) => void
+  listener: (event: Notification) => void,
 ): EventSubscription {
   return emitter.addListener<Notification>(
     didReceiveNotificationEventName,
     (notification: Notification) => {
       const mappedNotification = mapNotification(notification);
       listener(mappedNotification);
-    }
+    },
   );
 }
 
@@ -59,7 +68,9 @@ export function addNotificationReceivedListener(
  * @return An [`EventSubscription`](#eventsubscription) object represents the subscription of the provided listener.
  * @header listen
  */
-export function addNotificationsDroppedListener(listener: () => void): EventSubscription {
+export function addNotificationsDroppedListener(
+  listener: () => void,
+): EventSubscription {
   return emitter.addListener<void>(didDropNotificationsEventName, listener);
 }
 
@@ -90,14 +101,14 @@ export function addNotificationsDroppedListener(listener: () => void): EventSubs
  * @header listen
  */
 export function addNotificationResponseReceivedListener(
-  listener: (event: NotificationResponse) => void
+  listener: (event: NotificationResponse) => void,
 ): EventSubscription {
   return emitter.addListener<NotificationResponse>(
     didReceiveNotificationResponseEventName,
     (response: NotificationResponse) => {
       const mappedResponse = mapNotificationResponse(response);
       listener(mappedResponse);
-    }
+    },
   );
 }
 
@@ -124,10 +135,15 @@ export async function getLastNotificationResponseAsync(): Promise<NotificationRe
  */
 export function getLastNotificationResponse(): NotificationResponse | null {
   if (!NotificationsEmitterModule.getLastNotificationResponse) {
-    throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponse');
+    throw new UnavailabilityError(
+      'ExpoNotifications',
+      'getLastNotificationResponse',
+    );
   }
   const response = NotificationsEmitterModule.getLastNotificationResponse();
-  const mappedResponse = response ? mapNotificationResponse(response) : response;
+  const mappedResponse = response
+    ? mapNotificationResponse(response)
+    : response;
   return mappedResponse;
 }
 
@@ -157,7 +173,10 @@ export async function clearLastNotificationResponseAsync(): Promise<void> {
  */
 export function clearLastNotificationResponse(): void {
   if (!NotificationsEmitterModule.clearLastNotificationResponse) {
-    throw new UnavailabilityError('ExpoNotifications', 'clearLastNotificationResponse');
+    throw new UnavailabilityError(
+      'ExpoNotifications',
+      'clearLastNotificationResponse',
+    );
   }
   NotificationsEmitterModule.clearLastNotificationResponse();
   // Emit event to clear any useLastNotificationResponse hooks, after native call succeeds
@@ -167,6 +186,11 @@ export function clearLastNotificationResponse(): void {
 /**
  * @hidden
  */
-export function addNotificationResponseClearedListener(listener: () => void): EventSubscription {
-  return emitter.addListener<void>(didClearNotificationResponseEventName, listener);
+export function addNotificationResponseClearedListener(
+  listener: () => void,
+): EventSubscription {
+  return emitter.addListener<void>(
+    didClearNotificationResponseEventName,
+    listener,
+  );
 }

@@ -12,7 +12,10 @@ async function updatePushTokenAsync(token: DevicePushToken) {
   // Abort current update process
   lastAbortController?.abort();
   lastAbortController = new AbortController();
-  return await updateDevicePushTokenAsyncWithSignal(lastAbortController.signal, token);
+  return await updateDevicePushTokenAsyncWithSignal(
+    lastAbortController.signal,
+    token,
+  );
 }
 
 /**
@@ -35,17 +38,20 @@ export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
   lastAbortController?.abort();
 
   if (!ServerRegistrationModule.setRegistrationInfoAsync) {
-    throw new UnavailabilityError('ServerRegistrationModule', 'setRegistrationInfoAsync');
+    throw new UnavailabilityError(
+      'ServerRegistrationModule',
+      'setRegistrationInfoAsync',
+    );
   }
 
   await ServerRegistrationModule.setRegistrationInfoAsync(
-    enabled ? JSON.stringify({ isEnabled: enabled }) : null
+    enabled ? JSON.stringify({ isEnabled: enabled }) : null,
   );
 }
 
 // note(Chmiela): This function is exported only for testing purposes.
 export async function __handlePersistedRegistrationInfoAsync(
-  registrationInfo: string | null | undefined
+  registrationInfo: string | null | undefined,
 ) {
   if (!registrationInfo) {
     // No registration info, nothing to do
@@ -58,7 +64,7 @@ export async function __handlePersistedRegistrationInfoAsync(
   } catch (e) {
     console.warn(
       '[expo-notifications] Error encountered while fetching registration information for auto token updates.',
-      e
+      e,
     );
   }
 
@@ -75,7 +81,7 @@ export async function __handlePersistedRegistrationInfoAsync(
   } catch (e) {
     console.warn(
       '[expo-notifications] Error encountered while updating server registration with latest device push token.',
-      e
+      e,
     );
   }
 }
@@ -88,14 +94,16 @@ if (ServerRegistrationModule.getRegistrationInfoAsync) {
       // Before updating the push token on server we always check if we should
       // Since modules can't change their method availability while running, we
       // can assert it's defined.
-      const registrationInfo = await ServerRegistrationModule.getRegistrationInfoAsync!();
+      const registrationInfo =
+        await ServerRegistrationModule.getRegistrationInfoAsync!();
 
       if (!registrationInfo) {
         // Registration is not enabled
         return;
       }
 
-      const registration: DevicePushTokenRegistration | null = JSON.parse(registrationInfo);
+      const registration: DevicePushTokenRegistration | null =
+        JSON.parse(registrationInfo);
       if (registration?.isEnabled) {
         // Dispatch an abortable task to update
         // registration with new token.
@@ -104,7 +112,7 @@ if (ServerRegistrationModule.getRegistrationInfoAsync) {
     } catch (e) {
       console.warn(
         '[expo-notifications] Error encountered while updating server registration with latest device push token.',
-        e
+        e,
       );
     }
   });
@@ -112,10 +120,15 @@ if (ServerRegistrationModule.getRegistrationInfoAsync) {
   // Verify if persisted registration
   // has successfully uploaded last known
   // device push token. If not, retry.
-  ServerRegistrationModule.getRegistrationInfoAsync().then(__handlePersistedRegistrationInfoAsync);
+  ServerRegistrationModule.getRegistrationInfoAsync().then(
+    __handlePersistedRegistrationInfoAsync,
+  );
 } else {
   console.warn(
     `[expo-notifications] Error encountered while fetching auto-registration state, new tokens will not be automatically registered on server.`,
-    new UnavailabilityError('ServerRegistrationModule', 'getRegistrationInfoAsync')
+    new UnavailabilityError(
+      'ServerRegistrationModule',
+      'getRegistrationInfoAsync',
+    ),
   );
 }

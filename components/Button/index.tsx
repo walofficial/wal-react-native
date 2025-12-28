@@ -199,8 +199,8 @@ export default function Button({
       minWidth: isIconOnly
         ? undefined
         : fullWidth
-          ? undefined
-          : sizeStyle.minWidth,
+        ? undefined
+        : sizeStyle.minWidth,
       borderRadius: isIconOnly
         ? defaultDim / 2
         : theme.borderRadius.lg || theme.borderRadius.md * 1.5,

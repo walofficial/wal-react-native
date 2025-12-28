@@ -7,7 +7,10 @@ const notificationCategoriesModule: NotificationCategoriesModule = {
     return [];
   },
   async setNotificationCategoryAsync() {
-    throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'setNotificationCategoryAsync',
+    );
   },
   async deleteNotificationCategoryAsync() {
     return false;

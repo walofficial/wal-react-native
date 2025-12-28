@@ -22,15 +22,18 @@ import {
 export default async function setNotificationCategoryAsync(
   identifier: string,
   actions: NotificationAction[],
-  options?: NotificationCategoryOptions
+  options?: NotificationCategoryOptions,
 ): Promise<NotificationCategory> {
   if (!NotificationCategoriesModule.setNotificationCategoryAsync) {
-    throw new UnavailabilityError('Notifications', 'setNotificationCategoryAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'setNotificationCategoryAsync',
+    );
   }
 
   return await NotificationCategoriesModule.setNotificationCategoryAsync(
     identifier,
     actions,
-    options
+    options,
   );
 }

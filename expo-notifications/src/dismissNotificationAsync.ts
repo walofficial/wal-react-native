@@ -9,11 +9,13 @@ import NotificationPresenter from './NotificationPresenterModule';
  * @header dismiss
  */
 export default async function dismissNotificationAsync(
-  notificationIdentifier: string
+  notificationIdentifier: string,
 ): Promise<void> {
   if (!NotificationPresenter.dismissNotificationAsync) {
     throw new UnavailabilityError('Notifications', 'dismissNotificationAsync');
   }
 
-  return await NotificationPresenter.dismissNotificationAsync(notificationIdentifier);
+  return await NotificationPresenter.dismissNotificationAsync(
+    notificationIdentifier,
+  );
 }

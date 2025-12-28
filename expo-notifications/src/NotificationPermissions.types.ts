@@ -87,7 +87,9 @@ export interface IosNotificationPermissionsRequest {
   allowProvisional?: boolean;
 }
 
-export type NativeNotificationPermissionsRequest = IosNotificationPermissionsRequest | object;
+export type NativeNotificationPermissionsRequest =
+  | IosNotificationPermissionsRequest
+  | object;
 
 /**
  * An interface representing the permissions request scope configuration.

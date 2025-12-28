@@ -58,10 +58,16 @@ function EmptyListComponent() {
         <Ionicons
           name="chatbubble-outline"
           size={28}
-          color={isDarkColorScheme ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.3)'}
+          color={
+            isDarkColorScheme
+              ? 'rgba(255, 255, 255, 0.4)'
+              : 'rgba(0, 0, 0, 0.3)'
+          }
         />
       </View>
-      <Text style={[styles.emptyText, { color: theme.colors.text, opacity: 0.6 }]}>
+      <Text
+        style={[styles.emptyText, { color: theme.colors.text, opacity: 0.6 }]}
+      >
         {t('common.be_first_to_comment')}
       </Text>
     </View>

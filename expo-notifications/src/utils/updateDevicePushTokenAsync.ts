@@ -5,9 +5,13 @@ import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import ServerRegistrationModule from '../ServerRegistrationModule';
 import { DevicePushToken } from '../Tokens.types';
 
-const updateDevicePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
+const updateDevicePushTokenUrl =
+  'https://exp.host/--/api/v2/push/updateDeviceToken';
 
-export async function updateDevicePushTokenAsync(signal: AbortSignal, token: DevicePushToken) {
+export async function updateDevicePushTokenAsync(
+  signal: AbortSignal,
+  token: DevicePushToken,
+) {
   const doUpdateDevicePushTokenAsync = async (retry: () => void) => {
     const [development, deviceId] = await Promise.all([
       shouldUseDevelopmentNotificationService(),
@@ -35,7 +39,7 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
       if (!response.ok) {
         console.debug(
           '[expo-notifications] Error encountered while updating the device push token with the server:',
-          await response.text()
+          await response.text(),
         );
       }
 
@@ -59,7 +63,7 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
 
       console.warn(
         '[expo-notifications] Error thrown while updating the device push token with the server:',
-        error
+        error,
       );
 
       retry();
@@ -79,7 +83,7 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
   let nextBackoffInterval = computeNextBackoffInterval(
     initialBackoff,
     retriesCount,
-    backoffOptions
+    backoffOptions,
   );
 
   while (shouldTry && !signal.aborted) {
@@ -92,7 +96,7 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
       nextBackoffInterval = computeNextBackoffInterval(
         initialBackoff,
         retriesCount,
-        backoffOptions
+        backoffOptions,
       );
       retriesCount += 1;
       await new Promise((resolve) => setTimeout(resolve, nextBackoffInterval));
@@ -104,14 +108,17 @@ export async function updateDevicePushTokenAsync(signal: AbortSignal, token: Dev
 async function getDeviceIdAsync() {
   try {
     if (!ServerRegistrationModule.getInstallationIdAsync) {
-      throw new UnavailabilityError('ExpoServerRegistrationModule', 'getInstallationIdAsync');
+      throw new UnavailabilityError(
+        'ExpoServerRegistrationModule',
+        'getInstallationIdAsync',
+      );
     }
 
     return await ServerRegistrationModule.getInstallationIdAsync();
   } catch (e) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_DEVICE_ID',
-      `Could not fetch the installation ID of the application: ${e}.`
+      `Could not fetch the installation ID of the application: ${e}.`,
     );
   }
 }

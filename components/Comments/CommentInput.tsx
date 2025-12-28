@@ -184,7 +184,9 @@ const CommentInput = ({
   }, [shouldFocusInput, setShouldFocusInput]);
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       {/* Subtle note showing who the user is commenting on */}
       {posterUsername && isFocused && (
         <View style={styles.commentingOnContainer}>

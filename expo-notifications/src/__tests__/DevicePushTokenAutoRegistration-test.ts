@@ -3,12 +3,14 @@ import { DevicePushToken } from '../Tokens.types';
 import getDevicePushTokenAsync from '../getDevicePushTokenAsync';
 import { updateDevicePushTokenAsync } from '../utils/updateDevicePushTokenAsync';
 
-const ENABLED_REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushTokenRegistration = {
-  isEnabled: true,
-};
-const DISABLED_REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushTokenRegistration = {
-  isEnabled: false,
-};
+const ENABLED_REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushTokenRegistration =
+  {
+    isEnabled: true,
+  };
+const DISABLED_REGISTRATION_FIXTURE: DevicePushTokenAutoRegistration.DevicePushTokenRegistration =
+  {
+    isEnabled: false,
+  };
 
 jest.mock('../utils/updateDevicePushTokenAsync');
 jest.mock('../ServerRegistrationModule');
@@ -18,20 +20,26 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
   it(`doesn't fail if persisted value is empty`, async () => {
     const spy = jest.spyOn(console, 'warn').mockImplementation();
     await expect(
-      DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(null)
+      DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
+        null,
+      ),
     ).resolves.toBeUndefined();
     await expect(
-      DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(undefined)
+      DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
+        undefined,
+      ),
     ).resolves.toBeUndefined();
     await expect(
-      DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync('{i-am-invalid-json')
+      DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
+        '{i-am-invalid-json',
+      ),
     ).resolves.toBeUndefined();
     spy.mockRestore();
   });
 
   it(`doesn't try to update registration if it's not enabled`, async () => {
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
-      JSON.stringify(DISABLED_REGISTRATION_FIXTURE)
+      JSON.stringify(DISABLED_REGISTRATION_FIXTURE),
     );
     expect(getDevicePushTokenAsync).not.toHaveBeenCalled();
     expect(updateDevicePushTokenAsync).not.toHaveBeenCalled();
@@ -43,14 +51,16 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
       type: 'ios',
     };
     (
-      getDevicePushTokenAsync as jest.MockedFunction<typeof getDevicePushTokenAsync>
+      getDevicePushTokenAsync as jest.MockedFunction<
+        typeof getDevicePushTokenAsync
+      >
     ).mockResolvedValue(mockPendingDevicePushToken);
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
-      JSON.stringify(ENABLED_REGISTRATION_FIXTURE)
+      JSON.stringify(ENABLED_REGISTRATION_FIXTURE),
     );
     expect(updateDevicePushTokenAsync).toHaveBeenCalledWith(
       expect.anything(),
-      mockPendingDevicePushToken
+      mockPendingDevicePushToken,
     );
   });
 });

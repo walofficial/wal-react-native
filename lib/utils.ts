@@ -64,7 +64,8 @@ export async function sendPushNotification(
 
   const pushType = options.type ?? 'rich_image';
   const mediaUrl = options.mediaUrl ?? getRandomProfileImageUrl();
-  const senderDisplayName = options.senderDisplayName ?? options.title ?? 'Sender';
+  const senderDisplayName =
+    options.senderDisplayName ?? options.title ?? 'Sender';
   const senderAvatarUrl = options.senderAvatarUrl ?? getRandomProfileImageUrl();
 
   const baseData = {
@@ -99,26 +100,29 @@ export async function sendPushNotification(
    * - On iOS: uses Communication Notifications (NotificationService extension)
    * - On Android: uses BigTextStyle with optional image attachment
    */
-  const message: any = pushType === 'new_message'
-    ? {
-        to: expoPushToken,
-        // Data-only: title/message come from data payload
-        // Android will use MessagingStyleNotificationBuilder
-        title: senderDisplayName,
-        body: options.body ?? 'Test message',
-        data: baseData,
-        // Critical for Android MessagingStyle:
-        priority: 'high',
-        channelId: 'expo_notifications_chat_channel',
-      }
-    : {
-        to: expoPushToken,
-        title: options.title ?? 'Test (rich image)',
-        body: options.body ?? 'Expand the notification to see the image attachment.',
-        categoryId: 'chat_message',
-        mutableContent: true,
-        data: baseData,
-      };
+  const message: any =
+    pushType === 'new_message'
+      ? {
+          to: expoPushToken,
+          // Data-only: title/message come from data payload
+          // Android will use MessagingStyleNotificationBuilder
+          title: senderDisplayName,
+          body: options.body ?? 'Test message',
+          data: baseData,
+          // Critical for Android MessagingStyle:
+          priority: 'high',
+          channelId: 'expo_notifications_chat_channel',
+        }
+      : {
+          to: expoPushToken,
+          title: options.title ?? 'Test (rich image)',
+          body:
+            options.body ??
+            'Expand the notification to see the image attachment.',
+          categoryId: 'chat_message',
+          mutableContent: true,
+          data: baseData,
+        };
 
   const response = await fetch('https://exp.host/--/api/v2/push/send', {
     method: 'POST',

@@ -139,7 +139,7 @@ export default function EnableNotifications({
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
         const actionId = response.actionIdentifier;
-        
+
         // Handle inline reply action (Android MessagingStyle)
         if (actionId === 'expo.notifications.REPLY_ACTION') {
           const userText = (response as any).userText;
@@ -157,7 +157,7 @@ export default function EnableNotifications({
           }
           return;
         }
-        
+
         // Handle mark as read action
         if (actionId === 'expo.notifications.MARK_READ_ACTION') {
           if (data?.roomId) {
@@ -167,7 +167,7 @@ export default function EnableNotifications({
           }
           return;
         }
-        
+
         // Navigate to the chat route when notification is tapped
         const chatId = data?.chatId || data?.roomId;
         if (chatId) {
@@ -177,7 +177,10 @@ export default function EnableNotifications({
           });
           router.navigate(`/chat/${chatId}`);
         } else {
-          trackEvent('push_open_details', { source: 'tap', has_chat_id: false });
+          trackEvent('push_open_details', {
+            source: 'tap',
+            has_chat_id: false,
+          });
         }
       });
 

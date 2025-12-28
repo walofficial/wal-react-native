@@ -83,4 +83,3 @@ export function applyRounding(target: TransformMatrix): void {
   target[4] = Math.round(target[4] * PRECISION) / PRECISION;
   target[5] = Math.round(target[5] * PRECISION) / PRECISION;
 }
-

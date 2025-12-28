@@ -7,7 +7,10 @@ export default async function getNotificationChannelGroupsAsync(): Promise<
   NotificationChannelGroup[]
 > {
   if (!NotificationChannelGroupManager.getNotificationChannelGroupsAsync) {
-    throw new UnavailabilityError('Notifications', 'getNotificationChannelGroupsAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'getNotificationChannelGroupsAsync',
+    );
   }
   return await NotificationChannelGroupManager.getNotificationChannelGroupsAsync();
 }

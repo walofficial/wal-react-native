@@ -5,8 +5,12 @@ const pkg = require('./package.json');
 
 export const app_name_slug = 'wal';
 export const app_name = IS_DEV ? 'WAL DEV' : 'WAL';
-const ios_bundle_identifier = IS_DEV ? 'com.greetai.mentdev' : 'com.greetai.ment';
-const ios_app_group = IS_DEV ? 'group.com.greetai.mentdev' : 'group.com.greetai.ment';
+const ios_bundle_identifier = IS_DEV
+  ? 'com.greetai.mentdev'
+  : 'com.greetai.ment';
+const ios_app_group = IS_DEV
+  ? 'group.com.greetai.mentdev'
+  : 'group.com.greetai.ment';
 
 // Build plugin list dynamically so the app can run without Firebase files
 const pluginsList = [
@@ -157,7 +161,9 @@ export default {
         'com.apple.developer.usernotifications.communication': true,
         // Keep capabilities in sync with existing native entitlements
         'com.apple.security.application-groups': [ios_app_group],
-        'com.apple.developer.associated-domains': [`applinks:${app_name_slug}.ge`],
+        'com.apple.developer.associated-domains': [
+          `applinks:${app_name_slug}.ge`,
+        ],
       },
       infoPlist: {
         NSCameraUsageDescription:
@@ -177,7 +183,10 @@ export default {
         // Ensure push background delivery + notification service extension triggers are supported.
         UIBackgroundModes: ['location', 'fetch', 'remote-notification'],
         ITSAppUsesNonExemptEncryption: false,
-        NSUserActivityTypes: [`${ios_bundle_identifier}.expo.index_route`, 'INSendMessageIntent'],
+        NSUserActivityTypes: [
+          `${ios_bundle_identifier}.expo.index_route`,
+          'INSendMessageIntent',
+        ],
       },
       supportsTablet: false,
       bundleIdentifier: ios_bundle_identifier,

@@ -10,7 +10,10 @@ import {
   setNotificationSounds,
 } from '../withNotificationsAndroid';
 
-export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: string) {
+export function getDirFromFS(
+  fsJSON: Record<string, string | null>,
+  rootDir: string,
+) {
   return Object.entries(fsJSON)
     .filter(([path, value]) => value !== null && path.startsWith(rootDir))
     .reduce<Record<string, string>>(
@@ -20,7 +23,7 @@ export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: str
           ? path.substring(rootDir.length + 1)
           : path.substring(rootDir.length)]: fileContent,
       }),
-      {}
+      {},
     );
 }
 
@@ -58,7 +61,7 @@ describe('Android notifications configuration', () => {
     const sound = fsReal.readFileSync(soundPath);
     vol.fromJSON(
       { './android/app/src/main/res/values/colors.xml': SAMPLE_COLORS_XML },
-      projectRoot
+      projectRoot,
     );
     setUpDrawableDirectories();
     vol.mkdirpSync('/app/assets');
@@ -81,26 +84,38 @@ describe('Android notifications configuration', () => {
   });
 
   it(`returns config if provided`, () => {
-    expect(getNotificationIcon({ notification: { icon: './myIcon.png' } } as ExpoConfig)).toMatch(
-      './myIcon.png'
-    );
-    expect(getNotificationColor({ notification: { color: '#123456' } } as ExpoConfig)).toMatch(
-      '#123456'
-    );
+    expect(
+      getNotificationIcon({
+        notification: { icon: './myIcon.png' },
+      } as ExpoConfig),
+    ).toMatch('./myIcon.png');
+    expect(
+      getNotificationColor({
+        notification: { color: '#123456' },
+      } as ExpoConfig),
+    ).toMatch('#123456');
   });
 
   it('writes all the asset files (sounds and images) as expected', async () => {
-    await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+    await setNotificationIconAsync(
+      projectRoot,
+      '/app/assets/notificationIcon.png',
+    );
     setNotificationSounds(projectRoot, ['/app/assets/notification_sound.wav']);
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
-    expect(Object.keys(after).sort()).toEqual(LIST_OF_GENERATED_NOTIFICATION_FILES.sort());
+    expect(Object.keys(after).sort()).toEqual(
+      LIST_OF_GENERATED_NOTIFICATION_FILES.sort(),
+    );
   });
 
   it('Safely remove icon if it exists, and ignore if it doesnt', async () => {
     const before = getDirFromFS(vol.toJSON(), projectRoot);
     // first set the icon
-    await setNotificationIconAsync(projectRoot, '/app/assets/notificationIcon.png');
+    await setNotificationIconAsync(
+      projectRoot,
+      '/app/assets/notificationIcon.png',
+    );
 
     // now remove
     await setNotificationIconAsync(projectRoot, null);

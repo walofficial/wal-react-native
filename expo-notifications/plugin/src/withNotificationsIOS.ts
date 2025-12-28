@@ -11,11 +11,12 @@ import { basename, resolve } from 'path';
 
 import { NotificationsPluginProps } from './withNotifications';
 
-const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications. ';
+const ERROR_MSG_PREFIX =
+  'An error occurred while configuring iOS notifications. ';
 
 export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
   config,
-  { mode = 'development', sounds = [], enableBackgroundRemoteNotifications }
+  { mode = 'development', sounds = [], enableBackgroundRemoteNotifications },
 ) => {
   config = withEntitlementsPlist(config, (config) => {
     if (!config.modResults['aps-environment']) {
@@ -24,14 +25,17 @@ export const withNotificationsIOS: ConfigPlugin<NotificationsPluginProps> = (
     return config;
   });
   config = withNotificationSounds(config, { sounds });
-  config = withBackgroundRemoteNotifications(config, enableBackgroundRemoteNotifications);
+  config = withBackgroundRemoteNotifications(
+    config,
+    enableBackgroundRemoteNotifications,
+  );
 
   return config;
 };
 
 const withBackgroundRemoteNotifications: ConfigPlugin<boolean | undefined> = (
   config,
-  enableBackgroundRemoteNotifications
+  enableBackgroundRemoteNotifications,
 ) => {
   if (
     !(
@@ -41,7 +45,7 @@ const withBackgroundRemoteNotifications: ConfigPlugin<boolean | undefined> = (
   ) {
     throw new Error(
       ERROR_MSG_PREFIX +
-        `"enableBackgroundRemoteNotifications" has an invalid value: ${enableBackgroundRemoteNotifications}. Expected a boolean.`
+        `"enableBackgroundRemoteNotifications" has an invalid value: ${enableBackgroundRemoteNotifications}. Expected a boolean.`,
     );
   }
   if (!enableBackgroundRemoteNotifications) {
@@ -52,14 +56,19 @@ const withBackgroundRemoteNotifications: ConfigPlugin<boolean | undefined> = (
       config.modResults.UIBackgroundModes = [];
     }
     const notificationBackgroundMode = 'remote-notification';
-    if (!config.modResults.UIBackgroundModes.includes(notificationBackgroundMode)) {
+    if (
+      !config.modResults.UIBackgroundModes.includes(notificationBackgroundMode)
+    ) {
       config.modResults.UIBackgroundModes.push(notificationBackgroundMode);
     }
     return config;
   });
 };
 
-const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (config, { sounds }) => {
+const withNotificationSounds: ConfigPlugin<{ sounds: string[] }> = (
+  config,
+  { sounds },
+) => {
   return withXcodeProject(config, (config) => {
     setNotificationSounds(config.modRequest.projectRoot, {
       sounds,
@@ -79,7 +88,11 @@ export function setNotificationSounds(
     sounds,
     project,
     projectName,
-  }: { sounds: string[]; project: XcodeProject; projectName: string | undefined }
+  }: {
+    sounds: string[];
+    project: XcodeProject;
+    projectName: string | undefined;
+  },
 ): XcodeProject {
   if (!projectName) {
     throw new Error(ERROR_MSG_PREFIX + `Unable to find iOS project name.`);
@@ -87,7 +100,7 @@ export function setNotificationSounds(
   if (!Array.isArray(sounds)) {
     throw new Error(
       ERROR_MSG_PREFIX +
-        `Must provide an array of sound files in your app config, found ${typeof sounds}.`
+        `Must provide an array of sound files in your app config, found ${typeof sounds}.`,
     );
   }
   const sourceRoot = IOSConfig.Paths.getSourceRoot(projectRoot);

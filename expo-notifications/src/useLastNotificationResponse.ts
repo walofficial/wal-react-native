@@ -1,6 +1,9 @@
 import { useLayoutEffect, useState } from 'react';
 
-import { MaybeNotificationResponse, NotificationResponse } from './Notifications.types';
+import {
+  MaybeNotificationResponse,
+  NotificationResponse,
+} from './Notifications.types';
 import {
   addNotificationResponseReceivedListener,
   addNotificationResponseClearedListener,
@@ -53,15 +56,21 @@ export default function useLastNotificationResponse() {
   useLayoutEffect(() => {
     // Get the last response first, in case it was set earlier (even in native code on startup)
     const response = getLastNotificationResponse();
-    setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response));
+    setLastNotificationResponse((prevResponse) =>
+      determineNextResponse(prevResponse, response),
+    );
 
     // Set up listener for responses that come in, and set the last response if needed
     const subscription = addNotificationResponseReceivedListener((response) =>
-      setLastNotificationResponse((prevResponse) => determineNextResponse(prevResponse, response))
+      setLastNotificationResponse((prevResponse) =>
+        determineNextResponse(prevResponse, response),
+      ),
     );
-    const clearResponseSubscription = addNotificationResponseClearedListener(() => {
-      setLastNotificationResponse(null);
-    });
+    const clearResponseSubscription = addNotificationResponseClearedListener(
+      () => {
+        setLastNotificationResponse(null);
+      },
+    );
     return () => {
       subscription.remove();
       clearResponseSubscription.remove();
@@ -76,7 +85,7 @@ export default function useLastNotificationResponse() {
 // the transition from response to null is invalid
 export const determineNextResponse = (
   prevResponse: MaybeNotificationResponse,
-  newResponse: NotificationResponse | null
+  newResponse: NotificationResponse | null,
 ) => {
   if (!newResponse) {
     return null;

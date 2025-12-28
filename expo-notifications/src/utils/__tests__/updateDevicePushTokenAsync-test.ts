@@ -46,7 +46,10 @@ describe('given valid registration info', () => {
     const abortController = new AbortController();
     await updateDevicePushTokenAsync(abortController.signal, TOKEN);
     warnSpy.mockRestore();
-    expect(global.fetch).toHaveBeenCalledWith(expoEndpointUrl, expect.anything());
+    expect(global.fetch).toHaveBeenCalledWith(
+      expoEndpointUrl,
+      expect.anything(),
+    );
   });
 
   describe('when server responds with an ok status', () => {
@@ -76,7 +79,9 @@ describe('given valid registration info', () => {
   it('retries until it succeeds if fetch throws', async () => {
     const debugSpy = jest.spyOn(console, 'debug').mockImplementation();
     const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
-    global.fetch.mockRejectedValueOnce(new TypeError()).mockResolvedValueOnce(successResponse);
+    global.fetch
+      .mockRejectedValueOnce(new TypeError())
+      .mockResolvedValueOnce(successResponse);
     const abortController = new AbortController();
     await updateDevicePushTokenAsync(abortController.signal, TOKEN);
     expect(global.fetch).toHaveBeenCalledTimes(2);

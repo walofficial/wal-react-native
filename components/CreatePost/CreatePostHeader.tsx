@@ -75,8 +75,8 @@ export default function CreatePostHeader({
           {isPending
             ? t('common.loading')
             : isFactCheckEnabled
-              ? t('common.check_fact')
-              : t('common.check_fact')}
+            ? t('common.check_fact')
+            : t('common.check_fact')}
         </Text>
       </TouchableOpacity>
     </View>

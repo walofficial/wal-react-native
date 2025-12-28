@@ -13,7 +13,10 @@ let nativeTokenPromise: Promise<string> | null = null;
  */
 export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   if (!PushTokenManager.getDevicePushTokenAsync) {
-    throw new UnavailabilityError('ExpoNotifications', 'getDevicePushTokenAsync');
+    throw new UnavailabilityError(
+      'ExpoNotifications',
+      'getDevicePushTokenAsync',
+    );
   }
   warnOfExpoGoPushUsage();
 

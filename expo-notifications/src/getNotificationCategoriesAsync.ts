@@ -11,9 +11,14 @@ import { NotificationCategory } from './Notifications.types';
  * @platform ios
  * @header categories
  */
-export default async function getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {
+export default async function getNotificationCategoriesAsync(): Promise<
+  NotificationCategory[]
+> {
   if (!NotificationCategoriesModule.getNotificationCategoriesAsync) {
-    throw new UnavailabilityError('Notifications', 'getNotificationCategoriesAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'getNotificationCategoriesAsync',
+    );
   }
 
   return await NotificationCategoriesModule.getNotificationCategoriesAsync();

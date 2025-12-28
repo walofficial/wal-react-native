@@ -64,7 +64,9 @@ export const mapNotificationContent = (content: NotificationContent) => {
     // @ts-expect-error: TODO(@kitten): This is not present in the types! This is error prone
     const dataString = content['dataString'];
     if (typeof dataString === 'string') {
-      const mappedContent: NotificationContent & { dataString?: string } = { ...content };
+      const mappedContent: NotificationContent & { dataString?: string } = {
+        ...content,
+      };
       mappedContent.data = JSON.parse(dataString);
       Object.defineProperty(mappedContent, 'dataString', {
         get() {

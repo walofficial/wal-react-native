@@ -304,8 +304,8 @@ const CommentReactions: React.FC<CommentReactionsProps> = ({
                     ? 'rgba(255, 255, 255, 0.2)'
                     : 'rgba(0, 0, 0, 0.1)'
                   : colorScheme === 'dark'
-                    ? 'rgba(255, 255, 255, 0.1)'
-                    : 'rgba(0, 0, 0, 0.05)',
+                  ? 'rgba(255, 255, 255, 0.1)'
+                  : 'rgba(0, 0, 0, 0.05)',
               },
             ]}
             activeOpacity={0.7}

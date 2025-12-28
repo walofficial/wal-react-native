@@ -8,11 +8,17 @@ import {
 
 export default async function setNotificationChannelGroupAsync(
   groupId: string,
-  group: NotificationChannelGroupInput
+  group: NotificationChannelGroupInput,
 ): Promise<NotificationChannelGroup | null> {
   if (!NotificationChannelGroupManager.setNotificationChannelGroupAsync) {
-    throw new UnavailabilityError('Notifications', 'setNotificationChannelGroupAsync');
+    throw new UnavailabilityError(
+      'Notifications',
+      'setNotificationChannelGroupAsync',
+    );
   }
 
-  return await NotificationChannelGroupManager.setNotificationChannelGroupAsync(groupId, group);
+  return await NotificationChannelGroupManager.setNotificationChannelGroupAsync(
+    groupId,
+    group,
+  );
 }

@@ -35,7 +35,7 @@ export async function fetchDecryptedChatRooms({
           {
             encryptedMessage: lastMessage.encrypted_content || '',
             nonce: lastMessage.nonce || '',
-          }
+          },
         );
       } catch (error) {
         console.log('[fetchDecryptedChatRooms] Decryption error:', error);
@@ -49,7 +49,6 @@ export async function fetchDecryptedChatRooms({
           message: decryptedMessage,
         },
       };
-    })
+    }),
   );
 }
-

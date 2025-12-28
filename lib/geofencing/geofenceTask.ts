@@ -70,7 +70,10 @@ TaskManager.defineTask(
     data,
     error,
   }: {
-    data?: { eventType: Location.GeofencingEventType; region: Location.LocationRegion };
+    data?: {
+      eventType: Location.GeofencingEventType;
+      region: Location.LocationRegion;
+    };
     error?: TaskManager.TaskManagerError | null;
   }) => {
     if (error) {
@@ -116,4 +119,3 @@ TaskManager.defineTask(
 );
 
 export { GEOFENCING_TASK_NAME };
-

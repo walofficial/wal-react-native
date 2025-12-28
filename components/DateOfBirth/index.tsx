@@ -17,12 +17,12 @@ interface DateOfBirthProps {
 export default function DateOfBirth({ control }: DateOfBirthProps) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
-  
+
   const { field } = useController({
     name: 'date_of_birth',
     control,
   });
-  
+
   const value = field.value;
 
   const formatDate = (dateString: string) => {

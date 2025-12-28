@@ -17,4 +17,3 @@ export interface GeofencedRegion extends LocationRegion {
   name: string;
   description?: string;
 }
-
