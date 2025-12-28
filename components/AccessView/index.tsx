@@ -592,7 +592,7 @@ const SignupForm = forwardRef<any, AccessViewProps>(function SignupForm(
                   color: theme.colors.text,
                 },
                 focusedPinCodeContainerStyle: {
-                  borderColor: '#efefef',
+                  borderColor: theme.colors.secondary,
                 },
                 focusStickStyle: {
                   backgroundColor: '#333',
