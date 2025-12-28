@@ -1,0 +1,27 @@
+diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
+index c45f5cc..4fc3f11 100644
+--- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
++++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuView.kt
+@@ -25,8 +25,8 @@ class MenuView(private val mContext: ReactContext) : ReactViewGroup(mContext) {
+   private var mGestureDetector: GestureDetector
+   private var mHitSlopRect: Rect? = null
+     set(value) {
++      field = value
+       super.hitSlopRect = value
+-      mHitSlopRect = value
+       updateTouchDelegate()
+     }
+ 
+diff --git a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuViewManagerBase.kt b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuViewManagerBase.kt
+index e4d2743..0f7c942 100644
+--- a/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuViewManagerBase.kt
++++ b/node_modules/@react-native-menu/menu/android/src/main/java/com/reactnativemenu/MenuViewManagerBase.kt
+@@ -122,7 +122,6 @@ abstract class MenuViewManagerBase : ReactClippingViewManager<MenuView>() {
+   @ReactProp(name = "hitSlop")
+   fun setHitSlop(view: ReactViewGroup, @Nullable hitSlop: ReadableMap?) {
+     if (hitSlop == null) {
+-      // We should keep using setters as `Val cannot be reassigned`
+       view.hitSlopRect = null
+     } else {
+       view.hitSlopRect = (
+
