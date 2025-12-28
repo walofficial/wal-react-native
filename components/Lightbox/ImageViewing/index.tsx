@@ -482,6 +482,7 @@ function LightboxImage({
       onLoad={setFetchedDims}
       isScrollViewBeingDragged={isScrollViewBeingDragged}
       showControls={showControls}
+      //@ts-ignore
       measureSafeArea={measureSafeArea}
       imageAspect={imageAspect}
       imageDimensions={dims ?? undefined}

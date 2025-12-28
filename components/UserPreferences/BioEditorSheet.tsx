@@ -53,8 +53,8 @@ export default function BioEditorSheet({
   const snapPoints = useMemo(() => ['45%'], []);
   const sheetBackgroundStyle = getBottomSheetBackgroundStyle();
 
-  // Input background color - subtle dark gray for dark mode, light gray for light
-  const inputBackground = isDark ? '#1c1c1e' : '#f2f2f7';
+  // Input background color - subtle dark gray for dark mode, visible gray for light
+  const inputBackground = isDark ? '#1c1c1e' : '#e5e5ea';
   const placeholderColor = isDark ? '#636366' : '#8e8e93';
 
   const renderBackdrop = useCallback(
