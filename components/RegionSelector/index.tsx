@@ -45,7 +45,7 @@ const RegionSelector: React.FC = () => {
           {getCurrentRegionName()}
         </Text>
       </View>
-      <Text style={[styles.helperText, { color: theme.colors.textSecondary }]}>
+      <Text style={[styles.helperText, { color: theme.colors.secondary }]}>
         {t('settings.region_based_on_location')}
       </Text>
     </View>

@@ -276,7 +276,7 @@ export default function RegisterView() {
                       !hasNonLatinChars &&
                       !errors.username && (
                         <Text style={styles.errorText}>
-                          {usernameQuery.data?.message}
+                          {(usernameQuery.data as any)?.message}
                         </Text>
                       )}
                   </View>
