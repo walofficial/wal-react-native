@@ -241,6 +241,7 @@ export default function RegisterView() {
                   value={value}
                   onChangeText={(text) => onChange(handleUsernameChange(text))}
                   onBlur={onBlur}
+                  autoFocus
                   placeholder={t('common.enter_name')}
                   placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
                 />
