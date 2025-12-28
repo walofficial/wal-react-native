@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Platform, Pressable } from 'react-native';
-import { useFormContext, useWatch } from 'react-hook-form';
+import { Control, useController } from 'react-hook-form';
 import { Text } from '@/components/ui/text';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { parse, format } from 'date-fns';
@@ -10,11 +10,20 @@ import { t } from '@/lib/i18n';
 
 const DEFAULT_DATE = new Date(2000, 1, 1);
 
-export default function DateOfBirth() {
+interface DateOfBirthProps {
+  control: Control<any>;
+}
+
+export default function DateOfBirth({ control }: DateOfBirthProps) {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
-  const { setValue } = useFormContext();
-  const value = useWatch({ name: 'date_of_birth' });
+  
+  const { field } = useController({
+    name: 'date_of_birth',
+    control,
+  });
+  
+  const value = field.value;
 
   const formatDate = (dateString: string) => {
     return parse(dateString, 'dd/MM/yyyy', new Date());
@@ -33,10 +42,7 @@ export default function DateOfBirth() {
 
   const handleDateChange = (date: Date | undefined) => {
     if (date) {
-      setValue('date_of_birth', formatDateToString(date), {
-        shouldDirty: true,
-        shouldValidate: true,
-      });
+      field.onChange(formatDateToString(date));
     }
   };
 
