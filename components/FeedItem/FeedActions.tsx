@@ -24,6 +24,7 @@ import { getFactCheckBadgeInfo } from '@/utils/factualityUtils';
 import { t } from '@/lib/i18n';
 import { useToast } from '../ToastUsage';
 import useVerificationById from '@/hooks/useVerificationById';
+import LikeButton from './LikeButton';
 
 interface FeedActionsProps {
   verificationId: string;
@@ -273,7 +274,7 @@ const FeedActions: React.FC<FeedActionsProps> = ({
       <View style={[styles.actionsCard]}>
         <View style={styles.actionsWrapper}>
           <View style={styles.actionGroup}>
-            {/* {!hideUserRects && <LikeButton verificationId={verificationId} />} */}
+            {!hideUserRects && <LikeButton verificationId={verificationId} />}
             {!hideUserRects && (
               <CommentButton
                 // style={{ marginLeft: 12 }}
@@ -309,9 +310,6 @@ const FeedActions: React.FC<FeedActionsProps> = ({
               )}
             </Pressable>
           </View>
-          <View style={styles.actionGroup}>
-            <ShareButton verificationId={verificationId} />
-          </View>
         </View>
       </View>
       {sourceComponent && (
@@ -336,6 +334,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionGroup: {
+    gap: 12,
     flexDirection: 'row',
     alignItems: 'center',
   },

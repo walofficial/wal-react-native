@@ -1,9 +1,7 @@
 import React, { useRef, useMemo } from 'react';
 import { type DimensionValue, Pressable, View } from 'react-native';
-import Animated, { type AnimatedRef } from 'react-native-reanimated';
 import { Image } from 'expo-image';
 
-import { useHandleRef } from '@/lib/hooks/useHandleRef';
 import type { Dimensions } from '@/lib/media/types';
 import { isNative } from '@/lib/platform';
 
@@ -70,16 +68,10 @@ export function AutoSizedImage({
   image: any;
   crop?: 'none' | 'square' | 'constrained';
   hideBadge?: boolean;
-  onPress?: (
-    containerRef: AnimatedRef<any>,
-    fetchedDims: Dimensions | null,
-  ) => void;
+  onPress?: (fetchedDims: Dimensions | null) => void;
   onLongPress?: () => void;
   onPressIn?: () => void;
-  /** Unique tag for shared element transition animation with the lightbox */
-  sharedTransitionTag?: string;
 }) {
-  const containerRef = useHandleRef();
   const fetchedDimsRef = useRef<{ width: number; height: number } | null>(null);
 
   let aspectRatio: number | undefined;
@@ -106,7 +98,7 @@ export function AutoSizedImage({
   const hasAlt = !!image.alt;
 
   const contents = (
-    <View ref={containerRef} collapsable={false} style={{ flex: 1 }}>
+    <View style={{ flex: 1 }}>
       <Image
         contentFit={isContain ? 'contain' : 'cover'}
         style={{ width: '100%', height: '100%' }}
@@ -128,7 +120,7 @@ export function AutoSizedImage({
   if (cropDisabled) {
     return (
       <Pressable
-        onPress={() => onPress?.(containerRef as any, fetchedDimsRef.current)}
+        onPress={() => onPress?.(fetchedDimsRef.current)}
         onLongPress={onLongPress}
         onPressIn={onPressIn}
         // alt here is what screen readers actually use
@@ -152,7 +144,7 @@ export function AutoSizedImage({
         aspectRatio={constrained ?? 1}
       >
         <Pressable
-          onPress={() => onPress?.(containerRef as any, fetchedDimsRef.current)}
+          onPress={() => onPress?.(fetchedDimsRef.current)}
           onLongPress={onLongPress}
           onPressIn={onPressIn}
           // alt here is what screen readers actually use

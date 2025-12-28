@@ -218,13 +218,13 @@ export default function Component() {
             </>
           )}
           <Button
-            variant="destructive-outline"
+            variant="destructive"
             onPress={handleDeleteAccount}
             disabled={deleteAccountMutation.isPending}
             loading={deleteAccountMutation.isPending}
             title={t('common.delete_account')}
           />
-          {__DEV__ && (
+          {isNonProduction && (
             <Button
               variant="outline"
               onPress={handleClearCache}

@@ -33,12 +33,14 @@ interface CommentInputProps {
   postId: string;
   onFocusChange?: (focused: boolean) => void;
   posterUsername?: string;
+  onCommentSubmitted?: () => void;
 }
 
 const CommentInput = ({
   postId,
   onFocusChange,
   posterUsername,
+  onCommentSubmitted,
 }: CommentInputProps) => {
   const [content, setContent] = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -122,6 +124,9 @@ const CommentInput = ({
 
       // Clear input immediately
       setContent('');
+
+      // Scroll to comments section after submission (Facebook-like UX)
+      onCommentSubmitted?.();
 
       // Return context with snapshotted value
       return { previousComments };

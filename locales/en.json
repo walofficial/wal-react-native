@@ -7,6 +7,8 @@
     "telegram_channel": "Telegram Channel",
     "blocked_users": "Blocked Users",
     "preferred_country": "Country",
+    "app_region": "App Region",
+    "region_based_on_location": "Based on your location",
     "preferred_content_language": "Content Language",
     "language_and_region": "Language & Region",
     "language": "App Language",

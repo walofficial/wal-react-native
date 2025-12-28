@@ -88,12 +88,11 @@ export default function Layout({ segment }: { segment: string }) {
       <Stack.Screen
         name="locations"
         options={{
+          presentation: isIOS ? 'formSheet' : 'modal',
+          animation: 'slide_from_bottom',
+          animationDuration: isIOS ? 350 : 200,
           title: '',
-          header: () => <SimpleGoBackHeader title={t('common.locations')} />,
-          headerStyle: {
-            backgroundColor: theme.colors.background,
-          },
-          headerTintColor: theme.colors.text,
+          headerShown: false,
         }}
       />,
       <Stack.Screen
