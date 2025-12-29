@@ -37,7 +37,9 @@
         "buildFromSource": [
           "expo-notifications",
           "expo-haptics",
-          "expo-media-library"
+          "expo-media-library",
+          "@sentry/react-native",
+          "react-native-pager-view"
         ]
       }
     }
