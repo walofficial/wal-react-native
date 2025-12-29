@@ -65,8 +65,8 @@ const pluginsList = [
     {
       locationPermissionText:
         'This app accesses your location to let you post videos or photos to nearby locations.',
-      isIosBackgroundLocationEnabled: true,
-      isAndroidBackgroundLocationEnabled: true,
+      isIosBackgroundLocationEnabled: false,
+      isAndroidBackgroundLocationEnabled: false,
       isAndroidForegroundServiceEnabled: false,
     },
   ],
