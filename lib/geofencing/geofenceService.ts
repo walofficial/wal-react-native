@@ -1,16 +1,16 @@
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
-import { Platform } from 'react-native';
 
 import { GEOFENCING_TASK_NAME, type GeofencedRegion } from './constants';
 
 /**
  * Request necessary permissions for geofencing
- * Returns true if all permissions are granted
+ * Returns true if foreground location permission is granted
+ * Note: Background location has been removed - geofencing works with foreground-only
  */
 export async function requestGeofencingPermissions(): Promise<boolean> {
   try {
-    // First request foreground location permission
+    // Request foreground location permission only
     const { status: foregroundStatus } =
       await Location.requestForegroundPermissionsAsync();
 
@@ -22,29 +22,7 @@ export async function requestGeofencingPermissions(): Promise<boolean> {
       return false;
     }
 
-    // Then request background location permission
-    // Note: On iOS, this will show a separate prompt
-    // On Android 10+, this requires a separate dialog
-    const { status: backgroundStatus } =
-      await Location.requestBackgroundPermissionsAsync();
-
-    if (backgroundStatus !== 'granted') {
-      console.warn(
-        '[Geofencing] Background location permission not granted:',
-        backgroundStatus,
-      );
-      // Still return true for foreground-only usage on some platforms
-      // Geofencing may work with limited functionality
-      if (Platform.OS === 'ios') {
-        console.log(
-          '[Geofencing] iOS may still support geofencing with "When In Use" permission',
-        );
-        return true;
-      }
-      return false;
-    }
-
-    console.log('[Geofencing] All location permissions granted');
+    console.log('[Geofencing] Location permission granted');
     return true;
   } catch (error) {
     console.error('[Geofencing] Error requesting permissions:', error);
