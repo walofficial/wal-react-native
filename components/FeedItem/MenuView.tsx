@@ -1,5 +1,5 @@
 import React, { useRef } from 'react';
-import { Pressable, StyleSheet, Platform } from 'react-native';
+import { Pressable, StyleSheet, Platform, View } from 'react-native';
 import {
   MenuView as RNMenuView,
   MenuComponentRef,
@@ -72,76 +72,81 @@ function MenuView({
   };
 
   return (
-    <RNMenuView
-      ref={menuRef}
-      title={t('common.what_do_you_want')}
-      onPressAction={({ nativeEvent }) => {
-        if (nativeEvent.event === 'report') {
-          handleReport();
-        } else if (nativeEvent.event === 'remove') {
-          handleDeleteFriend();
-        } else if (nativeEvent.event === 'block') {
-          handleBlockUser();
-        } else if (nativeEvent.event === 'hide-post') {
-          handleMakePublic(false);
-        } else if (nativeEvent.event === 'show-post') {
-          handleMakePublic(true);
-        }
-      }}
-      shouldOpenOnLongPress={false}
-      actions={
-        isAuthor
-          ? [
-              ...(isPublic
-                ? [
-                    {
-                      id: 'hide-post',
-                      title: t('common.hide'),
-                      imageColor: 'yellow',
-                    },
-                  ]
-                : [
-                    {
-                      id: 'show-post',
-                      title: t('common.show'),
-                    },
-                  ]),
-            ]
-          : [
-              {
-                id: 'block',
-                title: t('common.block'),
-                attributes: {
-                  destructive: true,
-                },
-              },
-              {
-                id: 'report',
-                title: t('common.report'),
-                attributes: {
-                  destructive: true,
-                },
-              },
-            ]
-      }
+    <View
+      onStartShouldSetResponder={() => true}
+      onTouchEnd={(e) => e.stopPropagation()}
     >
-      <Pressable
-        hitSlop={40}
-        style={styles.pressable}
-        onPress={() => {
-          if (Platform.OS === 'android') {
-            menuRef.current?.show();
+      <RNMenuView
+        ref={menuRef}
+        title={t('common.what_do_you_want')}
+        onPressAction={({ nativeEvent }) => {
+          if (nativeEvent.event === 'report') {
+            handleReport();
+          } else if (nativeEvent.event === 'remove') {
+            handleDeleteFriend();
+          } else if (nativeEvent.event === 'block') {
+            handleBlockUser();
+          } else if (nativeEvent.event === 'hide-post') {
+            handleMakePublic(false);
+          } else if (nativeEvent.event === 'show-post') {
+            handleMakePublic(true);
           }
         }}
+        shouldOpenOnLongPress={false}
+        actions={
+          isAuthor
+            ? [
+                ...(isPublic
+                  ? [
+                      {
+                        id: 'hide-post',
+                        title: t('common.hide'),
+                        imageColor: 'yellow',
+                      },
+                    ]
+                  : [
+                      {
+                        id: 'show-post',
+                        title: t('common.show'),
+                      },
+                    ]),
+              ]
+            : [
+                {
+                  id: 'block',
+                  title: t('common.block'),
+                  attributes: {
+                    destructive: true,
+                  },
+                },
+                {
+                  id: 'report',
+                  title: t('common.report'),
+                  attributes: {
+                    destructive: true,
+                  },
+                },
+              ]
+        }
       >
-        <Ionicons
-          style={styles.icon}
-          name="ellipsis-horizontal"
-          size={18}
-          color={theme.colors.feedItem.secondaryText}
-        />
-      </Pressable>
-    </RNMenuView>
+        <Pressable
+          hitSlop={40}
+          style={styles.pressable}
+          onPress={() => {
+            if (Platform.OS === 'android') {
+              menuRef.current?.show();
+            }
+          }}
+        >
+          <Ionicons
+            style={styles.icon}
+            name="ellipsis-horizontal"
+            size={18}
+            color={theme.colors.feedItem.secondaryText}
+          />
+        </Pressable>
+      </RNMenuView>
+    </View>
   );
 }
 
