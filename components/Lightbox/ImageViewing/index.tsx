@@ -219,18 +219,10 @@ function ImageView({
   });
 
   const backdropStyle = useAnimatedStyle(() => {
-    let opacity = openProgress.value;
-    if (openProgress.value === 1 && orientation === 'portrait') {
-      const screenHeight = safeFrameDelayedForJSThreadOnly.height;
-      const dragProgress = Math.min(
-        Math.abs(dismissSwipeTranslateY.value) / (screenHeight / 2),
-        1,
-      );
-      opacity = 1 - dragProgress;
-    }
+    // Keep backdrop at full opacity during swipe - only fade on open/close animation
     const factor = isIOS ? 100 : 50;
     return {
-      opacity: Math.round(opacity * factor) / factor,
+      opacity: Math.round(openProgress.value * factor) / factor,
     };
   });
 
