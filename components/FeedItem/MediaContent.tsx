@@ -272,7 +272,7 @@ function MediaContent({
       ) : videoUrl ? (
         isLocked ? (
           <Image
-            source={{ uri: convertToCDNUrl(thumbnail || '') }}
+            source={thumbnail ? { uri: convertToCDNUrl(thumbnail) } : undefined}
             style={styles.lockedVideoThumb}
             contentFit="cover"
             blurRadius={24}
@@ -283,7 +283,7 @@ function MediaContent({
             shouldPlay={isVisible}
             isLive={isLive}
             loop={false}
-            thumbnail={convertToCDNUrl(thumbnail || '')}
+            thumbnail={thumbnail ? convertToCDNUrl(thumbnail) : undefined}
           />
         )
       ) : images[0] ? (
