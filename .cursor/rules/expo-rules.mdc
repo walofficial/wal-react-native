@@ -46,4 +46,7 @@ const additionalInstructions = `
 15. There is no pnpm, it npm project. Make sure that when thinking about modifything the native code. it can survive npx expo prebuild. Use industry standards when modifying native code
 16. Do not use deprecated API if you are implementing a new code or feature, search  for web for latest docs if needed
 17. App tries to minimize brainrot, do not write engagement boosting copyrights.
+18. Do not write async logic in for loop try to use asyncio gather instead so that it's faster
+19. Make sure to use types and create model for function arguments not just dicts or use existing model types. avoid dicts for types
+20. When creating new endpoints try to have some default arguments and make sure to use all features of swagger which can improve testing time and dev experience e.g when making a request
     `;

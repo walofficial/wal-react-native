@@ -263,6 +263,17 @@ export const decryptMessages =
       const processedMessages = await Promise.all(
         data.messages.map(async (message: ChatMessage) => {
           try {
+            // Check for plain_content first (AI/virtual user messages)
+            // @ts-ignore - plain_content may not be in generated types yet
+            if (message.plain_content) {
+              return {
+                ...message,
+                // @ts-ignore
+                message: message.plain_content,
+              };
+            }
+
+            // Regular encrypted messages
             if (message.encrypted_content && message.nonce) {
               let decryptedMessage = '';
 
@@ -300,6 +311,11 @@ export const decryptMessages =
       console.error('Error processing messages', error);
       decryptedMessages = data.messages
         .map((message: ChatMessage) => {
+          // @ts-ignore - plain_content may not be in generated types yet
+          if (message.plain_content) {
+            // @ts-ignore
+            return { ...message, message: message.plain_content };
+          }
           if (message.encrypted_content) {
             return null;
           }

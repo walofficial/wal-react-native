@@ -211,21 +211,40 @@ export function ChatList({ selectedUser }: ChatListProps) {
         }
       });
 
+      // Check if recipient is a virtual user (AI character)
+      // @ts-ignore - is_virtual may not be in the generated types yet
+      const isVirtualUser = selectedUser.is_virtual === true;
+
       try {
-        const { encrypted_content, nonce } =
-          await ProtocolService.encryptMessage(selectedUser.id, messageToSend);
-        socketContext?.emit('private_message', {
-          temporary_id: randomTemporaryMessageId,
-          recipient: selectedUser.id,
-          encrypted_content: encrypted_content,
-          nonce: nonce,
-          room_id: params.roomId,
-        });
+        if (isVirtualUser) {
+          // Virtual user - send plain text without encryption
+          socketContext?.emit('private_message', {
+            temporary_id: randomTemporaryMessageId,
+            recipient: selectedUser.id,
+            plain_content: messageToSend,
+            room_id: params.roomId,
+          });
+        } else {
+          // Regular user - encrypt message
+          const { encrypted_content, nonce } =
+            await ProtocolService.encryptMessage(
+              selectedUser.id,
+              messageToSend,
+            );
+          socketContext?.emit('private_message', {
+            temporary_id: randomTemporaryMessageId,
+            recipient: selectedUser.id,
+            encrypted_content: encrypted_content,
+            nonce: nonce,
+            room_id: params.roomId,
+          });
+        }
       } catch (error) {
         Sentry.captureException(error, {
           extra: {
             userId: user.id,
             recipientId: selectedUser.id,
+            isVirtualUser,
           },
         });
       }

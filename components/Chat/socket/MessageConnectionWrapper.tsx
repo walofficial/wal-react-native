@@ -155,8 +155,9 @@ export default function MessageConnectionWrapper({
 
     // Define the message handler separately so we can reference it in cleanup
     const handlePrivateMessage = (privateMessage: {
-      encrypted_content: string;
-      nonce: string;
+      encrypted_content?: string;
+      nonce?: string;
+      plain_content?: string;
       sender: string;
       sender_profile_picture: string;
       sender_username: string;
@@ -165,31 +166,40 @@ export default function MessageConnectionWrapper({
       room_id: string;
     }) => {
       const addIncomingMessage = async (newMessage: {
-        encrypted_content: string;
-        nonce: string;
+        encrypted_content?: string;
+        nonce?: string;
+        plain_content?: string;
         sender: string;
         id: string;
         temporary_id: string;
         room_id: string;
       }) => {
         let decryptedMessage = '';
-        try {
-          decryptedMessage = await ProtocolService.decryptMessage(
-            newMessage.sender,
-            {
-              encryptedMessage: newMessage.encrypted_content,
-              nonce: newMessage.nonce,
-            },
-          );
-        } catch (error) {
-          console.log('error', error);
-          Sentry.captureException(error, {
-            extra: {
-              userId: user?.id,
-              senderId: newMessage.sender,
-            },
-          });
+
+        // Check for plain_content first (AI/virtual user messages)
+        if (newMessage.plain_content) {
+          decryptedMessage = newMessage.plain_content;
+        } else if (newMessage.encrypted_content && newMessage.nonce) {
+          // Regular encrypted message
+          try {
+            decryptedMessage = await ProtocolService.decryptMessage(
+              newMessage.sender,
+              {
+                encryptedMessage: newMessage.encrypted_content,
+                nonce: newMessage.nonce,
+              },
+            );
+          } catch (error) {
+            console.log('error', error);
+            Sentry.captureException(error, {
+              extra: {
+                userId: user?.id,
+                senderId: newMessage.sender,
+              },
+            });
+          }
         }
+
         if (!decryptedMessage) {
           return;
         }

@@ -67,23 +67,23 @@ export const useUploadVideo = ({
       } catch {
         previewUriRef.current = null;
       }
-      uploadingToastIdRef.current = uploading({
-        label: t('common.uploading'),
-        mediaKind: isPhoto ? 'photo' : 'video',
-        progress: 0,
-        cancellable: true,
-        previewUri: previewUriRef.current ?? undefined,
-        onCancel: () => {
-          try {
-            abortController.current.abort();
-          } catch {}
-          if (uploadingToastIdRef.current) {
-            dismiss(uploadingToastIdRef.current);
-            uploadingToastIdRef.current = null;
-          }
-          info({ title: t('common.canceled') });
-        },
-      });
+      // uploadingToastIdRef.current = uploading({
+      //   label: t('common.uploading'),
+      //   mediaKind: isPhoto ? 'photo' : 'video',
+      //   progress: 0,
+      //   cancellable: true,
+      //   previewUri: previewUriRef.current ?? undefined,
+      //   onCancel: () => {
+      //     try {
+      //       abortController.current.abort();
+      //     } catch {}
+      //     if (uploadingToastIdRef.current) {
+      //       dismiss(uploadingToastIdRef.current);
+      //       uploadingToastIdRef.current = null;
+      //     }
+      //     info({ title: t('common.canceled') });
+      //   },
+      // });
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
