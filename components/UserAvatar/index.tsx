@@ -23,6 +23,7 @@ const UserAvatarLayout = ({
     green: theme.colors.primary,
     pink: '#ec4899', // pink-500
     blue: '#3b82f6', // blue-500
+    bluesky: '#0085ff', // Bluesky brand color
     gray: theme.colors.border,
   };
 

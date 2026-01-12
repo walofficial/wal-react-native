@@ -11,6 +11,7 @@ import {
   getLiveUsers,
   countLiveUsers,
   getSingleFeed,
+  getAllFeeds,
   goLive,
   publishPost,
   getCountryFeed,
@@ -60,6 +61,7 @@ import {
   getMessageChatRoom,
   listPublicKeysChatPublicKeysGet,
   publicKeysUiChatPublicKeysUiGet,
+  processAiBuffer,
   getNotifications,
   markNotificationsRead,
   getUnreadCount,
@@ -94,6 +96,22 @@ import {
   getCommentReactionsCommentsCommentIdReactionsGet,
   addOrUpdateReactionCommentsCommentIdReactionsPost,
   geofenceEvent,
+  createAiCharacter,
+  getAiCharacter,
+  updateAiCharacter,
+  aiCharacterGoLive,
+  addAiCharacterMemory,
+  listAiCharacterMemories,
+  aiCharacterBatchComplete,
+  executeAiCharacterPost,
+  pollAiBatchJobs,
+  listAiCharacters,
+  uploadLocationAssets,
+  deleteLocationAssets,
+  getLocationAssets,
+  updateLocationAssets,
+  listLocationAssets,
+  addLocationImages,
   getCountry,
   endpointHealthGet,
 } from '../sdk.gen';
@@ -120,9 +138,10 @@ import type {
   GetLiveUsersData,
   CountLiveUsersData,
   GetSingleFeedData,
+  GetAllFeedsData,
   GoLiveData,
   GoLiveError,
-  GoLiveResponse,
+  GoLiveResponse2,
   PublishPostData,
   PublishPostError,
   PublishPostResponse,
@@ -222,6 +241,9 @@ import type {
   GetMessageChatRoomData,
   ListPublicKeysChatPublicKeysGetData,
   PublicKeysUiChatPublicKeysUiGetData,
+  ProcessAiBufferData,
+  ProcessAiBufferError,
+  ProcessAiBufferResponse2,
   GetNotificationsData,
   GetNotificationsError,
   GetNotificationsResponse,
@@ -294,6 +316,43 @@ import type {
   GeofenceEventData,
   GeofenceEventError,
   GeofenceEventResponse2,
+  CreateAiCharacterData,
+  CreateAiCharacterError,
+  CreateAiCharacterResponse,
+  GetAiCharacterData,
+  UpdateAiCharacterData,
+  UpdateAiCharacterError,
+  UpdateAiCharacterResponse2,
+  AiCharacterGoLiveData,
+  AiCharacterGoLiveError,
+  AiCharacterGoLiveResponse,
+  AddAiCharacterMemoryData,
+  AddAiCharacterMemoryError,
+  AddAiCharacterMemoryResponse,
+  ListAiCharacterMemoriesData,
+  AiCharacterBatchCompleteData,
+  AiCharacterBatchCompleteError,
+  AiCharacterBatchCompleteResponse,
+  ExecuteAiCharacterPostData,
+  ExecuteAiCharacterPostError,
+  ExecuteAiCharacterPostResponse,
+  PollAiBatchJobsData,
+  PollAiBatchJobsResponse,
+  ListAiCharactersData,
+  UploadLocationAssetsData,
+  UploadLocationAssetsError,
+  UploadLocationAssetsResponse,
+  DeleteLocationAssetsData,
+  DeleteLocationAssetsError,
+  DeleteLocationAssetsResponse,
+  GetLocationAssetsData,
+  UpdateLocationAssetsData,
+  UpdateLocationAssetsError,
+  UpdateLocationAssetsResponse,
+  ListLocationAssetsData,
+  AddLocationImagesData,
+  AddLocationImagesError,
+  AddLocationImagesResponse,
   GetCountryData,
   EndpointHealthGetData,
 } from '../types.gen';
@@ -659,6 +718,36 @@ export const getSingleFeedOptions = (options: Options<GetSingleFeedData>) => {
   });
 };
 
+export const getAllFeedsQueryKey = (options?: Options<GetAllFeedsData>) =>
+  createQueryKey('getAllFeeds', options);
+
+/**
+ * Get All Feeds
+ * Get all feeds with optional filtering.
+ *
+ * Args:
+ * feed_type: Filter by feed type (news, fact_check, location)
+ * include_hidden: Whether to include hidden feeds (default: False)
+ * limit: Maximum number of feeds to return (default: 100, max: 500)
+ *
+ * Returns:
+ * List of all feeds matching the filters
+ */
+export const getAllFeedsOptions = (options?: Options<GetAllFeedsData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getAllFeeds({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getAllFeedsQueryKey(options),
+  });
+};
+
 export const goLiveQueryKey = (options: Options<GoLiveData>) =>
   createQueryKey('goLive', options);
 
@@ -686,12 +775,12 @@ export const goLiveOptions = (options: Options<GoLiveData>) => {
 export const goLiveMutation = (
   options?: Partial<Options<GoLiveData>>,
 ): UseMutationOptions<
-  GoLiveResponse,
+  GoLiveResponse2,
   AxiosError<GoLiveError>,
   Options<GoLiveData>
 > => {
   const mutationOptions: UseMutationOptions<
-    GoLiveResponse,
+    GoLiveResponse2,
     AxiosError<GoLiveError>,
     Options<GoLiveData>
   > = {
@@ -2703,6 +2792,65 @@ export const publicKeysUiChatPublicKeysUiGetOptions = (
   });
 };
 
+export const processAiBufferQueryKey = (
+  options: Options<ProcessAiBufferData>,
+) => createQueryKey('processAiBuffer', options);
+
+/**
+ * Process Ai Buffer Endpoint
+ * Process AI message buffer.
+ *
+ * This endpoint is called by Cloud Tasks after the debounce period.
+ * It processes all buffered messages and generates an AI response.
+ */
+export const processAiBufferOptions = (
+  options: Options<ProcessAiBufferData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await processAiBuffer({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: processAiBufferQueryKey(options),
+  });
+};
+
+/**
+ * Process Ai Buffer Endpoint
+ * Process AI message buffer.
+ *
+ * This endpoint is called by Cloud Tasks after the debounce period.
+ * It processes all buffered messages and generates an AI response.
+ */
+export const processAiBufferMutation = (
+  options?: Partial<Options<ProcessAiBufferData>>,
+): UseMutationOptions<
+  ProcessAiBufferResponse2,
+  AxiosError<ProcessAiBufferError>,
+  Options<ProcessAiBufferData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ProcessAiBufferResponse2,
+    AxiosError<ProcessAiBufferError>,
+    Options<ProcessAiBufferData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await processAiBuffer({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
 export const getNotificationsQueryKey = (
   options?: Options<GetNotificationsData>,
 ) => createQueryKey('getNotifications', options);
@@ -4152,6 +4300,701 @@ export const geofenceEventMutation = (
   > = {
     mutationFn: async (localOptions) => {
       const { data } = await geofenceEvent({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const createAiCharacterQueryKey = (
+  options: Options<CreateAiCharacterData>,
+) => createQueryKey('createAiCharacter', options);
+
+/**
+ * Create Character Endpoint
+ * Create a new AI character with associated virtual user.
+ *
+ * This endpoint:
+ * 1. Creates a virtual user in the users collection
+ * 2. Uploads face images to cloud storage
+ * 3. Creates the AI character document
+ * 4. Sets up live user presence at allowed feeds
+ */
+export const createAiCharacterOptions = (
+  options: Options<CreateAiCharacterData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await createAiCharacter({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: createAiCharacterQueryKey(options),
+  });
+};
+
+/**
+ * Create Character Endpoint
+ * Create a new AI character with associated virtual user.
+ *
+ * This endpoint:
+ * 1. Creates a virtual user in the users collection
+ * 2. Uploads face images to cloud storage
+ * 3. Creates the AI character document
+ * 4. Sets up live user presence at allowed feeds
+ */
+export const createAiCharacterMutation = (
+  options?: Partial<Options<CreateAiCharacterData>>,
+): UseMutationOptions<
+  CreateAiCharacterResponse,
+  AxiosError<CreateAiCharacterError>,
+  Options<CreateAiCharacterData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    CreateAiCharacterResponse,
+    AxiosError<CreateAiCharacterError>,
+    Options<CreateAiCharacterData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await createAiCharacter({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getAiCharacterQueryKey = (options: Options<GetAiCharacterData>) =>
+  createQueryKey('getAiCharacter', options);
+
+/**
+ * Get Character Endpoint
+ * Get an AI character by ID.
+ */
+export const getAiCharacterOptions = (options: Options<GetAiCharacterData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getAiCharacter({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getAiCharacterQueryKey(options),
+  });
+};
+
+/**
+ * Update Character Endpoint
+ * Update an existing AI character.
+ *
+ * Only provided fields will be updated (partial update).
+ */
+export const updateAiCharacterMutation = (
+  options?: Partial<Options<UpdateAiCharacterData>>,
+): UseMutationOptions<
+  UpdateAiCharacterResponse2,
+  AxiosError<UpdateAiCharacterError>,
+  Options<UpdateAiCharacterData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UpdateAiCharacterResponse2,
+    AxiosError<UpdateAiCharacterError>,
+    Options<UpdateAiCharacterData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await updateAiCharacter({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const aiCharacterGoLiveQueryKey = (
+  options: Options<AiCharacterGoLiveData>,
+) => createQueryKey('aiCharacterGoLive', options);
+
+/**
+ * Go Live Endpoint
+ * Make an AI character go live at a specific feed.
+ *
+ * This endpoint:
+ * 1. Verifies the character exists
+ * 2. Verifies the feed exists
+ * 3. Checks if the character is already live at the feed
+ * 4. Creates a live_users entry with far future expiration
+ * 5. Optionally adds the feed to allowed_feed_ids if not present
+ */
+export const aiCharacterGoLiveOptions = (
+  options: Options<AiCharacterGoLiveData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await aiCharacterGoLive({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: aiCharacterGoLiveQueryKey(options),
+  });
+};
+
+/**
+ * Go Live Endpoint
+ * Make an AI character go live at a specific feed.
+ *
+ * This endpoint:
+ * 1. Verifies the character exists
+ * 2. Verifies the feed exists
+ * 3. Checks if the character is already live at the feed
+ * 4. Creates a live_users entry with far future expiration
+ * 5. Optionally adds the feed to allowed_feed_ids if not present
+ */
+export const aiCharacterGoLiveMutation = (
+  options?: Partial<Options<AiCharacterGoLiveData>>,
+): UseMutationOptions<
+  AiCharacterGoLiveResponse,
+  AxiosError<AiCharacterGoLiveError>,
+  Options<AiCharacterGoLiveData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    AiCharacterGoLiveResponse,
+    AxiosError<AiCharacterGoLiveError>,
+    Options<AiCharacterGoLiveData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await aiCharacterGoLive({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const addAiCharacterMemoryQueryKey = (
+  options: Options<AddAiCharacterMemoryData>,
+) => createQueryKey('addAiCharacterMemory', options);
+
+/**
+ * Add Memory Endpoint
+ * Manually add a global memory to an AI character.
+ *
+ * This is useful for adding backstory, facts, or information
+ * that should be available in all conversations.
+ */
+export const addAiCharacterMemoryOptions = (
+  options: Options<AddAiCharacterMemoryData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await addAiCharacterMemory({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: addAiCharacterMemoryQueryKey(options),
+  });
+};
+
+/**
+ * Add Memory Endpoint
+ * Manually add a global memory to an AI character.
+ *
+ * This is useful for adding backstory, facts, or information
+ * that should be available in all conversations.
+ */
+export const addAiCharacterMemoryMutation = (
+  options?: Partial<Options<AddAiCharacterMemoryData>>,
+): UseMutationOptions<
+  AddAiCharacterMemoryResponse,
+  AxiosError<AddAiCharacterMemoryError>,
+  Options<AddAiCharacterMemoryData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    AddAiCharacterMemoryResponse,
+    AxiosError<AddAiCharacterMemoryError>,
+    Options<AddAiCharacterMemoryData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await addAiCharacterMemory({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const listAiCharacterMemoriesQueryKey = (
+  options: Options<ListAiCharacterMemoriesData>,
+) => createQueryKey('listAiCharacterMemories', options);
+
+/**
+ * List Memories Endpoint
+ * List memories for an AI character (admin endpoint).
+ *
+ * Can filter by user_id to see per-user memories,
+ * or set include_global=True to include shared memories.
+ */
+export const listAiCharacterMemoriesOptions = (
+  options: Options<ListAiCharacterMemoriesData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listAiCharacterMemories({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listAiCharacterMemoriesQueryKey(options),
+  });
+};
+
+export const aiCharacterBatchCompleteQueryKey = (
+  options: Options<AiCharacterBatchCompleteData>,
+) => createQueryKey('aiCharacterBatchComplete', options);
+
+/**
+ * Batch Complete Endpoint
+ * Handle completion of a Gemini Batch API job.
+ *
+ * This endpoint:
+ * 1. Retrieves the batch job metadata
+ * 2. Processes each generated image result
+ * 3. Schedules Cloud Tasks for staggered post insertion
+ */
+export const aiCharacterBatchCompleteOptions = (
+  options: Options<AiCharacterBatchCompleteData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await aiCharacterBatchComplete({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: aiCharacterBatchCompleteQueryKey(options),
+  });
+};
+
+/**
+ * Batch Complete Endpoint
+ * Handle completion of a Gemini Batch API job.
+ *
+ * This endpoint:
+ * 1. Retrieves the batch job metadata
+ * 2. Processes each generated image result
+ * 3. Schedules Cloud Tasks for staggered post insertion
+ */
+export const aiCharacterBatchCompleteMutation = (
+  options?: Partial<Options<AiCharacterBatchCompleteData>>,
+): UseMutationOptions<
+  AiCharacterBatchCompleteResponse,
+  AxiosError<AiCharacterBatchCompleteError>,
+  Options<AiCharacterBatchCompleteData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    AiCharacterBatchCompleteResponse,
+    AxiosError<AiCharacterBatchCompleteError>,
+    Options<AiCharacterBatchCompleteData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await aiCharacterBatchComplete({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const executeAiCharacterPostQueryKey = (
+  options: Options<ExecuteAiCharacterPostData>,
+) => createQueryKey('executeAiCharacterPost', options);
+
+/**
+ * Execute Post Endpoint
+ * Execute a scheduled AI character post.
+ *
+ * Called by Cloud Tasks to insert the verification document
+ * at the scheduled time.
+ */
+export const executeAiCharacterPostOptions = (
+  options: Options<ExecuteAiCharacterPostData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await executeAiCharacterPost({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: executeAiCharacterPostQueryKey(options),
+  });
+};
+
+/**
+ * Execute Post Endpoint
+ * Execute a scheduled AI character post.
+ *
+ * Called by Cloud Tasks to insert the verification document
+ * at the scheduled time.
+ */
+export const executeAiCharacterPostMutation = (
+  options?: Partial<Options<ExecuteAiCharacterPostData>>,
+): UseMutationOptions<
+  ExecuteAiCharacterPostResponse,
+  AxiosError<ExecuteAiCharacterPostError>,
+  Options<ExecuteAiCharacterPostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    ExecuteAiCharacterPostResponse,
+    AxiosError<ExecuteAiCharacterPostError>,
+    Options<ExecuteAiCharacterPostData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await executeAiCharacterPost({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const pollAiBatchJobsQueryKey = (
+  options?: Options<PollAiBatchJobsData>,
+) => createQueryKey('pollAiBatchJobs', options);
+
+/**
+ * Poll Batch Jobs Endpoint
+ * Poll for pending Gemini Batch API jobs and trigger completion handlers.
+ *
+ * Called by Cloud Scheduler every 5 minutes to check job status.
+ */
+export const pollAiBatchJobsOptions = (
+  options?: Options<PollAiBatchJobsData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await pollAiBatchJobs({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: pollAiBatchJobsQueryKey(options),
+  });
+};
+
+/**
+ * Poll Batch Jobs Endpoint
+ * Poll for pending Gemini Batch API jobs and trigger completion handlers.
+ *
+ * Called by Cloud Scheduler every 5 minutes to check job status.
+ */
+export const pollAiBatchJobsMutation = (
+  options?: Partial<Options<PollAiBatchJobsData>>,
+): UseMutationOptions<
+  PollAiBatchJobsResponse,
+  AxiosError<DefaultError>,
+  Options<PollAiBatchJobsData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    PollAiBatchJobsResponse,
+    AxiosError<DefaultError>,
+    Options<PollAiBatchJobsData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await pollAiBatchJobs({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const listAiCharactersQueryKey = (
+  options?: Options<ListAiCharactersData>,
+) => createQueryKey('listAiCharacters', options);
+
+/**
+ * List Characters Endpoint
+ * List all AI characters with optional active filter.
+ */
+export const listAiCharactersOptions = (
+  options?: Options<ListAiCharactersData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listAiCharacters({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listAiCharactersQueryKey(options),
+  });
+};
+
+export const uploadLocationAssetsQueryKey = (
+  options: Options<UploadLocationAssetsData>,
+) => createQueryKey('uploadLocationAssets', options);
+
+/**
+ * Upload Location Assets Endpoint
+ * Upload reference images and prompts for a location.
+ *
+ * These assets are used by AI characters when generating
+ * images of themselves at this location.
+ */
+export const uploadLocationAssetsOptions = (
+  options: Options<UploadLocationAssetsData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await uploadLocationAssets({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: uploadLocationAssetsQueryKey(options),
+  });
+};
+
+/**
+ * Upload Location Assets Endpoint
+ * Upload reference images and prompts for a location.
+ *
+ * These assets are used by AI characters when generating
+ * images of themselves at this location.
+ */
+export const uploadLocationAssetsMutation = (
+  options?: Partial<Options<UploadLocationAssetsData>>,
+): UseMutationOptions<
+  UploadLocationAssetsResponse,
+  AxiosError<UploadLocationAssetsError>,
+  Options<UploadLocationAssetsData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UploadLocationAssetsResponse,
+    AxiosError<UploadLocationAssetsError>,
+    Options<UploadLocationAssetsData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await uploadLocationAssets({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Delete Location Assets Endpoint
+ * Delete location assets for a feed.
+ */
+export const deleteLocationAssetsMutation = (
+  options?: Partial<Options<DeleteLocationAssetsData>>,
+): UseMutationOptions<
+  DeleteLocationAssetsResponse,
+  AxiosError<DeleteLocationAssetsError>,
+  Options<DeleteLocationAssetsData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DeleteLocationAssetsResponse,
+    AxiosError<DeleteLocationAssetsError>,
+    Options<DeleteLocationAssetsData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await deleteLocationAssets({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const getLocationAssetsQueryKey = (
+  options: Options<GetLocationAssetsData>,
+) => createQueryKey('getLocationAssets', options);
+
+/**
+ * Get Location Assets Endpoint
+ * Get location assets for a feed.
+ */
+export const getLocationAssetsOptions = (
+  options: Options<GetLocationAssetsData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await getLocationAssets({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: getLocationAssetsQueryKey(options),
+  });
+};
+
+/**
+ * Update Location Assets Endpoint
+ * Update location assets for a feed.
+ *
+ * Only provided fields will be updated (partial update).
+ */
+export const updateLocationAssetsMutation = (
+  options?: Partial<Options<UpdateLocationAssetsData>>,
+): UseMutationOptions<
+  UpdateLocationAssetsResponse,
+  AxiosError<UpdateLocationAssetsError>,
+  Options<UpdateLocationAssetsData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UpdateLocationAssetsResponse,
+    AxiosError<UpdateLocationAssetsError>,
+    Options<UpdateLocationAssetsData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await updateLocationAssets({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const listLocationAssetsQueryKey = (
+  options?: Options<ListLocationAssetsData>,
+) => createQueryKey('listLocationAssets', options);
+
+/**
+ * List Location Assets Endpoint
+ * List all location assets.
+ */
+export const listLocationAssetsOptions = (
+  options?: Options<ListLocationAssetsData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await listLocationAssets({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: listLocationAssetsQueryKey(options),
+  });
+};
+
+export const addLocationImagesQueryKey = (
+  options: Options<AddLocationImagesData>,
+) => createQueryKey('addLocationImages', options);
+
+/**
+ * Add Location Images Endpoint
+ * Add additional images to existing location assets.
+ */
+export const addLocationImagesOptions = (
+  options: Options<AddLocationImagesData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await addLocationImages({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: addLocationImagesQueryKey(options),
+  });
+};
+
+/**
+ * Add Location Images Endpoint
+ * Add additional images to existing location assets.
+ */
+export const addLocationImagesMutation = (
+  options?: Partial<Options<AddLocationImagesData>>,
+): UseMutationOptions<
+  AddLocationImagesResponse,
+  AxiosError<AddLocationImagesError>,
+  Options<AddLocationImagesData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    AddLocationImagesResponse,
+    AxiosError<AddLocationImagesError>,
+    Options<AddLocationImagesData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await addLocationImages({
         ...options,
         ...localOptions,
         throwOnError: true,

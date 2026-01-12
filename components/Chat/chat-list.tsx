@@ -15,7 +15,7 @@ import {
   InteractionManager,
 } from 'react-native';
 import ChatBottombar from './chat-bottombar';
-import { User, ChatMessage } from '@/lib/api/generated';
+import { User, ChatMessage, ChatMessageAttachment } from '@/lib/api/generated';
 import useAuth from '@/hooks/useAuth';
 import { SocketContext } from './socket/context';
 import useMessageUpdates from './useMessageUpdates';
@@ -139,6 +139,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
               ? getTimestampFromObjectId(message.id)
               : new Date(),
           user: getUserBasedOnId(message.author_id),
+          attachments: message.attachments,
         })),
       ) || [],
     [orderedPages],
@@ -158,6 +159,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
         text: string;
         createdAt: Date;
         _id: string;
+        attachments?: ChatMessageAttachment[] | null;
       };
       index: number;
     }) => {
@@ -175,6 +177,7 @@ export function ChatList({ selectedUser }: ChatListProps) {
           isAuthor={isSender}
           createdAt={item.createdAt}
           isLastFromAuthor={isLastFromAuthor}
+          attachments={item.attachments}
         />
       );
     },
@@ -441,7 +444,6 @@ export function ChatList({ selectedUser }: ChatListProps) {
       layoutHeight,
     ],
   );
-
   return (
     <View style={{ flex: 1, paddingTop: headerHeight }}>
       <ScrollProvider onScroll={onScroll}>
@@ -478,7 +480,10 @@ export function ChatList({ selectedUser }: ChatListProps) {
         />
       </ScrollProvider>
       <Animated.View style={animatedStickyViewStyle}>
-        <ChatBottombar sendMessage={onSendMessage} />
+        <ChatBottombar
+          sendMessage={onSendMessage}
+          recipientId={selectedUser.id}
+        />
       </Animated.View>
     </View>
   );

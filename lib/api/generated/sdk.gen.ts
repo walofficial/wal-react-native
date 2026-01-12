@@ -34,6 +34,9 @@ import type {
   GetSingleFeedData,
   GetSingleFeedResponses,
   GetSingleFeedErrors,
+  GetAllFeedsData,
+  GetAllFeedsResponses,
+  GetAllFeedsErrors,
   GoLiveData,
   GoLiveResponses,
   GoLiveErrors,
@@ -165,6 +168,9 @@ import type {
   CreateChatRoomData,
   CreateChatRoomResponses,
   CreateChatRoomErrors,
+  UploadChatAttachmentData,
+  UploadChatAttachmentResponses,
+  UploadChatAttachmentErrors,
   ExpireChatRoomChatExpireChatRoomPostData,
   ExpireChatRoomChatExpireChatRoomPostResponses,
   ExpireChatRoomChatExpireChatRoomPostErrors,
@@ -178,6 +184,9 @@ import type {
   ListPublicKeysChatPublicKeysGetResponses,
   PublicKeysUiChatPublicKeysUiGetData,
   PublicKeysUiChatPublicKeysUiGetResponses,
+  ProcessAiBufferData,
+  ProcessAiBufferResponses,
+  ProcessAiBufferErrors,
   GetNotificationsData,
   GetNotificationsResponses,
   GetNotificationsErrors,
@@ -280,6 +289,54 @@ import type {
   GeofenceEventData,
   GeofenceEventResponses,
   GeofenceEventErrors,
+  CreateAiCharacterData,
+  CreateAiCharacterResponses,
+  CreateAiCharacterErrors,
+  GetAiCharacterData,
+  GetAiCharacterResponses,
+  GetAiCharacterErrors,
+  UpdateAiCharacterData,
+  UpdateAiCharacterResponses,
+  UpdateAiCharacterErrors,
+  AiCharacterGoLiveData,
+  AiCharacterGoLiveResponses,
+  AiCharacterGoLiveErrors,
+  AddAiCharacterMemoryData,
+  AddAiCharacterMemoryResponses,
+  AddAiCharacterMemoryErrors,
+  ListAiCharacterMemoriesData,
+  ListAiCharacterMemoriesResponses,
+  ListAiCharacterMemoriesErrors,
+  AiCharacterBatchCompleteData,
+  AiCharacterBatchCompleteResponses,
+  AiCharacterBatchCompleteErrors,
+  ExecuteAiCharacterPostData,
+  ExecuteAiCharacterPostResponses,
+  ExecuteAiCharacterPostErrors,
+  PollAiBatchJobsData,
+  PollAiBatchJobsResponses,
+  PollAiBatchJobsErrors,
+  ListAiCharactersData,
+  ListAiCharactersResponses,
+  ListAiCharactersErrors,
+  UploadLocationAssetsData,
+  UploadLocationAssetsResponses,
+  UploadLocationAssetsErrors,
+  DeleteLocationAssetsData,
+  DeleteLocationAssetsResponses,
+  DeleteLocationAssetsErrors,
+  GetLocationAssetsData,
+  GetLocationAssetsResponses,
+  GetLocationAssetsErrors,
+  UpdateLocationAssetsData,
+  UpdateLocationAssetsResponses,
+  UpdateLocationAssetsErrors,
+  ListLocationAssetsData,
+  ListLocationAssetsResponses,
+  ListLocationAssetsErrors,
+  AddLocationImagesData,
+  AddLocationImagesResponses,
+  AddLocationImagesErrors,
   GetCountryData,
   GetCountryResponses,
   EndpointHealthGetData,
@@ -484,6 +541,32 @@ export const getSingleFeed = <ThrowOnError extends boolean = false>(
   >({
     responseType: 'json',
     url: '/feeds/single/{feed_id}',
+    ...options,
+  });
+};
+
+/**
+ * Get All Feeds
+ * Get all feeds with optional filtering.
+ *
+ * Args:
+ * feed_type: Filter by feed type (news, fact_check, location)
+ * include_hidden: Whether to include hidden feeds (default: False)
+ * limit: Maximum number of feeds to return (default: 100, max: 500)
+ *
+ * Returns:
+ * List of all feeds matching the filters
+ */
+export const getAllFeeds = <ThrowOnError extends boolean = false>(
+  options?: Options<GetAllFeedsData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    GetAllFeedsResponses,
+    GetAllFeedsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/feeds/all',
     ...options,
   });
 };
@@ -1367,6 +1450,25 @@ export const createChatRoom = <ThrowOnError extends boolean = false>(
 };
 
 /**
+ * Upload Chat Attachment
+ * Upload an image attachment for a chat message.
+ */
+export const uploadChatAttachment = <ThrowOnError extends boolean = false>(
+  options: Options<UploadChatAttachmentData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    UploadChatAttachmentResponses,
+    UploadChatAttachmentErrors,
+    ThrowOnError
+  >({
+    ...formDataBodySerializer,
+    responseType: 'json',
+    url: '/chat/upload-attachment',
+    ...options,
+  });
+};
+
+/**
  * Expire Chat Room
  */
 export const expireChatRoomChatExpireChatRoomPost = <
@@ -1464,6 +1566,31 @@ export const publicKeysUiChatPublicKeysUiGet = <
     responseType: 'text',
     url: '/chat/public-keys/ui',
     ...options,
+  });
+};
+
+/**
+ * Process Ai Buffer Endpoint
+ * Process AI message buffer.
+ *
+ * This endpoint is called by Cloud Tasks after the debounce period.
+ * It processes all buffered messages and generates an AI response.
+ */
+export const processAiBuffer = <ThrowOnError extends boolean = false>(
+  options: Options<ProcessAiBufferData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    ProcessAiBufferResponses,
+    ProcessAiBufferErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/chat/process-ai-buffer',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
   });
 };
 
@@ -2129,6 +2256,369 @@ export const geofenceEvent = <ThrowOnError extends boolean = false>(
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Create Character Endpoint
+ * Create a new AI character with associated virtual user.
+ *
+ * This endpoint:
+ * 1. Creates a virtual user in the users collection
+ * 2. Uploads face images to cloud storage
+ * 3. Creates the AI character document
+ * 4. Sets up live user presence at allowed feeds
+ */
+export const createAiCharacter = <ThrowOnError extends boolean = false>(
+  options: Options<CreateAiCharacterData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    CreateAiCharacterResponses,
+    CreateAiCharacterErrors,
+    ThrowOnError
+  >({
+    ...formDataBodySerializer,
+    responseType: 'json',
+    url: '/ai-characters/create',
+    ...options,
+    headers: {
+      'Content-Type': null,
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Get Character Endpoint
+ * Get an AI character by ID.
+ */
+export const getAiCharacter = <ThrowOnError extends boolean = false>(
+  options: Options<GetAiCharacterData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).get<
+    GetAiCharacterResponses,
+    GetAiCharacterErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/{character_id}',
+    ...options,
+  });
+};
+
+/**
+ * Update Character Endpoint
+ * Update an existing AI character.
+ *
+ * Only provided fields will be updated (partial update).
+ */
+export const updateAiCharacter = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateAiCharacterData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).put<
+    UpdateAiCharacterResponses,
+    UpdateAiCharacterErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/{character_id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Go Live Endpoint
+ * Make an AI character go live at a specific feed.
+ *
+ * This endpoint:
+ * 1. Verifies the character exists
+ * 2. Verifies the feed exists
+ * 3. Checks if the character is already live at the feed
+ * 4. Creates a live_users entry with far future expiration
+ * 5. Optionally adds the feed to allowed_feed_ids if not present
+ */
+export const aiCharacterGoLive = <ThrowOnError extends boolean = false>(
+  options: Options<AiCharacterGoLiveData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    AiCharacterGoLiveResponses,
+    AiCharacterGoLiveErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/{character_id}/go-live',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Add Memory Endpoint
+ * Manually add a global memory to an AI character.
+ *
+ * This is useful for adding backstory, facts, or information
+ * that should be available in all conversations.
+ */
+export const addAiCharacterMemory = <ThrowOnError extends boolean = false>(
+  options: Options<AddAiCharacterMemoryData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    AddAiCharacterMemoryResponses,
+    AddAiCharacterMemoryErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/{character_id}/add-memory',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * List Memories Endpoint
+ * List memories for an AI character (admin endpoint).
+ *
+ * Can filter by user_id to see per-user memories,
+ * or set include_global=True to include shared memories.
+ */
+export const listAiCharacterMemories = <ThrowOnError extends boolean = false>(
+  options: Options<ListAiCharacterMemoriesData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).get<
+    ListAiCharacterMemoriesResponses,
+    ListAiCharacterMemoriesErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/{character_id}/memories',
+    ...options,
+  });
+};
+
+/**
+ * Batch Complete Endpoint
+ * Handle completion of a Gemini Batch API job.
+ *
+ * This endpoint:
+ * 1. Retrieves the batch job metadata
+ * 2. Processes each generated image result
+ * 3. Schedules Cloud Tasks for staggered post insertion
+ */
+export const aiCharacterBatchComplete = <ThrowOnError extends boolean = false>(
+  options: Options<AiCharacterBatchCompleteData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    AiCharacterBatchCompleteResponses,
+    AiCharacterBatchCompleteErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/batch-complete',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Execute Post Endpoint
+ * Execute a scheduled AI character post.
+ *
+ * Called by Cloud Tasks to insert the verification document
+ * at the scheduled time.
+ */
+export const executeAiCharacterPost = <ThrowOnError extends boolean = false>(
+  options: Options<ExecuteAiCharacterPostData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    ExecuteAiCharacterPostResponses,
+    ExecuteAiCharacterPostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/execute-post',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Poll Batch Jobs Endpoint
+ * Poll for pending Gemini Batch API jobs and trigger completion handlers.
+ *
+ * Called by Cloud Scheduler every 5 minutes to check job status.
+ */
+export const pollAiBatchJobs = <ThrowOnError extends boolean = false>(
+  options?: Options<PollAiBatchJobsData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).post<
+    PollAiBatchJobsResponses,
+    PollAiBatchJobsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/poll-batch-jobs',
+    ...options,
+  });
+};
+
+/**
+ * List Characters Endpoint
+ * List all AI characters with optional active filter.
+ */
+export const listAiCharacters = <ThrowOnError extends boolean = false>(
+  options?: Options<ListAiCharactersData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    ListAiCharactersResponses,
+    ListAiCharactersErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/',
+    ...options,
+  });
+};
+
+/**
+ * Upload Location Assets Endpoint
+ * Upload reference images and prompts for a location.
+ *
+ * These assets are used by AI characters when generating
+ * images of themselves at this location.
+ */
+export const uploadLocationAssets = <ThrowOnError extends boolean = false>(
+  options: Options<UploadLocationAssetsData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    UploadLocationAssetsResponses,
+    UploadLocationAssetsErrors,
+    ThrowOnError
+  >({
+    ...formDataBodySerializer,
+    responseType: 'json',
+    url: '/location-assets/upload',
+    ...options,
+    headers: {
+      'Content-Type': null,
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Delete Location Assets Endpoint
+ * Delete location assets for a feed.
+ */
+export const deleteLocationAssets = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteLocationAssetsData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).delete<
+    DeleteLocationAssetsResponses,
+    DeleteLocationAssetsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/location-assets/{feed_id}',
+    ...options,
+  });
+};
+
+/**
+ * Get Location Assets Endpoint
+ * Get location assets for a feed.
+ */
+export const getLocationAssets = <ThrowOnError extends boolean = false>(
+  options: Options<GetLocationAssetsData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).get<
+    GetLocationAssetsResponses,
+    GetLocationAssetsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/location-assets/{feed_id}',
+    ...options,
+  });
+};
+
+/**
+ * Update Location Assets Endpoint
+ * Update location assets for a feed.
+ *
+ * Only provided fields will be updated (partial update).
+ */
+export const updateLocationAssets = <ThrowOnError extends boolean = false>(
+  options: Options<UpdateLocationAssetsData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).put<
+    UpdateLocationAssetsResponses,
+    UpdateLocationAssetsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/location-assets/{feed_id}',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * List Location Assets Endpoint
+ * List all location assets.
+ */
+export const listLocationAssets = <ThrowOnError extends boolean = false>(
+  options?: Options<ListLocationAssetsData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    ListLocationAssetsResponses,
+    ListLocationAssetsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/location-assets/',
+    ...options,
+  });
+};
+
+/**
+ * Add Location Images Endpoint
+ * Add additional images to existing location assets.
+ */
+export const addLocationImages = <ThrowOnError extends boolean = false>(
+  options: Options<AddLocationImagesData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    AddLocationImagesResponses,
+    AddLocationImagesErrors,
+    ThrowOnError
+  >({
+    ...formDataBodySerializer,
+    responseType: 'json',
+    url: '/location-assets/{feed_id}/add-images',
+    ...options,
+    headers: {
+      'Content-Type': null,
       ...options.headers,
     },
   });

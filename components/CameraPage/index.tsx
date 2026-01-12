@@ -90,11 +90,18 @@ const CameraOverlay = Reanimated.createAnimatedComponent(View);
 
 export default function CameraPage(): React.ReactElement {
   const navigation = useNavigation();
-  const { feedId } = useLocalSearchParams();
+  const { feedId, chatMode, roomId, recipientId } = useLocalSearchParams<{
+    feedId?: string;
+    chatMode?: string;
+    roomId?: string;
+    recipientId?: string;
+  }>();
   const { dismiss } = useToast();
   const [liveDescription, setLiveDescription] = useState('');
 
-  const shouldShowMediaTypeSwitch = true;
+  // In chat mode, only show photo capture (no video/live tabs)
+  const isChatMode = chatMode === 'true';
+  const shouldShowMediaTypeSwitch = !isChatMode;
   const safePadding = useSafeAreaPadding();
   const camera = useRef<Camera>(null);
   const [isCameraInitialized, setIsCameraInitialized] = useState(false);
@@ -191,10 +198,16 @@ export default function CameraPage(): React.ReactElement {
           type: type,
           feedId: feedId as string,
           recordingTime: lastSavedRecordingTime.current,
+          // Pass chat mode params if in chat mode
+          ...(isChatMode && {
+            chatMode: 'true',
+            roomId: roomId,
+            recipientId: recipientId,
+          }),
         },
       });
     },
-    [navigation],
+    [navigation, isChatMode, roomId, recipientId, feedId],
   );
   const onFlipCameraPressed = useCallback(() => {
     setCameraPosition((p) => (p === 'back' ? 'front' : 'back'));
@@ -326,8 +339,9 @@ export default function CameraPage(): React.ReactElement {
     }
   }, [format]);
 
+  // In chat mode, default to photo; otherwise default to video
   const [selectedMode, setSelectedMode] = useState<'video' | 'photo' | 'live'>(
-    'video',
+    isChatMode ? 'photo' : 'video',
   );
 
   // Add this new animated style for the overlay

@@ -101,6 +101,18 @@ export default function ChatTopbar() {
     }
   };
 
+  const handleProfilePress = () => {
+    if (!selectedUser || user?.id === selectedUser.id) {
+      return;
+    }
+    router.navigate({
+      pathname: `/profile`,
+      params: {
+        userId: selectedUser.id,
+      },
+    });
+  };
+
   const menuItems = [
     {
       id: 'poke',
@@ -143,19 +155,7 @@ export default function ChatTopbar() {
       </TouchableOpacity>
       <View style={styles.contentContainer}>
         <View style={styles.userInfoContainer}>
-          <Pressable
-            onPress={() => {
-              if (userPhoto) {
-                router.navigate({
-                  pathname: '/(chat)/[roomId]/profile-picture',
-                  params: {
-                    roomId: roomId,
-                    imageUrl: userPhoto,
-                  },
-                });
-              }
-            }}
-          >
+          <Pressable onPress={handleProfilePress}>
             <View style={styles.avatarContainer}>
               <Avatar
                 style={styles.avatar}
@@ -190,7 +190,7 @@ export default function ChatTopbar() {
               />
             </View>
           </Pressable>
-          <View style={styles.usernameContainer}>
+          <Pressable style={styles.usernameContainer} onPress={handleProfilePress}>
             {selectedUser?.username ? (
               <Text
                 style={[styles.username, { color: theme.colors.text }]}
@@ -210,7 +210,7 @@ export default function ChatTopbar() {
                 ]}
               />
             )}
-          </View>
+          </Pressable>
         </View>
         <View style={styles.menuContainer}>
           <MenuView

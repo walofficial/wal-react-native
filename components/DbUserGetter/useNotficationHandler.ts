@@ -31,7 +31,7 @@ export function useNotificationHandler() {
       queryClient.invalidateQueries({
         queryKey: queryOptions.queryKey,
       });
-      router.push({
+      router.navigate({
         pathname: '/(tabs)/(home)/verification/[verificationId]',
         params: {
           verificationId,
@@ -41,8 +41,7 @@ export function useNotificationHandler() {
     }
 
     if (type === 'new_message' && roomId) {
-      console.log('new_message', roomId);
-      router.push({
+      router.navigate({
         pathname: '/(chat)/[roomId]',
         params: {
           roomId: roomId,
@@ -52,7 +51,7 @@ export function useNotificationHandler() {
     }
 
     if (feedId) {
-      router.push({
+      router.navigate({
         pathname: '/(tabs)/(home)/[feedId]',
         params: {
           feedId: feedId,
@@ -70,7 +69,7 @@ export function useNotificationHandler() {
       queryClient.invalidateQueries({
         queryKey: queryOptions.queryKey,
       });
-      router.push({
+      router.navigate({
         pathname: '/status/[verificationId]',
         params: {
           verificationId,
@@ -80,7 +79,7 @@ export function useNotificationHandler() {
     }
 
     if (type === 'friend_request_sent') {
-      router.push({
+      router.navigate({
         pathname: '/(tabs)/(chat-list)',
       });
     }

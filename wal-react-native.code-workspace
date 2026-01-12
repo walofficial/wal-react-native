@@ -1,11 +1,14 @@
 {
   "folders": [
     {
-      "path": ".",
+      "path": "."
     },
     {
-      "path": "../wal-server",
+      "path": "../wal-server"
     },
+    {
+      "path": "../carnoles"
+    }
   ],
   "settings": {},
 }

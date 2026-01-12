@@ -7,9 +7,11 @@ import {
   useColorScheme,
 } from 'react-native';
 import { FileImage, Paperclip, ArrowUp } from '@/lib/icons';
+import { Camera } from 'lucide-react-native';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { hasMessageAtom, messageAtom } from '@/lib/state/chat';
 import { useTheme } from '@/lib/theme';
+import { useRouter, useGlobalSearchParams } from 'expo-router';
 
 // Maximum height for ~8 lines of text (each line ~20px + padding)
 const MAX_INPUT_HEIGHT = 180;
@@ -19,15 +21,18 @@ const LONG_TEXT_THRESHOLD = 400;
 
 interface ChatBottombarProps {
   sendMessage: (newMessage: string) => void;
+  recipientId?: string;
 }
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
-export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
+export default function ChatBottombar({ sendMessage, recipientId }: ChatBottombarProps) {
   const setMessage = useSetAtom(messageAtom);
   const message = useAtomValue(messageAtom);
   const setHasMessage = useSetAtom(hasMessageAtom);
   const theme = useTheme();
+  const router = useRouter();
+  const params = useGlobalSearchParams<{ roomId: string }>();
 
   // Signal/Messenger-like colors
   const isLightMode = useColorScheme() === 'light';
@@ -35,6 +40,18 @@ export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
   const placeholderColor = isLightMode ? '#8E8E93' : '#8A8A8E';
   const inputTextColor = theme.colors.text;
   const backgroundColor = theme.colors.background;
+  const cameraIconColor = isLightMode ? '#8E8E93' : '#8A8A8E';
+
+  const handleCameraPress = useCallback(() => {
+    router.push({
+      pathname: '/(camera)/record',
+      params: {
+        chatMode: 'true',
+        roomId: params.roomId,
+        recipientId: recipientId,
+      },
+    });
+  }, [router, params.roomId, recipientId]);
 
   // Check if text is "too long" - either has many newlines or is very long
   const shouldLimitHeight = useMemo(() => {
@@ -56,6 +73,13 @@ export default function ChatBottombar({ sendMessage }: ChatBottombarProps) {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <View style={styles.inputContainer}>
+        <TouchableOpacity
+          style={styles.cameraButton}
+          onPress={handleCameraPress}
+          activeOpacity={0.7}
+        >
+          <Camera color={cameraIconColor} size={24} />
+        </TouchableOpacity>
         <TextInput
           multiline
           value={message}
@@ -155,6 +179,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     paddingTop: 6,
+    alignItems: 'flex-end',
+  },
+  cameraButton: {
+    height: 40,
+    width: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 4,
   },
   textInput: {
     paddingHorizontal: 12,

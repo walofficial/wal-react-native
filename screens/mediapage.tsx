@@ -35,6 +35,8 @@ import { StatusBarBlurBackground } from '@/components/CameraPage/StatusBarBlurBa
 import { useIsFocused } from '@react-navigation/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import SubmitButton from '@/components/SubmitButton';
+import ChatSubmitButton from '@/components/SubmitButton/ChatSubmitButton';
+import ChatModeSocketProvider from '@/components/Chat/socket/ChatModeSocketProvider';
 import RetryButton from '@/components/RetryButton';
 import Button from '@/components/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -49,14 +51,19 @@ type OnLoadImage = NativeSyntheticEvent<ImageLoadEventData>;
 
 export default function MediaPage(): React.ReactElement {
   const safePadding = useSafeAreaPadding();
-  const { path, type, feedId, recordingTime } = useLocalSearchParams<{
-    path: string;
-    type: 'photo' | 'video';
-    feedId: string;
-    recordingTime: string;
-  }>();
+  const { path, type, feedId, recordingTime, chatMode, roomId, recipientId } =
+    useLocalSearchParams<{
+      path: string;
+      type: 'photo' | 'video';
+      feedId: string;
+      recordingTime: string;
+      chatMode?: string;
+      roomId?: string;
+      recipientId?: string;
+    }>();
 
   const router = useRouter();
+  const isChatMode = chatMode === 'true';
   const [hasMediaLoaded, setHasMediaLoaded] = useState(false);
   const isForeground = useIsForeground();
   const isScreenFocused = useIsFocused();
@@ -208,13 +215,23 @@ export default function MediaPage(): React.ReactElement {
   }, [isPlaying, player]);
 
   const handleBack = useCallback(() => {
-    router.navigate({
-      pathname: '/(tabs)/(home)/[feedId]',
-      params: {
-        feedId: feedId as string,
-      },
-    });
-  }, [router, feedId]);
+    if (isChatMode && roomId) {
+      // Navigate back to chat
+      router.navigate({
+        pathname: '/(chat)/[roomId]',
+        params: {
+          roomId: roomId as string,
+        },
+      });
+    } else {
+      router.navigate({
+        pathname: '/(tabs)/(home)/[feedId]',
+        params: {
+          feedId: feedId as string,
+        },
+      });
+    }
+  }, [router, feedId, isChatMode, roomId]);
 
   const handleAcceptCaption = useCallback(() => {
     Keyboard.dismiss();
@@ -321,40 +338,46 @@ export default function MediaPage(): React.ReactElement {
         />
 
         <KeyboardAvoidingView behavior="padding">
-          <View
-            style={[styles.captionContainer, { paddingBottom: insets.bottom }]}
-          >
-            <TextInput
-              ref={inputRef}
+          {/* Hide caption input in chat mode */}
+          {!isChatMode && (
+            <View
               style={[
-                styles.captionInput,
-                isInputFocused && styles.captionInputFocused,
-                {
-                  borderWidth: 1,
-                  borderColor: 'rgba(255, 255, 255, 0.3)',
-                  borderRadius: 8,
-                },
+                styles.captionContainer,
+                { paddingBottom: insets.bottom },
               ]}
-              placeholder={t('common.add_caption')}
-              placeholderTextColor="rgba(255, 255, 255, 0.6)"
-              value={caption}
-              onChangeText={setCaption}
-              multiline={false}
-              maxLength={150}
-              onFocus={() => setIsInputFocused(true)}
-              onBlur={() => setIsInputFocused(false)}
-            />
-            {isInputFocused && (
-              <Button
-                icon="checkmark"
-                variant="subtle"
-                onPress={handleAcceptCaption}
-                style={{
-                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
-                }}
+            >
+              <TextInput
+                ref={inputRef}
+                style={[
+                  styles.captionInput,
+                  isInputFocused && styles.captionInputFocused,
+                  {
+                    borderWidth: 1,
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderRadius: 8,
+                  },
+                ]}
+                placeholder={t('common.add_caption')}
+                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                value={caption}
+                onChangeText={setCaption}
+                multiline={false}
+                maxLength={150}
+                onFocus={() => setIsInputFocused(true)}
+                onBlur={() => setIsInputFocused(false)}
               />
-            )}
-          </View>
+              {isInputFocused && (
+                <Button
+                  icon="checkmark"
+                  variant="subtle"
+                  onPress={handleAcceptCaption}
+                  style={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  }}
+                />
+              )}
+            </View>
+          )}
           <View
             style={{
               flexDirection: 'row',
@@ -397,13 +420,24 @@ export default function MediaPage(): React.ReactElement {
               }}
             >
               <RetryButton />
-              <SubmitButton
-                onSubmit={handleBack}
-                mediaBlob={recordingSource}
-                isPhoto={type === 'photo'}
-                videoDuration={recordingTime}
-                caption={caption.trim()}
-              />
+              {isChatMode && roomId && recipientId ? (
+                <ChatModeSocketProvider>
+                  <ChatSubmitButton
+                    onSubmit={handleBack}
+                    mediaBlob={recordingSource as any}
+                    roomId={roomId}
+                    recipientId={recipientId}
+                  />
+                </ChatModeSocketProvider>
+              ) : (
+                <SubmitButton
+                  onSubmit={handleBack}
+                  mediaBlob={recordingSource}
+                  isPhoto={type === 'photo'}
+                  videoDuration={recordingTime}
+                  caption={caption.trim()}
+                />
+              )}
             </View>
           </View>
         </KeyboardAvoidingView>

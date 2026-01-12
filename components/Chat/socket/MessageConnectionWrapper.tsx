@@ -164,6 +164,13 @@ export default function MessageConnectionWrapper({
       id: string;
       temporary_id: string;
       room_id: string;
+      attachments?: Array<{
+        type: string;
+        url: string;
+        width?: number | null;
+        height?: number | null;
+        thumbnail_url?: string | null;
+      }>;
     }) => {
       const addIncomingMessage = async (newMessage: {
         encrypted_content?: string;
@@ -173,8 +180,16 @@ export default function MessageConnectionWrapper({
         id: string;
         temporary_id: string;
         room_id: string;
+        attachments?: Array<{
+          type: string;
+          url: string;
+          width?: number | null;
+          height?: number | null;
+          thumbnail_url?: string | null;
+        }>;
       }) => {
         let decryptedMessage = '';
+        const hasAttachments = newMessage.attachments && newMessage.attachments.length > 0;
 
         // Check for plain_content first (AI/virtual user messages)
         if (newMessage.plain_content) {
@@ -200,7 +215,8 @@ export default function MessageConnectionWrapper({
           }
         }
 
-        if (!decryptedMessage) {
+        // Allow message to be added if it has attachments even without text
+        if (!decryptedMessage && !hasAttachments) {
           return;
         }
         console.log(showMessagePreview);
@@ -280,6 +296,7 @@ export default function MessageConnectionWrapper({
                     nonce: null,
                     message_state: 'SENT',
                     sent_date: new Date().toISOString(),
+                    attachments: newMessage.attachments || null,
                   } as ChatMessage,
                 ],
               };
