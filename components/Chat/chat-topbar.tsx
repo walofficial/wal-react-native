@@ -106,8 +106,9 @@ export default function ChatTopbar() {
       return;
     }
     router.navigate({
-      pathname: `/profile`,
+      pathname: `/(chat)/[roomId]/profile`,
       params: {
+        roomId: roomId,
         userId: selectedUser.id,
       },
     });
@@ -190,7 +191,10 @@ export default function ChatTopbar() {
               />
             </View>
           </Pressable>
-          <Pressable style={styles.usernameContainer} onPress={handleProfilePress}>
+          <Pressable
+            style={styles.usernameContainer}
+            onPress={handleProfilePress}
+          >
             {selectedUser?.username ? (
               <Text
                 style={[styles.username, { color: theme.colors.text }]}

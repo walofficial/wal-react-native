@@ -39,6 +39,14 @@ function Layout() {
               header: () => <SimpleGoBackHeader title="ფოტო" />,
             }}
           />
+          .
+          <Stack.Screen
+            name="[roomId]/profile"
+            options={{
+              headerTransparent: true,
+              header: () => <SimpleGoBackHeader title="პროფილი" />,
+            }}
+          />
         </Stack>
       </View>
     </DbUserGetter>
