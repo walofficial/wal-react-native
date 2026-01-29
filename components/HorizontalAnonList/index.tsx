@@ -63,7 +63,7 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
                   key={`skeleton-${index}`}
                   style={[styles.storyItem, { marginBottom: 17 }]}
                 >
-                  <UserLiveItemSkeleton size="md" />
+                  <UserLiveItemSkeleton size="lg" />
                 </View>
               ))
             : items
@@ -96,7 +96,7 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
                     >
                       <UserLiveItem
                         showName={item.user.id !== user.id}
-                        size="md"
+                        size="lg"
                         color={
                           item.is_friend
                             ? 'green'
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   storyItem: {
-    width: 76,
+    width: 85,
     alignItems: 'center',
   },
   storyPressable: {

@@ -14,7 +14,7 @@ const UserAvatarLayout = ({
   size?: 'sm' | 'md' | 'lg';
 }) => {
   const theme = useTheme();
-  const width = size === 'sm' ? 50 : size === 'md' ? 60 : 70;
+  const width = size === 'sm' ? 50 : size === 'md' ? 60 : 85;
   const height = width;
   const borderRadius = width / 2;
 
