@@ -123,9 +123,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 4,
   },
   username: {
-    fontSize: 14,
+    fontSize: 13,
   },
 });
 
