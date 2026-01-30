@@ -53,6 +53,7 @@ import {
   removeFriend,
   getBlockedFriends,
   updateMessageStateChatUpdateMessagesPost,
+  uploadChatAttachment,
   getMessagesChatMessagesGet,
   getUserChatRooms,
   createChatRoom,
@@ -97,6 +98,7 @@ import {
   addOrUpdateReactionCommentsCommentIdReactionsPost,
   geofenceEvent,
   createAiCharacter,
+  deleteAiCharacter,
   getAiCharacter,
   updateAiCharacter,
   aiCharacterGoLive,
@@ -227,6 +229,9 @@ import type {
   UpdateMessageStateChatUpdateMessagesPostData,
   UpdateMessageStateChatUpdateMessagesPostError,
   UpdateMessageStateChatUpdateMessagesPostResponse,
+  UploadChatAttachmentData,
+  UploadChatAttachmentError,
+  UploadChatAttachmentResponse2,
   GetMessagesChatMessagesGetData,
   GetMessagesChatMessagesGetError,
   GetMessagesChatMessagesGetResponse,
@@ -319,6 +324,9 @@ import type {
   CreateAiCharacterData,
   CreateAiCharacterError,
   CreateAiCharacterResponse,
+  DeleteAiCharacterData,
+  DeleteAiCharacterError,
+  DeleteAiCharacterResponse2,
   GetAiCharacterData,
   UpdateAiCharacterData,
   UpdateAiCharacterError,
@@ -2471,6 +2479,61 @@ export const updateMessageStateChatUpdateMessagesPostMutation = (
   return mutationOptions;
 };
 
+export const uploadChatAttachmentQueryKey = (
+  options: Options<UploadChatAttachmentData>,
+) => createQueryKey('uploadChatAttachment', options);
+
+/**
+ * Upload Chat Attachment
+ * Upload an image attachment for a chat message.
+ * Returns the CDN URL and image dimensions.
+ */
+export const uploadChatAttachmentOptions = (
+  options: Options<UploadChatAttachmentData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await uploadChatAttachment({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: uploadChatAttachmentQueryKey(options),
+  });
+};
+
+/**
+ * Upload Chat Attachment
+ * Upload an image attachment for a chat message.
+ * Returns the CDN URL and image dimensions.
+ */
+export const uploadChatAttachmentMutation = (
+  options?: Partial<Options<UploadChatAttachmentData>>,
+): UseMutationOptions<
+  UploadChatAttachmentResponse2,
+  AxiosError<UploadChatAttachmentError>,
+  Options<UploadChatAttachmentData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    UploadChatAttachmentResponse2,
+    AxiosError<UploadChatAttachmentError>,
+    Options<UploadChatAttachmentData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await uploadChatAttachment({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
 export const getMessagesChatMessagesGetQueryKey = (
   options: Options<GetMessagesChatMessagesGetData>,
 ) => createQueryKey('getMessagesChatMessagesGet', options);
@@ -4365,6 +4428,34 @@ export const createAiCharacterMutation = (
   > = {
     mutationFn: async (localOptions) => {
       const { data } = await createAiCharacter({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+/**
+ * Delete Character Endpoint
+ * Delete an AI character and its related data.
+ */
+export const deleteAiCharacterMutation = (
+  options?: Partial<Options<DeleteAiCharacterData>>,
+): UseMutationOptions<
+  DeleteAiCharacterResponse2,
+  AxiosError<DeleteAiCharacterError>,
+  Options<DeleteAiCharacterData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    DeleteAiCharacterResponse2,
+    AxiosError<DeleteAiCharacterError>,
+    Options<DeleteAiCharacterData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await deleteAiCharacter({
         ...options,
         ...localOptions,
         throwOnError: true,

@@ -223,9 +223,7 @@ export default {
           category: ['BROWSABLE', 'DEFAULT'],
         },
       ],
-      permissions: [
-        'READ_CONTACTS',
-      ],
+      permissions: ['READ_CONTACTS'],
     },
     plugins: pluginsList,
     experiments: {

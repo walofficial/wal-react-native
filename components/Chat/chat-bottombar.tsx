@@ -26,7 +26,10 @@ interface ChatBottombarProps {
 
 export const BottombarIcons = [{ icon: FileImage }, { icon: Paperclip }];
 
-export default function ChatBottombar({ sendMessage, recipientId }: ChatBottombarProps) {
+export default function ChatBottombar({
+  sendMessage,
+  recipientId,
+}: ChatBottombarProps) {
   const setMessage = useSetAtom(messageAtom);
   const message = useAtomValue(messageAtom);
   const setHasMessage = useSetAtom(hasMessageAtom);

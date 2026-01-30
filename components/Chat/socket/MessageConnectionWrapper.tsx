@@ -189,7 +189,8 @@ export default function MessageConnectionWrapper({
         }>;
       }) => {
         let decryptedMessage = '';
-        const hasAttachments = newMessage.attachments && newMessage.attachments.length > 0;
+        const hasAttachments =
+          newMessage.attachments && newMessage.attachments.length > 0;
 
         // Check for plain_content first (AI/virtual user messages)
         if (newMessage.plain_content) {

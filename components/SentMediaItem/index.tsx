@@ -43,9 +43,11 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
     const { success } = useToast();
     const { openLightbox } = useLightboxControls();
     const isDark = colorScheme === 'dark';
-    
+
     // Store loaded image dimensions for accurate lightbox positioning
-    const loadedDimensionsRef = useRef<Map<string, { width: number; height: number }>>(new Map());
+    const loadedDimensionsRef = useRef<
+      Map<string, { width: number; height: number }>
+    >(new Map());
 
     const formattedTime = createdAt
       ? formatDistanceToNow(new Date(createdAt), { addSuffix: false })
@@ -75,7 +77,8 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
 
     const showTime = isAuthor && isLastFromAuthor && createdAt;
     const hasAttachments = attachments && attachments.length > 0;
-    const hasTextContent = typeof content === 'string' && content.trim().length > 0;
+    const hasTextContent =
+      typeof content === 'string' && content.trim().length > 0;
     const isImageOnly = hasAttachments && !hasTextContent;
 
     // Calculate image dimensions preserving aspect ratio
@@ -96,11 +99,17 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
       return { width: displayWidth, height: displayHeight };
     };
 
-    const handleImageLoad = useCallback((url: string, width: number, height: number) => {
-      loadedDimensionsRef.current.set(url, { width, height });
-    }, []);
+    const handleImageLoad = useCallback(
+      (url: string, width: number, height: number) => {
+        loadedDimensionsRef.current.set(url, { width, height });
+      },
+      [],
+    );
 
-    const handleImagePress = (attachment: ChatMessageAttachment, index: number) => {
+    const handleImagePress = (
+      attachment: ChatMessageAttachment,
+      index: number,
+    ) => {
       if (!attachments) return;
 
       const images = attachments
@@ -109,8 +118,10 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
           const url = convertToCDNUrl(a.url);
           // Use loaded dimensions if available, otherwise fall back to attachment dimensions
           const loadedDims = loadedDimensionsRef.current.get(url);
-          const dims = loadedDims || (a.width && a.height ? { width: a.width, height: a.height } : null);
-          
+          const dims =
+            loadedDims ||
+            (a.width && a.height ? { width: a.width, height: a.height } : null);
+
           return {
             uri: url,
             thumbUri: url,
@@ -131,7 +142,12 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
       if (!hasAttachments) return null;
 
       return (
-        <View style={[styles.attachmentsContainer, !isImageOnly && styles.attachmentsWithText]}>
+        <View
+          style={[
+            styles.attachmentsContainer,
+            !isImageOnly && styles.attachmentsWithText,
+          ]}
+        >
           {attachments!.map((attachment, index) => {
             if (attachment.type === 'image') {
               const dims = getImageDimensions(attachment);
@@ -154,7 +170,11 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
                     contentFit="cover"
                     transition={200}
                     onLoad={(e) => {
-                      handleImageLoad(imageUrl, e.source.width, e.source.height);
+                      handleImageLoad(
+                        imageUrl,
+                        e.source.width,
+                        e.source.height,
+                      );
                     }}
                   />
                 </TouchableOpacity>
@@ -163,9 +183,7 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
             return null;
           })}
           {showTime && isImageOnly && (
-            <Text style={styles.timeTextOnImage}>
-              {formattedTime}
-            </Text>
+            <Text style={styles.timeTextOnImage}>{formattedTime}</Text>
           )}
         </View>
       );
@@ -179,7 +197,9 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
             styles.imageOnlyWrapper,
             isAuthor ? styles.authorContainer : styles.nonAuthorContainer,
           ]}
-          entering={isAuthor ? FadeIn.duration(150) : FadeIn.duration(200).delay(50)}
+          entering={
+            isAuthor ? FadeIn.duration(150) : FadeIn.duration(200).delay(50)
+          }
         >
           {renderAttachments()}
         </Animated.View>
@@ -218,11 +238,7 @@ const SentMediaItem: React.FC<MessageItemProps> = React.memo(
               </Text>
             </View>
           )}
-          {showTime && (
-            <Text style={styles.timeText}>
-              {formattedTime}
-            </Text>
-          )}
+          {showTime && <Text style={styles.timeText}>{formattedTime}</Text>}
         </Pressable>
       </AnimatedMessageLayout>
     );

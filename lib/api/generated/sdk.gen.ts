@@ -160,6 +160,9 @@ import type {
   UpdateMessageStateChatUpdateMessagesPostData,
   UpdateMessageStateChatUpdateMessagesPostResponses,
   UpdateMessageStateChatUpdateMessagesPostErrors,
+  UploadChatAttachmentData,
+  UploadChatAttachmentResponses,
+  UploadChatAttachmentErrors,
   GetMessagesChatMessagesGetData,
   GetMessagesChatMessagesGetResponses,
   GetMessagesChatMessagesGetErrors,
@@ -168,9 +171,6 @@ import type {
   CreateChatRoomData,
   CreateChatRoomResponses,
   CreateChatRoomErrors,
-  UploadChatAttachmentData,
-  UploadChatAttachmentResponses,
-  UploadChatAttachmentErrors,
   ExpireChatRoomChatExpireChatRoomPostData,
   ExpireChatRoomChatExpireChatRoomPostResponses,
   ExpireChatRoomChatExpireChatRoomPostErrors,
@@ -292,6 +292,9 @@ import type {
   CreateAiCharacterData,
   CreateAiCharacterResponses,
   CreateAiCharacterErrors,
+  DeleteAiCharacterData,
+  DeleteAiCharacterResponses,
+  DeleteAiCharacterErrors,
   GetAiCharacterData,
   GetAiCharacterResponses,
   GetAiCharacterErrors,
@@ -1393,6 +1396,30 @@ export const updateMessageStateChatUpdateMessagesPost = <
 };
 
 /**
+ * Upload Chat Attachment
+ * Upload an image attachment for a chat message.
+ * Returns the CDN URL and image dimensions.
+ */
+export const uploadChatAttachment = <ThrowOnError extends boolean = false>(
+  options: Options<UploadChatAttachmentData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    UploadChatAttachmentResponses,
+    UploadChatAttachmentErrors,
+    ThrowOnError
+  >({
+    ...formDataBodySerializer,
+    responseType: 'json',
+    url: '/chat/upload-attachment',
+    ...options,
+    headers: {
+      'Content-Type': null,
+      ...options.headers,
+    },
+  });
+};
+
+/**
  * Get Messages
  */
 export const getMessagesChatMessagesGet = <
@@ -1446,25 +1473,6 @@ export const createChatRoom = <ThrowOnError extends boolean = false>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
-  });
-};
-
-/**
- * Upload Chat Attachment
- * Upload an image attachment for a chat message.
- */
-export const uploadChatAttachment = <ThrowOnError extends boolean = false>(
-  options: Options<UploadChatAttachmentData, ThrowOnError>,
-) => {
-  return (options.client ?? _heyApiClient).post<
-    UploadChatAttachmentResponses,
-    UploadChatAttachmentErrors,
-    ThrowOnError
-  >({
-    ...formDataBodySerializer,
-    responseType: 'json',
-    url: '/chat/upload-attachment',
-    ...options,
   });
 };
 
@@ -2287,6 +2295,24 @@ export const createAiCharacter = <ThrowOnError extends boolean = false>(
       'Content-Type': null,
       ...options.headers,
     },
+  });
+};
+
+/**
+ * Delete Character Endpoint
+ * Delete an AI character and its related data.
+ */
+export const deleteAiCharacter = <ThrowOnError extends boolean = false>(
+  options: Options<DeleteAiCharacterData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).delete<
+    DeleteAiCharacterResponses,
+    DeleteAiCharacterErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/ai-characters/{character_id}',
+    ...options,
   });
 };
 

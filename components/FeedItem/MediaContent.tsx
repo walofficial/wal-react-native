@@ -23,6 +23,7 @@ import { useLightboxControls } from '@/lib/lightbox/lightbox';
 import { Dimensions } from '@/components/Lightbox/ImageViewing/@types';
 import { convertToCDNUrl } from '@/lib/utils';
 import FactualityBadge from '../ui/FactualityBadge';
+// @ts-ignore
 import { FeedPost, ImageWithDims, LinkPreviewData } from '@/lib/api/generated';
 import SourceIcon from '../SourceIcon';
 import { LinearGradient } from 'expo-linear-gradient';

@@ -420,6 +420,20 @@ export type BodySubmitUserVideoVerificationLocationUpload = {
 };
 
 /**
+ * Body_upload_chat_attachment
+ */
+export type BodyUploadChatAttachment = {
+  /**
+   * File
+   */
+  file: Blob | File;
+  /**
+   * Room Id
+   */
+  room_id: string;
+};
+
+/**
  * Body_upload_location_assets
  */
 export type BodyUploadLocationAssets = {
@@ -471,33 +485,6 @@ export type BodyUploadUserPhotos = {
 };
 
 /**
- * ChatMessageAttachment
- * Attachment model for chat messages (images, videos, links).
- */
-export type ChatMessageAttachment = {
-  /**
-   * Type
-   */
-  type: string;
-  /**
-   * Url
-   */
-  url: string;
-  /**
-   * Width
-   */
-  width?: number | null;
-  /**
-   * Height
-   */
-  height?: number | null;
-  /**
-   * Thumbnail Url
-   */
-  thumbnail_url?: string | null;
-};
-
-/**
  * ChatMessage
  */
 export type ChatMessage = {
@@ -545,6 +532,33 @@ export type ChatMessage = {
    * Attachments
    */
   attachments?: Array<ChatMessageAttachment> | null;
+};
+
+/**
+ * ChatMessageAttachment
+ * Attachment model for chat messages (images, videos, links).
+ */
+export type ChatMessageAttachment = {
+  /**
+   * Type
+   */
+  type: string;
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Width
+   */
+  width?: number | null;
+  /**
+   * Height
+   */
+  height?: number | null;
+  /**
+   * Thumbnail Url
+   */
+  thumbnail_url?: string | null;
 };
 
 /**
@@ -771,29 +785,6 @@ export type CreateChatRoomResponse = {
 };
 
 /**
- * UploadChatAttachmentResponse
- * Response for chat attachment upload.
- */
-export type UploadChatAttachmentResponse = {
-  /**
-   * Url
-   */
-  url: string;
-  /**
-   * Width
-   */
-  width: number;
-  /**
-   * Height
-   */
-  height: number;
-  /**
-   * Type
-   */
-  type: string;
-};
-
-/**
  * CreateCommentRequest
  */
 export type CreateCommentRequest = {
@@ -907,6 +898,33 @@ export type CreateUserRequest = {
  */
 export type CurrentUserReaction = {
   type: ReactionType;
+};
+
+/**
+ * DeleteAICharacterResponse
+ * Response model for AI character deletion.
+ */
+export type DeleteAiCharacterResponse = {
+  /**
+   * Status
+   */
+  status: string;
+  /**
+   * Character Id
+   */
+  character_id: string;
+  /**
+   * User Id
+   */
+  user_id: string;
+  /**
+   * Deleted Memories
+   */
+  deleted_memories?: number;
+  /**
+   * Deleted Live Users
+   */
+  deleted_live_users?: number;
 };
 
 /**
@@ -2808,6 +2826,29 @@ export type UpdateVerificationVisibilityRequest = {
    * Is Public
    */
   is_public: boolean;
+};
+
+/**
+ * UploadChatAttachmentResponse
+ * Response for chat attachment upload.
+ */
+export type UploadChatAttachmentResponse = {
+  /**
+   * Url
+   */
+  url: string;
+  /**
+   * Width
+   */
+  width: number;
+  /**
+   * Height
+   */
+  height: number;
+  /**
+   * Type
+   */
+  type: string;
 };
 
 /**
@@ -4795,6 +4836,37 @@ export type UpdateMessageStateChatUpdateMessagesPostResponses = {
 export type UpdateMessageStateChatUpdateMessagesPostResponse =
   UpdateMessageStateChatUpdateMessagesPostResponses[keyof UpdateMessageStateChatUpdateMessagesPostResponses];
 
+export type UploadChatAttachmentData = {
+  body: BodyUploadChatAttachment;
+  path?: never;
+  query?: never;
+  url: '/chat/upload-attachment';
+};
+
+export type UploadChatAttachmentErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+  /**
+   * Upload error
+   */
+  500: unknown;
+};
+
+export type UploadChatAttachmentError =
+  UploadChatAttachmentErrors[keyof UploadChatAttachmentErrors];
+
+export type UploadChatAttachmentResponses = {
+  /**
+   * Successful Response
+   */
+  200: UploadChatAttachmentResponse;
+};
+
+export type UploadChatAttachmentResponse2 =
+  UploadChatAttachmentResponses[keyof UploadChatAttachmentResponses];
+
 export type GetMessagesChatMessagesGetData = {
   body?: never;
   path?: never;
@@ -4882,40 +4954,6 @@ export type CreateChatRoomResponses = {
 
 export type CreateChatRoomResponse2 =
   CreateChatRoomResponses[keyof CreateChatRoomResponses];
-
-export type UploadChatAttachmentData = {
-  body: {
-    file: Blob | File;
-    room_id: string;
-  };
-  path?: never;
-  query?: never;
-  url: '/chat/upload-attachment';
-};
-
-export type UploadChatAttachmentErrors = {
-  /**
-   * Validation Error
-   */
-  422: HttpValidationError;
-  /**
-   * Upload error
-   */
-  500: unknown;
-};
-
-export type UploadChatAttachmentError =
-  UploadChatAttachmentErrors[keyof UploadChatAttachmentErrors];
-
-export type UploadChatAttachmentResponses = {
-  /**
-   * Successful Response
-   */
-  200: UploadChatAttachmentResponse;
-};
-
-export type UploadChatAttachmentResponse2 =
-  UploadChatAttachmentResponses[keyof UploadChatAttachmentResponses];
 
 export type ExpireChatRoomChatExpireChatRoomPostData = {
   /**
@@ -6223,6 +6261,42 @@ export type CreateAiCharacterResponses = {
 
 export type CreateAiCharacterResponse =
   CreateAiCharacterResponses[keyof CreateAiCharacterResponses];
+
+export type DeleteAiCharacterData = {
+  body?: never;
+  path: {
+    /**
+     * Character Id
+     */
+    character_id: string;
+  };
+  query?: never;
+  url: '/ai-characters/{character_id}';
+};
+
+export type DeleteAiCharacterErrors = {
+  /**
+   * Not found
+   */
+  404: unknown;
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type DeleteAiCharacterError =
+  DeleteAiCharacterErrors[keyof DeleteAiCharacterErrors];
+
+export type DeleteAiCharacterResponses = {
+  /**
+   * Successful Response
+   */
+  200: DeleteAiCharacterResponse;
+};
+
+export type DeleteAiCharacterResponse2 =
+  DeleteAiCharacterResponses[keyof DeleteAiCharacterResponses];
 
 export type GetAiCharacterData = {
   body?: never;

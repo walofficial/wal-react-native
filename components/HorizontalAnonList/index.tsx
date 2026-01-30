@@ -101,8 +101,8 @@ const HorizontalAnonList: React.FC<{ feedId: string }> = ({ feedId }) => {
                           item.is_friend
                             ? 'green'
                             : item.user.is_virtual
-                              ? 'blue' // Bluesky brand color
-                              : 'pink'
+                            ? 'blue' // Bluesky brand color
+                            : 'pink'
                         }
                         isLoading={
                           joinChat.isPending &&
