@@ -16,6 +16,45 @@ function ChatItem({ item }: { item: ChatRoom }) {
   const queryClient = useQueryClient();
   const theme = useTheme();
 
+  const getLastMessagePreview = () => {
+    const lastMessage = item.last_message;
+    if (!lastMessage) return null;
+
+    const plainText =
+      // @ts-ignore
+      lastMessage.message || lastMessage.plain_content;
+
+    if (plainText) {
+      return { text: plainText, icon: null };
+    }
+
+    // No text content — check for attachments (WhatsApp/Instagram style)
+    const attachments = lastMessage.attachments;
+    if (attachments && attachments.length > 0) {
+      const firstType = attachments[0].type;
+      const count = attachments.length;
+
+      if (firstType === 'image') {
+        return {
+          text: count > 1 ? `Photo · ${count}` : 'Photo',
+          icon: 'image' as const,
+        };
+      }
+      if (firstType === 'video') {
+        return {
+          text: count > 1 ? `Video · ${count}` : 'Video',
+          icon: 'videocam' as const,
+        };
+      }
+      return {
+        text: 'Attachment',
+        icon: 'attach' as const,
+      };
+    }
+
+    return { text: '', icon: null };
+  };
+
   const targetUser = item.participants.find(
     (user) => user.id !== authorizedUser.id,
   );
@@ -161,16 +200,31 @@ function ChatItem({ item }: { item: ChatRoom }) {
                 </Text>
               </View>
               <View style={styles.messageContent}>
-                <Text
-                  style={[
-                    styles.messageText,
-                    { color: theme.colors.feedItem.secondaryText },
-                  ]}
-                  numberOfLines={1}
-                >
-                  {/* @ts-ignore */}
-                  {item.last_message?.message || ''}
-                </Text>
+                {(() => {
+                  const preview = getLastMessagePreview();
+                  return (
+                    <View style={styles.messagePreview}>
+                      {preview?.icon && (
+                        <Ionicons
+                          name={preview.icon}
+                          size={15}
+                          color={theme.colors.feedItem.secondaryText}
+                          style={styles.attachmentIcon}
+                        />
+                      )}
+                      <Text
+                        style={[
+                          styles.messageText,
+                          preview?.icon && styles.attachmentText,
+                          { color: theme.colors.feedItem.secondaryText },
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {preview?.text || ''}
+                      </Text>
+                    </View>
+                  );
+                })()}
                 <View style={styles.statusContainer}>
                   {renderMessageStatus()}
                 </View>
@@ -237,10 +291,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 40,
   },
+  messagePreview: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 48,
+  },
+  attachmentIcon: {
+    marginRight: 4,
+  },
   messageText: {
     fontSize: FontSizes.medium,
     flex: 1,
-    marginRight: 48,
+  },
+  attachmentText: {
+    flex: 0,
   },
   statusContainer: {
     flexDirection: 'row',

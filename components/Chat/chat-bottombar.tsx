@@ -46,7 +46,7 @@ export default function ChatBottombar({
   const cameraIconColor = isLightMode ? '#8E8E93' : '#8A8A8E';
 
   const handleCameraPress = useCallback(() => {
-    router.push({
+    router.navigate({
       pathname: '/(camera)/record',
       params: {
         chatMode: 'true',

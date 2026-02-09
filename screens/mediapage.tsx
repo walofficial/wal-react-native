@@ -217,7 +217,7 @@ export default function MediaPage(): React.ReactElement {
   const handleBack = useCallback(() => {
     if (isChatMode && roomId) {
       // Navigate back to chat
-      router.navigate({
+      router.dismissTo({
         pathname: '/(chat)/[roomId]',
         params: {
           roomId: roomId as string,

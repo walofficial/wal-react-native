@@ -78,6 +78,7 @@ export default function ChatRoomList({ header }: { header?: React.ReactNode }) {
       <ChatItem key={item.id} item={item as ChatRoom} />
     ));
   }
+
   return (
     <View style={styles.container}>
       <ScrollView

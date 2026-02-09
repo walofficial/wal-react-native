@@ -98,7 +98,7 @@ export default function LocationsListScreen() {
   const hasAnyLocations = feedsAtLocation.length > 0 || nearestFeeds.length > 0;
 
   const handleNavigateToFeed = (feedId: string) => {
-    router.replace({
+    router.dismissTo({
       pathname: '/(tabs)/(home)/[feedId]',
       params: { feedId },
     });
