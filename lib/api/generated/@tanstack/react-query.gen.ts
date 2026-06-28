@@ -114,6 +114,21 @@ import {
   updateLocationAssets,
   listLocationAssets,
   addLocationImages,
+  hausGetProfile,
+  hausUpsertProfile,
+  hausListHouses,
+  hausGetHouse,
+  hausListEvents,
+  hausGetEventDetail,
+  hausRequestJoin,
+  hausUploadBookingProof,
+  hausMyBookings,
+  hausHostIncoming,
+  hausApproveBooking,
+  hausRejectBooking,
+  hausGetBookingTicket,
+  hausCheckIn,
+  hausMarkHost,
   getCountry,
   endpointHealthGet,
 } from '../sdk.gen';
@@ -361,6 +376,33 @@ import type {
   AddLocationImagesData,
   AddLocationImagesError,
   AddLocationImagesResponse,
+  HausGetProfileData,
+  HausUpsertProfileData,
+  HausUpsertProfileError,
+  HausUpsertProfileResponse,
+  HausListHousesData,
+  HausGetHouseData,
+  HausListEventsData,
+  HausGetEventDetailData,
+  HausRequestJoinData,
+  HausRequestJoinError,
+  HausRequestJoinResponse,
+  HausUploadBookingProofData,
+  HausUploadBookingProofError,
+  HausUploadBookingProofResponse,
+  HausMyBookingsData,
+  HausHostIncomingData,
+  HausApproveBookingData,
+  HausApproveBookingError,
+  HausApproveBookingResponse,
+  HausRejectBookingData,
+  HausRejectBookingError,
+  HausRejectBookingResponse,
+  HausGetBookingTicketData,
+  HausCheckInData,
+  HausCheckInError,
+  HausMarkHostData,
+  HausMarkHostError,
   GetCountryData,
   EndpointHealthGetData,
 } from '../types.gen';
@@ -4324,8 +4366,9 @@ export const geofenceEventQueryKey = (options: Options<GeofenceEventData>) =>
  * Handle Geofence Event
  * Handle geofence enter/exit events from mobile clients.
  *
- * This endpoint receives notifications when a user enters or exits
- * a geofenced region.
+ * On enter: resolves feed from coordinates, publishes to GCP Pub/Sub for
+ * async processing (AI character notification). Response is returned
+ * immediately without waiting for notification delivery.
  */
 export const geofenceEventOptions = (options: Options<GeofenceEventData>) => {
   return queryOptions({
@@ -4346,8 +4389,9 @@ export const geofenceEventOptions = (options: Options<GeofenceEventData>) => {
  * Handle Geofence Event
  * Handle geofence enter/exit events from mobile clients.
  *
- * This endpoint receives notifications when a user enters or exits
- * a geofenced region.
+ * On enter: resolves feed from coordinates, publishes to GCP Pub/Sub for
+ * async processing (AI character notification). Response is returned
+ * immediately without waiting for notification delivery.
  */
 export const geofenceEventMutation = (
   options?: Partial<Options<GeofenceEventData>>,
@@ -5086,6 +5130,520 @@ export const addLocationImagesMutation = (
   > = {
     mutationFn: async (localOptions) => {
       const { data } = await addLocationImages({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const hausGetProfileQueryKey = (options?: Options<HausGetProfileData>) =>
+  createQueryKey('hausGetProfile', options);
+
+/**
+ * Haus Get Profile
+ */
+export const hausGetProfileOptions = (
+  options?: Options<HausGetProfileData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausGetProfile({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausGetProfileQueryKey(options),
+  });
+};
+
+/**
+ * Haus Upsert Profile
+ */
+export const hausUpsertProfileMutation = (
+  options?: Partial<Options<HausUpsertProfileData>>,
+): UseMutationOptions<
+  HausUpsertProfileResponse,
+  AxiosError<HausUpsertProfileError>,
+  Options<HausUpsertProfileData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    HausUpsertProfileResponse,
+    AxiosError<HausUpsertProfileError>,
+    Options<HausUpsertProfileData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await hausUpsertProfile({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const hausListHousesQueryKey = (options?: Options<HausListHousesData>) =>
+  createQueryKey('hausListHouses', options);
+
+/**
+ * Haus List Houses
+ */
+export const hausListHousesOptions = (
+  options?: Options<HausListHousesData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausListHouses({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausListHousesQueryKey(options),
+  });
+};
+
+export const hausGetHouseQueryKey = (options: Options<HausGetHouseData>) =>
+  createQueryKey('hausGetHouse', options);
+
+/**
+ * Haus Get House
+ */
+export const hausGetHouseOptions = (options: Options<HausGetHouseData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausGetHouse({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausGetHouseQueryKey(options),
+  });
+};
+
+export const hausListEventsQueryKey = (options?: Options<HausListEventsData>) =>
+  createQueryKey('hausListEvents', options);
+
+/**
+ * Haus List Events
+ */
+export const hausListEventsOptions = (
+  options?: Options<HausListEventsData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausListEvents({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausListEventsQueryKey(options),
+  });
+};
+
+export const hausGetEventDetailQueryKey = (
+  options: Options<HausGetEventDetailData>,
+) => createQueryKey('hausGetEventDetail', options);
+
+/**
+ * Haus Get Event Detail
+ */
+export const hausGetEventDetailOptions = (
+  options: Options<HausGetEventDetailData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausGetEventDetail({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausGetEventDetailQueryKey(options),
+  });
+};
+
+export const hausRequestJoinQueryKey = (
+  options: Options<HausRequestJoinData>,
+) => createQueryKey('hausRequestJoin', options);
+
+/**
+ * Haus Request Join
+ */
+export const hausRequestJoinOptions = (
+  options: Options<HausRequestJoinData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausRequestJoin({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausRequestJoinQueryKey(options),
+  });
+};
+
+/**
+ * Haus Request Join
+ */
+export const hausRequestJoinMutation = (
+  options?: Partial<Options<HausRequestJoinData>>,
+): UseMutationOptions<
+  HausRequestJoinResponse,
+  AxiosError<HausRequestJoinError>,
+  Options<HausRequestJoinData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    HausRequestJoinResponse,
+    AxiosError<HausRequestJoinError>,
+    Options<HausRequestJoinData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await hausRequestJoin({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const hausUploadBookingProofQueryKey = (
+  options: Options<HausUploadBookingProofData>,
+) => createQueryKey('hausUploadBookingProof', options);
+
+/**
+ * Haus Upload Booking Proof
+ */
+export const hausUploadBookingProofOptions = (
+  options: Options<HausUploadBookingProofData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausUploadBookingProof({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausUploadBookingProofQueryKey(options),
+  });
+};
+
+/**
+ * Haus Upload Booking Proof
+ */
+export const hausUploadBookingProofMutation = (
+  options?: Partial<Options<HausUploadBookingProofData>>,
+): UseMutationOptions<
+  HausUploadBookingProofResponse,
+  AxiosError<HausUploadBookingProofError>,
+  Options<HausUploadBookingProofData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    HausUploadBookingProofResponse,
+    AxiosError<HausUploadBookingProofError>,
+    Options<HausUploadBookingProofData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await hausUploadBookingProof({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const hausMyBookingsQueryKey = (options?: Options<HausMyBookingsData>) =>
+  createQueryKey('hausMyBookings', options);
+
+/**
+ * Haus My Bookings
+ */
+export const hausMyBookingsOptions = (
+  options?: Options<HausMyBookingsData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausMyBookings({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausMyBookingsQueryKey(options),
+  });
+};
+
+export const hausHostIncomingQueryKey = (
+  options?: Options<HausHostIncomingData>,
+) => createQueryKey('hausHostIncoming', options);
+
+/**
+ * Haus Host Incoming
+ */
+export const hausHostIncomingOptions = (
+  options?: Options<HausHostIncomingData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausHostIncoming({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausHostIncomingQueryKey(options),
+  });
+};
+
+export const hausApproveBookingQueryKey = (
+  options: Options<HausApproveBookingData>,
+) => createQueryKey('hausApproveBooking', options);
+
+/**
+ * Haus Approve Booking
+ */
+export const hausApproveBookingOptions = (
+  options: Options<HausApproveBookingData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausApproveBooking({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausApproveBookingQueryKey(options),
+  });
+};
+
+/**
+ * Haus Approve Booking
+ */
+export const hausApproveBookingMutation = (
+  options?: Partial<Options<HausApproveBookingData>>,
+): UseMutationOptions<
+  HausApproveBookingResponse,
+  AxiosError<HausApproveBookingError>,
+  Options<HausApproveBookingData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    HausApproveBookingResponse,
+    AxiosError<HausApproveBookingError>,
+    Options<HausApproveBookingData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await hausApproveBooking({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const hausRejectBookingQueryKey = (
+  options: Options<HausRejectBookingData>,
+) => createQueryKey('hausRejectBooking', options);
+
+/**
+ * Haus Reject Booking
+ */
+export const hausRejectBookingOptions = (
+  options: Options<HausRejectBookingData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausRejectBooking({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausRejectBookingQueryKey(options),
+  });
+};
+
+/**
+ * Haus Reject Booking
+ */
+export const hausRejectBookingMutation = (
+  options?: Partial<Options<HausRejectBookingData>>,
+): UseMutationOptions<
+  HausRejectBookingResponse,
+  AxiosError<HausRejectBookingError>,
+  Options<HausRejectBookingData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    HausRejectBookingResponse,
+    AxiosError<HausRejectBookingError>,
+    Options<HausRejectBookingData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await hausRejectBooking({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const hausGetBookingTicketQueryKey = (
+  options: Options<HausGetBookingTicketData>,
+) => createQueryKey('hausGetBookingTicket', options);
+
+/**
+ * Haus Get Booking Ticket
+ */
+export const hausGetBookingTicketOptions = (
+  options: Options<HausGetBookingTicketData>,
+) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausGetBookingTicket({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausGetBookingTicketQueryKey(options),
+  });
+};
+
+export const hausCheckInQueryKey = (options: Options<HausCheckInData>) =>
+  createQueryKey('hausCheckIn', options);
+
+/**
+ * Haus Check In
+ */
+export const hausCheckInOptions = (options: Options<HausCheckInData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausCheckIn({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausCheckInQueryKey(options),
+  });
+};
+
+/**
+ * Haus Check In
+ */
+export const hausCheckInMutation = (
+  options?: Partial<Options<HausCheckInData>>,
+): UseMutationOptions<
+  unknown,
+  AxiosError<HausCheckInError>,
+  Options<HausCheckInData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    unknown,
+    AxiosError<HausCheckInError>,
+    Options<HausCheckInData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await hausCheckIn({
+        ...options,
+        ...localOptions,
+        throwOnError: true,
+      });
+      return data;
+    },
+  };
+  return mutationOptions;
+};
+
+export const hausMarkHostQueryKey = (options: Options<HausMarkHostData>) =>
+  createQueryKey('hausMarkHost', options);
+
+/**
+ * Haus Mark Host
+ * Allow user to flag as host for MVP testing (listing creation is seed/script).
+ */
+export const hausMarkHostOptions = (options: Options<HausMarkHostData>) => {
+  return queryOptions({
+    queryFn: async ({ queryKey, signal }) => {
+      const { data } = await hausMarkHost({
+        ...options,
+        ...queryKey[0],
+        signal,
+        throwOnError: true,
+      });
+      return data;
+    },
+    queryKey: hausMarkHostQueryKey(options),
+  });
+};
+
+/**
+ * Haus Mark Host
+ * Allow user to flag as host for MVP testing (listing creation is seed/script).
+ */
+export const hausMarkHostMutation = (
+  options?: Partial<Options<HausMarkHostData>>,
+): UseMutationOptions<
+  unknown,
+  AxiosError<HausMarkHostError>,
+  Options<HausMarkHostData>
+> => {
+  const mutationOptions: UseMutationOptions<
+    unknown,
+    AxiosError<HausMarkHostError>,
+    Options<HausMarkHostData>
+  > = {
+    mutationFn: async (localOptions) => {
+      const { data } = await hausMarkHost({
         ...options,
         ...localOptions,
         throwOnError: true,

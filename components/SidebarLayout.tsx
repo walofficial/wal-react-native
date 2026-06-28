@@ -114,7 +114,11 @@ export default function SidebarLayout({
       icon: 'home',
       label: 'მთავარი',
     },
-    // Add more navigation items here as needed
+    {
+      href: '/(tabs)/(haus)',
+      icon: 'musical-notes',
+      label: 'Haus',
+    },
   ];
 
   if (isMobileWidth) {

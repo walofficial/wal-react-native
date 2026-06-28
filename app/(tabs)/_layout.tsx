@@ -354,6 +354,18 @@ export default function TabLayout() {
                 }}
               />
               <Tabs.Screen
+                name="(haus)"
+                options={{
+                  tabBarIcon: ({ focused }) => (
+                    <TabBarIcon
+                      size={24}
+                      name={focused ? 'musical-notes' : 'musical-notes-outline'}
+                      color={focused ? TAB_COLORS.active : TAB_COLORS.inactive}
+                    />
+                  ),
+                }}
+              />
+              <Tabs.Screen
                 name="(user)"
                 listeners={() => ({
                   tabPress: (e) => {

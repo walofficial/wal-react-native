@@ -9,6 +9,9 @@ interface PendingNavigation {
   verificationId?: string;
   roomId?: string;
   feedId?: string;
+  bookingId?: string;
+  eventId?: string;
+  houseId?: string;
 }
 
 export function useNotificationHandler() {
@@ -21,7 +24,22 @@ export function useNotificationHandler() {
     verificationId,
     roomId,
     feedId,
+    bookingId,
+    eventId,
   }: PendingNavigation) => {
+    if (type === 'haus_join_request' || type === 'haus_payment_proof') {
+      router.navigate('/(tabs)/(haus)/host-queue' as never);
+      return;
+    }
+    if (
+      eventId &&
+      (type === 'haus_booking_approved' ||
+        type === 'haus_booking_rejected' ||
+        type === 'haus_checked_in')
+    ) {
+      router.navigate(`/(tabs)/(haus)/event/${String(eventId)}` as never);
+      return;
+    }
     if (type === 'poke' && verificationId) {
       const queryOptions = getUserVerificationOptions({
         query: {
@@ -97,12 +115,18 @@ export function useNotificationHandler() {
       const verificationId = data?.verificationId as string | undefined;
       const roomId = data?.roomId as string | undefined;
       const feedId = data?.feedId as string | undefined;
+      const bookingId = data?.bookingId as string | undefined;
+      const eventId = data?.eventId as string | undefined;
+      const houseId = data?.houseId as string | undefined;
 
       console.log('Last notification response:', {
         type,
         verificationId,
         roomId,
         feedId,
+        bookingId,
+        eventId,
+        houseId,
       });
 
       handleNotificationNavigation({
@@ -110,6 +134,9 @@ export function useNotificationHandler() {
         verificationId,
         roomId,
         feedId,
+        bookingId,
+        eventId,
+        houseId,
       });
 
       // Clear the last notification response after handling it
@@ -126,12 +153,18 @@ export function useNotificationHandler() {
         const verificationId = data?.verificationId as string | undefined;
         const roomId = data?.roomId as string | undefined;
         const feedId = data?.feedId as string | undefined;
+        const bookingId = data?.bookingId as string | undefined;
+        const eventId = data?.eventId as string | undefined;
+        const houseId = data?.houseId as string | undefined;
 
         console.log('Notification response received:', {
           type,
           verificationId,
           roomId,
           feedId,
+          bookingId,
+          eventId,
+          houseId,
         });
 
         // App is ready, navigate immediately
@@ -140,6 +173,9 @@ export function useNotificationHandler() {
           verificationId,
           roomId,
           feedId,
+          bookingId,
+          eventId,
+          houseId,
         });
       });
 

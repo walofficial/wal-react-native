@@ -1667,6 +1667,262 @@ export type HttpValidationError = {
 };
 
 /**
+ * HausBookingProofBody
+ */
+export type HausBookingProofBody = {
+  /**
+   * Proof Image Url
+   */
+  proof_image_url: string;
+};
+
+/**
+ * HausBookingResponse
+ */
+export type HausBookingResponse = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Event Id
+   */
+  event_id: string;
+  /**
+   * Guest External User Id
+   */
+  guest_external_user_id: string;
+  status: HausBookingStatus;
+  /**
+   * Booking Code
+   */
+  booking_code: string;
+  /**
+   * Payment Proof Url
+   */
+  payment_proof_url?: string | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+  /**
+   * Updated At
+   */
+  updated_at: string;
+};
+
+/**
+ * HausBookingStatus
+ */
+export type HausBookingStatus =
+  | 'requested'
+  | 'payment_pending'
+  | 'proof_uploaded'
+  | 'approved'
+  | 'rejected'
+  | 'waitlisted'
+  | 'checked_in';
+
+/**
+ * HausCheckInBody
+ */
+export type HausCheckInBody = {
+  /**
+   * Token
+   */
+  token: string;
+};
+
+/**
+ * HausEventDetailResponse
+ */
+export type HausEventDetailResponse = {
+  event: HausEventResponse;
+  house: HausHouseResponse;
+};
+
+/**
+ * HausEventResponse
+ */
+export type HausEventResponse = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * House Id
+   */
+  house_id: string;
+  /**
+   * Title
+   */
+  title: string;
+  /**
+   * Starts At
+   */
+  starts_at: string;
+  /**
+   * Ends At
+   */
+  ends_at: string;
+  /**
+   * Price Gel
+   */
+  price_gel: number;
+  /**
+   * Spots Total
+   */
+  spots_total: number;
+  /**
+   * Spots Taken
+   */
+  spots_taken: number;
+  /**
+   * Midnight Drop Percent
+   */
+  midnight_drop_percent?: number;
+  /**
+   * Qr Activate Hours Before
+   */
+  qr_activate_hours_before?: number;
+  /**
+   * Created At
+   */
+  created_at: string;
+};
+
+/**
+ * HausHouseResponse
+ */
+export type HausHouseResponse = {
+  /**
+   * Id
+   */
+  id: string;
+  /**
+   * Host External User Id
+   */
+  host_external_user_id: string;
+  /**
+   * Title
+   */
+  title: string;
+  /**
+   * Neighborhood
+   */
+  neighborhood: string;
+  /**
+   * Vibe Tag
+   */
+  vibe_tag: string;
+  /**
+   * Capacity
+   */
+  capacity: number;
+  /**
+   * Payment Instructions
+   */
+  payment_instructions: string;
+  /**
+   * Image Urls
+   */
+  image_urls?: Array<string>;
+  /**
+   * Bathroom Note
+   */
+  bathroom_note?: string | null;
+  /**
+   * Created At
+   */
+  created_at: string;
+};
+
+/**
+ * HausMarkHostBody
+ * Dev convenience: mark current user as host (for testing).
+ */
+export type HausMarkHostBody = {
+  /**
+   * Is Host
+   */
+  is_host?: boolean;
+};
+
+/**
+ * HausProfileResponse
+ */
+export type HausProfileResponse = {
+  /**
+   * External User Id
+   */
+  external_user_id: string;
+  /**
+   * Invite Code
+   */
+  invite_code: string;
+  /**
+   * Instagram Handle
+   */
+  instagram_handle: string;
+  /**
+   * Age Confirmed
+   */
+  age_confirmed: boolean;
+  /**
+   * Is Host
+   */
+  is_host?: boolean;
+  /**
+   * Completed At
+   */
+  completed_at: string;
+};
+
+/**
+ * HausProfileUpsert
+ */
+export type HausProfileUpsert = {
+  /**
+   * Invite Code
+   */
+  invite_code: string;
+  /**
+   * Instagram Handle
+   */
+  instagram_handle: string;
+  /**
+   * Age Confirmed
+   */
+  age_confirmed?: boolean;
+};
+
+/**
+ * HausTicketResponse
+ */
+export type HausTicketResponse = {
+  /**
+   * Token
+   */
+  token?: string | null;
+  /**
+   * Active
+   */
+  active: boolean;
+  /**
+   * Valid From
+   */
+  valid_from?: string | null;
+  /**
+   * Valid Until
+   */
+  valid_until?: string | null;
+  /**
+   * Message
+   */
+  message?: string | null;
+};
+
+/**
  * InviteToStageRequest
  */
 export type InviteToStageRequest = {
@@ -2163,6 +2419,18 @@ export type Notification = {
    * Reaction Type
    */
   reaction_type?: string | null;
+  /**
+   * Haus Booking Id
+   */
+  haus_booking_id?: string | null;
+  /**
+   * Haus Event Id
+   */
+  haus_event_id?: string | null;
+  /**
+   * Haus House Id
+   */
+  haus_house_id?: string | null;
 };
 
 /**
@@ -2182,7 +2450,12 @@ export type NotificationType =
   | 'verification_like'
   | 'impression'
   | 'comment_tag'
-  | 'comment_reaction';
+  | 'comment_reaction'
+  | 'haus_join_request'
+  | 'haus_payment_proof'
+  | 'haus_booking_approved'
+  | 'haus_booking_rejected'
+  | 'haus_checked_in';
 
 /**
  * PlaybackMedia
@@ -6827,6 +7100,405 @@ export type AddLocationImagesResponses = {
 
 export type AddLocationImagesResponse =
   AddLocationImagesResponses[keyof AddLocationImagesResponses];
+
+export type HausGetProfileData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/haus/profile';
+};
+
+export type HausGetProfileResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type HausUpsertProfileData = {
+  body: HausProfileUpsert;
+  path?: never;
+  query?: never;
+  url: '/haus/profile';
+};
+
+export type HausUpsertProfileErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausUpsertProfileError =
+  HausUpsertProfileErrors[keyof HausUpsertProfileErrors];
+
+export type HausUpsertProfileResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausProfileResponse;
+};
+
+export type HausUpsertProfileResponse =
+  HausUpsertProfileResponses[keyof HausUpsertProfileResponses];
+
+export type HausListHousesData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/haus/houses';
+};
+
+export type HausListHousesResponses = {
+  /**
+   * Response Haus List Houses
+   * Successful Response
+   */
+  200: Array<HausHouseResponse>;
+};
+
+export type HausListHousesResponse =
+  HausListHousesResponses[keyof HausListHousesResponses];
+
+export type HausGetHouseData = {
+  body?: never;
+  path: {
+    /**
+     * House Id
+     */
+    house_id: string;
+  };
+  query?: never;
+  url: '/haus/houses/{house_id}';
+};
+
+export type HausGetHouseErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausGetHouseError = HausGetHouseErrors[keyof HausGetHouseErrors];
+
+export type HausGetHouseResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausHouseResponse;
+};
+
+export type HausGetHouseResponse =
+  HausGetHouseResponses[keyof HausGetHouseResponses];
+
+export type HausListEventsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * House Id
+     */
+    house_id?: string | null;
+  };
+  url: '/haus/events';
+};
+
+export type HausListEventsErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausListEventsError =
+  HausListEventsErrors[keyof HausListEventsErrors];
+
+export type HausListEventsResponses = {
+  /**
+   * Response Haus List Events
+   * Successful Response
+   */
+  200: Array<HausEventResponse>;
+};
+
+export type HausListEventsResponse =
+  HausListEventsResponses[keyof HausListEventsResponses];
+
+export type HausGetEventDetailData = {
+  body?: never;
+  path: {
+    /**
+     * Event Id
+     */
+    event_id: string;
+  };
+  query?: never;
+  url: '/haus/events/{event_id}';
+};
+
+export type HausGetEventDetailErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausGetEventDetailError =
+  HausGetEventDetailErrors[keyof HausGetEventDetailErrors];
+
+export type HausGetEventDetailResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausEventDetailResponse;
+};
+
+export type HausGetEventDetailResponse =
+  HausGetEventDetailResponses[keyof HausGetEventDetailResponses];
+
+export type HausRequestJoinData = {
+  body?: never;
+  path: {
+    /**
+     * Event Id
+     */
+    event_id: string;
+  };
+  query?: never;
+  url: '/haus/events/{event_id}/request';
+};
+
+export type HausRequestJoinErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausRequestJoinError =
+  HausRequestJoinErrors[keyof HausRequestJoinErrors];
+
+export type HausRequestJoinResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausBookingResponse;
+};
+
+export type HausRequestJoinResponse =
+  HausRequestJoinResponses[keyof HausRequestJoinResponses];
+
+export type HausUploadBookingProofData = {
+  body: HausBookingProofBody;
+  path: {
+    /**
+     * Booking Id
+     */
+    booking_id: string;
+  };
+  query?: never;
+  url: '/haus/bookings/{booking_id}/proof';
+};
+
+export type HausUploadBookingProofErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausUploadBookingProofError =
+  HausUploadBookingProofErrors[keyof HausUploadBookingProofErrors];
+
+export type HausUploadBookingProofResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausBookingResponse;
+};
+
+export type HausUploadBookingProofResponse =
+  HausUploadBookingProofResponses[keyof HausUploadBookingProofResponses];
+
+export type HausMyBookingsData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/haus/bookings/me';
+};
+
+export type HausMyBookingsResponses = {
+  /**
+   * Response Haus My Bookings
+   * Successful Response
+   */
+  200: Array<HausBookingResponse>;
+};
+
+export type HausMyBookingsResponse =
+  HausMyBookingsResponses[keyof HausMyBookingsResponses];
+
+export type HausHostIncomingData = {
+  body?: never;
+  path?: never;
+  query?: never;
+  url: '/haus/host/incoming';
+};
+
+export type HausHostIncomingResponses = {
+  /**
+   * Response Haus Host Incoming
+   * Successful Response
+   */
+  200: Array<{
+    [key: string]: unknown;
+  }>;
+};
+
+export type HausHostIncomingResponse =
+  HausHostIncomingResponses[keyof HausHostIncomingResponses];
+
+export type HausApproveBookingData = {
+  body?: never;
+  path: {
+    /**
+     * Booking Id
+     */
+    booking_id: string;
+  };
+  query?: never;
+  url: '/haus/bookings/{booking_id}/approve';
+};
+
+export type HausApproveBookingErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausApproveBookingError =
+  HausApproveBookingErrors[keyof HausApproveBookingErrors];
+
+export type HausApproveBookingResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausBookingResponse;
+};
+
+export type HausApproveBookingResponse =
+  HausApproveBookingResponses[keyof HausApproveBookingResponses];
+
+export type HausRejectBookingData = {
+  body?: never;
+  path: {
+    /**
+     * Booking Id
+     */
+    booking_id: string;
+  };
+  query?: never;
+  url: '/haus/bookings/{booking_id}/reject';
+};
+
+export type HausRejectBookingErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausRejectBookingError =
+  HausRejectBookingErrors[keyof HausRejectBookingErrors];
+
+export type HausRejectBookingResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausBookingResponse;
+};
+
+export type HausRejectBookingResponse =
+  HausRejectBookingResponses[keyof HausRejectBookingResponses];
+
+export type HausGetBookingTicketData = {
+  body?: never;
+  path: {
+    /**
+     * Booking Id
+     */
+    booking_id: string;
+  };
+  query?: never;
+  url: '/haus/bookings/{booking_id}/ticket';
+};
+
+export type HausGetBookingTicketErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausGetBookingTicketError =
+  HausGetBookingTicketErrors[keyof HausGetBookingTicketErrors];
+
+export type HausGetBookingTicketResponses = {
+  /**
+   * Successful Response
+   */
+  200: HausTicketResponse;
+};
+
+export type HausGetBookingTicketResponse =
+  HausGetBookingTicketResponses[keyof HausGetBookingTicketResponses];
+
+export type HausCheckInData = {
+  body: HausCheckInBody;
+  path?: never;
+  query?: never;
+  url: '/haus/bookings/check-in';
+};
+
+export type HausCheckInErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausCheckInError = HausCheckInErrors[keyof HausCheckInErrors];
+
+export type HausCheckInResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
+
+export type HausMarkHostData = {
+  body: HausMarkHostBody;
+  path?: never;
+  query?: never;
+  url: '/haus/profile/host';
+};
+
+export type HausMarkHostErrors = {
+  /**
+   * Validation Error
+   */
+  422: HttpValidationError;
+};
+
+export type HausMarkHostError = HausMarkHostErrors[keyof HausMarkHostErrors];
+
+export type HausMarkHostResponses = {
+  /**
+   * Successful Response
+   */
+  200: unknown;
+};
 
 export type GetCountryData = {
   body?: never;

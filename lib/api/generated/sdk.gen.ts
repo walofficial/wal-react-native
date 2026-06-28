@@ -340,6 +340,47 @@ import type {
   AddLocationImagesData,
   AddLocationImagesResponses,
   AddLocationImagesErrors,
+  HausGetProfileData,
+  HausGetProfileResponses,
+  HausUpsertProfileData,
+  HausUpsertProfileResponses,
+  HausUpsertProfileErrors,
+  HausListHousesData,
+  HausListHousesResponses,
+  HausGetHouseData,
+  HausGetHouseResponses,
+  HausGetHouseErrors,
+  HausListEventsData,
+  HausListEventsResponses,
+  HausListEventsErrors,
+  HausGetEventDetailData,
+  HausGetEventDetailResponses,
+  HausGetEventDetailErrors,
+  HausRequestJoinData,
+  HausRequestJoinResponses,
+  HausRequestJoinErrors,
+  HausUploadBookingProofData,
+  HausUploadBookingProofResponses,
+  HausUploadBookingProofErrors,
+  HausMyBookingsData,
+  HausMyBookingsResponses,
+  HausHostIncomingData,
+  HausHostIncomingResponses,
+  HausApproveBookingData,
+  HausApproveBookingResponses,
+  HausApproveBookingErrors,
+  HausRejectBookingData,
+  HausRejectBookingResponses,
+  HausRejectBookingErrors,
+  HausGetBookingTicketData,
+  HausGetBookingTicketResponses,
+  HausGetBookingTicketErrors,
+  HausCheckInData,
+  HausCheckInResponses,
+  HausCheckInErrors,
+  HausMarkHostData,
+  HausMarkHostResponses,
+  HausMarkHostErrors,
   GetCountryData,
   GetCountryResponses,
   EndpointHealthGetData,
@@ -2248,8 +2289,9 @@ export const addOrUpdateReactionCommentsCommentIdReactionsPost = <
  * Handle Geofence Event
  * Handle geofence enter/exit events from mobile clients.
  *
- * This endpoint receives notifications when a user enters or exits
- * a geofenced region.
+ * On enter: resolves feed from coordinates, publishes to GCP Pub/Sub for
+ * async processing (AI character notification). Response is returned
+ * immediately without waiting for notification delivery.
  */
 export const geofenceEvent = <ThrowOnError extends boolean = false>(
   options: Options<GeofenceEventData, ThrowOnError>,
@@ -2645,6 +2687,278 @@ export const addLocationImages = <ThrowOnError extends boolean = false>(
     ...options,
     headers: {
       'Content-Type': null,
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Haus Get Profile
+ */
+export const hausGetProfile = <ThrowOnError extends boolean = false>(
+  options?: Options<HausGetProfileData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    HausGetProfileResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/profile',
+    ...options,
+  });
+};
+
+/**
+ * Haus Upsert Profile
+ */
+export const hausUpsertProfile = <ThrowOnError extends boolean = false>(
+  options: Options<HausUpsertProfileData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).put<
+    HausUpsertProfileResponses,
+    HausUpsertProfileErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/profile',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Haus List Houses
+ */
+export const hausListHouses = <ThrowOnError extends boolean = false>(
+  options?: Options<HausListHousesData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    HausListHousesResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/houses',
+    ...options,
+  });
+};
+
+/**
+ * Haus Get House
+ */
+export const hausGetHouse = <ThrowOnError extends boolean = false>(
+  options: Options<HausGetHouseData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).get<
+    HausGetHouseResponses,
+    HausGetHouseErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/houses/{house_id}',
+    ...options,
+  });
+};
+
+/**
+ * Haus List Events
+ */
+export const hausListEvents = <ThrowOnError extends boolean = false>(
+  options?: Options<HausListEventsData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    HausListEventsResponses,
+    HausListEventsErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/events',
+    ...options,
+  });
+};
+
+/**
+ * Haus Get Event Detail
+ */
+export const hausGetEventDetail = <ThrowOnError extends boolean = false>(
+  options: Options<HausGetEventDetailData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).get<
+    HausGetEventDetailResponses,
+    HausGetEventDetailErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/events/{event_id}',
+    ...options,
+  });
+};
+
+/**
+ * Haus Request Join
+ */
+export const hausRequestJoin = <ThrowOnError extends boolean = false>(
+  options: Options<HausRequestJoinData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    HausRequestJoinResponses,
+    HausRequestJoinErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/events/{event_id}/request',
+    ...options,
+  });
+};
+
+/**
+ * Haus Upload Booking Proof
+ */
+export const hausUploadBookingProof = <ThrowOnError extends boolean = false>(
+  options: Options<HausUploadBookingProofData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    HausUploadBookingProofResponses,
+    HausUploadBookingProofErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/bookings/{booking_id}/proof',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Haus My Bookings
+ */
+export const hausMyBookings = <ThrowOnError extends boolean = false>(
+  options?: Options<HausMyBookingsData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    HausMyBookingsResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/bookings/me',
+    ...options,
+  });
+};
+
+/**
+ * Haus Host Incoming
+ */
+export const hausHostIncoming = <ThrowOnError extends boolean = false>(
+  options?: Options<HausHostIncomingData, ThrowOnError>,
+) => {
+  return (options?.client ?? _heyApiClient).get<
+    HausHostIncomingResponses,
+    unknown,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/host/incoming',
+    ...options,
+  });
+};
+
+/**
+ * Haus Approve Booking
+ */
+export const hausApproveBooking = <ThrowOnError extends boolean = false>(
+  options: Options<HausApproveBookingData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    HausApproveBookingResponses,
+    HausApproveBookingErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/bookings/{booking_id}/approve',
+    ...options,
+  });
+};
+
+/**
+ * Haus Reject Booking
+ */
+export const hausRejectBooking = <ThrowOnError extends boolean = false>(
+  options: Options<HausRejectBookingData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    HausRejectBookingResponses,
+    HausRejectBookingErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/bookings/{booking_id}/reject',
+    ...options,
+  });
+};
+
+/**
+ * Haus Get Booking Ticket
+ */
+export const hausGetBookingTicket = <ThrowOnError extends boolean = false>(
+  options: Options<HausGetBookingTicketData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).get<
+    HausGetBookingTicketResponses,
+    HausGetBookingTicketErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/bookings/{booking_id}/ticket',
+    ...options,
+  });
+};
+
+/**
+ * Haus Check In
+ */
+export const hausCheckIn = <ThrowOnError extends boolean = false>(
+  options: Options<HausCheckInData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    HausCheckInResponses,
+    HausCheckInErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/bookings/check-in',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+};
+
+/**
+ * Haus Mark Host
+ * Allow user to flag as host for MVP testing (listing creation is seed/script).
+ */
+export const hausMarkHost = <ThrowOnError extends boolean = false>(
+  options: Options<HausMarkHostData, ThrowOnError>,
+) => {
+  return (options.client ?? _heyApiClient).post<
+    HausMarkHostResponses,
+    HausMarkHostErrors,
+    ThrowOnError
+  >({
+    responseType: 'json',
+    url: '/haus/profile/host',
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
       ...options.headers,
     },
   });
