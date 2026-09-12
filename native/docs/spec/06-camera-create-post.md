@@ -37,7 +37,7 @@ ZoomControls), `lib/media/*` (compression, upload), `components/UploadingToast.t
 
 ## Create post (`create-post`, modal)
 
-- Params: `feedId`, `contentType?`, `disableImagePicker?`, `sharedContent?`, `sharedImages?`.
+- Params: `feedId`, `content_type?`, `disableImagePicker?`, `disableRoomCreation?`, `sharedContent?`, `sharedImages?`.
 - Sheet-style modal (`slide_from_bottom` 200 ms), header: cancel × left, title from locale, publish pill
   right (radius 20, primary bg, text 15/600, disabled until text or image present).
 - Text area 17/24, placeholder from locale, max **1500** chars, counter appears after 1400.
@@ -50,7 +50,8 @@ ZoomControls), `lib/media/*` (compression, upload), `components/UploadingToast.t
 ## Share intent (expo-share-intent)
 
 - Activation rules: web URL (1), web page (1), text, images (≤ 10).
-- App group payload key `ShareKey`; host opened via `wal://dataUrl=ShareKey`.
+- App group payload key `walShareKey` (`${scheme}ShareKey`); host opened via `wal://dataUrl=walShareKey`.
+  RN `ShareIntentProvider` is currently unused (`useShareIntentContext` imported but never read); `+native-intent.ts` redirects to a missing `/(tabs)/shareintent`. Native implements the intended share → createPost path (listed as a deviation).
 - `ShareIntentProvider` reads the payload on foreground; if signed in navigates to
   `createPost(feedId: preferred_news_feed_id, sharedContent, sharedImages)`, else stores it until after
   login.

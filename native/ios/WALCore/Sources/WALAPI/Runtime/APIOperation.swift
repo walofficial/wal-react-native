@@ -81,11 +81,31 @@ public struct NoBody: Encodable, Hashable, Sendable {
 
 /// Response placeholder for operations whose 200 has no documented schema. Accepts any payload
 /// (including an empty body) and keeps the raw JSON when there is one.
+///
+/// `JSONDecoder.decode` throws on `Data()` before `init(from:)` runs, so HTTP clients must use
+/// `EmptyResponse.decode(from:)` (or `ResponseDecoder`) rather than `JSONDecoder` directly.
 public struct EmptyResponse: Decodable, Hashable, Sendable {
     public var raw: JSONValue?
     public init(raw: JSONValue? = nil) { self.raw = raw }
     public init(from decoder: Decoder) throws {
         raw = try? JSONValue(from: decoder)
+    }
+
+    public static func decode(from data: Data) throws -> EmptyResponse {
+        if data.isEmpty || data.allSatisfy({ (9...13).contains($0) || $0 == 32 }) {
+            return EmptyResponse(raw: nil)
+        }
+        return try JSONDecoder().decode(EmptyResponse.self, from: data)
+    }
+}
+
+/// Decodes a generated `Response` from an HTTP body, treating empty 200/204 as `EmptyResponse`.
+public enum ResponseDecoder {
+    public static func decode<T: Decodable>(_ type: T.Type, from data: Data) throws -> T {
+        if type == EmptyResponse.self {
+            return try EmptyResponse.decode(from: data) as! T
+        }
+        return try JSONDecoder().decode(T.self, from: data)
     }
 }
 

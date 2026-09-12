@@ -13,7 +13,7 @@ Source files analysed: `components/friends/ContactSyncSheet.tsx`, `hooks/useFrie
 - Sections in order:
   1. "მეგობრობის მოთხოვნები" — `GET /friends/requests` (polled every 30 s while open); row avatar 50,
      name 16/600, accept (primary pill) / reject (secondary) buttons 32 high.
-  2. Friends — `GET /friends/list` (polled every 10 s); row → open chat (`POST /chat/rooms` if none);
+  2. Friends — `GET /friends/list` (polled every 10 s); row → open chat (`POST /chat/create-chat-room` if none);
      long-press / kebab → "მეგობრის წაშლა" (`DELETE /friends/remove/{id}`), block, report.
   3. "იყენებენ" (contacts already on WAL) — from `POST /user/check_registered_users {phone_numbers}`;
      row has "მოთხოვნა" button → `POST /friends/request {target_user_id}`; state pending shows
@@ -31,12 +31,12 @@ Source files analysed: `components/friends/ContactSyncSheet.tsx`, `hooks/useFrie
 | --- | --- |
 | send request | `POST /friends/request` `{target_user_id}` |
 | list incoming | `GET /friends/requests` |
-| accept / reject | `POST /friends/request/{request_id}/accept` / `…/reject` |
+| accept / reject | `PUT /friends/request/{request_id}/accept` / `…/reject` |
 | friends | `GET /friends/list` |
 | remove | `DELETE /friends/remove/{friend_id}` |
 | blocked | `GET /friends/blocked` |
 | block / unblock | `POST /user/block/{target_id}` / `POST /user/unblock/{target_id}` |
-| report | `POST /user/report/{target_id}` `{reason}` |
+| report | `POST /user/report/{target_id}` body `{target_id}` (hey-api generated `path?: never` — RN and native both send the literal `{target_id}` unless we deviate; see CHECKLIST) |
 
 Optimistic updates: accept removes the request from the `friends/requests` cache and appends to
 `friends/list`; remove filters `friends/list`; block filters friends + rooms. Toasts: block → "დაიბლოკა",
@@ -51,7 +51,7 @@ unblock → "განიბლოკა"; report → `Alert` "რეპორ�
   action button: self → "რედაქტირება", other → chat (`chatbubble-outline`) + friend state button
   (add / pending / friends) 40 high pill.
 - Data: `GET /user/profile/{user_id}` (`ProfileInformationResponse`), posts grid
-  `GET /user/{user_id}/posts?page` 3 columns gap 2 square thumbnails with play icon for videos.
+  `GET /user/get-verifications` 3 columns gap 2 square thumbnails with play icon for videos.
 - `profilePicture`: black screen, image `contentFit: contain`, header SimpleGoBack "ფოტო", for self
   a "შეცვლა" button → `ProfilePhotoEditSheet`.
 

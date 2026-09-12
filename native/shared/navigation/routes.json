@@ -11,7 +11,7 @@
     { "id": "register", "rnPath": "/register", "stack": "auth", "presentation": "push", "params": [], "header": "simpleGoBack", "headerTitle": "რეგისტრაცია", "headerLogoutOnBack": true, "headerWithInsets": true },
 
     { "id": "homeIndex", "rnPath": "/", "stack": "home", "presentation": "push", "params": [], "header": "none", "note": "Redirects to feed(defaultFeedId)" },
-    { "id": "feed", "rnPath": "/[feedId]", "stack": "home", "presentation": "fade", "params": [{ "name": "feedId", "type": "string" }], "header": "profileHeader", "headerShowTabs": true },
+    { "id": "feed", "rnPath": "/[feedId]", "stack": "home", "presentation": "fade", "params": [{ "name": "feedId", "type": "string" }, { "name": "content_type", "type": "string", "optional": true }], "header": "profileHeader", "headerShowTabs": true },
     { "id": "locations", "rnPath": "/locations", "stack": "home", "presentation": "formSheet", "animation": "slide_from_bottom", "animationDurationMs": 350, "params": [], "header": "none" },
     { "id": "createSpace", "rnPath": "/create-space", "stack": "home", "presentation": "push", "params": [{ "name": "feedId", "type": "string" }], "header": "simpleGoBack", "headerTitle": "ოთახი", "outOfScope": "livekit" },
     { "id": "scheduleSpace", "rnPath": "/create-space/schedule-space", "stack": "home", "presentation": "push", "params": [{ "name": "feedId", "type": "string" }, { "name": "description", "type": "string" }], "outOfScope": "livekit" },
@@ -19,7 +19,7 @@
     { "id": "profile", "rnPath": "/profile", "stack": "homeOrUser", "presentation": "push", "params": [{ "name": "userId", "type": "string" }], "header": "profilePageUsername" },
     { "id": "profilePicture", "rnPath": "/profile-picture", "stack": "homeOrUser", "presentation": "push", "params": [{ "name": "userId", "type": "string", "optional": true }, { "name": "imageUrl", "type": "string", "optional": true }], "header": "simpleGoBack", "headerTitle": "ფოტო" },
     { "id": "verification", "rnPath": "/verification/[verificationId]", "stack": "homeOrUser", "presentation": "push", "params": [{ "name": "verificationId", "type": "string" }, { "name": "focusComment", "type": "bool", "optional": true }], "header": "simpleGoBackPost" },
-    { "id": "createPost", "rnPath": "/create-post", "stack": "homeOrUser", "presentation": "modal", "animation": "slide_from_bottom", "animationDurationMs": 200, "params": [{ "name": "feedId", "type": "string" }, { "name": "contentType", "type": "string", "optional": true }, { "name": "disableImagePicker", "type": "bool", "optional": true }, { "name": "sharedContent", "type": "string", "optional": true }, { "name": "sharedImages", "type": "string", "optional": true }], "header": "none" },
+    { "id": "createPost", "rnPath": "/create-post", "stack": "homeOrUser", "presentation": "modal", "animation": "slide_from_bottom", "animationDurationMs": 200, "params": [{ "name": "feedId", "type": "string" }, { "name": "content_type", "type": "string", "optional": true }, { "name": "disableImagePicker", "type": "bool", "optional": true }, { "name": "disableRoomCreation", "type": "bool", "optional": true }, { "name": "sharedContent", "type": "string", "optional": true }, { "name": "sharedImages", "type": "string", "optional": true }], "header": "none" },
     { "id": "factChecks", "rnPath": "/fact-checks", "stack": "homeOrUser", "presentation": "push", "params": [], "header": "default" },
 
     { "id": "chatList", "rnPath": "/chat-list", "stack": "chatList", "presentation": "push", "params": [], "header": "simpleGoBack", "headerTitle": "ჩათი", "headerHideBack": true, "headerRight": "addContacts" },
@@ -35,10 +35,14 @@
     { "id": "chatProfilePicture", "rnPath": "/(chat)/[roomId]/profile-picture", "stack": "chat", "presentation": "push", "params": [{ "name": "roomId", "type": "string" }, { "name": "imageUrl", "type": "string", "optional": true }], "header": "simpleGoBack", "headerTitle": "ფოტო" },
 
     { "id": "record", "rnPath": "/record", "stack": "camera", "presentation": "push", "params": [{ "name": "feedId", "type": "string", "optional": true }, { "name": "chatMode", "type": "bool", "optional": true }, { "name": "roomId", "type": "string", "optional": true }, { "name": "recipientId", "type": "string", "optional": true }], "header": "none" },
-    { "id": "mediaPage", "rnPath": "/mediapage", "stack": "camera", "presentation": "push", "params": [{ "name": "feedId", "type": "string", "optional": true }, { "name": "path", "type": "string" }, { "name": "type", "type": "string" }, { "name": "chatMode", "type": "bool", "optional": true }, { "name": "roomId", "type": "string", "optional": true }, { "name": "recipientId", "type": "string", "optional": true }], "header": "none" },
+    { "id": "mediaPage", "rnPath": "/mediapage", "stack": "camera", "presentation": "push", "params": [{ "name": "feedId", "type": "string", "optional": true }, { "name": "path", "type": "string" }, { "name": "type", "type": "string" }, { "name": "recordingTime", "type": "string", "optional": true }, { "name": "chatMode", "type": "bool", "optional": true }, { "name": "roomId", "type": "string", "optional": true }, { "name": "recipientId", "type": "string", "optional": true }], "header": "none" },
     { "id": "livestream", "rnPath": "/livestream", "stack": "camera", "presentation": "replace", "params": [], "outOfScope": "livekit" },
 
-    { "id": "status", "rnPath": "/status/[verificationId]", "stack": "root", "presentation": "push", "params": [{ "name": "verificationId", "type": "string" }, { "name": "focusComment", "type": "bool", "optional": true }], "header": "simpleGoBack", "headerTitle": "ფოსტი" }
+    { "id": "status", "rnPath": "/status/[verificationId]", "stack": "root", "presentation": "push", "params": [{ "name": "verificationId", "type": "string" }, { "name": "focusComment", "type": "bool", "optional": true }], "header": "simpleGoBack", "headerTitle": "ფოსტი" },
+
+    { "id": "profileByUsername", "rnPath": "/links/[username]", "stack": "root", "presentation": "push", "params": [{ "name": "username", "type": "string" }], "header": "profilePageUsername", "note": "RN has no /links route (outbound-only wal.ge/links/{username}); native resolves GET /user/profile/username/{username} then profile(userId)" },
+    { "id": "createPostShareIntent", "rnPath": "/create-post-shareintent", "stack": "homeOrUser", "presentation": "modal", "params": [], "header": "none", "note": "RN screen exists but ShareIntentProvider never navigates here; listed for completeness" },
+    { "id": "notFound", "rnPath": "/[...missing]", "stack": "root", "presentation": "push", "params": [], "header": "default", "headerTitle": "Oops!" }
   ],
   "stacks": {
     "root": "Root UINavigationController; hosts auth, tabs, chat, camera, status as full-screen pushes/covers",

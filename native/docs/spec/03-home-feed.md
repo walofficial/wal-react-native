@@ -24,14 +24,15 @@ NewsCardItem, HorizontalAnonList, ContentTypeTabs, SearchOverlay, FAB), `compone
 
 ## Feed list
 
-- `GET /feeds/{feed_id}/posts?page=N&page_size=10[&content_type=…]` infinite query, page-number based.
+- `GET /user/feed/location-feed/{feed_id}?page=&page_size=10[&content_type_filter=&search_term=]` (`getLocationFeedPaginated`) infinite query, page-number based.
 - FlatList: `initialNumToRender 2`, `windowSize 6`, `onEndReachedThreshold 0.5`, `removeClippedSubviews`,
   pull-to-refresh (`RefreshControl`, theme text colour), footer spinner while fetching next page,
   `ListEmptyComponent` with skeletons (3 cards) on first load.
 - Video autoplay: item ≥ 50 % visible for 250 ms (`videoVisibilityPercent`, `videoMinimumViewTimeMs`);
   only one plays; muted by default, tap toggles sound.
-- Impressions: `POST /feeds/impressions` batched, per-post cooldown 60 s.
-- FAB: 56 circle, icon 28, bottom 24 above tab bar, right 16; opens camera `record?feedId=`.
+- Video autoplay uses `itemVisiblePercentThreshold: 40` and `minimumViewTime: 500` ms (not 50%/250).
+- FAB: 64 circle, icon 32 (`TakeVideo.tsx`); opens camera `record?feedId=`.
+- Anon list items are 85 wide with gap 12 (`HorizontalAnonList`).
 - Locations sheet: `presentation: formSheet`, `slide_from_bottom` 350 ms; lists
   `GET /feeds/locations` with headers `x-user-location-latitude/longitude` and query `category_id`;
   response `{feeds_at_location, nearest_feeds}`; tap → `router.replace(feed(feedId))`.
@@ -48,7 +49,7 @@ NewsCardItem, HorizontalAnonList, ContentTypeTabs, SearchOverlay, FAB), `compone
   `feedItem.text`; like count 14; comment icon 20 (large 23) + count; share icon 22.
 - Like animation: scale 1 → 1.1 → 0.9 → 1 spring (`stiffness 300, damping 15`), haptic
   `impactAsync(Medium)`.
-- Like mutation: `POST /feeds/verifications/{id}/like` / `DELETE …/like`; optimistic
+- Like mutation: `POST /live-actions/like-verification/{id}` / `DELETE /live-actions/unlike-verification/{id}`; optimistic
   `setQueryData` on every cached infinite feed page + the single-post query (toggle `is_liked`,
   `likes_count ± 1`); on settle `invalidateQueries` for the feed list and the post.
 - NewsCardItem (generated news): title 17/700, source row with favicon 16, `FactualityBadge`, sources
@@ -63,15 +64,16 @@ NewsCardItem, HorizontalAnonList, ContentTypeTabs, SearchOverlay, FAB), `compone
   borders `40/80`; light-mode text overrides `#008c5f`, `#0057c2`.
 - `FactualityCircle`: rendered only when score > 0.7; ≥ 0.7 green `#22c55e`, ≥ 0.4 amber `#f59e0b`,
   else red `#ef4444`; track `#374151`; size 40, r 16, stroke 3, label 11/700.
-- `FactCheckSheet` (70 %): rating stars, references list, `GET /fact-checks/{id}`,
-  `GET /fact-checks/{id}/ratings-count`, `POST /fact-checks/{id}/rate`.
+- `FactCheckSheet` (70 %): rating stars, references list, `GET /live-actions/fact-check/{id}`,
+  `GET /live-actions/fact-check-ratings/{id}`, `POST /live-actions/rate-fact-check/{id}`,
+  `DELETE /live-actions/unrate-fact-check/{id}`.
 
 ## Post detail (`verification/[verificationId]`, `status/[verificationId]`)
 
 - Header `SimpleGoBackPost` (title "ფოსტი", share right accessory).
 - `PostHeader` = FeedItem in large variant; markdown body (`react-native-markdown-display`) with theme
   colours, links in primary.
-- `CommentsList`: `GET /feeds/verifications/{id}/comments?page&page_size=10`, newest first, avatar 32,
+- `CommentsList`: `GET /comments/verification/{id}?sort_by=recent|top&page&limit`, newest first, avatar 32,
   name 14/600, body 15/20, time 12 secondary, separators `rgba(31,41,55,0.5)` dark /
   `rgba(229,231,235,0.8)` light; long-press → reactions overlay.
 - Reactions: `ReactionType` love / laugh / wow / sad / dislike (angry & like exist in the enum, unused);

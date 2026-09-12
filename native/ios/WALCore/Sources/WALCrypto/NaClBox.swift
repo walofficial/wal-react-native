@@ -16,7 +16,9 @@ public enum NaClBox {
         case sodiumInitFailed
         case invalidKeyLength
         case invalidNonceLength
+        case invalidCiphertextLength
         case invalidBase64
+        case encryptionFailed
         case decryptionFailed
     }
 
@@ -30,13 +32,17 @@ public enum NaClBox {
     }
 
     public struct Sealed: Hashable, Sendable, Codable {
-        /// Base64URL (no padding) ciphertext incl. 16-byte MAC prefix.
+        /// Base64URL (no padding) ciphertext incl. 16-byte MAC prefix. Wire name `encrypted_content`.
         public let encryptedContent: String
         /// Base64URL (no padding) 24-byte nonce.
         public let nonce: String
         public init(encryptedContent: String, nonce: String) {
             self.encryptedContent = encryptedContent
             self.nonce = nonce
+        }
+        public enum CodingKeys: String, CodingKey {
+            case encryptedContent = "encrypted_content"
+            case nonce
         }
     }
 
@@ -69,15 +75,26 @@ public enum NaClBox {
         var out = [UInt8](repeating: 0, count: message.count + macBytes)
         let m = [UInt8](message), n = [UInt8](nonce), pk = [UInt8](recipientPublicKey), sk = [UInt8](senderSecretKey)
         let rc = crypto_box_easy(&out, m, UInt64(m.count), n, pk, sk)
-        guard rc == 0 else { throw Error.decryptionFailed }
+        guard rc == 0 else { throw Error.encryptionFailed }
         return Data(out)
+    }
+
+    /// Derive the X25519 public key from a 32-byte secret (`crypto_scalarmult_base`).
+    public static func publicKey(fromSecretKey secretKey: Data) throws -> Data {
+        try ensureInit()
+        guard secretKey.count == secretKeyBytes else { throw Error.invalidKeyLength }
+        var pk = [UInt8](repeating: 0, count: publicKeyBytes)
+        let sk = [UInt8](secretKey)
+        guard crypto_scalarmult_base(&pk, sk) == 0 else { throw Error.encryptionFailed }
+        return Data(pk)
     }
 
     /// `crypto_box_open_easy(ciphertext, nonce, senderPublicKey, recipientSecretKey)`
     public static func open(ciphertext: Data, nonce: Data, senderPublicKey: Data, recipientSecretKey: Data) throws -> Data {
         try ensureInit()
         guard senderPublicKey.count == publicKeyBytes, recipientSecretKey.count == secretKeyBytes else { throw Error.invalidKeyLength }
-        guard nonce.count == nonceBytes, ciphertext.count >= macBytes else { throw Error.invalidNonceLength }
+        guard nonce.count == nonceBytes else { throw Error.invalidNonceLength }
+        guard ciphertext.count >= macBytes else { throw Error.invalidCiphertextLength }
         var out = [UInt8](repeating: 0, count: ciphertext.count - macBytes)
         let c = [UInt8](ciphertext), n = [UInt8](nonce), pk = [UInt8](senderPublicKey), sk = [UInt8](recipientSecretKey)
         let rc = crypto_box_open_easy(&out, c, UInt64(c.count), n, pk, sk)

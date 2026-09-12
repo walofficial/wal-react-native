@@ -522,7 +522,6 @@ public enum Tokens {
         public static let friendsListPollMs: Int = 10000
         public static let presencePollMs: Int = 1000
         public static let heartbeatMs: Int = 25000
-        public static let impressionCooldownMs: Int = 60000
         public static let lightboxOpenMs: Int = 200
         public static let lightboxFlyAwayMs: Int = 150
         public static let lightboxMinZoom: Int = 2

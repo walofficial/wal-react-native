@@ -46,6 +46,9 @@ jobs:
       - name: Typecheck generators
         working-directory: native/shared/codegen
         run: npx tsc --noEmit -p .
+      - name: Generator unit tests
+        working-directory: native/shared/codegen
+        run: npm test
       - name: Generated artifacts are up to date
         working-directory: native/shared/codegen
         run: npm run check:drift
@@ -61,8 +64,9 @@ jobs:
           swift run walctl version
           swift run walctl catalog | head -20
 
-  # Full app build, unit + snapshot + XCUITests on the simulator. Snapshot baselines live in
-  # native/ios/WALSnapshotTests/__Snapshots__ and are refreshed per checkpoint after visual sign-off.
+  # Full app build, unit + snapshot + XCUITests on the simulator.
+  # macos-26 currently ships Xcode 26.x (not 27). libsodium is required because WALCrypto
+  # links the system library on Apple platforms the same way it does on Linux.
   app-macos:
     name: App (macOS, xcodebuild test)
     runs-on: macos-26
@@ -70,9 +74,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_27.0.app || sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
-      - name: Install XcodeGen
-        run: brew install xcodegen
+        run: |
+          if [ -d /Applications/Xcode_26.6.app ]; then
+            sudo xcode-select -s /Applications/Xcode_26.6.app
+          else
+            sudo xcode-select -s "$(ls -d /Applications/Xcode_26*.app | sort -V | tail -1)"
+          fi
+          xcodebuild -version
+      - name: Install tools
+        run: |
+          brew list xcodegen >/dev/null 2>&1 || brew install xcodegen
+          brew list libsodium >/dev/null 2>&1 || brew install libsodium
+          brew list xcbeautify >/dev/null 2>&1 || brew install xcbeautify
+          echo "PKG_CONFIG_PATH=$(brew --prefix libsodium)/lib/pkgconfig" >> "$GITHUB_ENV"
       - name: Generate project
         working-directory: native/ios
         run: xcodegen generate
@@ -89,7 +103,7 @@ jobs:
             -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
             -resultBundlePath TestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
-            | xcbeautify --renderer github-actions || xcodebuild test -project WAL.xcodeproj -scheme WAL -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' CODE_SIGNING_ALLOWED=NO
+            | xcbeautify --renderer github-actions
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4

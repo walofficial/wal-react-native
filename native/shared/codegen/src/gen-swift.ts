@@ -195,8 +195,8 @@ function emitInit(owner: string, props: Property[], boxed: Set<string>): string 
     return `${ident(p.name)}: ${type}${optional ? '? = nil' : ''}`;
   });
   const assigns = props.map((p) => {
-    const lhs = boxed.has(`${owner}.${p.name}`) ? `self._${p.name}` : `self.${ident(p.name)}`;
-    const rhs = boxed.has(`${owner}.${p.name}`) ? `Indirect(wrappedValue: ${ident(p.name)})` : ident(p.name);
+    const lhs = boxed.has(`${owner}.${p.name}`) ? `self.${ident(p.name)}` : `self.${ident(p.name)}`;
+    const rhs = boxed.has(`${owner}.${p.name}`) ? ident(p.name) : ident(p.name);
     return `        ${lhs} = ${rhs}`;
   });
   return `    public init(\n        ${params.join(',\n        ')}\n    ) {\n${assigns.join('\n')}\n    }\n`;

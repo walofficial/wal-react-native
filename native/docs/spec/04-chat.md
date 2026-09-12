@@ -14,7 +14,7 @@ Source files analysed: `app/(tabs)/(chat-list)/*`, `app/(chat)/[roomId]/*`, `com
 - `ChatItem`: avatar 60, name 20/600, preview 15 secondary single line, timestamp 13 secondary right:
   `"Now"` < 1 min, `"{n}m"` < 60 min, `"{n}h"` < 24 h, weekday short < 7 d, else `M/D`.
   **No unread badge, no typing indicator** (parity: RN has none).
-- Data: `GET /chat/rooms?page&page_size=15` infinite; previews are decrypted client-side
+- Data: `GET /chat/chat-rooms` (no pagination params); previews are decrypted client-side
   (`fetchDecryptedChatRooms.ts`) using `remote_key_{otherUserId}`; failures show
   "🔒 Encrypted message".
 - Pull-to-refresh; empty state icon `chatbubbles-outline` 64 + locale text.
@@ -26,24 +26,24 @@ Source files analysed: `app/(tabs)/(chat-list)/*`, `app/(chat)/[roomId]/*`, `com
 - `ChatTopbar`: back chevron 28, avatar 40 with **online dot 12 `#22c55e`** (border 2 background),
   name 24/600 (tap → `chatProfile`), kebab → action sheet title "რა გსურთ?" with "უჯიკე" (poke),
   "მეგობრად დამატება" / "მეგობრის წაშლა" depending on friendship, "დაბლოკვა", "რეპორტი".
-- Presence: emit `check_user_connection {userId}` every **1000 ms** while the room is open; server
-  answers `user_connection_status {userId, isOnline}`.
-- Messages: `GET /chat/rooms/{room_id}/messages?cursor&limit=15` infinite (cursor based), inverted list,
-  `onEndReachedThreshold 0.3`, auto-scroll to bottom when within 100 px (`chatAutoScrollDistance`),
+- Presence: emit `check_user_connection {is_that_connected_id}` every **1000 ms** while the room is open; server
+  answers `user_connection_status`.
+- Messages: `GET /chat/messages?room_id&page&page_size=15` infinite (page-based, `CHAT_PAGE_SIZE`), inverted list,
+  `onEndReachedThreshold 0.2`, auto-scroll to bottom when within 100 px (`chatAutoScrollDistance`),
   date separators 12 secondary.
 - `MessageBubble`: max width 80 %, padding 8 vertical / 12 horizontal, radius 10 with the tail corner 0:
-  sent → TL/BL 10, TR/BR 0, bg `#3A76F0` (dark) / `#107896` (light), text white 16;
+  sent → TL/BL 10, TR/BR 0, bg `#107896` (dark) / `#3A76F0` (light), text white 16;
   received → TR/BR 10, TL/BL 0, bg `#333333` (dark) / `#E9E9EB` (light), text theme text 16.
   Time 11 inside bubble bottom-right; "seen" check when `state == READ`.
-- Images: `chatImageMaxWidthPercent 70`, max height 300, radius 12, tap → lightbox; uploaded through
-  `POST /chat/upload-attachment` (multipart `file`) then sent as an encrypted message whose plaintext is
-  the JSON `{type:"image", url, width, height}`.
+- Images: `chatImageMaxWidthPercent 65`, max height 300, radius 12, tap → lightbox; uploaded through
+  `POST /chat/upload-attachment` (multipart `file`) then sent as `plain_content: ''` plus an unencrypted
+  `attachments: [{type:"image", url, width, height}]` (not crypto_box).
 - Composer: bg `#1E1E1E` dark / `#e0e0e0` light, radius 20, max height 180, placeholder "მესიჯი",
   camera icon 24 left (opens `record?chatMode=true&roomId&recipientId`), send button 40 circle radius 20
   primary with `ArrowUp` 20; send disabled while empty. Haptic light on send.
 - Sending flow: encrypt → optimistic append (`state: SENT`, temp id) → `socket.emit('private_message',
-  {roomId, recipientId, encryptedContent, nonce, messageType, clientMessageId})` → ack replaces temp id;
-  failure marks `FAILED` with retry on tap.
+  {temporary_id, recipient, encrypted_content, nonce, room_id})` (virtual users: `{temporary_id, recipient, plain_content, room_id}`) → ack replaces temp id;
+  failure marks `FAILED` with retry on tap. Incoming payloads use `sender`, `encrypted_content` / `plain_content`, `attachments`.
 - Incoming `private_message` while in another screen → toast (avatar 32, name 14/600, preview 13) tapping
   navigates to the room. `notify_single_message_seen {messageId}` updates state to `READ`.
 - `force_logout` event → clear session and navigate to sign-in.
@@ -55,8 +55,8 @@ Source files analysed: `app/(tabs)/(chat-list)/*`, `app/(chat)/[roomId]/*`, `com
 - Connect on app foreground when a session exists; disconnect on background after 5 s.
 - Events consumed: `private_message`, `user_connection_status`, `user_public_key`,
   `notify_single_message_seen`, `force_logout`. Emitted: `private_message`, `check_user_connection`,
-  `heartbeat`, `join_room`, `message_seen`.
-- `user_public_key {userId, publicKey}` → `storeRemotePublicKey` (`remote_key_{userId}`).
+  `heartbeat`. (`notify_single_message_seen` emit is commented out in RN; `join_room` / `message_seen` are not emitted.)
+- Public key upload: `POST /chat/send-public-key` (not `PUT /user/update`). `user_public_key {userId, publicKey}` → `storeRemotePublicKey` (`remote_key_{userId}`).
 
 ## Crypto (ProtocolService)
 

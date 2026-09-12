@@ -54,6 +54,8 @@ final class GeneratedAPITests: XCTestCase {
         XCTAssertFalse(future.isKnown)
         XCTAssertEqual(ReactionType.known.count, 7)
         XCTAssertEqual(String(data: try JSONEncoder().encode(future), encoding: .utf8), "\"fire\"")
+        XCTAssertEqual(MessageState.sent.rawValue, "SENT")
+        XCTAssertEqual(AiVideoSummaryStatus.failedPreprocessing.rawValue, "FAILED_PREPROCESSING")
     }
 
     func testPathSubstitutionAndPercentEncoding() {
@@ -97,6 +99,9 @@ final class GeneratedAPITests: XCTestCase {
     func testEmptyResponseAcceptsAnything() throws {
         XCTAssertNil(try decoder.decode(EmptyResponse.self, from: Data("null".utf8)).raw?.stringValue)
         XCTAssertEqual(try decoder.decode(EmptyResponse.self, from: Data("{\"ok\":true}".utf8)).raw?["ok"]?.boolValue, true)
+        XCTAssertNil(try EmptyResponse.decode(from: Data()).raw)
+        XCTAssertNil(try EmptyResponse.decode(from: Data(" \n".utf8)).raw)
+        XCTAssertEqual(try ResponseDecoder.decode(EmptyResponse.self, from: Data()).raw, nil)
     }
 
     func testJSONValueRoundTrip() throws {

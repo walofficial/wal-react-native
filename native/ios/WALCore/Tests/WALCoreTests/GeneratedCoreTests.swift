@@ -64,7 +64,7 @@ final class RoutesTests: XCTestCase {
             XCTAssertNotNil(Routes.descriptors[id], "missing descriptor for \(id)")
             XCTAssertEqual(Routes.descriptors[id]?.id, id)
         }
-        XCTAssertEqual(RouteID.allCases.count, 26)
+        XCTAssertEqual(RouteID.allCases.count, 29)
     }
 
     func testTabsMirrorExpoTabsLayout() {
@@ -90,6 +90,7 @@ final class RoutesTests: XCTestCase {
 
     func testRouteParamsSerialiseLikeExpoRouterParams() {
         XCTAssertEqual(Route.feed(feedId: "f1").params, ["feedId": "f1"])
+        XCTAssertEqual(Route.feed(feedId: "f1", contentType: "last24h").params, ["feedId": "f1", "content_type": "last24h"])
         XCTAssertEqual(Route.verification(verificationId: "v1").params, ["verificationId": "v1"])
         XCTAssertEqual(Route.verification(verificationId: "v1", focusComment: true).params, ["verificationId": "v1", "focusComment": "true"])
         XCTAssertEqual(Route.chatList.params, [:])

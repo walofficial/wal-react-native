@@ -34,7 +34,7 @@ includes `INSendMessageIntent`.
 - `LocationProvider`: `requestForegroundPermissionsAsync` lazily when the locations sheet or camera opens;
   `getCurrentPositionAsync({accuracy: Balanced})`, cached 5 min; exposes `{latitude, longitude, status}`.
 - Headers `x-user-location-latitude` / `x-user-location-longitude` are attached only to
-  `GET /feeds/locations`. `PUT /user/location` posts coordinates after login when permitted.
+  `GET /feeds/locations`. `POST /user/location` posts coordinates after login when permitted.
 - No background location (`isIosBackgroundLocationEnabled: false`).
 
 ## App state

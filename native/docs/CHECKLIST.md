@@ -61,14 +61,14 @@ remote, **V** manual visual comparison with the RN app.
 
 - [ ] Collapsing header `opacity=(1-mode)^2`, translateY −headerHeight, spring overshootClamping — V
 - [ ] Search overlay, content-type tabs, `HorizontalAnonList`
-- [ ] Feed list pagination 10/page, `onEndReachedThreshold 0.5`, pull-to-refresh, `initialNumToRender 2`, `windowSize 6` semantics — U/E
-- [ ] FAB, locations formSheet (slide_from_bottom 350 ms) with `feeds_at_location` / `nearest_feeds` + location headers — E
+- [ ] Feed list pagination 10/page (`GET /user/feed/location-feed/{id}`), `onEndReachedThreshold 0.5`, pull-to-refresh — U/E
+- [ ] FAB 64/32, locations formSheet (slide_from_bottom 350 ms) with `feeds_at_location` / `nearest_feeds` + location headers — E
 
 ## CP6 — Feed item
 
 - [ ] Card: avatar 50 radius 35, name 15/600, time 15 secondary, borders from tokens — S
-- [ ] Media layouts, video visibility 50 %/250 ms, link preview, `ExpandableText` 250 chars "მეტი"
-- [ ] Like: heart 27 (large 30) `#ff3b30`, spring 1.1→0.9→1, haptic Medium, optimistic `setQueryData` + invalidate — U/E
+- [ ] Media layouts, video visibility 40 % / 500 ms, link preview, `ExpandableText` 250 chars "მეტი"
+- [ ] Like: heart 27 (large 30) `#ff3b30`, `withSpring(1.1,{damping:2})` → `withSpring(0.9)` → `withTiming(1,200ms)`, haptic Medium, optimistic `setQueryData` + invalidate — U/E
 - [ ] Comment icon 20/23; menu (delete/report); NewsCardItem; fact-check badge/box/circle thresholds; factCheck 70 % & newsSources 50 % sheets — S
 
 ## CP7 — Post detail
@@ -135,3 +135,9 @@ remote, **V** manual visual comparison with the RN app.
 | Send button colour | compares to `#FFFFFF` while theme bg is `#efefef` | uses theme token | RN bug; intended contrast restored |
 | Key storage | AsyncStorage (plaintext) | Keychain | Security; same key names/format |
 | Live (LiveKit) | createSpace, scheduleSpace, livestream, LivePulseIcon | routes exist, screens show "not available" | Out of scope by request |
+| `POST /user/report/{target_id}` | hey-api emits `path?: never`; RN sends the literal `{target_id}` | same (parity) until CP11 decides to add the path param | RN generator bug |
+| 401 interceptor | `_retry` guard is commented out; retries unbounded | retry once then surface the error | intended RN behaviour; listed so CP2 does not copy the leak |
+| `x-is-anonymous` | `String(isWeb)` → `"false"` on native | omit the header (native is never web) | RN header is a web-only leftover |
+| `/links/{username}` | outbound-only; inbound hits `[...missing]` | `profileByUsername` resolves via `GET /user/profile/username/{username}` | intended native improvement |
+| Share intent | `ShareIntentProvider` unused; `+native-intent` → missing route | Share Extension → `createPost` | intended path the RN screen never wired |
+| DOB wire format | `dd/MM/yyyy` | same | keep RN format, do not ISO-8601 it |

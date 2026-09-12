@@ -50,7 +50,7 @@ Source files analysed: `app/index.tsx`, `app/(auth)/_layout.tsx`, `app/(auth)/si
 - Gender segmented control (male / female / other) using theme primary.
 - Date of birth: button 58 high, radius 12, default **01/02/2000**, min **1940-02-01**,
   max **today − 12 years**, native date picker in a sheet.
-- Submit `PUT /user/update` with `{ username, date_of_birth (YYYY-MM-DD), gender }`, then invalidate the
+- Submit `PUT /user/update` with `{ username, date_of_birth }` where DOB is **`dd/MM/yyyy`** (RN `format(date,'dd/MM/yyyy')`, default `01/02/2000`), then invalidate the
   current-user query; navigation falls out of the tabs gate.
 - Delete account (settings): confirm alert "ანგარიშის წაშლა" → `DELETE /user/delete` → logout.
 

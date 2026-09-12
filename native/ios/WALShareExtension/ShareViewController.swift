@@ -43,7 +43,7 @@ final class ShareViewController: UIViewController {
         }
         payload["value"] = texts
         payload["files"] = files
-        UserDefaults(suiteName: appGroup)?.set(payload, forKey: "ShareKey")
+        UserDefaults(suiteName: appGroup)?.set(payload, forKey: "\(hostScheme)ShareKey")
         openHost()
     }
 
@@ -59,14 +59,17 @@ final class ShareViewController: UIViewController {
     }
 
     private func openHost() {
-        guard let url = URL(string: "\(hostScheme)://dataUrl=ShareKey") else { return }
+        // expo-share-intent writes `${scheme}ShareKey` and opens `wal://dataUrl=walShareKey`.
+        guard let url = URL(string: "\(hostScheme)://dataUrl=\(hostScheme)ShareKey") else { return }
         var responder: UIResponder? = self
+        let selector = NSSelectorFromString("openURL:")
         while let r = responder {
-            if let app = r as? UIApplication {
-                app.open(url, options: [:], completionHandler: nil)
+            if r.responds(to: selector) {
+                r.perform(selector, with: url)
                 return
             }
             responder = r.next
         }
+        extensionContext?.open(url, completionHandler: nil)
     }
 }

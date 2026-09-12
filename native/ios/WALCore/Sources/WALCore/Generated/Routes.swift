@@ -30,6 +30,9 @@ public enum RouteID: String, CaseIterable, Hashable, Sendable, Codable {
     case mediaPage
     case livestream
     case status
+    case profileByUsername
+    case createPostShareIntent
+    case notFound
 }
 
 public enum TabID: String, CaseIterable, Hashable, Sendable, Codable {
@@ -126,14 +129,14 @@ public enum Route: Hashable, Sendable {
     case signIn
     case register
     case homeIndex
-    case feed(feedId: String)
+    case feed(feedId: String, contentType: String? = nil)
     case locations
     case createSpace(feedId: String)
     case scheduleSpace(feedId: String, description: String)
     case profile(userId: String)
     case profilePicture(userId: String? = nil, imageUrl: String? = nil)
     case verification(verificationId: String, focusComment: Bool? = nil)
-    case createPost(feedId: String, contentType: String? = nil, disableImagePicker: Bool? = nil, sharedContent: String? = nil, sharedImages: String? = nil)
+    case createPost(feedId: String, contentType: String? = nil, disableImagePicker: Bool? = nil, disableRoomCreation: Bool? = nil, sharedContent: String? = nil, sharedImages: String? = nil)
     case factChecks
     case chatList
     case userIndex
@@ -145,9 +148,12 @@ public enum Route: Hashable, Sendable {
     case chatProfile(roomId: String, userId: String)
     case chatProfilePicture(roomId: String, imageUrl: String? = nil)
     case record(feedId: String? = nil, chatMode: Bool? = nil, roomId: String? = nil, recipientId: String? = nil)
-    case mediaPage(feedId: String? = nil, path: String, type: String, chatMode: Bool? = nil, roomId: String? = nil, recipientId: String? = nil)
+    case mediaPage(feedId: String? = nil, path: String, type: String, recordingTime: String? = nil, chatMode: Bool? = nil, roomId: String? = nil, recipientId: String? = nil)
     case livestream
     case status(verificationId: String, focusComment: Bool? = nil)
+    case profileByUsername(username: String)
+    case createPostShareIntent
+    case notFound
 
     public var id: RouteID {
         switch self {
@@ -177,6 +183,9 @@ public enum Route: Hashable, Sendable {
         case .mediaPage: return .mediaPage
         case .livestream: return .livestream
         case .status: return .status
+        case .profileByUsername: return .profileByUsername
+        case .createPostShareIntent: return .createPostShareIntent
+        case .notFound: return .notFound
         }
     }
 
@@ -189,8 +198,8 @@ public enum Route: Hashable, Sendable {
         case .signIn: return [:]
         case .register: return [:]
         case .homeIndex: return [:]
-        case .feed(let feedId):
-            return ["feedId": feedId].compactMapValues { $0 }
+        case .feed(let feedId, let contentType):
+            return ["feedId": feedId, "content_type": contentType].compactMapValues { $0 }
         case .locations: return [:]
         case .createSpace(let feedId):
             return ["feedId": feedId].compactMapValues { $0 }
@@ -202,8 +211,8 @@ public enum Route: Hashable, Sendable {
             return ["userId": userId, "imageUrl": imageUrl].compactMapValues { $0 }
         case .verification(let verificationId, let focusComment):
             return ["verificationId": verificationId, "focusComment": focusComment.map(String.init)].compactMapValues { $0 }
-        case .createPost(let feedId, let contentType, let disableImagePicker, let sharedContent, let sharedImages):
-            return ["feedId": feedId, "contentType": contentType, "disableImagePicker": disableImagePicker.map(String.init), "sharedContent": sharedContent, "sharedImages": sharedImages].compactMapValues { $0 }
+        case .createPost(let feedId, let contentType, let disableImagePicker, let disableRoomCreation, let sharedContent, let sharedImages):
+            return ["feedId": feedId, "content_type": contentType, "disableImagePicker": disableImagePicker.map(String.init), "disableRoomCreation": disableRoomCreation.map(String.init), "sharedContent": sharedContent, "sharedImages": sharedImages].compactMapValues { $0 }
         case .factChecks: return [:]
         case .chatList: return [:]
         case .userIndex: return [:]
@@ -219,11 +228,15 @@ public enum Route: Hashable, Sendable {
             return ["roomId": roomId, "imageUrl": imageUrl].compactMapValues { $0 }
         case .record(let feedId, let chatMode, let roomId, let recipientId):
             return ["feedId": feedId, "chatMode": chatMode.map(String.init), "roomId": roomId, "recipientId": recipientId].compactMapValues { $0 }
-        case .mediaPage(let feedId, let path, let type, let chatMode, let roomId, let recipientId):
-            return ["feedId": feedId, "path": path, "type": type, "chatMode": chatMode.map(String.init), "roomId": roomId, "recipientId": recipientId].compactMapValues { $0 }
+        case .mediaPage(let feedId, let path, let type, let recordingTime, let chatMode, let roomId, let recipientId):
+            return ["feedId": feedId, "path": path, "type": type, "recordingTime": recordingTime, "chatMode": chatMode.map(String.init), "roomId": roomId, "recipientId": recipientId].compactMapValues { $0 }
         case .livestream: return [:]
         case .status(let verificationId, let focusComment):
             return ["verificationId": verificationId, "focusComment": focusComment.map(String.init)].compactMapValues { $0 }
+        case .profileByUsername(let username):
+            return ["username": username].compactMapValues { $0 }
+        case .createPostShareIntent: return [:]
+        case .notFound: return [:]
         }
     }
 }
@@ -313,7 +326,7 @@ public enum Routes {
             presentation: .fade,
             animation: nil,
             animationDurationMs: nil,
-            params: [RouteParamDescriptor(name: "feedId", type: .string, optional: false)],
+            params: [RouteParamDescriptor(name: "feedId", type: .string, optional: false), RouteParamDescriptor(name: "content_type", type: .string, optional: true)],
             header: .profileHeader,
             headerTitle: nil,
             headerTitleKey: nil,
@@ -446,7 +459,7 @@ public enum Routes {
             presentation: .modal,
             animation: "slide_from_bottom",
             animationDurationMs: 200,
-            params: [RouteParamDescriptor(name: "feedId", type: .string, optional: false), RouteParamDescriptor(name: "contentType", type: .string, optional: true), RouteParamDescriptor(name: "disableImagePicker", type: .bool, optional: true), RouteParamDescriptor(name: "sharedContent", type: .string, optional: true), RouteParamDescriptor(name: "sharedImages", type: .string, optional: true)],
+            params: [RouteParamDescriptor(name: "feedId", type: .string, optional: false), RouteParamDescriptor(name: "content_type", type: .string, optional: true), RouteParamDescriptor(name: "disableImagePicker", type: .bool, optional: true), RouteParamDescriptor(name: "disableRoomCreation", type: .bool, optional: true), RouteParamDescriptor(name: "sharedContent", type: .string, optional: true), RouteParamDescriptor(name: "sharedImages", type: .string, optional: true)],
             header: .none,
             headerTitle: nil,
             headerTitleKey: nil,
@@ -674,7 +687,7 @@ public enum Routes {
             presentation: .push,
             animation: nil,
             animationDurationMs: nil,
-            params: [RouteParamDescriptor(name: "feedId", type: .string, optional: true), RouteParamDescriptor(name: "path", type: .string, optional: false), RouteParamDescriptor(name: "type", type: .string, optional: false), RouteParamDescriptor(name: "chatMode", type: .bool, optional: true), RouteParamDescriptor(name: "roomId", type: .string, optional: true), RouteParamDescriptor(name: "recipientId", type: .string, optional: true)],
+            params: [RouteParamDescriptor(name: "feedId", type: .string, optional: true), RouteParamDescriptor(name: "path", type: .string, optional: false), RouteParamDescriptor(name: "type", type: .string, optional: false), RouteParamDescriptor(name: "recordingTime", type: .string, optional: true), RouteParamDescriptor(name: "chatMode", type: .bool, optional: true), RouteParamDescriptor(name: "roomId", type: .string, optional: true), RouteParamDescriptor(name: "recipientId", type: .string, optional: true)],
             header: .none,
             headerTitle: nil,
             headerTitleKey: nil,
@@ -715,6 +728,63 @@ public enum Routes {
             params: [RouteParamDescriptor(name: "verificationId", type: .string, optional: false), RouteParamDescriptor(name: "focusComment", type: .bool, optional: true)],
             header: .simpleGoBack,
             headerTitle: "ფოსტი",
+            headerTitleKey: nil,
+            headerHideBack: false,
+            headerRight: nil,
+            headerShowTabs: false,
+            headerLogoutOnBack: false,
+            headerWithInsets: false,
+            backgroundColor: nil,
+            outOfScope: nil
+        ),
+        .profileByUsername: RouteDescriptor(
+            id: .profileByUsername,
+            rnPath: "/links/[username]",
+            stack: .root,
+            presentation: .push,
+            animation: nil,
+            animationDurationMs: nil,
+            params: [RouteParamDescriptor(name: "username", type: .string, optional: false)],
+            header: .profilePageUsername,
+            headerTitle: nil,
+            headerTitleKey: nil,
+            headerHideBack: false,
+            headerRight: nil,
+            headerShowTabs: false,
+            headerLogoutOnBack: false,
+            headerWithInsets: false,
+            backgroundColor: nil,
+            outOfScope: nil
+        ),
+        .createPostShareIntent: RouteDescriptor(
+            id: .createPostShareIntent,
+            rnPath: "/create-post-shareintent",
+            stack: .homeOrUser,
+            presentation: .modal,
+            animation: nil,
+            animationDurationMs: nil,
+            params: [],
+            header: .none,
+            headerTitle: nil,
+            headerTitleKey: nil,
+            headerHideBack: false,
+            headerRight: nil,
+            headerShowTabs: false,
+            headerLogoutOnBack: false,
+            headerWithInsets: false,
+            backgroundColor: nil,
+            outOfScope: nil
+        ),
+        .notFound: RouteDescriptor(
+            id: .notFound,
+            rnPath: "/[...missing]",
+            stack: .root,
+            presentation: .push,
+            animation: nil,
+            animationDurationMs: nil,
+            params: [],
+            header: .`default`,
+            headerTitle: "Oops!",
             headerTitleKey: nil,
             headerHideBack: false,
             headerRight: nil,

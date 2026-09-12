@@ -87,10 +87,15 @@ export interface ApiModel {
 const IDENT_CLEAN = /[^A-Za-z0-9_]/g;
 
 export function camel(wire: string): string {
-  const parts = wire.replace(IDENT_CLEAN, '_').split('_').filter(Boolean);
+  const cleaned = wire.replace(IDENT_CLEAN, '_');
+  const hasSep = cleaned.includes('_');
+  const isAllCaps = /^[A-Z0-9_]+$/.test(cleaned) && /[A-Z]/.test(cleaned);
+  const rawParts = cleaned.split('_').filter(Boolean);
+  const parts = hasSep || isAllCaps ? rawParts.map((p) => p.toLowerCase()) : rawParts;
   if (parts.length === 0) return 'value';
   const [first, ...rest] = parts;
-  const out = first.charAt(0).toLowerCase() + first.slice(1) + rest.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join('');
+  const out =
+    first.charAt(0).toLowerCase() + first.slice(1) + rest.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join('');
   return /^[0-9]/.test(out) ? `_${out}` : out;
 }
 

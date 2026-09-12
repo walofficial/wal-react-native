@@ -267,16 +267,16 @@ public struct AiVideoSummaryStatus: RawRepresentable, Codable, Hashable, Sendabl
     public func encode(to encoder: Encoder) throws { var c = encoder.singleValueContainer(); try c.encode(rawValue) }
     public var description: String { rawValue }
     public var isKnown: Bool { Self.known.contains(self) }
-    public static let pENDING = AiVideoSummaryStatus(rawValue: "PENDING")
-    public static let cOMPLETED = AiVideoSummaryStatus(rawValue: "COMPLETED")
-    public static let fAILED = AiVideoSummaryStatus(rawValue: "FAILED")
-    public static let fAILEDPREPROCESSING = AiVideoSummaryStatus(rawValue: "FAILED_PREPROCESSING")
-    public static let sKIPPEDDURATION = AiVideoSummaryStatus(rawValue: "SKIPPED_DURATION")
-    public static let mETADATAINCOMPLETE = AiVideoSummaryStatus(rawValue: "METADATA_INCOMPLETE")
-    public static let mETADATAFETCHFAILED = AiVideoSummaryStatus(rawValue: "METADATA_FETCH_FAILED")
-    public static let pROCESSINGERROR = AiVideoSummaryStatus(rawValue: "PROCESSING_ERROR")
-    public static let nOTELIGIBLE = AiVideoSummaryStatus(rawValue: "NOT_ELIGIBLE")
-    public static let known: [AiVideoSummaryStatus] = [.pENDING, .cOMPLETED, .fAILED, .fAILEDPREPROCESSING, .sKIPPEDDURATION, .mETADATAINCOMPLETE, .mETADATAFETCHFAILED, .pROCESSINGERROR, .nOTELIGIBLE]
+    public static let pending = AiVideoSummaryStatus(rawValue: "PENDING")
+    public static let completed = AiVideoSummaryStatus(rawValue: "COMPLETED")
+    public static let failed = AiVideoSummaryStatus(rawValue: "FAILED")
+    public static let failedPreprocessing = AiVideoSummaryStatus(rawValue: "FAILED_PREPROCESSING")
+    public static let skippedDuration = AiVideoSummaryStatus(rawValue: "SKIPPED_DURATION")
+    public static let metadataIncomplete = AiVideoSummaryStatus(rawValue: "METADATA_INCOMPLETE")
+    public static let metadataFetchFailed = AiVideoSummaryStatus(rawValue: "METADATA_FETCH_FAILED")
+    public static let processingError = AiVideoSummaryStatus(rawValue: "PROCESSING_ERROR")
+    public static let notEligible = AiVideoSummaryStatus(rawValue: "NOT_ELIGIBLE")
+    public static let known: [AiVideoSummaryStatus] = [.pending, .completed, .failed, .failedPreprocessing, .skippedDuration, .metadataIncomplete, .metadataFetchFailed, .processingError, .notEligible]
 }
 
 public struct AllFeedsResponse: Codable, Hashable, Sendable {
@@ -1600,11 +1600,11 @@ public struct FactCheckStatus: RawRepresentable, Codable, Hashable, Sendable, Ex
     public func encode(to encoder: Encoder) throws { var c = encoder.singleValueContainer(); try c.encode(rawValue) }
     public var description: String { rawValue }
     public var isKnown: Bool { Self.known.contains(self) }
-    public static let iDLE = FactCheckStatus(rawValue: "IDLE")
-    public static let pENDING = FactCheckStatus(rawValue: "PENDING")
-    public static let cOMPLETED = FactCheckStatus(rawValue: "COMPLETED")
-    public static let fAILED = FactCheckStatus(rawValue: "FAILED")
-    public static let known: [FactCheckStatus] = [.iDLE, .pENDING, .cOMPLETED, .fAILED]
+    public static let idle = FactCheckStatus(rawValue: "IDLE")
+    public static let pending = FactCheckStatus(rawValue: "PENDING")
+    public static let completed = FactCheckStatus(rawValue: "COMPLETED")
+    public static let failed = FactCheckStatus(rawValue: "FAILED")
+    public static let known: [FactCheckStatus] = [.idle, .pending, .completed, .failed]
 }
 
 public struct FcpResponse: Codable, Hashable, Sendable {
@@ -3175,12 +3175,12 @@ public struct MessageState: RawRepresentable, Codable, Hashable, Sendable, Expre
     public func encode(to encoder: Encoder) throws { var c = encoder.singleValueContainer(); try c.encode(rawValue) }
     public var description: String { rawValue }
     public var isKnown: Bool { Self.known.contains(self) }
-    public static let sENT = MessageState(rawValue: "SENT")
-    public static let rECEIVED = MessageState(rawValue: "RECEIVED")
-    public static let rEAD = MessageState(rawValue: "READ")
-    public static let fAILED = MessageState(rawValue: "FAILED")
-    public static let dELETED = MessageState(rawValue: "DELETED")
-    public static let known: [MessageState] = [.sENT, .rECEIVED, .rEAD, .fAILED, .dELETED]
+    public static let sent = MessageState(rawValue: "SENT")
+    public static let received = MessageState(rawValue: "RECEIVED")
+    public static let read = MessageState(rawValue: "READ")
+    public static let failed = MessageState(rawValue: "FAILED")
+    public static let deleted = MessageState(rawValue: "DELETED")
+    public static let known: [MessageState] = [.sent, .received, .read, .failed, .deleted]
 }
 
 public struct MetadataStatus: RawRepresentable, Codable, Hashable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {
@@ -3191,11 +3191,11 @@ public struct MetadataStatus: RawRepresentable, Codable, Hashable, Sendable, Exp
     public func encode(to encoder: Encoder) throws { var c = encoder.singleValueContainer(); try c.encode(rawValue) }
     public var description: String { rawValue }
     public var isKnown: Bool { Self.known.contains(self) }
-    public static let iDLE = MetadataStatus(rawValue: "IDLE")
-    public static let pENDING = MetadataStatus(rawValue: "PENDING")
-    public static let cOMPLETED = MetadataStatus(rawValue: "COMPLETED")
-    public static let fAILED = MetadataStatus(rawValue: "FAILED")
-    public static let known: [MetadataStatus] = [.iDLE, .pENDING, .cOMPLETED, .fAILED]
+    public static let idle = MetadataStatus(rawValue: "IDLE")
+    public static let pending = MetadataStatus(rawValue: "PENDING")
+    public static let completed = MetadataStatus(rawValue: "COMPLETED")
+    public static let failed = MetadataStatus(rawValue: "FAILED")
+    public static let known: [MetadataStatus] = [.idle, .pending, .completed, .failed]
 }
 
 public struct NewMessageState: Codable, Hashable, Sendable {
@@ -3903,11 +3903,11 @@ public struct SocialMediaScrapeStatus: RawRepresentable, Codable, Hashable, Send
     public func encode(to encoder: Encoder) throws { var c = encoder.singleValueContainer(); try c.encode(rawValue) }
     public var description: String { rawValue }
     public var isKnown: Bool { Self.known.contains(self) }
-    public static let pENDING = SocialMediaScrapeStatus(rawValue: "PENDING")
-    public static let pROCESSING = SocialMediaScrapeStatus(rawValue: "PROCESSING")
-    public static let cOMPLETED = SocialMediaScrapeStatus(rawValue: "COMPLETED")
-    public static let fAILED = SocialMediaScrapeStatus(rawValue: "FAILED")
-    public static let known: [SocialMediaScrapeStatus] = [.pENDING, .pROCESSING, .cOMPLETED, .fAILED]
+    public static let pending = SocialMediaScrapeStatus(rawValue: "PENDING")
+    public static let processing = SocialMediaScrapeStatus(rawValue: "PROCESSING")
+    public static let completed = SocialMediaScrapeStatus(rawValue: "COMPLETED")
+    public static let failed = SocialMediaScrapeStatus(rawValue: "FAILED")
+    public static let known: [SocialMediaScrapeStatus] = [.pending, .processing, .completed, .failed]
 }
 
 public struct Source: Codable, Hashable, Sendable {

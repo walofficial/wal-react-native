@@ -39,11 +39,18 @@ final class NaClBoxTests: XCTestCase {
     }
 
     func testDerivedPublicKeysMatchVector() throws {
-        // Secret keys are the raw scalars; libsodium derives the same public keys tweetnacl did.
+        XCTAssertEqual(
+            Base64URL.encode(try NaClBox.publicKey(fromSecretKey: try Base64URL.decode(aSecret))),
+            aPublic
+        )
+        XCTAssertEqual(
+            Base64URL.encode(try NaClBox.publicKey(fromSecretKey: try Base64URL.decode(bSecret))),
+            bPublic
+        )
         let kp = try NaClBox.generateKeyPair()
         XCTAssertEqual(kp.publicKey.count, 32)
         XCTAssertEqual(kp.secretKey.count, 32)
-        XCTAssertNotEqual(kp.publicKey, kp.secretKey)
+        XCTAssertEqual(try NaClBox.publicKey(fromSecretKey: kp.secretKey), kp.publicKey)
     }
 
     func testRoundTripWithFreshKeys() throws {

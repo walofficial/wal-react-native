@@ -9,6 +9,8 @@ import os
 class NotificationService: UNNotificationServiceExtension {
   var contentHandler: ((UNNotificationContent) -> Void)?
   var bestAttemptContent: UNMutableNotificationContent?
+  private let deliverLock = NSLock()
+  private var didDeliver = false
   private let logger = Logger(
     subsystem: Bundle.main.bundleIdentifier ?? "wal.notification-service",
     category: "NotificationServiceExtension"
@@ -251,22 +253,22 @@ class NotificationService: UNNotificationServiceExtension {
 
           if let imageUrl = imageUrl {
             downloadAndAttachImage(url: imageUrl, to: updatedMutable) { content in
-              contentHandler(content)
+              deliver(content)
             }
             return
           }
 
-          contentHandler(updatedMutable)
+          deliver(updatedMutable)
         } catch {
           logger.error("communication notification failed error=\(error.localizedDescription, privacy: .public)")
           // Fallback to standard behavior below.
           if let imageUrl = imageUrl {
             downloadAndAttachImage(url: imageUrl, to: bestAttemptContent) { content in
-              contentHandler(content)
+              deliver(content)
             }
             return
           }
-          contentHandler(bestAttemptContent)
+          deliver(bestAttemptContent)
         }
       }
 
@@ -276,12 +278,12 @@ class NotificationService: UNNotificationServiceExtension {
     // Standard rich push attachment behavior.
     if let imageUrl = imageUrl {
       downloadAndAttachImage(url: imageUrl, to: bestAttemptContent) { content in
-        contentHandler(content)
+        deliver(content)
       }
       return
     }
 
-    contentHandler(bestAttemptContent)
+    deliver(bestAttemptContent)
   }
 
   private func downloadAndAttachImage(
@@ -328,12 +330,19 @@ class NotificationService: UNNotificationServiceExtension {
     task.resume()
   }
 
+  /// UNNotificationServiceExtension must invoke the content handler exactly once.
+  private func deliver(_ content: UNNotificationContent) {
+    deliverLock.lock()
+    defer { deliverLock.unlock() }
+    guard !didDeliver, let handler = contentHandler else { return }
+    didDeliver = true
+    contentHandler = nil
+    handler(content)
+  }
+
   override func serviceExtensionTimeWillExpire() {
-    // Called just before the extension will be terminated by the system.
-    // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-    if let contentHandler = contentHandler,
-      let bestAttemptContent = bestAttemptContent {
-      contentHandler(bestAttemptContent)
+    if let bestAttemptContent = bestAttemptContent {
+      deliver(bestAttemptContent)
     }
   }
 }
