@@ -9,7 +9,7 @@ struct WALApp: App {
 
     var body: some Scene {
         WindowGroup {
-            RootView()
+            AppShell(host: AppHost(core: AppCore(mode: .mock)))
         }
     }
 }
