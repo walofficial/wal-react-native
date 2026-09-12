@@ -1,0 +1,235 @@
+# XcodeGen spec for the native WAL iOS app. `xcodegen generate` in this directory produces WAL.xcodeproj
+# (not committed). Settings mirror app.config.js of the React Native app: bundle ids, team, deployment
+# target 15.1, entitlements, usage descriptions, URL scheme `wal`, associated domain wal.ge.
+name: WAL
+options:
+  bundleIdPrefix: com.greetai
+  deploymentTarget:
+    iOS: "15.1"
+  xcodeVersion: "27.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+  defaultConfig: Debug
+  groupSortPosition: top
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    DEVELOPMENT_TEAM: 7JZBPQL8L6
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    IPHONEOS_DEPLOYMENT_TARGET: "15.1"
+    TARGETED_DEVICE_FAMILY: "1"          # supportsTablet: false
+    MARKETING_VERSION: "1.0.33"          # keep in sync with package.json version
+    CURRENT_PROJECT_VERSION: "1"
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: NO
+    ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+  configs:
+    Debug:
+      # EXPO_PUBLIC_IS_DEV=true build flavour ("WAL DEV", com.greetai.mentdev)
+      WAL_APP_NAME: "WAL DEV"
+      WAL_BUNDLE_ID: com.greetai.mentdev
+      WAL_APP_GROUP: group.com.greetai.mentdev
+      SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG WAL_DEV
+    Release:
+      WAL_APP_NAME: "WAL"
+      WAL_BUNDLE_ID: com.greetai.ment
+      WAL_APP_GROUP: group.com.greetai.ment
+
+packages:
+  WALCore:
+    path: WALCore
+
+targets:
+  WAL:
+    type: application
+    platform: iOS
+    sources:
+      - path: WAL
+        excludes:
+          - "Config/*.entitlements"
+    dependencies:
+      - package: WALCore
+        product: WALCore
+      - target: WALNotificationService
+        embed: true
+      - target: WALShareExtension
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(WAL_BUNDLE_ID)
+        PRODUCT_NAME: $(WAL_APP_NAME)
+        CODE_SIGN_ENTITLEMENTS: WAL/Config/WAL.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        INFOPLIST_KEY_UILaunchScreen_Generation: NO
+        OTHER_LDFLAGS: ["$(inherited)", "-ObjC"]
+    info:
+      path: WAL/Config/Info.plist
+      properties:
+        CFBundleDisplayName: $(WAL_APP_NAME)
+        CFBundleName: $(WAL_APP_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+        UIUserInterfaceStyle: Automatic
+        UIViewControllerBasedStatusBarAppearance: true
+        UIRequiresFullScreen: true
+        ITSAppUsesNonExemptEncryption: false
+        UIBackgroundModes: [remote-notification]
+        NSUserActivityTypes:
+          - $(WAL_BUNDLE_ID).expo.index_route
+          - INSendMessageIntent
+        CFBundleURLTypes:
+          - CFBundleURLName: $(WAL_BUNDLE_ID)
+            CFBundleURLSchemes: [wal]
+        CFBundleLocalizations: [en, fr, ka]
+        CFBundleDevelopmentRegion: en
+        NSCameraUsageDescription: "This app uses the camera to capture photos and videos."
+        NSPhotoLibraryUsageDescription: "This app accesses your photos to let you share them."
+        NSPhotoLibraryAddUsageDescription: "This app saves photos and videos to your photo library."
+        NSMicrophoneUsageDescription: "This app accesses your microphone to let you share them."
+        NSContactsUsageDescription: "WAL uses your contacts to help you find and connect with friends who are already using the app. Your contact data is only used for finding friends and is never stored or used for any other purpose."
+        NSLocationWhenInUseUsageDescription: "This app accesses your location to let you post videos or photos to nearby locations."
+        LSApplicationQueriesSchemes: [sms, tel, https]
+        WALAPIBaseURL: https://mnt-api-880207287631.europe-west3.run.app
+        WALAppGroup: $(WAL_APP_GROUP)
+    entitlements:
+      path: WAL/Config/WAL.entitlements
+      properties:
+        aps-environment: development
+        com.apple.developer.usernotifications.communication: true
+        com.apple.security.application-groups: [$(WAL_APP_GROUP)]
+        com.apple.developer.associated-domains: ["applinks:wal.ge"]
+    scheme:
+      testTargets:
+        - WALTests
+        - WALSnapshotTests
+        - WALUITests
+      gatherCoverageData: true
+      environmentVariables:
+        WAL_DEV_SERVER: "1"
+
+  WALNotificationService:
+    type: app-extension
+    platform: iOS
+    sources: [WALNotificationService]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(WAL_BUNDLE_ID).notification-service
+        PRODUCT_NAME: NotificationServiceExtension
+        CODE_SIGN_ENTITLEMENTS: WALNotificationService/WALNotificationService.entitlements
+    info:
+      path: WALNotificationService/Info.plist
+      properties:
+        CFBundleDisplayName: NotificationServiceExtension
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.usernotifications.service
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).NotificationService
+          NSExtensionAttributes:
+            IntentsSupported: [INSendMessageIntent]
+    entitlements:
+      path: WALNotificationService/WALNotificationService.entitlements
+      properties:
+        com.apple.security.application-groups: [$(WAL_APP_GROUP)]
+        com.apple.developer.usernotifications.communication: true
+
+  WALShareExtension:
+    type: app-extension
+    platform: iOS
+    sources: [WALShareExtension]
+    dependencies:
+      - package: WALCore
+        product: WALCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(WAL_BUNDLE_ID).share-extension
+        PRODUCT_NAME: ShareExtension
+        CODE_SIGN_ENTITLEMENTS: WALShareExtension/WALShareExtension.entitlements
+    info:
+      path: WALShareExtension/Info.plist
+      properties:
+        CFBundleDisplayName: $(WAL_APP_NAME)
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.share-services
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ShareViewController
+          NSExtensionAttributes:
+            # expo-share-intent iosActivationRules from app.config.js
+            NSExtensionActivationRule:
+              NSExtensionActivationSupportsWebURLWithMaxCount: 1
+              NSExtensionActivationSupportsWebPageWithMaxCount: 1
+              NSExtensionActivationSupportsText: true
+              NSExtensionActivationSupportsImageWithMaxCount: 10
+        WALAppGroup: $(WAL_APP_GROUP)
+        WALHostScheme: wal
+    entitlements:
+      path: WALShareExtension/WALShareExtension.entitlements
+      properties:
+        com.apple.security.application-groups: [$(WAL_APP_GROUP)]
+
+  WALTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [WALTests]
+    dependencies:
+      - target: WAL
+      - package: WALCore
+        product: WALCore
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(WAL_BUNDLE_ID).tests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/$(WAL_APP_NAME).app/$(WAL_APP_NAME)
+        BUNDLE_LOADER: $(TEST_HOST)
+
+  WALSnapshotTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources: [WALSnapshotTests]
+    dependencies:
+      - target: WAL
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(WAL_BUNDLE_ID).snapshot-tests
+        TEST_HOST: $(BUILT_PRODUCTS_DIR)/$(WAL_APP_NAME).app/$(WAL_APP_NAME)
+        BUNDLE_LOADER: $(TEST_HOST)
+
+  WALUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources: [WALUITests]
+    dependencies:
+      - target: WAL
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(WAL_BUNDLE_ID).ui-tests
+        TEST_TARGET_NAME: WAL
+
+schemes:
+  WAL:
+    build:
+      targets:
+        WAL: all
+        WALNotificationService: all
+        WALShareExtension: all
+    run:
+      config: Debug
+      environmentVariables:
+        WAL_DEV_SERVER: "1"
+    test:
+      config: Debug
+      gatherCoverageData: true
+      targets:
+        - WALTests
+        - WALSnapshotTests
+        - name: WALUITests
+          parallelizable: false
+    archive:
+      config: Release

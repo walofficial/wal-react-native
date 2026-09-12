@@ -1,0 +1,68 @@
+{
+  "description": "Route table extracted from the Expo Router tree under app/. Generated into Route.swift (WALCore) and Route.kt. `stack` is the navigator that owns the screen; `presentation` mirrors react-native-screens options; `rnPath` is the public URL path (group segments dropped) used for deep links and walctl navigate.",
+  "tabs": [
+    { "id": "home", "rnGroup": "(home)", "initialRoute": "homeIndex", "iconFocused": "location", "iconUnfocused": "location-outline", "focusedScale": 1.15 },
+    { "id": "chatList", "rnGroup": "(chat-list)", "initialRoute": "chatList", "iconFocused": "chatbubble", "iconUnfocused": "chatbubble-outline", "focusedScale": 1.0 },
+    { "id": "user", "rnGroup": "(user)", "initialRoute": "userIndex", "iconFocused": "person-circle", "iconUnfocused": "person-circle", "focusedScale": 1.15, "tabPressResetsStack": true }
+  ],
+  "routes": [
+    { "id": "index", "rnPath": "/", "stack": "root", "presentation": "replace", "params": [], "note": "Redirect gate: session && user.preferred_news_feed_id -> home; loading -> splash; else signIn" },
+    { "id": "signIn", "rnPath": "/sign-in", "stack": "auth", "presentation": "fade", "params": [], "header": "none", "backgroundColor": "authBackground" },
+    { "id": "register", "rnPath": "/register", "stack": "auth", "presentation": "push", "params": [], "header": "simpleGoBack", "headerTitle": "რეგისტრაცია", "headerLogoutOnBack": true, "headerWithInsets": true },
+
+    { "id": "homeIndex", "rnPath": "/", "stack": "home", "presentation": "push", "params": [], "header": "none", "note": "Redirects to feed(defaultFeedId)" },
+    { "id": "feed", "rnPath": "/[feedId]", "stack": "home", "presentation": "fade", "params": [{ "name": "feedId", "type": "string" }], "header": "profileHeader", "headerShowTabs": true },
+    { "id": "locations", "rnPath": "/locations", "stack": "home", "presentation": "formSheet", "animation": "slide_from_bottom", "animationDurationMs": 350, "params": [], "header": "none" },
+    { "id": "createSpace", "rnPath": "/create-space", "stack": "home", "presentation": "push", "params": [{ "name": "feedId", "type": "string" }], "header": "simpleGoBack", "headerTitle": "ოთახი", "outOfScope": "livekit" },
+    { "id": "scheduleSpace", "rnPath": "/create-space/schedule-space", "stack": "home", "presentation": "push", "params": [{ "name": "feedId", "type": "string" }, { "name": "description", "type": "string" }], "outOfScope": "livekit" },
+
+    { "id": "profile", "rnPath": "/profile", "stack": "homeOrUser", "presentation": "push", "params": [{ "name": "userId", "type": "string" }], "header": "profilePageUsername" },
+    { "id": "profilePicture", "rnPath": "/profile-picture", "stack": "homeOrUser", "presentation": "push", "params": [{ "name": "userId", "type": "string", "optional": true }, { "name": "imageUrl", "type": "string", "optional": true }], "header": "simpleGoBack", "headerTitle": "ფოტო" },
+    { "id": "verification", "rnPath": "/verification/[verificationId]", "stack": "homeOrUser", "presentation": "push", "params": [{ "name": "verificationId", "type": "string" }, { "name": "focusComment", "type": "bool", "optional": true }], "header": "simpleGoBackPost" },
+    { "id": "createPost", "rnPath": "/create-post", "stack": "homeOrUser", "presentation": "modal", "animation": "slide_from_bottom", "animationDurationMs": 200, "params": [{ "name": "feedId", "type": "string" }, { "name": "contentType", "type": "string", "optional": true }, { "name": "disableImagePicker", "type": "bool", "optional": true }, { "name": "sharedContent", "type": "string", "optional": true }, { "name": "sharedImages", "type": "string", "optional": true }], "header": "none" },
+    { "id": "factChecks", "rnPath": "/fact-checks", "stack": "homeOrUser", "presentation": "push", "params": [], "header": "default" },
+
+    { "id": "chatList", "rnPath": "/chat-list", "stack": "chatList", "presentation": "push", "params": [], "header": "simpleGoBack", "headerTitle": "ჩათი", "headerHideBack": true, "headerRight": "addContacts" },
+
+    { "id": "userIndex", "rnPath": "/user", "stack": "user", "presentation": "push", "params": [], "header": "profileHeader", "headerTitle": "პროფილი", "headerRight": "settings" },
+    { "id": "settings", "rnPath": "/settings", "stack": "user", "presentation": "push", "params": [], "header": "simpleGoBack", "headerTitleKey": "common.settings" },
+    { "id": "profileSettings", "rnPath": "/profile-settings", "stack": "user", "presentation": "push", "params": [], "header": "simpleGoBack", "headerTitleKey": "settings.account" },
+    { "id": "userPreferences", "rnPath": "/user-preferences", "stack": "user", "presentation": "push", "params": [], "header": "simpleGoBack", "headerTitleKey": "settings.user_preferences" },
+    { "id": "blockedUsers", "rnPath": "/blocked-users", "stack": "user", "presentation": "push", "params": [], "header": "default", "headerTitle": "დაბლოკილი" },
+
+    { "id": "chatRoom", "rnPath": "/(chat)/[roomId]", "stack": "chat", "presentation": "push", "params": [{ "name": "roomId", "type": "string" }], "header": "chatTopbar" },
+    { "id": "chatProfile", "rnPath": "/(chat)/[roomId]/profile", "stack": "chat", "presentation": "push", "params": [{ "name": "roomId", "type": "string" }, { "name": "userId", "type": "string" }], "header": "simpleGoBack", "headerTitle": "პროფილი" },
+    { "id": "chatProfilePicture", "rnPath": "/(chat)/[roomId]/profile-picture", "stack": "chat", "presentation": "push", "params": [{ "name": "roomId", "type": "string" }, { "name": "imageUrl", "type": "string", "optional": true }], "header": "simpleGoBack", "headerTitle": "ფოტო" },
+
+    { "id": "record", "rnPath": "/record", "stack": "camera", "presentation": "push", "params": [{ "name": "feedId", "type": "string", "optional": true }, { "name": "chatMode", "type": "bool", "optional": true }, { "name": "roomId", "type": "string", "optional": true }, { "name": "recipientId", "type": "string", "optional": true }], "header": "none" },
+    { "id": "mediaPage", "rnPath": "/mediapage", "stack": "camera", "presentation": "push", "params": [{ "name": "feedId", "type": "string", "optional": true }, { "name": "path", "type": "string" }, { "name": "type", "type": "string" }, { "name": "chatMode", "type": "bool", "optional": true }, { "name": "roomId", "type": "string", "optional": true }, { "name": "recipientId", "type": "string", "optional": true }], "header": "none" },
+    { "id": "livestream", "rnPath": "/livestream", "stack": "camera", "presentation": "replace", "params": [], "outOfScope": "livekit" },
+
+    { "id": "status", "rnPath": "/status/[verificationId]", "stack": "root", "presentation": "push", "params": [{ "name": "verificationId", "type": "string" }, { "name": "focusComment", "type": "bool", "optional": true }], "header": "simpleGoBack", "headerTitle": "ფოსტი" }
+  ],
+  "stacks": {
+    "root": "Root UINavigationController; hosts auth, tabs, chat, camera, status as full-screen pushes/covers",
+    "auth": "Auth stack (fade); black background",
+    "home": "Home tab stack (mounted inside tabs)",
+    "user": "User tab stack (mounted inside tabs)",
+    "homeOrUser": "Shared (home,user) destinations pushed onto whichever tab stack is active",
+    "chatList": "Chat-list tab stack",
+    "chat": "Chat room stack (root-level, outside tabs)",
+    "camera": "Camera stack (root-level, outside tabs)"
+  },
+  "deepLinks": {
+    "scheme": "wal",
+    "associatedDomain": "wal.ge",
+    "patterns": [
+      { "match": "/status/{verificationId}", "route": "status" },
+      { "match": "/links/{username}", "route": "profileByUsername", "note": "resolved through GET /user/profile/username/{username} then profile(userId)" }
+    ]
+  },
+  "pushNotificationRouting": [
+    { "type": "poke", "requires": ["verificationId"], "route": "verification" },
+    { "type": "new_message", "requires": ["roomId"], "route": "chatRoom" },
+    { "type": "*", "requires": ["feedId"], "route": "feed" },
+    { "type": "verification_like", "requires": ["verificationId"], "route": "status" },
+    { "type": "friend_request_sent", "requires": [], "route": "chatList" }
+  ]
+}

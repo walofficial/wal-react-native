@@ -1,0 +1,20 @@
+{
+  "name": "@wal/native-codegen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Language-neutral spec extraction and Swift/Kotlin code generation for the WAL native apps",
+  "type": "module",
+  "scripts": {
+    "extract:openapi": "tsx src/extract-openapi.ts",
+    "gen:swift": "tsx src/gen-swift.ts",
+    "gen:kotlin": "tsx src/gen-kotlin.ts",
+    "gen": "npm run extract:openapi && npm run gen:swift",
+    "check:drift": "tsx src/check-drift.ts",
+    "test": "tsx --test src/*.test.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.2",
+    "@types/node": "^22.15.0"
+  }
+}

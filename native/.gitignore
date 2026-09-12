@@ -1,0 +1,12 @@
+# SwiftPM / Xcode build output
+ios/WALCore/.build/
+ios/WALCore/.swiftpm/
+ios/WAL.xcodeproj/
+ios/*.xcworkspace/
+ios/DerivedData/
+ios/TestResults.xcresult/
+ios/**/*.xcuserstate
+# codegen
+shared/codegen/node_modules/
+# snapshot diffs
+ios/WALSnapshotTests/__Snapshots__/**/*.diff.png

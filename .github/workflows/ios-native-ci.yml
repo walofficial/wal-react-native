@@ -1,0 +1,106 @@
+name: iOS Native CI
+
+on:
+  pull_request:
+    paths:
+      - 'native/**'
+      - 'lib/api/generated/**'
+      - 'locales/**'
+      - '.github/workflows/ios-native-ci.yml'
+  push:
+    branches: [dev]
+    paths:
+      - 'native/**'
+      - 'lib/api/generated/**'
+      - 'locales/**'
+
+concurrency:
+  group: ios-native-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Fast, Linux-only: shared-artifact drift + headless core (WALCore) tests. Mirrors what the Kotlin
+  # core will run in the same job later so both platforms are tested at the same time.
+  core-linux:
+    name: Core (Linux, swift test + drift)
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: native/shared/codegen/package-lock.json
+      - name: Install libsodium
+        run: sudo apt-get update && sudo apt-get install -y libsodium-dev
+      - name: Install Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.3.1"
+      - name: Codegen deps
+        working-directory: native/shared/codegen
+        run: npm ci
+      - name: Typecheck generators
+        working-directory: native/shared/codegen
+        run: npx tsc --noEmit -p .
+      - name: Generated artifacts are up to date
+        working-directory: native/shared/codegen
+        run: npm run check:drift
+      - name: Build WALCore (Linux)
+        working-directory: native/ios/WALCore
+        run: swift build
+      - name: Test WALCore
+        working-directory: native/ios/WALCore
+        run: swift test --parallel
+      - name: walctl smoke
+        working-directory: native/ios/WALCore
+        run: |
+          swift run walctl version
+          swift run walctl catalog | head -20
+
+  # Full app build, unit + snapshot + XCUITests on the simulator. Snapshot baselines live in
+  # native/ios/WALSnapshotTests/__Snapshots__ and are refreshed per checkpoint after visual sign-off.
+  app-macos:
+    name: App (macOS, xcodebuild test)
+    runs-on: macos-26
+    needs: core-linux
+    steps:
+      - uses: actions/checkout@v4
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_27.0.app || sudo xcode-select -s "$(ls -d /Applications/Xcode*.app | sort -V | tail -1)"
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        working-directory: native/ios
+        run: xcodegen generate
+      - name: Resolve packages
+        working-directory: native/ios
+        run: xcodebuild -resolvePackageDependencies -project WAL.xcodeproj -scheme WAL
+      - name: Build & test
+        working-directory: native/ios
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project WAL.xcodeproj \
+            -scheme WAL \
+            -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' \
+            -resultBundlePath TestResults.xcresult \
+            CODE_SIGNING_ALLOWED=NO \
+            | xcbeautify --renderer github-actions || xcodebuild test -project WAL.xcodeproj -scheme WAL -destination 'platform=iOS Simulator,name=iPhone 17,OS=latest' CODE_SIGNING_ALLOWED=NO
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult
+          path: native/ios/TestResults.xcresult
+          if-no-files-found: ignore
+      - name: Upload failed snapshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-failures
+          path: native/ios/WALSnapshotTests/__Snapshots__/**/*.png
+          if-no-files-found: ignore

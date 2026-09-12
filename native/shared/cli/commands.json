@@ -1,0 +1,51 @@
+{
+  "description": "Headless CLI surface shared by walctl (Swift) and the future walctl (Kotlin/JVM). Both binaries must accept exactly these commands/flags and emit the same JSON envelopes so the same end-to-end scripts drive both platforms. In `--remote` mode the CLI forwards the command to a running debug build (DevServer) instead of executing it against the in-process core.",
+  "envelope": {
+    "ok": { "ok": true, "command": "string", "data": "any" },
+    "error": { "ok": false, "command": "string", "error": { "code": "string", "message": "string" } }
+  },
+  "globalFlags": [
+    { "flag": "--mode", "values": ["mock", "live", "remote"], "default": "mock", "description": "mock: fixtures transport; live: real backend (needs --api-url and a session); remote: forward to DevServer" },
+    { "flag": "--api-url", "type": "string", "description": "Backend base URL for live mode" },
+    { "flag": "--remote-url", "type": "string", "default": "http://127.0.0.1:8765", "description": "DevServer URL for remote mode" },
+    { "flag": "--fixtures", "type": "path", "default": "native/shared/fixtures", "description": "Fixture root for mock mode" },
+    { "flag": "--json", "type": "bool", "default": true, "description": "Machine-readable output (always on; kept for parity)" }
+  ],
+  "commands": [
+    { "name": "state", "description": "Dump app state: auth status, current route stack, selected tab, active sheets, cache summary" },
+    { "name": "cache", "args": ["list|get|invalidate", "[queryId]"], "description": "Inspect or invalidate QueryStore entries by operation id" },
+    { "name": "navigate", "args": ["<route-id|rn-path>", "[--param key=value]..."], "description": "Push a route (same ids as navigation/routes.json)" },
+    { "name": "back", "description": "Pop the top route" },
+    { "name": "tab", "args": ["home|chatList|user"], "description": "Select a tab (user tab resets its stack like the RN tabPress listener)" },
+    { "name": "deeplink", "args": ["<url>"], "description": "Route a wal:// or https://wal.ge URL" },
+    { "name": "push-tap", "args": ["<json-data>"], "description": "Simulate tapping a push notification with the given data payload" },
+
+    { "name": "auth", "args": ["send-otp <phone> | verify <phone> <code> | logout | session"], "description": "Phone OTP auth flow" },
+    { "name": "register", "args": ["--username <u>", "--dob dd/MM/yyyy"], "description": "Complete registration (gender defaults to male like RN)" },
+
+    { "name": "feeds", "args": ["locations | default"], "description": "Feeds at/near location; default feed resolution" },
+    { "name": "feed", "args": ["<feedId>", "[--page n]", "[--filter last24h|social_media_only|youtube_only]"], "description": "Load a feed page into the cache and print post ids" },
+    { "name": "post", "args": ["<verificationId>"], "description": "Load a single post" },
+    { "name": "like", "args": ["<verificationId>", "[--undo]"], "description": "Optimistic like/unlike; prints cache before/after and invalidations" },
+    { "name": "comments", "args": ["<verificationId>", "[--page n]"], "description": "Load comments" },
+    { "name": "comment", "args": ["<verificationId>", "<text>"], "description": "Create a comment optimistically" },
+    { "name": "react", "args": ["<commentId>", "<love|laugh|wow|sad|dislike|none>"], "description": "Set/remove a comment reaction" },
+    { "name": "publish", "args": ["<feedId>", "<text>", "[--image path]..."], "description": "Publish a post (multipart)" },
+    { "name": "visibility", "args": ["<verificationId>", "public|private"], "description": "Make post public/private" },
+    { "name": "report", "args": ["<targetId>"], "description": "Report a user" },
+
+    { "name": "chats", "description": "List chat rooms (decrypted previews) in RN sort order" },
+    { "name": "chat", "args": ["open <roomId|--user userId> | messages <roomId> [--cursor c] | send <roomId> <text> | receive <json>"], "description": "Chat room operations; `receive` injects an incoming socket event" },
+    { "name": "presence", "args": ["<userId>"], "description": "Query presence state for a user" },
+
+    { "name": "friends", "args": ["list | requests | send <userId> | accept <requestId> | reject <requestId> | remove <userId> | check <phone>..."], "description": "Friends and contact sync" },
+    { "name": "block", "args": ["<userId>", "[--undo]"], "description": "Block/unblock" },
+    { "name": "profile", "args": ["<userId> | me | update --bio|--username|--dob|--language"], "description": "Profile read/update" },
+    { "name": "settings", "args": ["locale get|set <en|ka>", "notifications enable|disable"], "description": "Preferences" },
+
+    { "name": "scenario", "args": ["run <file|all>"], "description": "Run shared JSON scenarios (native/shared/fixtures/scenarios) against the core and report pass/fail" },
+    { "name": "crypto", "args": ["keypair | encrypt <recipientPk> <text> | decrypt <senderPk> <nonce> <cipher> | vectors"], "description": "crypto_box helpers and cross-language vector check" },
+
+    { "name": "ui", "remoteOnly": true, "args": ["screenshot <path> | tap <accessibilityId> | type <accessibilityId> <text> | scroll <accessibilityId> <dy> | wait <accessibilityId> [--timeout ms] | tree"], "description": "UI actions executed by the DevServer inside the running app" }
+  ]
+}
