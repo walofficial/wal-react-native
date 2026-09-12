@@ -12,14 +12,20 @@ public final class AppCore: @unchecked Sendable {
     public let storage: KeyValueStore
     public let http: HTTPClient
     public let l10n: L10n
+    public let socket: RealtimeSocketing
+    public let haptics: HapticPlaying
     public var themePreference: ColorSchemePreference
     public var systemIsDark: Bool
+    public var currentUser: JSONValue?
+    public var userLoading = false
 
     public init(
         mode: RuntimeMode = .mock,
         apiURL: URL = URL(string: "https://mnt-api-880207287631.europe-west3.run.app")!,
         fixtures: URL? = nil,
         storage: KeyValueStore = MemoryStore(),
+        socket: RealtimeSocketing = MockRealtimeSocket(),
+        haptics: HapticPlaying = RecordingHaptics(),
         systemIsDark: Bool = true
     ) {
         self.mode = mode
@@ -27,6 +33,8 @@ public final class AppCore: @unchecked Sendable {
         self.router = RouterState()
         self.storage = storage
         self.l10n = L10n()
+        self.socket = socket
+        self.haptics = haptics
         self.themePreference = .system
         self.systemIsDark = systemIsDark
         if let locale = storage.get(StorageKey.appLocale) { l10n.setLocale(locale) }
@@ -40,16 +48,44 @@ public final class AppCore: @unchecked Sendable {
         }
         self.http = HTTPClient(defaultBaseURL: apiURL, transport: transport) { [storage] in
             var snap = SessionSnapshot()
-            if let raw = storage.get(StorageKey.session),
-               let data = raw.data(using: .utf8),
-               let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-                snap.accessToken = obj["access_token"] as? String
-                snap.userId = obj["user_id"] as? String
+            if let rec = SessionRecord.parse(storage.get(StorageKey.session)) {
+                snap.accessToken = rec.accessToken
+                snap.userId = rec.userId
             }
             snap.locale = storage.get(StorageKey.appLocale) ?? "en"
             snap.apiBaseURLOverride = storage.get(StorageKey.apiOverride)
+            snap.latitude = storage.get(StorageKey.latitude)
+            snap.longitude = storage.get(StorageKey.longitude)
             return snap
         }
+    }
+
+    public var sessionRecord: SessionRecord? { SessionRecord.parse(storage.get(StorageKey.session)) }
+    public var sessionUserId: String? { sessionRecord?.userId }
+    public var hasSession: Bool { storage.get(StorageKey.session) != nil }
+
+    public func gate() -> AuthRules.Gate {
+        AuthRules.indexGate(hasSession: hasSession, userLoading: userLoading, user: currentUser)
+    }
+
+    public func persistSession(_ record: SessionRecord) {
+        storage.set(StorageKey.session, record.encoded())
+    }
+
+    public func clearSession() {
+        storage.remove(StorageKey.session)
+        storage.remove(StorageKey.userKeys)
+        storage.remove(StorageKey.expoPushToken)
+        currentUser = nil
+        socket.disconnect()
+        router.navigate(.signIn)
+    }
+
+    public func deviceId() -> String {
+        if let existing = storage.get(StorageKey.deviceId), !existing.isEmpty { return existing }
+        let id = UUID().uuidString
+        storage.set(StorageKey.deviceId, id)
+        return id
     }
 
     public var theme: ResolvedTheme {

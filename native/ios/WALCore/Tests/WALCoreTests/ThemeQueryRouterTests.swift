@@ -97,6 +97,25 @@ final class RouterStateTests: XCTestCase {
         XCTAssertEqual(r.applyPushTap(["feedId": "f9"])?.id, .feed)
         XCTAssertEqual(r.applyPushTap(["type": "friend_request_sent"])?.id, .chatList)
     }
+
+    func testWalSchemeStatusAndShareIntent() {
+        let r = RouterState()
+        XCTAssertEqual(RouterState.deepLinkPath(from: URL(string: "wal://status/abc")!), "/status/abc")
+        XCTAssertEqual(r.applyDeepLink(url: URL(string: "wal://status/abc")!)?.id, .status)
+        let share = RouterState()
+        XCTAssertEqual(share.applyDeepLink(url: URL(string: "wal://dataUrl=walShareKey")!)?.id, .createPostShareIntent)
+    }
+
+    func testBackDismissesSheetsFirst() {
+        let r = RouterState()
+        r.navigate(.feed(feedId: "f1"))
+        r.presentSheet("login")
+        r.back()
+        XCTAssertTrue(r.sheets.isEmpty)
+        XCTAssertEqual(r.current.id, .feed)
+        r.back()
+        XCTAssertEqual(r.current.id, .homeIndex)
+    }
 }
 
 final class HTTPClientTests: XCTestCase {

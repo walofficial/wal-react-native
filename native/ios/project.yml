@@ -35,15 +35,30 @@ settings:
       WAL_DISPLAY_NAME: "WAL DEV"
       WAL_BUNDLE_ID: com.greetai.mentdev
       WAL_APP_GROUP: group.com.greetai.mentdev
+      WAL_SUPABASE_URL: ""
+      WAL_SUPABASE_ANON_KEY: ""
+      WAL_SENTRY_DSN: ""
       SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG WAL_DEV
     Release:
       WAL_DISPLAY_NAME: "WAL"
       WAL_BUNDLE_ID: com.greetai.ment
       WAL_APP_GROUP: group.com.greetai.ment
+      WAL_SUPABASE_URL: ""
+      WAL_SUPABASE_ANON_KEY: ""
+      WAL_SENTRY_DSN: ""
 
 packages:
   WALCore:
     path: WALCore
+  supabase-swift:
+    url: https://github.com/supabase/supabase-swift
+    exactVersion: 2.55.2
+  SocketIO:
+    url: https://github.com/socketio/socket.io-client-swift
+    exactVersion: 16.1.1
+  Sentry:
+    url: https://github.com/getsentry/sentry-cocoa
+    exactVersion: 9.28.0
 
 targets:
   WAL:
@@ -56,6 +71,14 @@ targets:
     dependencies:
       - package: WALCore
         product: WALCore
+      - package: supabase-swift
+        product: Auth
+      - package: supabase-swift
+        product: Supabase
+      - package: SocketIO
+        product: SocketIO
+      - package: Sentry
+        product: Sentry
       - target: WALNotificationService
         embed: true
       - target: WALShareExtension
@@ -99,6 +122,10 @@ targets:
         LSApplicationQueriesSchemes: [sms, tel, https]
         WALAPIBaseURL: https://mnt-api-880207287631.europe-west3.run.app
         WALAppGroup: $(WAL_APP_GROUP)
+        WALSupabaseURL: $(WAL_SUPABASE_URL)
+        WALSupabaseAnonKey: $(WAL_SUPABASE_ANON_KEY)
+        WALSentryDSN: $(WAL_SENTRY_DSN)
+        WALExpoProjectId: a9de94ea-576e-4767-ae3f-085bfe155f96
     entitlements:
       path: WAL/Config/WAL.entitlements
       properties:

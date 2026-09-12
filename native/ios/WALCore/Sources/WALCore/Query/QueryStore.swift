@@ -19,6 +19,8 @@ public final class QueryStore: @unchecked Sendable {
     private var records: [QueryKey: QueryRecord] = [:]
     private let lock = NSLock()
     public private(set) var invalidations: [QueryKey] = []
+    public var onChange: (() -> Void)?
+    public private(set) var generation: Int = 0
 
     public init(defaults: Defaults = Defaults()) {
         self.defaults = defaults
@@ -44,7 +46,9 @@ public final class QueryStore: @unchecked Sendable {
         rec.updatedAt = Date()
         rec.errorMessage = nil
         records[key] = rec
+        generation += 1
         lock.unlock()
+        onChange?()
     }
 
     public func setQueryData(_ key: QueryKey, update: (JSONValue?) -> JSONValue?) {
@@ -58,7 +62,9 @@ public final class QueryStore: @unchecked Sendable {
             rec.updatedAt = Date.distantPast
             records[key] = rec
         }
+        generation += 1
         lock.unlock()
+        onChange?()
     }
 
     public func invalidate(operationId: String) {

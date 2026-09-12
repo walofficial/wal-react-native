@@ -1,10 +1,16 @@
 import XCTest
 
 final class LaunchUITests: XCTestCase {
-    func testAppLaunchesToSplash() {
+    func testAppLaunchesToSessionGate() {
         let app = XCUIApplication()
         app.launchEnvironment["WAL_UITEST"] = "1"
         app.launch()
-        XCTAssertTrue(app.images["splash.icon"].waitForExistence(timeout: 5))
+        let splash = app.images["splash.icon"]
+        let title = app.staticTexts["WAL"]
+        let auth = app.otherElements["auth.title"]
+        let appeared = splash.waitForExistence(timeout: 5)
+            || title.waitForExistence(timeout: 5)
+            || auth.waitForExistence(timeout: 5)
+        XCTAssertTrue(appeared)
     }
 }

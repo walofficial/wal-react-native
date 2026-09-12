@@ -116,26 +116,50 @@ public final class HTTPClient: @unchecked Sendable {
         return defaultBaseURL
     }
 
+    public func executeJSON<Op: APIOperation>(_ op: Op) async throws -> JSONValue {
+        let response = try await sendBuilt(try build(op))
+        if response.body.isEmpty { return .null }
+        return try JSONDecoder().decode(JSONValue.self, from: response.body)
+    }
+
+    /// Used when the generated operation is missing a body (e.g. `upsertFcm`).
+    public func sendRaw(method: HTTPMethod, path: String, operationId: String, json: JSONValue? = nil) async throws -> JSONValue {
+        let snap = session()
+        var headers: [String: String] = ["Accept": "application/json", "Accept-Language": snap.locale]
+        if let token = snap.accessToken { headers["Authorization"] = "Bearer \(token)" }
+        var body: Data?
+        if let json {
+            body = try JSONEncoder().encode(json)
+            headers["Content-Type"] = "application/json"
+        }
+        let request = HTTPRequest(method: method, path: path, headers: headers, body: body, operationId: operationId)
+        let response = try await sendBuilt(request)
+        if response.body.isEmpty { return .null }
+        return (try? JSONDecoder().decode(JSONValue.self, from: response.body)) ?? .null
+    }
+
     public func execute<Op: APIOperation>(_ op: Op) async throws -> Op.Response {
-        let request = try build(op)
-        lock.lock(); lastRequests.append(request); lock.unlock()
-        var response = try await transport.send(request, baseURL: baseURL)
-        if response.status == 401 {
-            let id = Op.operationId
-            lock.lock(); let already = retried.contains(id); if !already { retried.insert(id) }; lock.unlock()
-            if !already {
-                let retry = try build(op)
-                response = try await transport.send(retry, baseURL: baseURL)
-            }
-        }
-        if response.status == 401 || response.status >= 400 {
-            throw HTTPClientError.status(response.status, body: String(data: response.body, encoding: .utf8) ?? "")
-        }
+        let response = try await sendBuilt(try build(op))
         do {
             return try ResponseDecoder.decode(Op.Response.self, from: response.body)
         } catch {
             throw HTTPClientError.decoding(String(describing: error))
         }
+    }
+
+    private func sendBuilt(_ request: HTTPRequest) async throws -> HTTPResponse {
+        lock.lock(); lastRequests.append(request); lock.unlock()
+        var response = try await transport.send(request, baseURL: baseURL)
+        if response.status == 401 {
+            lock.lock(); let already = retried.contains(request.operationId); if !already { retried.insert(request.operationId) }; lock.unlock()
+            if !already {
+                response = try await transport.send(request, baseURL: baseURL)
+            }
+        }
+        if response.status == 401 || response.status >= 400 {
+            throw HTTPClientError.status(response.status, body: String(data: response.body, encoding: .utf8) ?? "")
+        }
+        return response
     }
 
     public func build<Op: APIOperation>(_ op: Op) throws -> HTTPRequest {

@@ -127,17 +127,15 @@ public struct CommandRunner: Sendable {
         case "session":
             return ok(command, ["hasSession": .bool(core.storage.get(StorageKey.session) != nil)])
         case "logout":
-            core.storage.remove(StorageKey.session)
-            core.storage.remove(StorageKey.userKeys)
-            core.router.navigate(.signIn)
+            core.clearSession()
             return ok(command, ["loggedOut": .bool(true)])
         case "send-otp":
             return ok(command, ["sent": .bool(true), "phone": .string(rest.dropFirst().first ?? "")])
         case "verify":
             let phone = rest.dropFirst().first ?? ""
             let code = rest.dropFirst(2).first ?? ""
-            let session = "{\"access_token\":\"mock\",\"user_id\":\"u1\",\"phone\":\"\(phone)\",\"code\":\"\(code)\"}"
-            core.storage.set(StorageKey.session, session)
+            core.persistSession(SessionRecord(accessToken: "mock", userId: "u1", phone: phone))
+            _ = code
             return ok(command, ["verified": .bool(true)])
         default:
             return fail(command, "bad_args", "auth send-otp|verify|logout|session")
@@ -218,22 +216,35 @@ public struct CommandRunner: Sendable {
 
     private func routeFrom(id: RouteID, params: [String: String]) -> Route {
         switch id {
-        case .feed: return .feed(feedId: params["feedId"] ?? params["content_type"] ?? "")
-        case .profile: return .profile(userId: params["userId"] ?? "")
-        case .verification: return .verification(verificationId: params["verificationId"] ?? "")
-        case .chatRoom: return .chatRoom(roomId: params["roomId"] ?? "")
-        case .status: return .status(verificationId: params["verificationId"] ?? "")
-        case .createPost: return .createPost(feedId: params["feedId"] ?? "")
-        case .record: return .record(feedId: params["feedId"])
-        case .profileByUsername: return .profileByUsername(username: params["username"] ?? "")
+        case .index: return .index
         case .signIn: return .signIn
         case .register: return .register
+        case .homeIndex: return .homeIndex
+        case .feed: return .feed(feedId: params["feedId"] ?? params["content_type"] ?? "")
+        case .locations: return .locations
+        case .createSpace: return .createSpace(feedId: params["feedId"] ?? "")
+        case .scheduleSpace: return .scheduleSpace(feedId: params["feedId"] ?? "", description: params["description"] ?? "")
+        case .profile: return .profile(userId: params["userId"] ?? "")
+        case .profilePicture: return .profilePicture(userId: params["userId"], imageUrl: params["imageUrl"])
+        case .verification: return .verification(verificationId: params["verificationId"] ?? "", focusComment: params["focusComment"] == "true")
+        case .createPost: return .createPost(feedId: params["feedId"] ?? "", sharedContent: params["sharedContent"], sharedImages: params["sharedImages"])
+        case .factChecks: return .factChecks
         case .chatList: return .chatList
         case .userIndex: return .userIndex
-        case .homeIndex: return .homeIndex
         case .settings: return .settings
-        case .locations: return .locations
-        default: return .index
+        case .profileSettings: return .profileSettings
+        case .userPreferences: return .userPreferences
+        case .blockedUsers: return .blockedUsers
+        case .chatRoom: return .chatRoom(roomId: params["roomId"] ?? "")
+        case .chatProfile: return .chatProfile(roomId: params["roomId"] ?? "", userId: params["userId"] ?? "")
+        case .chatProfilePicture: return .chatProfilePicture(roomId: params["roomId"] ?? "", imageUrl: params["imageUrl"])
+        case .record: return .record(feedId: params["feedId"], chatMode: params["chatMode"] == "true", roomId: params["roomId"], recipientId: params["recipientId"])
+        case .mediaPage: return .mediaPage(feedId: params["feedId"], path: params["path"] ?? "", type: params["type"] ?? "photo", recordingTime: params["recordingTime"], chatMode: params["chatMode"] == "true", roomId: params["roomId"], recipientId: params["recipientId"])
+        case .livestream: return .livestream
+        case .status: return .status(verificationId: params["verificationId"] ?? "", focusComment: params["focusComment"] == "true")
+        case .profileByUsername: return .profileByUsername(username: params["username"] ?? "")
+        case .createPostShareIntent: return .createPostShareIntent
+        case .notFound: return .notFound
         }
     }
 
