@@ -1,0 +1,10 @@
+{
+  "name": "cp2-router",
+  "description": "Navigate feed → user tab reset → settings locale. Used by walctl scenario run.",
+  "steps": [
+    { "command": ["navigate", "feed", "--param", "feedId=news"], "expect": { "ok": true } },
+    { "command": ["tab", "user"], "expect": { "ok": true } },
+    { "command": ["settings", "locale", "set", "ka"], "expect": { "ok": true } },
+    { "command": ["state"], "expect": { "ok": true } }
+  ]
+}

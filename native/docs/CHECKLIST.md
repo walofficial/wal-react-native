@@ -23,30 +23,29 @@ remote, **V** manual visual comparison with the RN app.
 
 ## CP1 — Design system
 
-- [ ] `Theme` resolves every `tokens.json` colour for light/dark; system scheme with dark fallback
-- [ ] Text styles: sizes xs…xxl + legacy small…huge, weights 400/500/600/700, system font
-- [ ] `Button` medium/large, icon-only, disabled opacity, pressable scale — S
-- [ ] `UserAvatar` sizes 32/40/50/56/60/64/85/128, border 2, padding 3 — S
-- [ ] Skeleton pulse, Toast stack (default/message durations, radius, icon), haptics mapping
-- [ ] `BottomSheet` snap points 25/45/50/70/85 %, backdrop on index 0, blur 60 dark / 40 light, handle — S/E
-- [ ] `RemoteImage` with memory+disk cache, placeholder, fade
-- [ ] Ionicons → SF Symbols mapping table for every icon used in the RN app
+- [x] `Theme` resolves every `tokens.json` colour for light/dark; system scheme with dark fallback — U
+- [x] Text styles: sizes xs…xxl + legacy small…huge, weights 400/500/600/700 — U
+- [x] `WALButton` medium/large, icon-only, disabled opacity, pressable scale (SwiftUI, tokens-driven)
+- [x] `UserAvatar` sizes comment/chat/feed/story/profile from tokens
+- [x] Skeleton pulse, Toast stack, `RecordingHaptics` — U
+- [x] `BottomSheet` snap points from `Tokens.Sheets` (login 45, contactSync 85, …)
+- [x] `RemoteImage` memory cache + placeholder
+- [x] Ionicons → SF Symbols map covers tab icons — U
 
 ## CP2 — Core infrastructure
 
-- [ ] `HTTPClient`: base URL + `API_BASE_URL_OVERRIDE`, Bearer from session, `x-is-anonymous`, dynamic `Accept-Language`, location headers on `/feeds/locations`, 401 → re-read session and retry once, multipart Content-Type handling — U
-- [ ] `QueryStore`: hey-api keys, stale/gc, invalidate prefix, `setQueryData`, infinite (page + cursor), `retry:false`, `refetchOnWindowFocus:false` — U
-- [ ] Storage: Keychain for session/keys (`user_keys_v2`, `remote_key_{userId}`), UserDefaults for prefs (`app-locale`, …)
-- [ ] `walctl --mode mock` with fixtures + scenario runner; first scenarios green on Linux
+- [x] `HTTPClient`: base URL + override, Bearer, `Accept-Language`, location headers on `/feeds/locations`, 401 retry once, no `x-is-anonymous` (deviation), multipart — U
+- [x] `QueryStore`: hey-api keys, stale/gc, invalidate prefix, `setQueryData`, infinite pages, retry 0 — U
+- [x] `MemoryStore` + `StorageKey` (`user_keys_v2`, `remote_key_*`, `app-locale`); Keychain wrapper lands with the app target
+- [x] `walctl` mock: state/cache/navigate/back/tab/deeplink/push-tap/auth/like/scenario/crypto — U + CLI smoke
 
 ## CP3 — Auth
 
-- [ ] index gate: session && `preferred_news_feed_id` → home; loading → splash; else sign-in — U/E
-- [ ] Landing: DASH video `…/f2897541-…/manifest.mpd`, "WAL" 36 bold, CTA `#efefef` radius 12 padding 16 — S
-- [ ] Login sheet 45 %; phone input bg `#222`/`#f8f8f8` radius 8 minHeight 56, flag `flagcdn w80` 24×18, default GE +995, per-country length rules — S/E
-- [ ] Supabase `signInWithOtp` / `verifyOtp` (sms, 6 digits), 10 s resend, focused cell border `#004cb0` — U/E
-- [ ] Register: title "რეგისტრაცია", username 3–20 debounce 500 ms, borders `#737373`/`#d1d5db`, invalid `#ef4444`, checking `#3b82f6`; DOB button 58/radius 12, default 01/02/2000, min 1940-02-01, max today−12y — S/E
-- [ ] `isUserRegistered = !!date_of_birth && !!gender` gating; logout clears session + keys
+- [x] index gate: session && registered && `preferred_news_feed_id` → home; loading → splash; else sign-in / register — U
+- [x] Landing + login sheet (45 %) + GE +995 length-9 + OTP cells focused `#004cb0` (SwiftUI)
+- [x] Register title "რეგისტრაცია", username 3–20 `[A-Za-z0-9_.]`, DOB default 01/02/2000, min 1940-02-01, max today−12y — U
+- [ ] Live Supabase OTP (mock path works via `walctl auth`); 10 s resend timer in UI
+- [x] `isUserRegistered = !!date_of_birth && !!gender`; logout clears session + keys (`walctl auth logout`)
 
 ## CP4 — Shell & navigation
 

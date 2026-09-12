@@ -1,54 +1,41 @@
 import Foundation
 import WALCore
 
-// walctl: headless driver for WALCore. CP0 ships the envelope, `--json`, `version` and `catalog`;
-// later checkpoints add the commands listed in native/shared/cli/commands.json as the core grows.
+var mode = RuntimeMode.mock
+var apiURL = URL(string: "https://mnt-api-880207287631.europe-west3.run.app")!
+var fixtures = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+    .appendingPathComponent("native/shared/fixtures")
+var positional: [String] = []
 
-struct Envelope<T: Encodable>: Encodable {
-    let ok: Bool
-    let command: String
-    let data: T
-}
-
-struct ErrorEnvelope: Encodable {
-    struct Failure: Encodable { let code: String; let message: String }
-    let ok = false
-    let command: String
-    let error: Failure
-}
-
-func emit<T: Encodable>(_ value: T) {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
-    if let data = try? encoder.encode(value), let s = String(data: data, encoding: .utf8) {
-        print(s)
+var args = Array(CommandLine.arguments.dropFirst())
+var i = 0
+while i < args.count {
+    let a = args[i]
+    if a == "--mode", i + 1 < args.count {
+        mode = RuntimeMode(rawValue: args[i + 1]) ?? .mock
+        i += 2
+    } else if a == "--api-url", i + 1 < args.count {
+        apiURL = URL(string: args[i + 1]) ?? apiURL
+        i += 2
+    } else if a == "--fixtures", i + 1 < args.count {
+        fixtures = URL(fileURLWithPath: args[i + 1])
+        i += 2
+    } else if a == "--json" || a == "--remote-url" {
+        i += a == "--remote-url" ? 2 : 1
+    } else if a.hasPrefix("--") {
+        fputs("unknown flag \(a)\n", stderr)
+        exit(2)
+    } else {
+        positional.append(a)
+        i += 1
     }
 }
 
-let args = Array(CommandLine.arguments.dropFirst()).filter { !$0.hasPrefix("--") }
-let command = args.first ?? "help"
-
-switch command {
-case "version":
-    emit(Envelope(ok: true, command: command, data: ["core": WALCoreInfo.version, "checkpoint": WALCoreInfo.checkpoint]))
-case "catalog":
-    struct Catalog: Encodable {
-        let operations: [String]
-        let routes: [String]
-        let tabs: [String]
-        let locales: [String]
-        let translationKeys: Int
-    }
-    emit(Envelope(ok: true, command: command, data: Catalog(
-        operations: Operations.allOperationIds,
-        routes: RouteID.allCases.map(\.rawValue),
-        tabs: TabID.allCases.map(\.rawValue),
-        locales: L10nCatalog.supportedLocales,
-        translationKeys: L10nKey.allCases.count
-    )))
-case "help":
-    emit(Envelope(ok: true, command: command, data: ["usage": "walctl <version|catalog> [--json]"]))
-default:
-    emit(ErrorEnvelope(command: command, error: .init(code: "unknown_command", message: "Unknown command '\(command)'. Run `walctl help`.")))
-    exit(2)
+let core = AppCore(mode: mode, apiURL: apiURL, fixtures: fixtures)
+let result = CommandRunner(core: core).run(positional)
+let encoder = JSONEncoder()
+encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+if let data = try? encoder.encode(result), let s = String(data: data, encoding: .utf8) {
+    print(s)
 }
+if !result.ok { exit(2) }

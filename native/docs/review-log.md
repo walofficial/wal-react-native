@@ -55,3 +55,11 @@ Scope: `native/` tree, shared artifacts, codegen, WALCore package, XcodeGen proj
 ### Human sign-off
 
 _pending_
+
+---
+
+## CP1 — Design system / CP2 — Core / CP3 — Auth (headless + first screens)
+
+Headless WALCore now owns theme resolution, QueryStore (hey-api keys, prefix invalidate, optimistic infinite pages), HTTPClient (401 once, location headers), RouterState (tabs, deep links, push-tap order), AuthRules (index gate, username/phone/DOB), and walctl (`state`, `navigate`, `like`, `scenario`, …). SwiftUI primitives live under `native/ios/WAL/DesignSystem` and `WAL/Auth`. Linux: 49 tests.
+
+Reviewers: same findings as CP0 applied; new code is covered by `ThemeQueryRouterTests` + `AuthRulesTests`. Visual snapshot sign-off still pending (needs the macOS job / device).
